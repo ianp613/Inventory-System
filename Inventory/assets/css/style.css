@@ -748,3 +748,31 @@ input:checked + .slider:before {
   -webkit-appearance: none;
   margin: 0;
 }
+
+.post-it-card{
+    border: solid rgb(209, 209, 209) 1px;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: aquamarine;
+    transition: transform 0.5s ease;
+}
+
+.post-it-card.zoomed{
+    position: fixed;
+    z-index: 5000;
+    top: 50%;
+    left: 50%;
+    width: 20%;
+    transform: translate(-50%,-50%);
+}
+
+.post-it-card.zoomed .post-it-message{
+    height: 300px !important;
+    overflow-y: auto;
+}
+
+.post-it-message{
+    height: 100px;
+    overflow-y: hidden;
+    transition: transform 0.5s ease;
+}
