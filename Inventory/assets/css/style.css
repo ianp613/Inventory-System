@@ -776,3 +776,11 @@ input:checked + .slider:before {
     overflow-y: hidden;
     transition: transform 0.5s ease;
 }
+
+.modal.fade .modal-dialog {
+  transform: scale(0.9);
+}
+
+.modal.show .modal-dialog {
+  transform: scale(1);
+}

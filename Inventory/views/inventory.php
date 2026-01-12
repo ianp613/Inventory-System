@@ -217,6 +217,7 @@
             </div>
         </div>
         <h6 class="copyright f-10 text-secondary"></h6>
+        <?php include("modals/dashboard.php"); ?>
         <?php include("modals/equipments.php"); ?>
         <?php include("modals/consumables.php"); ?>
         <?php include("modals/ipaddress.php"); ?>
