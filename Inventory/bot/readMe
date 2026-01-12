@@ -1,0 +1,7 @@
+setup
+    cd bot folder
+    python3.13 -m venv telebot_wifi
+    telebot_wifi\Scripts\activate.bat
+    pip install python-telegram-bot
+    pip install requests
+    python main.py

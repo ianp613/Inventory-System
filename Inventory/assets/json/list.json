@@ -1,0 +1,10 @@
+{
+    "equipment" : [
+        "Mesh",
+        "Switch",
+        "Router",
+        "KVM Switch",
+        "UPS",
+        "System Unit"
+    ]
+}

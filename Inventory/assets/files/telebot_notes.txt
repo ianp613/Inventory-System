@@ -1,0 +1,17 @@
+
+
+Note:
+
+Table Codename:
+    Equipment 
+    Entry (Equipment Entry)
+    Network (IP Network)
+    IPAddress (IP Address)
+    Router 
+    ISP
+    Map (CCTV Map)
+    CCTV (CCTV Camera)
+   
+  WIP: Table Relationship
+  
+  BUG: recheck list of column and ignored words in array (pregmatch and strpos)

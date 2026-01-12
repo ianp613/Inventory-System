@@ -1,0 +1,373 @@
+/* Splash Body */
+.splash{
+    z-index: 5000;
+    display: flex;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: #ffffff;
+}
+.splash-plate{
+    position: absolute;
+    width: 300px;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+.splash-message{
+    margin-top: 20px;
+    margin-left: 10px;
+    font-size: 20px;
+    color: #2c2c2c;
+}
+.splash-img img{
+    width: 100px;
+    height: 100px;
+    margin: auto;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+.splash-img{
+    height: 115px;
+}
+/* Splash Box Tumble */
+.splash-box{
+    width: 30px;
+    height: 30px;
+    background: orangered;
+    border-radius: 5px;
+    animation: box 2s linear infinite;
+}
+@keyframes box{
+	0%{
+		transform: rotate(0deg);
+		opacity: 0;
+	}
+    30%{
+		opacity: 1;
+        background: green;
+	}
+    50%{
+		opacity: 1;
+        background: blue;
+	}
+    80%{
+		opacity: 1;
+        background: orangered;
+	}
+	100%{
+		transform: rotate(360deg);
+		opacity: 0;
+        margin-left: 100%;
+        background: green;
+	}
+}
+
+/* Splash Marble Fade */
+.splash-marbles{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 30px;
+}
+.splash-marbles div{
+    width: 20px;
+    height: 20px;
+    border-radius: 100px;
+    background: green;
+    transition: 2s !important;
+    animation: marble 1s linear infinite;
+}
+.splash-marbles div:nth-child(1){
+    animation-delay: 0s;
+}
+.splash-marbles div:nth-child(2){
+    animation-delay: 0.1s;
+}
+.splash-marbles div:nth-child(3){
+    animation-delay: 0.2s;
+}
+.splash-marbles div:nth-child(4){
+    animation-delay: 0.3s;
+}
+.splash-marbles div:nth-child(5){
+    animation-delay: 0.4s;
+}
+.splash-marbles div:nth-child(6){
+    animation-delay: 0.5s;
+}
+.splash-marbles div:nth-child(7){
+    animation-delay: 0.6s;
+}
+@keyframes marble{
+    0%{
+        background: gray;
+    }
+    40%{
+        background: green;
+    }
+    50%{
+        background: green;
+    }
+    60%{
+        background: green;
+    }
+	100%{
+        background: gray;
+	}
+}
+/* Splash Crystal Fade */
+.splash-crystal{
+    width: 60px;
+    height: 60px;
+    background: green;
+    margin: auto;
+    border-radius: 100px;
+    animation: crystal 5s linear infinite;
+}
+@keyframes crystal {
+    0%{
+        background: yellow;
+    }
+    20%{
+        background: orangered;
+    }
+    40%{
+        background: green;
+    }
+    60%{
+        background: blue;
+    }
+    80%{
+        background: red;
+    }
+    100%{
+        background: yellow;
+    }
+}
+/* Splash Progress Bar */
+.splash-progress{
+    border-radius: 5px;
+    border: solid 1px grey;
+    width: 100%;
+    height: 15px;
+    
+}
+.splash-progress div{
+    border-radius: 5px;
+    border-right: solid 1px grey;
+    width: 100%;
+    height: 13px;
+    background-color: green;
+}
+@keyframes progressbar {
+    0%{
+        width: 0%;
+    }
+    100%{
+        width: 100%;
+    }
+}
+/* Splash Wave */
+.splash-waves{
+    height: 70px;
+    display: flex;
+}
+.splash-waves div{
+    justify-content: space-between;
+    background: green;
+    height: 20px;
+    width: 14px;
+    margin-left: 2px;
+    animation: waves 5s linear infinite;
+    border-radius: 5px;
+    border: solid 1px gray;
+    position: absolute;
+    bottom: 65px;
+}
+.splash-waves div:nth-child(1){
+    animation-delay: 0s;
+}
+.splash-waves div:nth-child(2){
+    left: 15px;
+    animation-delay: 0.1s;
+}
+.splash-waves div:nth-child(3){
+    left: 30px;
+    animation-delay: 0.2s;
+}
+.splash-waves div:nth-child(4){
+    left: 45px;
+    animation-delay: 0.3s;
+}
+.splash-waves div:nth-child(5){
+    left: 60px;
+    animation-delay: 0.4s;
+}
+.splash-waves div:nth-child(6){
+    left: 75px;
+    animation-delay: 0.5s;
+}
+.splash-waves div:nth-child(7){
+    left: 90px;
+    animation-delay: 0.6s;
+}
+.splash-waves div:nth-child(8){
+    left: 105px;
+    animation-delay: 0.7s;
+}
+.splash-waves div:nth-child(9){
+    left: 120px;
+    animation-delay: 0.8s;
+}
+.splash-waves div:nth-child(10){
+    left: 135px;
+    animation-delay: 0.9s;
+}
+.splash-waves div:nth-child(11){
+    left: 150px;
+    animation-delay: 1s;
+}
+.splash-waves div:nth-child(12){
+    left: 165px;
+    animation-delay: 1.1s;
+}
+.splash-waves div:nth-child(13){
+    left: 180px;
+    animation-delay: 1.2s;
+}
+.splash-waves div:nth-child(14){
+    left: 195px;
+    animation-delay: 1.3s;
+}
+.splash-waves div:nth-child(15){
+    left: 210px;
+    animation-delay: 1.4s;
+}
+.splash-waves div:nth-child(16){
+    left: 225px;
+    animation-delay: 1.5s;
+}
+.splash-waves div:nth-child(17){
+    left: 240px;
+    animation-delay: 1.6s;
+}
+.splash-waves div:nth-child(18){
+    left: 255px;
+    animation-delay: 1.7s;
+}
+.splash-waves div:nth-child(19){
+    left: 270px;
+    animation-delay: 1.8s;
+}
+.splash-waves div:nth-child(20){
+    left: 285px;
+    animation-delay: 1.9s;
+}
+@keyframes waves {
+    0%{
+        height: 20px;
+    }
+    20%{
+        height: 80px;
+    }
+    40%{
+        height: 30px;
+    }
+    60%{
+        height: 50px;
+    }
+    80%{
+        height: 80px;
+        background: orangered;
+    }
+    90%{
+        height: 50px;
+    }
+    100%{
+        height: 20px;
+    }
+}
+/* Splash Img Fade */
+.splash-img-fade{
+    animation: imgbeat 1s linear infinite;
+}
+@keyframes imgbeat {
+    0%{
+        width: 100px;
+        height: 100px;
+    }
+    10%{
+        width: 110px;
+        height: 110px;
+    }
+    20%{
+        width: 100px;
+        height: 100px;
+    }
+    30%{
+        width: 115px;
+        height: 115px;
+    }
+    100%{
+        width: 100px;
+        height: 100px;
+    }
+}
+/* Splash Img Progress */
+.splash-img-progress-cover{
+    width: 100px;
+    height: 100px;
+    margin: auto;
+    background: #ffffff;
+    position: absolute;
+    top: 15px;
+    right: 100px;
+    height: 102px;
+    width: 100px;
+}
+@keyframes imgprogress {
+    0%{
+        width: 100px;
+    }
+    10%{
+        width: 80px;
+    }
+    30%{
+        width: 50px;
+    }
+    100%{
+        width: 0px;
+    }
+}
+/* Splash Dark */
+.splash-dark{
+    background: #3b3b3b !important;
+}
+.splash-dark .splash-plate{
+    color: white;
+}
+.splash-dark .splash-box,
+.splash-dark .splash-marbles div,
+.splash-dark .splash-crystal,
+.splash-dark .splash-progress,
+.splash-dark .splash-waves div
+{
+    border: solid 1px white;
+}
+.splash-dark .splash-progress div{
+    border-right: solid 1px white;
+}
+.splash-dark .splash-message{
+    color: white;
+}
+.splash-dark .splash-img-progress-cover{
+    background: #3b3b3b;
+}

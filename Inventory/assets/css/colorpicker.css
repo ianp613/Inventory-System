@@ -1,0 +1,34 @@
+.colorpicker{
+    display: block;
+}
+
+/* .colorpicker label{
+    position: absolute;
+    pointer-events: none;
+    margin-top: 5px;
+    margin-left: 15px;
+} */
+.colorpicker{
+    width: 100%;
+    height: 35px;
+    width: 100%;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    border: solid 1px #cecece;
+    border-radius: 5px;
+    padding: 10px;
+    transition: 0.3s;
+    margin-top: -40px;
+}
+.colorpicker:focus{
+  border: solid 0.02px #0d6efd;
+}
+.colorpicker-selector{
+    width: 100%;
+    height: 35px;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    opacity: 0;
+}

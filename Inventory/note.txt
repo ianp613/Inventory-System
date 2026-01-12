@@ -1,0 +1,173 @@
+Add login attemp and Account Lock Function
+
+Count add per month
+
+
+
+CCTV
+    Save Map (Download Map Image) - Download name should also change when user update the Map Name (Recheck SESSION or LOCALSTORAGE)
+
+
+
+
+
+
+Account Module
+    Fetch all account if privilege is admin, group members otherwise
+    Before updating account to administrator privilege, check if the $_SESSION["privileges"] is administrator
+    because only the administrator account have the authority to set an Admin Privilege.
+
+EQUIPMENTS
+    Add equipment - should not check the list of equipments in another group
+
+When updating account privileges, check if user is part of a group
+    - if user is part of group and is in USERS and want to update the privilege to Supervisor
+        remove the ID of the user from user column in group and add it to administrator column
+        and Vise Virsa
+    - if user is part of a group and want to update the privileges to administrator
+        check if user is part of a group, and remove the id if it exist
+
+
+
+Equipments
+    ALL GROUPS
+    Users
+        All data in group
+        All Privilege
+    Supervisor
+        All data in group
+        All Privilege
+
+Consumables
+    ALL GROUPS
+    Users
+        All data in group
+        View logs and data
+    Supervisor
+        Generate Link for groups only
+        All data in group
+        All Privilege
+
+ISP
+    IT GROUPS ONLY
+    Users / Supervisor
+        All data in group
+        All Privilege
+
+Routers
+    IT GROUPS ONLY
+    Users / Supervisor
+        All data in group
+        All Privilege
+
+IP Address
+    IT GROUPS ONLY
+    Users / Supervisor
+        All data in group
+        All Privilege
+
+MAC Address
+    IT GROUPS ONLY
+    Users / Supervisor
+        All data in group
+        All Privilege          
+
+CCTV
+    IT GROUPS ONLY
+    Users / Supervisor
+        All data in group
+        All Privilege          
+
+Accounts
+    ALL GROUPS
+    Users
+        All data in group
+        View only
+    Supervisor 
+        All data in group
+        All Privilege
+
+logs
+    ALL GROUPS
+    Users
+        Own logs
+        View Only
+    Supervisor
+        All logs in group
+        All Privilege
+
+
+#AEC6CF – soft pastel blue
+
+#FFB347 – light pastel orange
+
+#77DD77 – gentle pastel green
+
+#F49AC2 – pastel pink
+
+#CFCFC4 – muted pastel gray
+
+#B39EB5 – pastel purple
+
+#FF6961 – pastel red
+
+#FFD1DC – baby pastel pink
+
+#CB99C9 – pastel lavender
+
+#FDFD96 – pastel yellow
+
+#C23B22 – earthy pastel brown-red
+
+#DEA5A4 – dusty pastel rose
+
+#E0BBE4 – lilac pastel
+
+#FFDAC1 – peach pastel
+
+#B5EAD7 – mint pastel
+
+#C7CEEA – sky pastel blue
+
+
+⚡ Bright Color HEX Codes
+#FF0000 – bright red
+
+#FF7F00 – vivid orange
+
+#FFFF00 – neon yellow
+
+#00FF00 – lime green
+
+#00FFFF – cyan / aqua
+
+#0000FF – pure blue
+
+#8B00FF – electric violet
+
+#FF1493 – hot pink
+
+#FF4500 – bright orange-red
+
+#32CD32 – bright lime
+
+#1E90FF – dodger blue
+
+#FFD700 – gold yellow
+
+#00CED1 – turquoise
+
+#FF69B4 – neon pink
+
+#ADFF2F – green-yellow
+
+
+
+MONTH   |                                  Name 1
+        |                                  Name 2
+        |                                  Name 3
+        |                                  Name 4
+        |                                  Name 5
+        |                                  Name 6
+        __________________________________ Name 7
+        0   10  20  30  40  50 - SCALE
