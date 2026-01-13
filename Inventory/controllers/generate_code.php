@@ -21,6 +21,12 @@
         "message" => "User not found."
     ]; 
 
+    $mail->addEmbeddedImage(
+        '../assets/img/fposi-logo.png', // path to image
+        'logoimg',             // CID (unique ID)
+        'logo.png'             // optional name
+    );
+
     if($data) {
         $userid = $data['userid'];
         $user = new User;
@@ -29,7 +35,8 @@
         if(count(explode("@",$userid)) == 1){
             $temp = DB::where($user,"username","=",$userid);
             if(count($temp)){
-                $_SESSION["code"] = Data::generate(6,"numeric");
+                $code = Data::generate(6,"numeric");
+                $_SESSION["code_hash"] = Data::encrypt($code);
                 try {
                     // SMTP settings
                     $mail->isSMTP();
@@ -46,11 +53,12 @@
                     $mail->isHTML(true); 
                     $mail->Body = '<div style="width: 100%; color: #332D2D;">'.
                     '<div style="position: absolute; left: 50%; transform: translateX(-50%); width: 500px;">'.
-                    '<div style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; background-color: #168897; color: white;">'.
-                    '<h2>ACCOUNT RECOVERY CODE</h2>'.
+                    '<div style="display: flex; padding-top: 5px; padding-bottom: 5px; padding-left: 20px; background-color: #168897; color: white;">'.
+                    '<img src="cid:logoimg" style="max-width: 80px; margin-bottom:10px; margin-right: 20px;">'.
+                    '<h2 style="margin-top: 25px;">ACCOUNT RECOVERY CODE</h2>'.
                     '</div>'.
                     '<h3>This code was sent to your email for help getting back into your Account:</h3>'.
-                    '<h1 style="font-size: 50px; color: #168897;">'.$_SESSION['code'].'</h1>'.
+                    '<h1 style="font-size: 50px; color: #168897;">'.$code.'</h1>'.
                     '<h4><i>Note: Do not share this code to anyone.</i></h4>'.
                     '</div>'.
                     '</div>';
@@ -88,7 +96,8 @@
         if(count(explode("@",$userid)) == 2){
             $temp = DB::where($user,"email","=",$userid);
             if(count($temp)){
-                $_SESSION["code"] = Data::generate(6,"numeric");
+                $code = Data::generate(6,"numeric");
+                $_SESSION["code_hash"] = Data::encrypt($code);
                 try {
                     // SMTP settings
                     $mail->isSMTP();
@@ -105,11 +114,12 @@
                     $mail->isHTML(true); 
                     $mail->Body = '<div style="width: 100%; color: #332D2D;">'.
                     '<div style="position: absolute; left: 50%; transform: translateX(-50%); width: 500px;">'.
-                    '<div style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; background-color: #168897; color: white;">'.
-                    '<h2>ACCOUNT RECOVERY CODE</h2>'.
+                    '<div style="display: flex; padding-top: 5px; padding-bottom: 5px; padding-left: 20px; background-color: #168897; color: white;">'.
+                    '<img src="cid:logoimg" style="max-width: 80px; margin-bottom:10px; margin-right: 20px;">'.
+                    '<h2 style="margin-top: 25px;">ACCOUNT RECOVERY CODE</h2>'.
                     '</div>'.
                     '<h3>This code was sent to your email for help getting back into your Account:</h3>'.
-                    '<h1 style="font-size: 50px; color: #168897;">'.$_SESSION['code'].'</h1>'.
+                    '<h1 style="font-size: 50px; color: #168897;">'.$code.'</h1>'.
                     '<h4><i>Note: Do not share this code to anyone.</i></h4>'.
                     '</div>'.
                     '</div>';

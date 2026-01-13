@@ -14,7 +14,7 @@
     ]; 
 
     if($data) {
-        if($data["code"] == $_SESSION["code"]){
+        if(Data::decrypt($data["code"],$_SESSION["code_hash"])){
             $user = new User;
             $user = DB::prepare($user,$data["id"]);
             $user->password = Data::encrypt($data["password"]);
