@@ -13,3 +13,38 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="create_post" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6><span class="fa fa-th-large"></span> Create Post</h6>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="pastel_color">Select Theme</label>
+                        <select name="pastel_color" id="pastel_color" class="form-control"></select>        
+                    </div>
+                    <div class="col-md-4">
+                        <label for="">Post Duration</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="">Type</label>
+                        <Select class="form-control">
+                            <option value="">Simple</option>
+                            <option value="">Information ℹ️</option>
+                            <option value="">Warning ⚠️</option>
+                            <option value="">Important 🚨</option>
+                        </Select>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="modal-footer">
+                <button class="btn">Discard</button>
+                <button class="btn">Post</button>
+            </div>
+        </div>
+    </div>
+</div>

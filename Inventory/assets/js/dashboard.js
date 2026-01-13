@@ -608,10 +608,6 @@ if(document.getElementById("dashboard")){
         }
     })
 
-
-
-
-
     function clearAllData(chart_) {
         chart_.data.datasets = [];
         chart_.data.labels = [];
@@ -621,4 +617,56 @@ if(document.getElementById("dashboard")){
         chart_.update();
     }
 
+
+    // POST IT START ==========================================================================================================================
+
+    const pastel = [
+        // Pinks & Peaches
+        ["#FADADD", "Blush Pink"],
+        ["#FFD6C9", "Soft Peach"],
+        ["#FBC4AB", "Pastel Coral"],
+        ["#FFE5EC", "Light Rose"],
+
+        // Yellows & Creams
+        ["#FFF1C1", "Pastel Yellow"],
+        ["#FFF3CD", "Butter Cream"],
+        ["#FAF3DD", "Soft Ivory"],
+        ["#FFF9E6", "Light Vanilla"],
+
+        // Greens & Mints
+        ["#E6F4EA", "Mint Green"],
+        ["#DFF5EA", "Soft Mint"],
+        ["#E8F5E9", "Pastel Green"],
+        ["#EDF7ED", "Light Sage"],
+
+        // Blues & Lavenders
+        ["#E3F2FD", "Baby Blue"],
+        ["#E6ECFF", "Soft Periwinkle"],
+        ["#EDE7F6", "Lavender"],
+        ["#F1F0FF", "Misty Purple"],
+
+        // Neutrals
+        ["#F5F5F5", "Light Gray"],
+        ["#FAFAFA", "Off White"],
+        ["#F2F4F8", "Cloud Gray"],
+        ["#EFEFEF", "Soft Gray"]
+    ];
+
+
+    var pastel_color = document.getElementById("pastel_color");
+    pastel.forEach(color => {
+        var opt = document.createElement("option")
+        opt.value = color[0]
+        opt.innerText = color[1]
+        opt.style.backgroundColor = color[0]
+        if(color[1] == "Off White"){
+            opt.selected = true
+        }
+        pastel_color.appendChild(opt)
+    })
+
+
+
 }
+
+

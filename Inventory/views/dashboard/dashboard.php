@@ -133,7 +133,10 @@
         </div>    
     </div>
     <!-- POST IT -->
-    <h6 <?php $_SESSION["g_type"] == "IT" ? "" : print("hidden");?> class="mt-3" style="margin-bottom: -2px;"><span class="fa fa-th-large"></span> Post It</h6>
+    <div class="d-flex w-100 justify-content-between">
+        <h6 <?php $_SESSION["g_type"] == "IT" ? "" : print("hidden");?> class="mt-3" style="margin-bottom: -2px;"><span class="fa fa-th-large"></span> Post It</h6>
+        <button <?php $_SESSION["g_type"] == "IT" ? "" : print("hidden");?> data-bs-toggle="modal" data-bs-target="#create_post" class="btn btn-sm btn-secondary mt-2"><span class="fa fa-plus"></span> Create Post</button>
+    </div>
     <div <?php $_SESSION["g_type"] == "IT" ? "" : print("hidden");?> class="row p-3">
         <div class="col-md-3">
             <div class="post-it-card">
