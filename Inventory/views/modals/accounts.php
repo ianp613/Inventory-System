@@ -55,8 +55,11 @@
                         <input required type="text" name="" id="edit_username" class="form-control">
                     </div>
                     <div class="col-md-6">
-                        <label for="edit_password" class="mb-2">Password</label>
-                        <input required type="text" name="" value="12345" id="edit_password" class="form-control">
+                        <label for="edit_passkey" class="mb-2">Passkey</label>
+                        <div class="d-flex">
+                            <input readonly required type="text" name="" value="12345" id="edit_passkey" class="form-control">
+                            <button id="generate_passkey_btn" class="btn btn-success ms-1"><span class="fa fa-refresh"></span></button>
+                        </div>
                     </div>
                 </div>
                 <label for="edit_privilege" class="mb-2 mt-2">Account Privilege</label>

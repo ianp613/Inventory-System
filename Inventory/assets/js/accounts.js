@@ -92,12 +92,14 @@ if(document.getElementById("accounts")){
     var edit_account_name = document.getElementById("edit_account_name")
     var edit_email = document.getElementById("edit_email")
     var edit_username = document.getElementById("edit_username")
-    var edit_password = document.getElementById("edit_password")
+    var edit_passkey = document.getElementById("edit_passkey")
     var edit_privilege = document.getElementById("edit_privilege")
     var edit_account_title = document.getElementById("edit_account_title")
 
     var delete_account_btn = document.getElementById("delete_account_btn")
     var delete_account_name = document.getElementById("delete_account_name")
+
+    var generate_passkey_btn = document.getElementById("generate_passkey_btn")
 
     add_group.addEventListener('shown.bs.modal', function () {
         sole.get("../../controllers/administrator/get_accounts_dropdown.php")
@@ -347,12 +349,20 @@ if(document.getElementById("accounts")){
         edit_account_name.focus()
     })
 
+    generate_passkey_btn.addEventListener("click", function (){
+        sole.post("../../controllers/generate_key.php",{
+            id : this.getAttribute("u-id")
+        }).then(res => {
+            edit_passkey.value = res.key
+        })
+    })
+
     edit_account_btn.addEventListener("click",function(){
         var message = "";
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         !edit_account_name.value ? message = "Please input name." : null
         !edit_username.value ? message = "Please input user ID." : null
-        !edit_password.value ? alert("Password field is empty, it will be set to default password \"12345\".") : null
+        // !edit_passkey.value ? alert("Password field is empty, it will be set to default password \"12345\".") : null
 
         if(edit_email.value){
             var bol = regex.test(edit_email.value)
@@ -367,7 +377,7 @@ if(document.getElementById("accounts")){
                 name: edit_account_name.value,
                 email: edit_email.value,
                 username: edit_username.value,
-                password: edit_password.value,
+                passkey: edit_passkey.value,
                 privilege: edit_privilege.value
             }).then(res => validateResponse(res,"edit_account"))    
         }else{
@@ -491,7 +501,6 @@ if(document.getElementById("accounts")){
     }
 
     function loadAccounts(res){
-        console.log(res)
         accounts_table.clear().draw();
         res.user.forEach(e => {
             accounts_table.row.add([
@@ -515,13 +524,14 @@ if(document.getElementById("accounts")){
             if(e.target.classList.contains('edit_account_row')) {
                 edit_account_title.innerHTML = "<span class=\"fa fa-user\"></span> Edit Account: " + tr[0].innerText
                 edit_account_btn.setAttribute("u-id",e.target.getAttribute("u-id"))
+                generate_passkey_btn.setAttribute("u-id",e.target.getAttribute("u-id"))
                 sole.post("../../controllers/administrator/find_account.php",{
                     id: e.target.getAttribute("u-id")
                 }).then(res => {
                     edit_account_name.value = res.user[0].name
                     edit_email.value = res.user[0].email != "-" ? res.user[0].email : ""
                     edit_username.value = res.user[0].username
-                    edit_password.value = res.user[0].password
+                    edit_passkey.value = res.user[0].passkey
                     edit_privilege.value = res.user[0].privileges
                     edit_account_modal.show()
                 })

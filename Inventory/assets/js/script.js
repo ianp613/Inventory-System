@@ -176,13 +176,17 @@ if(document.getElementById("sidebar")){
                 
             }
 
-            if(localStorage.getItem("password") == "12345"){
-                alert("Your account password is set to the default setting. For security reasons, please update your password.")
-                account_email.value = localStorage.getItem("email") != "-" ? localStorage.getItem("email") : "";
-                passkey_field.hidden = true
-                account_cancel_btn.hidden = true
-                account_edit_modal.show()
-            }
+            sole.post("../../controllers/check_default_password.php",{
+                password : localStorage.getItem("password")
+            }).then(res => {
+                if(res){
+                    alert("Your account password is set to the default setting. For security reasons, please update your password.")
+                    account_email.value = localStorage.getItem("email") != "-" ? localStorage.getItem("email") : "";
+                    passkey_field.hidden = true
+                    account_cancel_btn.hidden = true
+                    account_edit_modal.show()
+                }
+            })
         }else{
             window.location.replace("../index.php");
         }

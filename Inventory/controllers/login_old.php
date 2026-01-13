@@ -9,17 +9,7 @@
         $userid = $data['userid'];
         $password = $data['password'];
         $user = new User;
-        // $auth = DB::auth($user,$userid,$password);
-        $auth = false;
-
-        $users = DB::where($user,"username","=",$userid);
-
-        if(count($users) == 1){
-            $hash = $users[0]["password"];
-            if(Data::decrypt($password,$hash)){
-                $auth = true;
-            }
-        }
+        $auth = DB::auth($user,$userid,$password);
 
         if($auth){
             $user = DB::where($user,"username","=",$userid);

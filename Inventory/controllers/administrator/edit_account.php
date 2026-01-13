@@ -21,7 +21,8 @@
                 $user2->name = $data["name"];
                 $user2->email = $data["email"] ? $data["email"] : "-";
                 $user2->username = $data["username"];
-                $user2->password = $data["password"] ? $data["password"] : "12345";
+                $user2->passkey = $data["passkey"];
+                // $user2->password = $data["password"] ? Data::encrypt($data["password"]) : Data::encrypt("12345");
 
                 $group = new User_Group;
                 $group_data = DB::all($group);
@@ -149,7 +150,8 @@
             $user2->name = $data["name"];
             $user2->email = $data["email"] ? $data["email"] : "-";
             $user2->username = $data["username"];
-            $user2->password = $data["password"] ? $data["password"] : "12345";
+            $user2->passkey = $data["passkey"];
+            // $user2->password = $data["password"] ? Data::encrypt($data["password"]) : Data::encrypt("12345");
             $user2->privileges = $data["privilege"];
             DB::update($user2);
                 $response = [

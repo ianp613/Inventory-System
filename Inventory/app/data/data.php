@@ -180,5 +180,14 @@
             }
             return $key;
         }
+
+        public static function encrypt($key){
+            $hash = password_hash($key, PASSWORD_ARGON2ID);
+            return $hash;
+        }
+        public static function decrypt($key,$hash){
+            $bol = password_verify($key, $hash);
+            return $bol;
+        }
     }
 ?>

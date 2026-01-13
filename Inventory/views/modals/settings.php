@@ -23,7 +23,7 @@
                 </div>
             </div>
             
-            <div hidden class="users_menu modal-footer">
+            <div <?php $_SESSION["privileges"] == "Administrator" ? null : print("hidden"); ?> class="users_menu modal-footer">
                 <button id="export_db" class="btn btn-sm btn-success rouded-pill w-100"><span class="fa fa-database"></span> DB Export</button>
                 <!-- <button class="btn btn-sm btn-danger rouded-pill">Save</button> -->
             </div>

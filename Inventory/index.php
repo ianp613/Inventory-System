@@ -45,7 +45,7 @@
             $users = DB::where($user,"username","=",$_GET["reset-user"]);
             if(count($users)){
                 $temp = DB::prepare($user,$users[0]["id"]);
-                $temp->password = "12345";
+                $temp->password = Data::encrypt("12345");
                 $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : DB::update($temp);
                 $temp->username == "administrator" || $temp->username == "703F_administrator" ? Data::pp("Warning: You don't have enough privilege to reset user account <b>".$temp->username."</b>.") : Data::pp("User account of <b>".$temp->name."</b> has been reset.");
             }else{
@@ -55,7 +55,7 @@
             $users = DB::all($user);
             foreach ($users as $use) {
                 $temp = DB::prepare($user,$use["id"]);
-                $temp->password = "12345";
+                $temp->password = Data::encrypt("12345");
                 $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : DB::update($temp);
                 $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : Data::pp("User account of <b>".$temp->username."</b> has been reset.");
             }
@@ -88,6 +88,10 @@
                 $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : Data::pp("Passkey for account <b>".$temp->username."</b> has been set to <b>".$passkey."</b>.");
             }
         }
+    }elseif(isset($_GET["test"])){
+        $user = new User;
+        $sample = DB::where($user,"username","=","sdfkjsd");
+        echo count($sample);
     }else{
         header("location: views/login.php");
     }

@@ -46,11 +46,11 @@
                     $mail->isHTML(true); 
                     $mail->Body = '<div style="width: 100%; color: #332D2D;">'.
                     '<div style="position: absolute; left: 50%; transform: translateX(-50%); width: 500px;">'.
-                    '<div style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; background-color: #dc3545; color: white;">'.
+                    '<div style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; background-color: #168897; color: white;">'.
                     '<h2>ACCOUNT RECOVERY CODE</h2>'.
                     '</div>'.
                     '<h3>This code was sent to your email for help getting back into your Account:</h3>'.
-                    '<h1 style="font-size: 50px; color: #dc3545;">'.$_SESSION['code'].'</h1>'.
+                    '<h1 style="font-size: 50px; color: #168897;">'.$_SESSION['code'].'</h1>'.
                     '<h4><i>Note: Do not share this code to anyone.</i></h4>'.
                     '</div>'.
                     '</div>';
@@ -88,7 +88,7 @@
         if(count(explode("@",$userid)) == 2){
             $temp = DB::where($user,"email","=",$userid);
             if(count($temp)){
-                $_SESSION["code"] = Data::generate(6,"alphanumeric");
+                $_SESSION["code"] = Data::generate(6,"numeric");
                 try {
                     // SMTP settings
                     $mail->isSMTP();
@@ -105,11 +105,11 @@
                     $mail->isHTML(true); 
                     $mail->Body = '<div style="width: 100%; color: #332D2D;">'.
                     '<div style="position: absolute; left: 50%; transform: translateX(-50%); width: 500px;">'.
-                    '<div style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; background-color: #dc3545; color: white;">'.
+                    '<div style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; background-color: #168897; color: white;">'.
                     '<h2>ACCOUNT RECOVERY CODE</h2>'.
                     '</div>'.
                     '<h3>This code was sent to your email for help getting back into your Account:</h3>'.
-                    '<h1 style="font-size: 50px; color: #dc3545;">'.$_SESSION['code'].'</h1>'.
+                    '<h1 style="font-size: 50px; color: #168897;">'.$_SESSION['code'].'</h1>'.
                     '<h4><i>Note: Do not share this code to anyone.</i></h4>'.
                     '</div>'.
                     '</div>';

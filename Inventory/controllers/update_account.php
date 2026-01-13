@@ -9,7 +9,7 @@
         $user = new User;
         $user = DB::prepare($user,$data["id"]);
         $user->email = $data["email"] ? $data["email"] : "-";
-        $user->password = $data["password"];
+        $user->password = Data::encrypt($data["password"]);
         DB::update($user);
         $response = [
             "status" => true,

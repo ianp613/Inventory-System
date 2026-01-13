@@ -17,7 +17,7 @@
         if($data["code"] == $_SESSION["code"]){
             $user = new User;
             $user = DB::prepare($user,$data["id"]);
-            $user->password = $data["password"];
+            $user->password = Data::encrypt($data["password"]);
             DB::update($user);
 
             $_SESSION["code"] = null;
