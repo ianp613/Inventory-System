@@ -65,9 +65,11 @@ submit_btn.addEventListener("click", e => {
                     user_id : user_id.value,
                     passkey : passkey.value
                 }).then(res => {
-                    alert(res.message)
                     if(res.status){
+                        bs5.toast("success",res.message)
                         cancel_btn.click()
+                    }else{
+                        alert(res.message)
                     }
                 })
             }else{

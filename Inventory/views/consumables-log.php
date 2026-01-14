@@ -18,7 +18,11 @@
     <body>
         <div class="w-100 d-flex justify-content-center">
             <div class="wd-550 p-4">
-                <h5 class="text-secondary mb-3 d-flex"><div id="g_name_display"></div><span class="fa fa-cubes"></span> Consumables</h5>
+                <div class="d-flex w-100 mt-4">
+                    <img class="wd-90 ht-80 me-3" style="margin-top: -45px;" src="../../assets/img/fposi-logo.png" alt="" srcset="">
+
+                    <h5 class="text-secondary mb-3 d-flex"><div id="g_name_display"></div><span class="fa fa-cubes"></span> Consumable Log</h5>
+                </div>
                 <div class="w-100 btn-group">
                     <input type="text" name="" id="g_search" class="form-control" placeholder="Search code or description">
                     <button class="btn btn-sm alert-dark btn-dark wd-40"><span class="fa fa-search"></span></button>
