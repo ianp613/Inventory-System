@@ -195,6 +195,11 @@ if(document.getElementById("consumables")){
         cons.hidden = false
     }
 
+    if(localStorage.getItem("privileges") != "User"){
+        cons.children[0].hidden = false
+        cons.children[1].hidden = false
+    }
+
     sole.get("../../controllers/consumables/get_consumables_logs.php")
     .then(res => {
         consumables_logsTable.clear().draw();

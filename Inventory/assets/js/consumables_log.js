@@ -106,34 +106,40 @@ quantity_deduction.addEventListener("input",function(){
 function search(){
     sole.post("../../controllers/consumables/consumables_log/search_consumable.php",{
         search: g_search.value,
-        g_id: g_id
+        g_id: g_id,
+        link: link[1]
     }).then(res => {
-        console.log(res)
-        if(res.length && g_search.value){
-            log_consumables_code.innerText = res[0].code
-            log_consumables_description.innerText = res[0].description
-            log_consumables_stock.innerText = res[0].stock
+        if(res.status){
+            if(res.data.length && g_search.value){
+                log_consumables_code.innerText = res.data[0].code
+                log_consumables_description.innerText = res.data[0].description
+                log_consumables_stock.innerText = res.data[0].stock
 
-            remaining_stock = res[0].stock
-            cid = res[0].id
+                remaining_stock = res.data[0].stock
+                cid = res.data[0].id
 
-            if(parseFloat(res[0].stock) <= parseFloat(res[0].restock_point)){
-                log_consumable_badge_danger.hidden = false
-                log_consumable_badge_success.hidden = true
+                if(parseFloat(res.data[0].stock) <= parseFloat(res.data[0].restock_point)){
+                    log_consumable_badge_danger.hidden = false
+                    log_consumable_badge_success.hidden = true
+                }else{
+                    log_consumable_badge_danger.hidden = true
+                    log_consumable_badge_success.hidden = false
+                }
             }else{
-                log_consumable_badge_danger.hidden = true
-                log_consumable_badge_success.hidden = false
-            }
-        }else{
-            remaining_stock = null
-            cid = null
+                remaining_stock = null
+                cid = null
 
-            log_consumables_code.innerText = ""
-            log_consumables_description.innerText = ""
-            log_consumables_stock.innerText = ""
-            log_consumable_badge_danger.hidden = true
-            log_consumable_badge_success.hidden = true
+                log_consumables_code.innerText = ""
+                log_consumables_description.innerText = ""
+                log_consumables_stock.innerText = ""
+                log_consumable_badge_danger.hidden = true
+                log_consumable_badge_success.hidden = true
+            }    
+        }else{
+            bs5.toast("warning", "<code> The link provided is invalid. Please contact your supervisor to obtain a valid link. Redirecting to home page <span class='fa fa-spin fa-spinner'></span></code>","lg",false,false)
+            locationRedirect()
         }
+        
     }) 
 }
 

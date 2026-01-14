@@ -1,7 +1,7 @@
 <div id="consumables">
     <div hidden id="cons">
-        <button data-bs-toggle="modal" data-bs-target="#add_consumables" class="btn btn-dark wd-120 alert-dark fw-bold"><span class="fa fa-cubes"></span><div>ADD ENTRY</div></button>
-        <button data-bs-toggle="modal" data-bs-target="#restock_consumables" class="btn btn-dark wd-120 alert-dark fw-bold"><span class="fa fa-refresh"></span><div>RESTOCK</div></button>
+        <button hidden data-bs-toggle="modal" data-bs-target="#add_consumables" class="btn btn-dark wd-120 alert-dark fw-bold"><span class="fa fa-cubes"></span><div>ADD ENTRY</div></button>
+        <button hidden data-bs-toggle="modal" data-bs-target="#restock_consumables" class="btn btn-dark wd-120 alert-dark fw-bold"><span class="fa fa-refresh"></span><div>RESTOCK</div></button>
         <button id="show_logs" class="btn btn-dark wd-120 alert-dark fw-bold"><span class="fa fa-edit"></span><div>LOGS</div></button>
         <button id="add_log" class="btn btn-dark wd-120 alert-dark fw-bold"><span class="fa fa-external-link"></span><div>ADD LOG</div></button>
         <div class="mt-4"></div>
