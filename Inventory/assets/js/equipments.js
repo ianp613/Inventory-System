@@ -459,27 +459,28 @@ if(document.getElementById("equipments")){
             console.error("Quagga init error:", err);
             return;
         }
-        Quagga.start();
-        scannerRunning = true;
-    });
+            Quagga.start();
+            scannerRunning = true;
+        });
 
-    Quagga.onDetected(onDetectedHandler);
+        Quagga.onDetected(onDetectedHandler);
     }
 
     function stopScanner() {
-    if (!scannerRunning) return;
+        if (!scannerRunning) return;
 
-    Quagga.stop();
-    Quagga.offDetected(onDetectedHandler);
-    scannerRunning = false;
+        Quagga.stop();
+        Quagga.offDetected(onDetectedHandler);
+        scannerRunning = false;
+        barcode_camera_modal.hide()
     }
 
     function onDetectedHandler(result) {
-    const code = result.codeResult.code;
-    console.log("Scanned:", code);
+        const code = result.codeResult.code;
+        console.log("Scanned:", code);
 
-    document.getElementById('barcodeInput').value = code;
+        add_entry_barcode_input.value = code;
 
-    stopScanner(); // stop after success
+        stopScanner(); // stop after success
     }
 }
