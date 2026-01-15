@@ -22,7 +22,7 @@
                     <tr>
                         <td class="text-start">
                             WAN Settings   
-                            <select class="form-control mt-2" name="" id="active_wan">
+                            <select class="form-control mt-2 drop_active_wan" name="" id="active_wan">
                                 <option disabled selected value="-">-- Select Active WAN --</option>
                             </select>
                         </td>

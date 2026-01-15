@@ -4,13 +4,13 @@
         <div class="modal-content">
             <div class="modal-header text-center">
                 <div class="w-100">
-                    <span class="fa fa-exclamation-triangle text-warning h2"></span>
+                    <span class="fa fa-exclamation-triangle text-danger h2"></span>
                     <h5 id="clear_log_title" class="modal-title fw-bolder">Clear Logs</h5>    
                 </div>
             </div>
             <div class="modal-header text-center">
                 <div class="w-100">
-                    <div>Your are about to delete activity logs <span id="clear_log_name">for user User</span>. This can't be undone. Do you wish to proceed?</div>    
+                    <div>You are about to delete activity logs <span id="clear_log_name">for user User</span>. This action cannot be undone. Do you wish to proceed?</div>    
                 </div>
             </div>
             <div class="modal-footer">

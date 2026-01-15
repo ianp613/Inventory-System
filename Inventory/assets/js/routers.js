@@ -49,7 +49,6 @@ if(document.getElementById("routers")){
         rowCallback: function(row) {
             $(row).addClass("trow");
         },
-        scrollX: true,
         columnDefs: [
             { 
                 className: 'dt-left', 
@@ -682,49 +681,50 @@ if(document.getElementById("routers")){
             var wan2op = document.createElement("option")
             wan2op.setAttribute("value","-")
             wan2op.innerText = "N/A"
-            router_wan2.appendChild(wan2op)    
+            router_wan2.appendChild(wan2op)   
         }
         if(func == "edit_router"){
-            if(temp_wan1 == "-"){
-                var op1_sel = document.createElement("option")
-                op1_sel.setAttribute("disabled","")
-                op1_sel.setAttribute("selected","")
-                op1_sel.setAttribute("value","-")
-                op1_sel.innerText = "-- Select WAN 1 --"
-                checkOptionIfExist(edit_router_wan1,"-- Select WAN 1 --") ? edit_router_wan1.insertAdjacentElement("afterbegin",op1_sel) : null
-            }
-            if(temp_wan2 == "-"){
-                var op2_sel = document.createElement("option")
-                op2_sel.setAttribute("disabled","")
-                op2_sel.setAttribute("selected","")
-                op2_sel.setAttribute("value","-")
-                op2_sel.innerText = "-- Select WAN 2 --"
-                checkOptionIfExist(edit_router_wan2,"-- Select WAN 2 --") ? edit_router_wan2.insertAdjacentElement("afterbegin",op2_sel) : null
-            }
- 
-            res.isp.forEach(e => {
-                var op1 = document.createElement("option")
-                op1.setAttribute("value",e["id"])
-                op1.innerText = e["name"]
-                checkOptionIfExist(edit_router_wan1,e["name"]) ? edit_router_wan1.appendChild(op1) : null
-            });
+            setTimeout(() => {
+                res.isp.forEach(e => {
+                    var op1 = document.createElement("option")
+                    op1.setAttribute("value",e["id"])
+                    op1.innerText = e["name"]
+                    checkOptionIfExist(edit_router_wan1,e["name"]) ? edit_router_wan1.appendChild(op1) : null
+                });
 
-            var wan1op = document.createElement("option")
-            wan1op.setAttribute("value","-")
-            wan1op.innerText = "N/A"
-            checkOptionIfExist(edit_router_wan1,"N/A") ? edit_router_wan1.appendChild(wan1op) : null
-            
-            res.isp.forEach(e => {
-                var op2 = document.createElement("option")
-                op2.setAttribute("value",e["id"])
-                op2.innerText = e["name"]
-                checkOptionIfExist(edit_router_wan2,e["name"]) ? edit_router_wan2.appendChild(op2) : null
-            });
+                res.isp.forEach(e => {
+                    var op2 = document.createElement("option")
+                    op2.setAttribute("value",e["id"])
+                    op2.innerText = e["name"]
+                    checkOptionIfExist(edit_router_wan2,e["name"]) ? edit_router_wan2.appendChild(op2) : null
+                });
+                if(temp_wan1 == "-"){
+                    var op1_sel = document.createElement("option")
+                    op1_sel.setAttribute("disabled","")
+                    op1_sel.setAttribute("selected","")
+                    op1_sel.setAttribute("value","-")
+                    op1_sel.innerText = "-- Select WAN 1 --"
+                    checkOptionIfExist(edit_router_wan1,"-- Select WAN 1 --") ? edit_router_wan1.insertAdjacentElement("afterbegin",op1_sel) : null
+                }
+                if(temp_wan2 == "-"){
+                    var op2_sel = document.createElement("option")
+                    op2_sel.setAttribute("disabled","")
+                    op2_sel.setAttribute("selected","")
+                    op2_sel.setAttribute("value","-")
+                    op2_sel.innerText = "-- Select WAN 2 --"
+                    checkOptionIfExist(edit_router_wan2,"-- Select WAN 2 --") ? edit_router_wan2.insertAdjacentElement("afterbegin",op2_sel) : null
+                }
 
-            var wan2op = document.createElement("option")
-            wan2op.setAttribute("value","-")
-            wan2op.innerText = "N/A"
-            checkOptionIfExist(edit_router_wan2,"N/A") ? edit_router_wan2.appendChild(wan2op) : null
+                var wan1op = document.createElement("option")
+                wan1op.setAttribute("value","-")
+                wan1op.innerText = "N/A"
+                checkOptionIfExist(edit_router_wan1,"N/A") ? edit_router_wan1.appendChild(wan1op) : null
+
+                var wan2op = document.createElement("option")
+                wan2op.setAttribute("value","-")
+                wan2op.innerText = "N/A"
+                checkOptionIfExist(edit_router_wan2,"N/A") ? edit_router_wan2.appendChild(wan2op) : null
+            }, 200);
         }  
     }
 
@@ -880,7 +880,7 @@ if(document.getElementById("routers")){
 
     document.body.addEventListener("click",e => {
         let table = document.querySelector("#router_isp_table");
-        if(!table.contains(e.target) && e.target.parentNode.tagName != "TR" && temp_tr_id && !e.target.classList.contains("dt-column-order") && !e.target.classList.contains("dt-column-title") && !e.target.classList.contains("edit_router_row") && !e.target.classList.contains("delete_router_row") && !e.target.classList.contains("save_active_wan")){
+        if(!table.contains(e.target) && e.target.parentNode.tagName != "TR" && temp_tr_id && !e.target.classList.contains("dt-column-order") && !e.target.classList.contains("dt-column-title") && !e.target.classList.contains("edit_router_row") && !e.target.classList.contains("delete_router_row") && !e.target.classList.contains("save_active_wan") && !e.target.classList.contains("drop_active_wan")){
             temp_tr.removeAttribute("class")
             temp_tr = null
             temp_btn_edit.classList.remove("bg-light")

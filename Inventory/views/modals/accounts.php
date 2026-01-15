@@ -92,7 +92,7 @@
             <div class="modal-header text-center">
                 <div class="w-100">
                     <div>You're going to delete the account of <b>"<span id="delete_account_name">Name</span>"</b>.</div>
-                    <div>This can't be undone. Do you wish to proceed?</div>    
+                    <div>This action cannot be undone. Do you wish to proceed?</div>    
                 </div>
             </div>
             <div class="modal-footer">

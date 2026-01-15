@@ -110,7 +110,7 @@
             <div class="modal-header text-center">
                 <div class="w-100">
                     <div>You're going to delete network <b>"<span id="delete_network_name">NETWORK</span>"</b>.</div>
-                    <div>All of the recorded IP address will also be deleted, this can't be undone. Do you wish to proceed?</div>    
+                    <div>All of the recorded IP address will also be deleted. This action cannot be undone. Do you wish to proceed?</div>    
                 </div>
             </div>
             <div class="modal-footer">
@@ -207,7 +207,7 @@
                 <h6 class="modal-title" id="unassign_ip_name"></h6>
             </div>
             <div class="modal-body pe-4 ps-4">
-                <div>You are going to unassign an IP, this can't be undone do you wish to proceed?</div>
+                <div>You are going to unassign an IP. This action cannot be undone do you wish to proceed?</div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><span class="fa fa-remove"></span> Cancel</button>

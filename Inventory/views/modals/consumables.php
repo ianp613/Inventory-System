@@ -162,12 +162,35 @@
                 <div class="w-100">
                     <div>You're going to delete <b>"<span id="delete_consumables_description">consumables</span>"</b>.</div>
                     <div>All logs of this item will also be deleted.</div>
-                    <div>This can't be undone. Do you wish to proceed?</div>    
+                    <div>This action cannot be undone. Do you wish to proceed?</div>    
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><span class="fa fa-remove"></span> No</button>
                 <button id="delete_consumables_btn" e-id="" type="button" data-bs-dismiss="" class="btn btn-danger btn-sm"><span class="fa fa-trash-o"></span> Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CLEAR CONSUMABLE LOG MODAL -->
+<div class="modal fade" id="clear_consumable_log" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered ">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <div class="w-100">
+                    <span class="fa fa-exclamation-triangle text-danger h2"></span>
+                    <h5 id="clear_consumable_log_title" class="modal-title fw-bolder">Clear Logs</h5>    
+                </div>
+            </div>
+            <div class="modal-header text-center">
+                <div class="w-100">
+                    <div>You are about to delete all logs for all consumables. This action cannot be undone. Do you wish to proceed?</div>    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><span class="fa fa-remove"></span> No</button>
+                <button id="clear_consumable_log_confirm" type="button" data-bs-dismiss="" class="btn btn-danger btn-sm"><span class="fa fa-trash-o"></span> Yes</button>
             </div>
         </div>
     </div>

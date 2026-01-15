@@ -54,7 +54,7 @@
             <div class="modal-header text-center">
                 <div class="w-100">
                     <div>You're going to delete wifi <b>"<span id="delete_wifi_name">WIFI</span>"</b>.</div>
-                    <div>All of the recorded MAC address will also be deleted, this can't be undone. Do you wish to proceed?</div>    
+                    <div>All of the recorded MAC address will also be deleted. This action cannot be undone. Do you wish to proceed?</div>    
                 </div>
             </div>
             <div class="modal-footer">
@@ -185,7 +185,7 @@
             <div class="modal-header text-center">
                 <div class="w-100">
                     <div>You're going to delete <b>"<span id="delete_mac_address">MAC</span>"</b>.</div>
-                    <div>This can't be undone. Do you wish to proceed?</div>    
+                    <div>This action cannot be undone. Do you wish to proceed?</div>    
                 </div>
             </div>
             <div class="modal-footer">

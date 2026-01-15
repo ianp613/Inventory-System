@@ -267,7 +267,7 @@
             <div class="modal-body text-center">
                 <div class="w-100">
                     <div>You're going to delete cctv map "<b><span id="delete_cctv_map_name">MAP</span></b>".</div>
-                    <div>All of the camera will also be deleted, this can't be undone. Do you wish to proceed?</div>    
+                    <div>All of the camera will also be deleted. This action cannot be undone. Do you wish to proceed?</div>    
                 </div>
             </div>
             <div class="modal-footer">

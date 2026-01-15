@@ -132,7 +132,7 @@
             <div class="modal-header text-center">
                 <div class="w-100">
                     <div>You're going to delete ISP <b>"<span id="delete_isp_name">ISP</span>"</b>.</div>
-                    <div><span id="delete_isp_message">This ISP will also be removed from the router to which it is assigned, this can't be undone.</span> Do you wish to proceed?</div>    
+                    <div><span id="delete_isp_message">This ISP will also be removed from the router to which it is assigned. This action cannot be undone.</span> Do you wish to proceed?</div>    
                 </div>
             </div>
             <div class="modal-footer">

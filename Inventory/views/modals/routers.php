@@ -152,7 +152,7 @@
                         </table>    
                     </div>
                     
-                    <div>This can't be undone. Do you wish to proceed?</div>    
+                    <div>This action cannot be undone. Do you wish to proceed?</div>    
                 </div>
             </div>
             <div class="modal-footer">
