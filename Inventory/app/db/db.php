@@ -163,10 +163,10 @@
                             $temp = $data->fillable[$i];
                             $data->$temp = $get[0][$temp];
                         }
-                        $data->status = TRUE;
+                        $data->stats = TRUE;
                     }
                     else{
-                        $data->status = FALSE;
+                        $data->stats = FALSE;
                     }
                     $data->id = $row;
                     return $data;
@@ -202,7 +202,7 @@
                 $table = $data->table;
                 $id = $data->id;
                 $set = "";
-                if($data->status){
+                if($data->stats){
                     for ($i=0; $i <= count($data->fillable)-1; $i++) {
                         if($i == count($data->fillable)-1){
                             $temp = $data->fillable[$i];
