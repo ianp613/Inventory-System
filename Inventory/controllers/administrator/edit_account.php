@@ -7,6 +7,16 @@
     if($data["privilege"] == "Administrator"){
         $update_privileges = $_SESSION["privileges"] == "Administrator" ? true : false;    
     }
+
+    $response = [
+        "status" => false,
+        "type" => "info",
+        "size" => null,
+        "message" => "Updating an account is not available at this moment."
+    ];
+
+    echo json_encode($response);
+    exit;
     
 
 
