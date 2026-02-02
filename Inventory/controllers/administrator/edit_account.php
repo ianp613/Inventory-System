@@ -11,7 +11,7 @@
     $response = [
         "status" => false,
         "type" => "info",
-        "size" => null,
+        "size" => "lg",
         "message" => "Updating an account is not available at this moment."
     ];
 
