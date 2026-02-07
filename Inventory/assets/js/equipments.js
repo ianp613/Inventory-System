@@ -424,6 +424,9 @@ if(document.getElementById("equipments")){
         add_entry_barcode_input.value = decodedText;
         console.log("Scanned:", decodedText);
 
+        barcode_camera_modal.hide();
+        stopScanner();
+
         // Shrink scan frame after first detection
         if (firstScan && scanner) {
             scanner.setQrBox({ width: 250, height: 100 }); // smaller frame
