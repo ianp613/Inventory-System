@@ -404,14 +404,17 @@ if(document.getElementById("equipments")){
     }
     barcode_scanner_btn.addEventListener("click",function(){
         barcode_camera_modal.show()
+        add_entry_modal.hide()
         startScanner()
     })
     barcode_scanner_btn_edit.addEventListener("click",function(){
         barcode_camera_modal.show()
+        add_entry_modal.hide()
         startScanner()
     })
     cancel_barcode_scanner_btn.addEventListener("click",function(){
-        barcode_camera_modal.hide();
+        barcode_camera_modal.hide()
+        add_entry_modal.show()
         stopScanner();
     })
 
