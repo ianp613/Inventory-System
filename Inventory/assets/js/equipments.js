@@ -428,6 +428,7 @@ if(document.getElementById("equipments")){
         console.log("Scanned:", decodedText);
 
         barcode_camera_modal.hide();
+        add_entry_modal.show();
         stopScanner();
 
         // Shrink scan frame after first detection
