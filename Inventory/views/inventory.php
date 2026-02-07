@@ -248,7 +248,7 @@
         <script src="../assets/js/datatables/datatables.min.js"></script>
         <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
         <script src="../assets/js/sole.splash/splash.js"></script>
-        <script src="../assets/js/quagga/quagga.min.js"></script>
+        <script src="../assets/js/html5-qrcode/html5-qrcode.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="../assets/js/sole.js"></script>
         <script src="../assets/js/script.js"></script>

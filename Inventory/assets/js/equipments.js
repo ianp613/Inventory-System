@@ -404,83 +404,202 @@ if(document.getElementById("equipments")){
     }
     barcode_scanner_btn.addEventListener("click",function(){
         barcode_camera_modal.show()
-        startBarcodeScanner()
+        startScanner()
     })
     barcode_scanner_btn_edit.addEventListener("click",function(){
         barcode_camera_modal.show()
-        startBarcodeScanner()
+        startScanner()
     })
     cancel_barcode_scanner_btn.addEventListener("click",function(){
         barcode_camera_modal.hide();
         stopScanner();
     })
 
-    let scannerRunning = false;
 
-    async function startBarcodeScanner() {
-    if (scannerRunning) return;
+    let scanner = null;
+    let running = false;
+    let firstScan = true; // flag for first detection
 
-    // 🔐 Check camera support
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        console.log("Camera API not available. Use HTTPS or localhost.");
-        return;
-    }
+    function onScanSuccess(decodedText) {
+        add_entry_barcode_input.value = decodedText;
+        console.log("Scanned:", decodedText);
 
-    // 🔓 Force permission prompt (Brave fix)
-    try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
-    } catch (err) {
-        console.error("Camera permission denied:", err);
-        alert("Camera permission is required.");
-        return;
-    }
-
-    Quagga.init({
-        inputStream: {
-        name: "Live",
-        type: "LiveStream",
-        target: document.querySelector('#scanner'),
-        constraints: {
-            facingMode: { ideal: "environment" }, // rear camera
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
+        // Shrink scan frame after first detection
+        if (firstScan && scanner) {
+            scanner.setQrBox({ width: 250, height: 100 }); // smaller frame
+            firstScan = false;
         }
-        },
-        decoder: {
-            readers: [
-                "code_128_reader",
-                "ean_reader",
-                "ean_8_reader"
-            ]
-        },
-        locate: true
-    }, function(err) {
-        if (err) {
-            console.error("Quagga init error:", err);
+    }
+
+    function enableAutoFocus() {
+        try {
+            const track = scanner.getRunningTrack();
+            const capabilities = track.getCapabilities();
+
+            if (capabilities.focusMode) {
+                track.applyConstraints({
+                    advanced: [{ focusMode: "continuous" }]
+                });
+                console.log("Auto focus enabled");
+            }
+        } catch (e) {
+            console.log("Focus not supported");
+        }
+    }
+
+    async function startScanner() {
+        if (running) return;
+
+        // check camera support
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            console.log("Camera API not available. Use HTTPS or localhost.");
             return;
         }
-            Quagga.start();
-            scannerRunning = true;
-        });
 
-        Quagga.onDetected(onDetectedHandler);
+        try {
+            await navigator.mediaDevices.getUserMedia({ video: true });
+        } catch (err) {
+            console.error("Camera permission denied:", err);
+            alert("Camera permission is required.");
+            return;
+        }
+
+        running = true;
+        document.getElementById("scanner").disabled = true;
+
+        // remove old video
+        document.getElementById("scanner").innerHTML = "";
+
+        firstScan = true; // reset flag
+
+        scanner = new Html5Qrcode("scanner");
+
+        const formatsToSupport = [
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.CODE_39,
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.EAN_8,
+            Html5QrcodeSupportedFormats.UPC_A,
+            Html5QrcodeSupportedFormats.UPC_E,
+            Html5QrcodeSupportedFormats.ITF
+        ];
+
+        scanner.start(
+            { facingMode: "environment" },
+            {
+                fps: 12,
+                qrbox: (videoWidth, videoHeight) => {
+                    // Make the frame 80% of the video width and 80% of the height
+                    const width = videoWidth * 0.8;
+                    const height = videoHeight * 0.8;
+                    return { width, height };
+                }, // wide initial scan line
+                formatsToSupport: formatsToSupport
+            },
+            onScanSuccess
+        ).then(() => {
+            enableAutoFocus();
+        }).catch(err => {
+            console.error(err);
+            running = false;
+        });
     }
 
     function stopScanner() {
-        if (!scannerRunning) return;
-
-        Quagga.stop();
-        Quagga.offDetected(onDetectedHandler);
-        scannerRunning = false;
-        barcode_camera_modal.hide()
+        if (scanner && running) {
+            scanner.stop().then(() => {
+                scanner.clear();
+                running = false;
+                console.log("Scanner stopped");
+            });
+        }
     }
 
-    function onDetectedHandler(result) {
-        const code = result.codeResult.code;
-        console.log("Scanned:", code);
+    // tap to refocus
+    document.getElementById("scanner").addEventListener("click", () => {
+        try {
+            if (!scanner) return;
+            const track = scanner.getRunningTrack();
+            const capabilities = track.getCapabilities();
 
-        add_entry_barcode_input.value = code;
+            if (capabilities.focusMode) {
+                track.applyConstraints({
+                    advanced: [{ focusMode: "single-shot" }]
+                });
+                console.log("Tap focus");
+            }
+        } catch (e) {
+            console.log("Tap focus not supported");
+        }
+    });
 
-        stopScanner(); // stop after success
-    }
+
+    // let scannerRunning = false;
+
+    // async function startBarcodeScanner() {
+    // if (scannerRunning) return;
+
+    // // 🔐 Check camera support
+    // if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    //     console.log("Camera API not available. Use HTTPS or localhost.");
+    //     return;
+    // }
+
+    // // 🔓 Force permission prompt (Brave fix)
+    // try {
+    //     await navigator.mediaDevices.getUserMedia({ video: true });
+    // } catch (err) {
+    //     console.error("Camera permission denied:", err);
+    //     alert("Camera permission is required.");
+    //     return;
+    // }
+
+    // Quagga.init({
+    //     inputStream: {
+    //     name: "Live",
+    //     type: "LiveStream",
+    //     target: document.querySelector('#scanner'),
+    //     constraints: {
+    //         facingMode: { ideal: "environment" }, // rear camera
+    //         width: { ideal: 1280 },
+    //         height: { ideal: 720 }
+    //     }
+    //     },
+    //     decoder: {
+    //         readers: [
+    //             "code_128_reader",
+    //             "ean_reader",
+    //             "ean_8_reader"
+    //         ]
+    //     },
+    //     locate: true
+    // }, function(err) {
+    //     if (err) {
+    //         console.error("Quagga init error:", err);
+    //         return;
+    //     }
+    //         Quagga.start();
+    //         scannerRunning = true;
+    //     });
+
+    //     Quagga.onDetected(onDetectedHandler);
+    // }
+
+    // function stopScanner() {
+    //     if (!scannerRunning) return;
+
+    //     Quagga.stop();
+    //     Quagga.offDetected(onDetectedHandler);
+    //     scannerRunning = false;
+    //     barcode_camera_modal.hide()
+    // }
+
+    // function onDetectedHandler(result) {
+    //     const code = result.codeResult.code;
+    //     console.log("Scanned:", code);
+
+    //     add_entry_barcode_input.value = code;
+
+    //     stopScanner(); // stop after success
+    // }
 }

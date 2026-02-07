@@ -224,3 +224,7 @@ Real
 Add clear consumable logs function, fix drop down of router edit ISP selection.
 
 
+
+
+ADD EQUIPMENTS LOCATION
+    DROP DOWN
