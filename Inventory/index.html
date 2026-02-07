@@ -1,43 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ZXing Scanner</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barcode Scanner</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+}
+#reader{
+    width: 320px;
+    margin-bottom: 10px;
+}
+</style>
 </head>
 <body>
 
-<button id="start">Start Scan</button>
-<button id="stop">Stop</button>
+<h3>Scan Barcode</h3>
 
+<div id="reader"></div>
+
+<input type="text" id="result" placeholder="Scan result will appear here" style="width:320px;">
 <br><br>
 
-<video id="video" width="300" height="200" style="border:1px solid black;"></video>
+<button id="start">Start</button>
+<button id="stop">Stop</button>
 
-<p>Result: <span id="result"></span></p>
-
-<script src="https://unpkg.com/@zxing/library@latest"></script>
 <script>
-const codeReader = new ZXing.BrowserMultiFormatReader();
-const videoElement = document.getElementById('video');
-const resultElement = document.getElementById('result');
+let scanner;
 
-let controls;
+function onScanSuccess(decodedText, decodedResult) {
+    // put result in input
+    document.getElementById("result").value = decodedText;
 
-document.getElementById('start').addEventListener('click', () => {
-    codeReader.listVideoInputDevices()
-        .then(videoInputDevices => {
-            const firstDeviceId = videoInputDevices[0].deviceId;
+    console.log("Scanned:", decodedText);
 
-            codeReader.decodeFromVideoDevice(firstDeviceId, videoElement, (result, err) => {
-                if (result) {
-                    resultElement.textContent = result.getText();
-                    console.log(result.getText());
-                }
-            }).then(ctrl => controls = ctrl);
-        });
+    // OPTIONAL → stop after first scan
+    // scanner.clear();
+}
+
+document.getElementById("start").addEventListener("click", () => {
+
+    const formatsToSupport = [
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.CODE_39,
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E,
+        Html5QrcodeSupportedFormats.ITF
+    ];
+
+    scanner = new Html5Qrcode("reader");
+
+    scanner.start(
+        { facingMode: "environment" }, // back camera
+        {
+            fps: 10,
+            qrbox: { width: 250, height: 120 },
+            formatsToSupport: formatsToSupport
+        },
+        onScanSuccess
+    );
 });
 
-document.getElementById('stop').addEventListener('click', () => {
-    if (controls) controls.stop();
+document.getElementById("stop").addEventListener("click", () => {
+    if (scanner) {
+        scanner.stop().then(() => {
+            scanner.clear();
+            console.log("Stopped");
+        });
+    }
 });
 </script>
 
