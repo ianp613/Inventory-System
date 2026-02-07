@@ -119,7 +119,20 @@
                         <?php 
                             if(isset($_GET["loc"])){
                                 if($_SESSION["g_member"]){
-                                    echo "<span class=\"fa fa-users\"></span> ".$_SESSION["g_name"]." | ";
+                                    $color = "black";
+                                    if(stripos($_SESSION["g_name"], "main") !== false || stripos($_SESSION["g_name"], "annex") !== false){
+                                        $color = "#168897";
+                                    }
+                                    if(stripos($_SESSION["g_name"], "real") !== false){
+                                        $color = "orange";
+                                    }
+                                    if(stripos($_SESSION["g_name"], "network") !== false){
+                                        $color = "red";
+                                    }
+                                    if(stripos($_SESSION["g_name"], "wifi") !== false){
+                                        $color = "green";
+                                    }
+                                    echo "<span style=\"color: ".$color.";\" class=\"fa fa-users\"></span> <span style=\"color: ".$color.";\">".$_SESSION["g_name"]." </span> | ";
                                 }
                                 if($_GET["loc"] == "dashboard"){
                                     echo "<span class=\"fa fa-tachometer\"></span> Dashboard";

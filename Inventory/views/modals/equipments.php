@@ -218,7 +218,7 @@
                     <div class="ms-5 me-5 mt-2">
                         <div class="w-100 row border border-dark">
                             <div class="col-md-3 p-0 d-flex align-items-center justify-content-center">
-                                <img class="w-100 ht-80" src="../../assets/img/DDPO-logo.png" alt="">
+                                <img class="w-100 ht-80" src="../../assets/img/fposi-logo.png" alt="">
                             </div>
                             <div class="col-md-7 p-0 text-center border-start border-end border-dark">
                                 <div class="pt-2 f-12 ht-35 border-bottom border-dark">Information Security Management System</div>
