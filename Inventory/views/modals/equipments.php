@@ -84,7 +84,7 @@
                         <input required style="text-transform: uppercase" type="text" name="" id="add_entry_model_no_input" class="form-control">
                     </div>
                     <div class="col-md-6">
-                        <label for="add_entry_barcode_input" class="mb-2">Barcode (FPOSI)</label>
+                        <label for="add_entry_barcode_input" class="mb-2">Barcode (DDPO)</label>
 
                         <div class="btn-group form-control m-0 p-0 form-control-nooutline">
                             <input required style="text-transform: uppercase" type="text" name="" id="add_entry_barcode_input" class="form-control">
@@ -139,7 +139,7 @@
                         <input required style="text-transform: uppercase" type="text" name="" id="edit_entry_model_no_input" class="form-control">
                     </div>
                     <div class="col-md-6">
-                        <label for="edit_entry_barcode_input" class="mb-2">Barcode (FPOSI)</label>
+                        <label for="edit_entry_barcode_input" class="mb-2">Barcode (DDPO)</label>
 
                         <div class="btn-group form-control m-0 p-0 form-control-nooutline">
                             <input required style="text-transform: uppercase" type="text" name="" id="edit_entry_barcode_input" class="form-control">
@@ -218,7 +218,7 @@
                     <div class="ms-5 me-5 mt-2">
                         <div class="w-100 row border border-dark">
                             <div class="col-md-3 p-0 d-flex align-items-center justify-content-center">
-                                <img class="w-100 ht-80" src="../../assets/img/fposi-logo.png" alt="">
+                                <img class="w-100 ht-80" src="../../assets/img/DDPO-logo.png" alt="">
                             </div>
                             <div class="col-md-7 p-0 text-center border-start border-end border-dark">
                                 <div class="pt-2 f-12 ht-35 border-bottom border-dark">Information Security Management System</div>
@@ -240,7 +240,7 @@
                     <div class="ms-5 me-5 mt-3 fw-bold">
                         <div class="d-flex mb-1">
                             <h6 class="fw-bold f-12 wd-60 text-end mr-3">SITE:</h6>
-                            <span style="margin-left: 10px; margin-top: -2px; width: 200px;" class="f-11 border-bottom border-dark text-center">FPOSI MAIN BUILDING, 2ND FLOOR</span>    
+                            <span style="margin-left: 10px; margin-top: -2px; width: 200px;" class="f-11 border-bottom border-dark text-center">DDPO MAIN BUILDING, 2ND FLOOR</span>    
                         </div>
                         <div class="d-flex mb-1">
                             <h6 class="fw-bold f-12 wd-60 text-end mr-3">PROJECT:</h6>
@@ -254,7 +254,7 @@
                     <div class="ms-5 me-5 mt-3">
                         <div class="row w-100 border pt-1 border-dark">
                             <div class="col-md-10">
-                                <p class="f-9"><i>This material is intended for FPOSI use only. It must not be reproduced in whole or in part, in any form, or by any means without a formal agreement or the written consent of the Document Record Controller (DRC) or Information Security Management Representative (ISMR). Any hard copy or unprotected soft copy of this document shall be regarded as uncontrolled copy.</i></p>
+                                <p class="f-9"><i>This material is intended for DDPO use only. It must not be reproduced in whole or in part, in any form, or by any means without a formal agreement or the written consent of the Document Record Controller (DRC) or Information Security Management Representative (ISMR). Any hard copy or unprotected soft copy of this document shall be regarded as uncontrolled copy.</i></p>
                             </div>
                             <div class="col-md-1 f-9">
                                 <div>Document Class:</div>
