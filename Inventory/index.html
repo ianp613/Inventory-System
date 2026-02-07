@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ZXing Scanner</title>
+</head>
+<body>
+
+<button id="start">Start Scan</button>
+<button id="stop">Stop</button>
+
+<br><br>
+
+<video id="video" width="300" height="200" style="border:1px solid black;"></video>
+
+<p>Result: <span id="result"></span></p>
+
+<script src="https://unpkg.com/@zxing/library@latest"></script>
+<script>
+const codeReader = new ZXing.BrowserMultiFormatReader();
+const videoElement = document.getElementById('video');
+const resultElement = document.getElementById('result');
+
+let controls;
+
+document.getElementById('start').addEventListener('click', () => {
+    codeReader.listVideoInputDevices()
+        .then(videoInputDevices => {
+            const firstDeviceId = videoInputDevices[0].deviceId;
+
+            codeReader.decodeFromVideoDevice(firstDeviceId, videoElement, (result, err) => {
+                if (result) {
+                    resultElement.textContent = result.getText();
+                    console.log(result.getText());
+                }
+            }).then(ctrl => controls = ctrl);
+        });
+});
+
+document.getElementById('stop').addEventListener('click', () => {
+    if (controls) controls.stop();
+});
+</script>
+
+</body>
+</html>
