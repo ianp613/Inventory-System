@@ -8,13 +8,9 @@
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <style>
-body{
-    font-family: Arial, sans-serif;
-}
-#reader{
-    width: 320px;
-    margin-bottom: 10px;
-}
+body { font-family: Arial, sans-serif; }
+#reader { width: 320px; margin-bottom: 10px; }
+button { margin-right: 5px; }
 </style>
 </head>
 <body>
@@ -23,26 +19,47 @@ body{
 
 <div id="reader"></div>
 
-<input type="text" id="result" placeholder="Scan result will appear here" style="width:320px;">
+<input type="text" id="result" placeholder="Scan result" style="width:320px;">
 <br><br>
 
 <button id="start">Start</button>
 <button id="stop">Stop</button>
 
 <script>
-let scanner;
+let scanner = null;
+let running = false;
 
-function onScanSuccess(decodedText, decodedResult) {
-    // put result in input
+function onScanSuccess(decodedText) {
     document.getElementById("result").value = decodedText;
-
     console.log("Scanned:", decodedText);
-
-    // OPTIONAL → stop after first scan
-    // scanner.clear();
 }
 
-document.getElementById("start").addEventListener("click", () => {
+function enableAutoFocus() {
+    try {
+        const track = scanner.getRunningTrack();
+        const capabilities = track.getCapabilities();
+
+        if (capabilities.focusMode) {
+            track.applyConstraints({
+                advanced: [{ focusMode: "continuous" }]
+            });
+            console.log("Auto focus enabled");
+        }
+    } catch (e) {
+        console.log("Focus not supported");
+    }
+}
+
+function startScanner() {
+    if (running) return;
+
+    running = true;
+    document.getElementById("start").disabled = true;
+
+    // remove old video
+    document.getElementById("reader").innerHTML = "";
+
+    scanner = new Html5Qrcode("reader");
 
     const formatsToSupport = [
         Html5QrcodeSupportedFormats.CODE_128,
@@ -54,27 +71,54 @@ document.getElementById("start").addEventListener("click", () => {
         Html5QrcodeSupportedFormats.ITF
     ];
 
-    scanner = new Html5Qrcode("reader");
-
     scanner.start(
-        { facingMode: "environment" }, // back camera
+        { facingMode: "environment" },
         {
-            fps: 10,
+            fps: 12,
             qrbox: { width: 250, height: 120 },
             formatsToSupport: formatsToSupport
         },
         onScanSuccess
-    );
-});
+    ).then(() => {
+        enableAutoFocus();
+    }).catch(err => {
+        console.error(err);
+        running = false;
+        document.getElementById("start").disabled = false;
+    });
+}
 
-document.getElementById("stop").addEventListener("click", () => {
-    if (scanner) {
+function stopScanner() {
+    if (scanner && running) {
         scanner.stop().then(() => {
             scanner.clear();
-            console.log("Stopped");
+            running = false;
+            document.getElementById("start").disabled = false;
+            console.log("Scanner stopped");
         });
     }
+}
+
+// tap video to try refocus
+document.getElementById("reader").addEventListener("click", () => {
+    try {
+        if (!scanner) return;
+        const track = scanner.getRunningTrack();
+        const capabilities = track.getCapabilities();
+
+        if (capabilities.focusMode) {
+            track.applyConstraints({
+                advanced: [{ focusMode: "single-shot" }]
+            });
+            console.log("Tap focus");
+        }
+    } catch (e) {
+        console.log("Tap focus not supported");
+    }
 });
+
+document.getElementById("start").addEventListener("click", startScanner);
+document.getElementById("stop").addEventListener("click", stopScanner);
 </script>
 
 </body>
