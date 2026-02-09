@@ -509,7 +509,7 @@ if(document.getElementById("accounts")){
                 e["email"] != "-" ? e["email"] : "",
                 e["username"],
                 e["privileges"] == "Administrator" ? "<div class=\"text-primary\">"+e["privileges"]+"</div>" : e["privileges"] == "Supervisor" ? "<div class=\"text-success\">"+e["privileges"]+"</div>" : e["privileges"],
-                e["id"] != localStorage.getItem("userid") && e["username"] != "703F_administrator"? "<button id=\"edit_account_"+ e["id"] +"\" u-id=\""+ e["id"] +"\" class=\"edit_account_row btn btn-sm btn-secondary\"><i u-id=\""+ e["id"] +"\" class=\"edit_account_row fa fa-edit\"></i></button>" +
+                e["id"] != localStorage.getItem("userid") && e["username"] != "703F_administrator" && e["privileges"] != "Administrator"? "<button id=\"edit_account_"+ e["id"] +"\" u-id=\""+ e["id"] +"\" class=\"edit_account_row btn btn-sm btn-secondary\"><i u-id=\""+ e["id"] +"\" class=\"edit_account_row fa fa-edit\"></i></button>" +
                 "<button id=\"delete_account_"+ e["id"] +"\" u-id=\""+ e["id"] +"\" class=\"delete_account_row btn btn-sm btn-danger ms-1\"><i u-id=\""+ e["id"] +"\" class=\"delete_account_row fa fa-trash\"></i></button>" : ""
             ]).draw(false)   
         });

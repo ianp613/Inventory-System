@@ -1,0 +1,148 @@
+{
+    "Building" : [
+        {"1st Flr. Main Building" : {
+            "Room" : [
+                "Production Area",
+                "Tech Room",
+                "Server Room",
+                "Data Control",
+                "HR / Admin Room",
+                "Conference Room",
+                "Meeting Room",
+                "Social Media Room",
+                "AIMS",
+                "General Manager Office",
+                "Recieptionist",
+                "DDC Mart",
+                "Electrical Room",
+                "Locker Room",
+                "Sleeping Quarter",
+                "Pantry"
+            ],
+            "Project" : [
+                "IT",
+                "Admin",
+                "Aims",
+                "SocMed",
+                "Data Control",
+                "Boohoo",
+                "Honorlock"
+            ]
+        }},
+        {"2nd Flr. Main Building" : {
+            "Room" : [
+                "Production Area",
+                "Tech Room",
+                "Server Room",
+                "Network Monitoring Room",
+                "Server Room",
+                "Conference Room",
+                "CCO Manager Room",
+                "Training Room",
+                "QA Room",
+                "Sleeping Quarter"
+            ],
+            "Project" : [
+                "IT",
+                "CCO",
+                "Network Monitoring Team",
+                "Wifi Team"
+            ]
+        }},
+        {"1st Flr. Annex Building" : {
+            "Room" : [
+                "Production Area",
+                "Tech Room",
+                "Production Server Room",
+                "Conference Room",
+                "Pantry Server Room",
+                "KTV Room",
+                "Recieptionist",
+                "Guest Room",
+                "Electrical Room",
+                "Locker Room",
+                "Pantry",
+                "Sleeping Quarter"
+            ],
+            "Project" : [
+                "IT",
+                "CSUK",
+                "MAGNUM",
+                "OAK",
+                "ESTES",
+                "RL/SCALEHUB",
+                "TSTO",
+                "ESTES230",
+                "ACT",
+                "CMFC",
+                "FTSC",
+                "PMLI",
+                "VALC",
+                "DOUBLE D",
+                "FRONTLINE",
+                "MORAN",
+                "RIST",
+                "PITT OHIO",
+                "WARD",
+                "ASCENT",
+                "AVERITT",
+                "CUSTOM",
+                "CTBV",
+                "OFFEN",
+                "DYLT",
+                "SMTL",
+                "SEFL MAIN"
+            ]
+        }},
+        {"2nd Flr. Annex Building" : {
+            "Room" : [
+                "Production Area",
+                "Tech Room",
+                "Server Room",
+                "Planning Area",
+                "Conference Room",
+                "Electrical Room"
+            ],
+            "Project" : [
+                "IT",
+                "Planning",
+                "US ODC",
+                "APAC",
+                "CA",
+                "EU ODC",
+                "USM",
+                "GBM ODC",
+                "MULTIJOB",
+                "TFF",
+                "DOHRN",
+                "ILGB2000"
+                
+            ]
+        }},
+        {"Palo Office" : {
+            "Room" : [
+                "Production Area",
+                "Tech Room",
+                "Server Room",
+                "Printing Press",
+                "Recieptionist",
+                "Pantry",
+                "Locker Room",
+                "Electrical Room",
+                "Residential"
+            ],
+            "Project" : [
+                "IT"
+            ]
+        }},
+        {"Real Office" : {
+            "Room" : [
+                "Tech Room",
+                "Server Room"
+            ],
+            "Project" : [
+                "IT"
+            ]
+        }}
+    ]
+}

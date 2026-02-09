@@ -784,3 +784,8 @@ input:checked + .slider:before {
 .modal.show .modal-dialog {
   transform: scale(1);
 }
+
+input::placeholder, textarea::placeholder{
+    font-size: 14px;
+    font-style: italic;
+}

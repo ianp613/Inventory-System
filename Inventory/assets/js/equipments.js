@@ -37,6 +37,8 @@ if(document.getElementById("equipments")){
     var delete_equipment_btn = document.getElementById('delete_equipment_btn')
     var delete_equipment_name = document.getElementById('delete_equipment_name')
     var delete_equipment_btn_proceed = document.getElementById('delete_equipment_btn_proceed')
+
+    add_entry_modal.show()
     // for_status_modal.show()
 
     // FOCUS ADD EQUIPMENT INPUT
@@ -58,6 +60,155 @@ if(document.getElementById("equipments")){
             add_equipment_select.appendChild(op)
         });
     })
+
+    var Buildings = [];
+    var add_location_building = document.getElementById("add_location_building")
+    var add_location_building_others = document.getElementById("add_location_building_others")
+    var add_location_room = document.getElementById("add_location_room")
+    var add_location_room_others = document.getElementById("add_location_room_others")
+    var add_location_project = document.getElementById("add_location_project")
+    var add_location_project_others = document.getElementById("add_location_project_others")
+    var add_location_cabinet = document.getElementById("add_location_cabinet")
+
+    sole.get("../../controllers/equipments/get_equipment_location_preset.php").then(res => {
+        
+
+        add_location_building.innerHTML = ""
+
+        var opt_building = document.createElement("option")
+        opt_building.value = ""
+        opt_building.innerText = "-- Select Building --"
+        opt_building.disabled = true
+        opt_building.selected = true
+        add_location_building.appendChild(opt_building)
+
+        res.Building.forEach(bldg => {
+            var opt_building = document.createElement("option")
+            opt_building.value = Object.keys(bldg)[0]
+            opt_building.innerText = Object.keys(bldg)[0]
+            add_location_building.appendChild(opt_building)
+            Buildings.push(bldg)
+        })
+
+        var opt_building = document.createElement("option")
+        opt_building.value = "Others"
+        opt_building.innerText = "Others"
+        add_location_building.appendChild(opt_building)
+        
+
+        add_location_building.addEventListener("change",e => {
+            if(add_location_building.value && add_location_building.value != "Others"){
+                add_location_room.disabled = false
+                add_location_project.disabled = false
+                
+                add_location_building_others.value = ""
+                add_location_room.innerHTML = ""
+                add_location_project.innerHTML = ""
+
+                var opt_room = document.createElement("option")
+                opt_room.value = ""
+                opt_room.innerText = "-- Select Room --"
+                opt_room.disabled = true
+                opt_room.selected = true
+                add_location_room.appendChild(opt_room)
+
+                var opt_project = document.createElement("option")
+                opt_project.value = ""
+                opt_project.innerText = "-- Select Project / Office --"
+                opt_project.disabled = true
+                opt_project.selected = true
+                add_location_project.appendChild(opt_project)
+
+                Buildings.forEach(bldgs => {
+                    let key = Object.keys(bldgs)[0]
+                    if(key == add_location_building.value){
+                        bldgs[key].Room.forEach(room => {
+                            var opt_room = document.createElement("option")
+                            opt_room.value = room
+                            opt_room.innerText = room
+                            add_location_room.appendChild(opt_room)
+                        });
+
+                        bldgs[key].Project.forEach(project => {
+                            var opt_project = document.createElement("option")
+                            opt_project.value = project
+                            opt_project.innerText = project
+                            add_location_project.appendChild(opt_project)
+                        });
+                    }
+                });
+
+                var opt_room = document.createElement("option")
+                opt_room.value = "Others"
+                opt_room.innerText = "Others"
+                add_location_room.appendChild(opt_room)
+
+                var opt_project = document.createElement("option")
+                opt_project.value = "Others"
+                opt_project.innerText = "Others"
+                add_location_project.appendChild(opt_project)
+            }
+            if(add_location_building.value == "Others"){
+                add_location_room.value = "Others"
+                add_location_room.disabled = true
+                add_location_project.value = "Others"
+                add_location_project.disabled = true
+            }
+        })
+    })
+    
+    add_location_building_others.addEventListener("input", e => {
+        if(add_location_building_others.value){
+            add_location_building.value = "Others"
+            add_location_room.value = "Others"
+            add_location_room.disabled = true
+            add_location_project.value = "Others"
+            add_location_project.disabled = true
+        }else{
+            add_location_building.value = ""
+            add_location_room.value = ""
+            add_location_room.disabled = false
+            add_location_project.value = ""
+            add_location_project.disabled = false
+        }
+    })
+
+    add_location_room.addEventListener("change", e => {
+        if(add_location_room.value && add_location_room.value != "Others"){
+            add_location_room_others.value = ""
+        }
+    })
+
+    add_location_room_others.addEventListener("input", e => {
+        if(add_location_room_others.value){
+            add_location_room.value = "Others"
+        }else{
+            if(add_location_building.value != "Others"){
+                add_location_room.value = ""
+            }
+        }
+    })
+
+    add_location_project.addEventListener("change", e => {
+        if(add_location_project.value && add_location_project.value != "Others"){
+            add_location_project_others.value = ""
+        }
+    })
+
+    add_location_project_others.addEventListener("input", e => {
+        if(add_location_project_others.value){
+            add_location_project.value = "Others"
+        }else{
+            if(add_location_building.value != "Others"){
+                add_location_project.value = ""
+            }
+        }
+    })
+
+
+
+    
+
 
     add_equipment.addEventListener('shown.bs.modal', function () {
         add_equipment_select.focus()
