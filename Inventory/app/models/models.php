@@ -55,6 +55,10 @@
             "barcode",
             "specifications",
             "status",
+            "building",
+            "room",
+            "project",
+            "cabinet",
             "remarks"
         ];
         public $label = [

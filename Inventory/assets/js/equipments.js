@@ -38,7 +38,6 @@ if(document.getElementById("equipments")){
     var delete_equipment_name = document.getElementById('delete_equipment_name')
     var delete_equipment_btn_proceed = document.getElementById('delete_equipment_btn_proceed')
 
-    add_entry_modal.show()
     // for_status_modal.show()
 
     // FOCUS ADD EQUIPMENT INPUT
@@ -71,8 +70,6 @@ if(document.getElementById("equipments")){
     var add_location_cabinet = document.getElementById("add_location_cabinet")
 
     sole.get("../../controllers/equipments/get_equipment_location_preset.php").then(res => {
-        
-
         add_location_building.innerHTML = ""
 
         var opt_building = document.createElement("option")
@@ -205,10 +202,147 @@ if(document.getElementById("equipments")){
         }
     })
 
+    var Buildings_edit = []
+    var edit_location_building = document.getElementById("edit_location_building")
+    var edit_location_building_others = document.getElementById("edit_location_building_others")
+    var edit_location_room = document.getElementById("edit_location_room")
+    var edit_location_room_others = document.getElementById("edit_location_room_others")
+    var edit_location_project = document.getElementById("edit_location_project")
+    var edit_location_project_others = document.getElementById("edit_location_project_others")
+    var edit_location_cabinet = document.getElementById("edit_location_cabinet")
 
+    sole.get("../../controllers/equipments/get_equipment_location_preset.php").then(res => {
+        edit_location_building.innerHTML = ""
 
+        var opt_building = document.createElement("option")
+        opt_building.value = ""
+        opt_building.innerText = "-- Select Building --"
+        opt_building.disabled = true
+        opt_building.selected = true
+        edit_location_building.appendChild(opt_building)
+
+        res.Building.forEach(bldg => {
+            var opt_building = document.createElement("option")
+            opt_building.value = Object.keys(bldg)[0]
+            opt_building.innerText = Object.keys(bldg)[0]
+            edit_location_building.appendChild(opt_building)
+            Buildings_edit.push(bldg)
+        })
+
+        var opt_building = document.createElement("option")
+        opt_building.value = "Others"
+        opt_building.innerText = "Others"
+        edit_location_building.appendChild(opt_building)
+        
+
+        edit_location_building.addEventListener("change",e => {
+            if(edit_location_building.value && edit_location_building.value != "Others"){
+                edit_location_room.disabled = false
+                edit_location_project.disabled = false
+                
+                edit_location_building_others.value = ""
+                edit_location_room.innerHTML = ""
+                edit_location_project.innerHTML = ""
+
+                var opt_room = document.createElement("option")
+                opt_room.value = ""
+                opt_room.innerText = "-- Select Room --"
+                opt_room.disabled = true
+                opt_room.selected = true
+                edit_location_room.appendChild(opt_room)
+
+                var opt_project = document.createElement("option")
+                opt_project.value = ""
+                opt_project.innerText = "-- Select Project / Office --"
+                opt_project.disabled = true
+                opt_project.selected = true
+                edit_location_project.appendChild(opt_project)
+
+                Buildings_edit.forEach(bldgs => {
+                    let key = Object.keys(bldgs)[0]
+                    if(key == edit_location_building.value){
+                        bldgs[key].Room.forEach(room => {
+                            var opt_room = document.createElement("option")
+                            opt_room.value = room
+                            opt_room.innerText = room
+                            edit_location_room.appendChild(opt_room)
+                        });
+
+                        bldgs[key].Project.forEach(project => {
+                            var opt_project = document.createElement("option")
+                            opt_project.value = project
+                            opt_project.innerText = project
+                            edit_location_project.appendChild(opt_project)
+                        });
+                    }
+                });
+
+                var opt_room = document.createElement("option")
+                opt_room.value = "Others"
+                opt_room.innerText = "Others"
+                edit_location_room.appendChild(opt_room)
+
+                var opt_project = document.createElement("option")
+                opt_project.value = "Others"
+                opt_project.innerText = "Others"
+                edit_location_project.appendChild(opt_project)
+            }
+            if(edit_location_building.value == "Others"){
+                edit_location_room.value = "Others"
+                edit_location_room.disabled = true
+                edit_location_project.value = "Others"
+                edit_location_project.disabled = true
+            }
+        })
+    })
     
+    edit_location_building_others.addEventListener("input", e => {
+        if(edit_location_building_others.value){
+            edit_location_building.value = "Others"
+            edit_location_room.value = "Others"
+            edit_location_room.disabled = true
+            edit_location_project.value = "Others"
+            edit_location_project.disabled = true
+        }else{
+            edit_location_building.value = ""
+            edit_location_room.value = ""
+            edit_location_room.disabled = false
+            edit_location_project.value = ""
+            edit_location_project.disabled = false
+        }
+    })
 
+    edit_location_room.addEventListener("change", e => {
+        if(edit_location_room.value && edit_location_room.value != "Others"){
+            edit_location_room_others.value = ""
+        }
+    })
+
+    edit_location_room_others.addEventListener("input", e => {
+        if(edit_location_room_others.value){
+            edit_location_room.value = "Others"
+        }else{
+            if(edit_location_building.value != "Others"){
+                edit_location_room.value = ""
+            }
+        }
+    })
+
+    edit_location_project.addEventListener("change", e => {
+        if(edit_location_project.value && edit_location_project.value != "Others"){
+            edit_location_project_others.value = ""
+        }
+    })
+
+    edit_location_project_others.addEventListener("input", e => {
+        if(edit_location_project_others.value){
+            edit_location_project.value = "Others"
+        }else{
+            if(edit_location_building.value != "Others"){
+                edit_location_project.value = ""
+            }
+        }
+    })
 
     add_equipment.addEventListener('shown.bs.modal', function () {
         add_equipment_select.focus()
@@ -278,6 +412,24 @@ if(document.getElementById("equipments")){
     var add_entry_remarks_input = document.getElementById('add_entry_remarks_input')
 
     add_entry_btn.addEventListener("click", function () {
+        var building = "-";
+        var room = "-";
+        var project = "-";
+        if(add_location_building.value && add_location_building.value != "Others"){
+            building = add_location_building.value
+        }else if(add_location_building.value == "Others"){
+            building = add_location_building_others.value
+        }
+        if(add_location_room.value && add_location_room.value != "Others"){
+            room = add_location_room.value
+        }else if(add_location_room.value == "Others"){
+            room = add_location_room_others.value
+        }
+        if(add_location_project.value && add_location_project.value != "Others"){
+            project = add_location_project.value
+        }else if(add_location_project.value == "Others"){
+            project = add_location_project_others.value
+        }
         if(add_entry_description_input.value){
             if(localStorage.getItem("selected_equipment")){
                 sole.post("../../controllers/equipments/add_entry.php", {
@@ -288,6 +440,10 @@ if(document.getElementById("equipments")){
                     barcode: add_entry_barcode_input.value,
                     specifications: add_entry_specifications_input.value,
                     status: add_entry_status_input.value,
+                    building: building,
+                    room: room,
+                    project: project,
+                    cabinet: add_location_cabinet.value,
                     remarks: add_entry_remarks_input.value
                 }).then(res => validateResponse(res,"add_entry"))
             }else{
@@ -481,6 +637,24 @@ if(document.getElementById("equipments")){
                     id: e.target.getAttribute("e-id")
                 }).then(res => editForm(res))
                 edit_entry_btn.addEventListener("click", e =>{
+                    var building = "-";
+                    var room = "-";
+                    var project = "-";
+                    if(edit_location_building.value && edit_location_building.value != "Others"){
+                        building = edit_location_building.value
+                    }else if(edit_location_building.value == "Others"){
+                        building = edit_location_building_others.value
+                    }
+                    if(edit_location_room.value && edit_location_room.value != "Others"){
+                        room = edit_location_room.value
+                    }else if(edit_location_room.value == "Others"){
+                        room = edit_location_room_others.value
+                    }
+                    if(edit_location_project.value && edit_location_project.value != "Others"){
+                        project = edit_location_project.value
+                    }else if(edit_location_project.value == "Others"){
+                        project = edit_location_project_others.value
+                    }
                     if(edit_entry_description_input.value){
                         if(localStorage.getItem("selected_equipment")){
                             var id = null;
@@ -493,6 +667,10 @@ if(document.getElementById("equipments")){
                                 barcode: edit_entry_barcode_input.value,
                                 specifications: edit_entry_specifications_input.value,
                                 status: edit_entry_status_input.value,
+                                building: building,
+                                room: room,
+                                project: project,
+                                cabinet: edit_location_cabinet.value,
                                 remarks: edit_entry_remarks_input.value
                             }).then(res => validateResponse(res,"edit_entry"))
                         }else{
@@ -521,6 +699,134 @@ if(document.getElementById("equipments")){
             edit_entry_barcode_input.value = res.entry[0].barcode != "-" ? res.entry[0].barcode : ""
             edit_entry_specifications_input.value = res.entry[0].specifications != "-" ? res.entry[0].specifications : ""
             edit_entry_status_input.value = res.entry[0].status != "-" ? res.entry[0].status : "N/A"
+
+            let Building_ = [];
+
+            Buildings_edit.forEach(bldg => {
+                if(Object.keys(bldg)[0] == res.entry[0].building){
+                    Building_.push(bldg)
+                }
+            })
+
+
+            if(Building_.length){
+                edit_location_building_others.value = ""
+                edit_location_room.disabled = false
+                edit_location_project.disabled = false
+                edit_location_building.value = res.entry[0].building != "-" ? res.entry[0].building : ""
+                edit_location_room.innerHTML = ""
+                edit_location_project.innerHTML = ""
+                
+                var opt_room = document.createElement("option")
+                opt_room.value = ""
+                opt_room.innerText = "-- Select Room --"
+                opt_room.disabled = true
+                opt_room.selected = true
+                edit_location_room.appendChild(opt_room)
+
+                var opt_room = document.createElement("option")
+                opt_room.value = ""
+                opt_room.innerText = "-- Select Room --"
+                opt_room.disabled = true
+                opt_room.selected = true
+                edit_location_project.appendChild(opt_room)
+
+
+                var Room_ = "";
+                Building_[0][Object.keys(Building_[0])[0]].Room.forEach(room => {
+                    var opt_room = document.createElement("option")
+                    opt_room.value = room
+                    opt_room.innerText = room
+                    edit_location_room.appendChild(opt_room)
+                    if(room.toLowerCase() == res.entry[0].room.toLowerCase()){
+                        Room_ = room
+                    }
+                })
+
+                var Project_ = "";
+                Building_[0][Object.keys(Building_[0])[0]].Project.forEach(proj => {
+                    var opt_project = document.createElement("option")
+                    opt_project.value = proj
+                    opt_project.innerText = proj
+                    edit_location_project.appendChild(opt_project)
+                    if(proj.toLowerCase() == res.entry[0].project.toLowerCase()){
+                        Project_ = proj
+                    }
+                })
+
+                var opt_room = document.createElement("option")
+                opt_room.value = "Others"
+                opt_room.innerText = "Others"
+                edit_location_room.appendChild(opt_room)
+
+                var opt_project = document.createElement("option")
+                opt_project.value = "Others"
+                opt_project.innerText = "Others"
+                edit_location_project.appendChild(opt_project)
+                
+                if(res.entry[0].room != "-"){
+                    if(Building_[0][Object.keys(Building_[0])[0]].Room.some(v => v.toLowerCase() === res.entry[0].room.toLowerCase())){
+                        edit_location_room.value = Room_
+                        edit_location_room_others.value = ""
+                    }else{
+                        edit_location_room.value = "Others"
+                        edit_location_room_others.value = res.entry[0].room
+                    }
+                }else{
+                    edit_location_room.value = ""
+                    edit_location_room_others.value = ""
+                }
+
+                if(res.entry[0].project != "-"){
+
+                    if(Building_[0][Object.keys(Building_[0])[0]].Project.some(v => v.toLowerCase() === res.entry[0].project.toLowerCase())){
+                        edit_location_project.value = Project_
+                        edit_location_project_others.value = ""
+                    }else{
+                        edit_location_project.value = "Others"
+                        edit_location_project_others.value = res.entry[0].project
+                    }
+                }else{
+                    edit_location_project.value = ""
+                    edit_location_project_others.value = ""
+                }
+            }else{
+                if(res.entry[0].building != "-"){
+                    edit_location_building_others.value = res.entry[0].building != "-" ? res.entry[0].building : ""
+                    edit_location_room_others.value = res.entry[0].room != "-" ? res.entry[0].room : ""
+                    edit_location_project_others.value = res.entry[0].project != "-" ? res.entry[0].project : ""
+
+                    edit_location_building.value = "Others"
+                    edit_location_room.value = "Others"
+                    edit_location_room.disabled = true
+                    edit_location_project.value = "Others"
+                    edit_location_project.disabled = true
+                }else{
+                    edit_location_building_others.value = res.entry[0].building != "-" ? res.entry[0].building : ""
+
+                    if(res.entry[0].room != "-"){
+                        edit_location_room.value = "Others"
+                        edit_location_room_others.value = res.entry[0].room
+                    }else{
+                        edit_location_room.value = ""
+                        edit_location_room_others.value = ""
+                    }
+
+                    if(res.entry[0].project != "-"){
+                        edit_location_project.value = "Others"
+                        edit_location_project_others.value = res.entry[0].project
+                    }else{
+                        edit_location_project.value = ""
+                        edit_location_project_others.value = ""
+                    }
+
+                    edit_location_building.value = ""
+                    edit_location_room.disabled = false
+                    edit_location_project.disabled = false
+                }
+            }
+            
+            edit_location_cabinet.value = res.entry[0].cabinet != "-" ? res.entry[0].cabinet : ""
             edit_entry_remarks_input.value = res.entry[0].remarks != "-" ? res.entry[0].remarks : ""
             edit_entry_modal.show()
         }else{

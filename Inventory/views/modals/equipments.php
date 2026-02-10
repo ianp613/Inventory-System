@@ -190,6 +190,31 @@
                         </select>
                     </div>
                 </div>
+                <label for="" class="mb-2 mt-2">Location</label>
+                <div class="input-group mb-2">
+                    <select name="" id="edit_location_building" class="form-control">
+                        <option selected disabled value="">-- Select Building --</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <input type="text" name="" id="edit_location_building_others" class="form-control" placeholder="if others specify building">
+                </div>
+                <div class="input-group mb-2">
+                    <select name="" id="edit_location_room" class="form-control">
+                        <option selected disabled value="">-- Select Room --</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <input type="text" name="" id="edit_location_room_others" class="form-control" placeholder="if others specify room">
+                </div>
+                <div class="input-group mb-2">
+                    <select name="" id="edit_location_project" class="form-control">
+                        <option selected disabled value="">-- Select Project / Office --</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <input type="text" name="" id="edit_location_project_others" class="form-control" placeholder="if others specify project / office">
+                </div>
+                <div class="input-group">
+                    <input type="text" name="" id="edit_location_cabinet" class="form-control" placeholder="Cabinet / Desk / Station (Specific Location)">
+                </div>
                 <label for="edit_entry_remarks_input" class="mb-2 mt-2">Remarks</label>
                 <textarea maxlength="1000" rows="5" name="" id="edit_entry_remarks_input" class="form-control" placeholder="Aa"></textarea>
             </div>

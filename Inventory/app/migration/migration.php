@@ -68,6 +68,10 @@
             Migrate::string("barcode");
             Migrate::string("specifications");
             Migrate::string("status");
+            Migrate::string("building");
+            Migrate::string("room");
+            Migrate::string("project");
+            Migrate::string("cabinet");
             Migrate::string("remarks");
         }
     }

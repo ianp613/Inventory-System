@@ -20,6 +20,10 @@
                 $entry->barcode = $data["barcode"] ? strtoupper($data["barcode"]) : "-";
                 $entry->specifications = $data["specifications"] ? $data["specifications"] : "-";
                 $entry->status = $data["status"] ? $data["status"] : "N/A";
+                $entry->building = $data["building"] ? $data["building"] : "-";
+                $entry->room = $data["room"] ? $data["room"] : "-";
+                $entry->project = $data["project"] ? $data["project"] : "-";
+                $entry->cabinet = $data["cabinet"] ? $data["cabinet"] : "-";
                 $entry->remarks = $data["remarks"] ? $data["remarks"] : "-";
 
                 DB::save($entry);

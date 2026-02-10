@@ -88,10 +88,18 @@
                 $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : Data::pp("Passkey for account <b>".$temp->username."</b> has been set to <b>".$passkey."</b>.");
             }
         }
-    }elseif(isset($_GET["test"])){
-        $user = new User;
-        $sample = DB::where($user,"username","=","sdfkjsd");
-        echo count($sample);
+    }elseif(isset($_GET["update"])){
+        $entry = new Equipment_Entry;
+        $entry_ = DB::all($entry);
+
+        foreach($entry_ as $e){
+            $ent = DB::prepare($entry,$e["id"]);
+            $ent->building = "-";
+            $ent->room = "-";
+            $ent->project = "-";
+            $ent->cabinet = "-";
+            DB::update($ent);
+        }
     }else{
         header("location: views/login.php");
     }
