@@ -727,7 +727,7 @@ if(document.getElementById("equipments")){
 
                 var opt_room = document.createElement("option")
                 opt_room.value = ""
-                opt_room.innerText = "-- Select Room --"
+                opt_room.innerText = "-- Select Project / Office --"
                 opt_room.disabled = true
                 opt_room.selected = true
                 edit_location_project.appendChild(opt_room)
