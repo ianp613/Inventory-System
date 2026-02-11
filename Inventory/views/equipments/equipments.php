@@ -20,6 +20,7 @@
                 <td class="text-start">Description</td>
                 <td class="text-start">Model No.</td>
                 <td class="text-start">Barcode (FPOSI)</td>
+                <td class="text-start">Location</td>
                 <td class="text-start">Status</td>
                 <td style="width: 100px; !important">Action</td>
             </tr>

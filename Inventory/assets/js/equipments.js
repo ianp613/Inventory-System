@@ -586,6 +586,7 @@ if(document.getElementById("equipments")){
                 e["description"],
                 e["model_no"] != "-" ? e["model_no"] : "",
                 e["barcode"] != "-" ? e["barcode"] : "",
+                e["building"] != "-" ? e["building"] : "",
                 e["status"] != "-" ? e["status"] : "",
                 " <button id=\"edit_entry_"+ e["id"] +"\" e-id=\""+ e["id"] +"\" class=\"edit_entry_row btn btn-sm btn-secondary mb-1\"><i e-id=\""+ e["id"] +"\" class=\"edit_entry_row fa fa-edit\"></i></button>"+
                 " <button id=\"delete_entry_"+ e["id"] +"\" e-id=\""+ e["id"] +"\" class=\"delete_entry_row btn btn-sm btn-danger mb-1\"><i e-id=\""+ e["id"] +"\" class=\"delete_entry_row fa fa-trash-o\"></i></button>"
