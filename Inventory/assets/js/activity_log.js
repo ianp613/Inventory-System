@@ -6,7 +6,7 @@ activity_log.addEventListener("click",function(){
 
 if(document.getElementById("logs")){
     let logTable = new DataTable('#log_table',{
-        order: [[5, 'asc']],
+        order: [[2, 'desc']],
         rowCallback: function(row) {
             $(row).addClass("trow");
         },

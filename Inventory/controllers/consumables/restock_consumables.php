@@ -11,6 +11,15 @@
         $consumables->stock += $data["quantity"];
         DB::update($consumables);
 
+        $log = new Logs;
+        $log->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+        $log->uid = $_SESSION["userid"];
+        $log->log = $_SESSION["name"]." has added a stock to consumable \"".$consumables->description."\" with a quantity of \"".$data["quantity"]."\".";
+        if($_SESSION["log"] != $log->log){
+            $_SESSION["log"] = $log->log;
+            DB::save($log);
+        }
+
         $response = [
             "status" => true,
             "type" => "success",
