@@ -6,6 +6,8 @@ activity_log.addEventListener("click",function(){
 
 if(document.getElementById("logs")){
     let logTable = new DataTable('#log_table',{
+        "pageLength": 50,
+        "lengthChange": false,
         order: [[2, 'desc']],
         rowCallback: function(row) {
             $(row).addClass("trow");
@@ -32,7 +34,7 @@ if(document.getElementById("logs")){
             search : localStorage.getItem("privileges") == "Administrator" ? "<button id=\"clear_log_toggle\" data-bs-toggle=\"modal\" data-bs-target=\"#clear_log\" class=\"btn btn-sm btn-danger me-3\"><span class=\"fa fa-trash\"></span> Clear Logs</button> Search: " : "Search: "
         },
         searching: true,
-        paging: false,
+        paging: true,
         info: false,
         emptyTable: false
     });
