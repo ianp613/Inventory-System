@@ -31,7 +31,7 @@ if(document.getElementById("logs")){
         autoWidth: false,
         language: {
             sLengthMenu: "Show _MENU_entries",
-            search : localStorage.getItem("privileges") == "Administrator" ? "<button id=\"clear_log_toggle\" data-bs-toggle=\"modal\" data-bs-target=\"#clear_log\" class=\"btn btn-sm btn-danger me-3\"><span class=\"fa fa-trash\"></span> Clear Logs</button> Search: " : "Search: "
+            search : localStorage.getItem("privileges") == "Administrator" || localStorage.getItem("privileges") == "Supervisor"? "<button id=\"clear_log_toggle\" data-bs-toggle=\"modal\" data-bs-target=\"#clear_log\" class=\"btn btn-sm btn-danger me-3\"><span class=\"fa fa-trash\"></span> Clear Logs</button> Search: " : "Search: "
         },
         searching: true,
         paging: true,
@@ -47,12 +47,13 @@ if(document.getElementById("logs")){
 
     loadLogs()
 
-    if(localStorage.getItem("privileges") == "Administrator"){
+    if(localStorage.getItem("privileges") == "Administrator" || localStorage.getItem("privileges") == "Supervisor"){
         loadUsers()
         var clear_log_btn = document.getElementById("clear_log_btn")
         var clear_log_name = document.getElementById("clear_log_name")
         var clear_log_toggle = document.getElementById("clear_log_toggle")
-        if(!JSON.parse(localStorage.getItem("g_member"))){
+        // if(!JSON.parse(localStorage.getItem("g_member"))){
+        if(localStorage.getItem("privileges") == "Administrator" || localStorage.getItem("privileges") == "Supervisor"){
             select_log.addEventListener("change",function(){
                 loadLogs(select_log.value)
             })
@@ -88,7 +89,7 @@ if(document.getElementById("logs")){
                     e["id"],
                     replaceName(e["uid"],e["log"]),
                     e["created_at"],
-                    localStorage.getItem("privileges") == "Administrator" ? "<button id=\"delete_log_"+ e["id"] +"\" l-id=\""+ e["id"] +"\" class=\"delete_log_row btn btn-sm btn-danger ms-1\"><i l-id=\""+ e["id"] +"\" class=\"delete_log_row fa fa-trash\"></i></button>" : ""
+                    localStorage.getItem("privileges") == "Administrator" || localStorage.getItem("privileges") == "Supervisor"? "<button id=\"delete_log_"+ e["id"] +"\" l-id=\""+ e["id"] +"\" class=\"delete_log_row btn btn-sm btn-danger ms-1\"><i l-id=\""+ e["id"] +"\" class=\"delete_log_row fa fa-trash\"></i></button>" : ""
                 ]).draw(false)   
             });
             document.querySelector('#log_table').addEventListener("click", e=>{
@@ -116,7 +117,9 @@ if(document.getElementById("logs")){
     }
 
     function loadUsers(){
-        if(!JSON.parse(localStorage.getItem("g_member"))){
+        console.log("running")
+        // if(!JSON.parse(localStorage.getItem("g_member"))){
+        if(localStorage.getItem("privileges") == "Administrator" || localStorage.getItem("privileges") == "Supervisor"){
             sole.get("../../controllers/logs/get_users.php")
             .then(res => {
                 res.forEach(e => {

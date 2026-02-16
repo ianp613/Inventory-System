@@ -89,7 +89,7 @@ if(document.getElementById("sidebar")){
             }).then(res => {
                 if(res.status){
                     setTimeout(() => {
-                        localStorage.clear();
+                        // localStorage.clear();
                         location.reload();
                     }, 2000);
                     bs5.toast(res.type,res.message,res.size)
@@ -108,7 +108,7 @@ if(document.getElementById("sidebar")){
         }).then(res => {
             if(res.status){
                 setTimeout(() => {
-                    localStorage.clear();
+                    // localStorage.clear();
                     location.reload();
                 }, 2000);
                 bs5.toast(res.type,res.message,res.size)
@@ -462,7 +462,7 @@ if(document.getElementsByClassName("ps-field")[0]){
 // PUBLIC
 
 document.addEventListener('contextmenu', event => {
-    event.preventDefault();
+    // event.preventDefault();
 });
 
 const elements = document.querySelectorAll("input[type='text'], input[type='password'], textarea");
