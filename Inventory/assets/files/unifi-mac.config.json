@@ -1,0 +1,36 @@
+{
+    "unifi" : [
+        {
+            "name" : "Network 15 | Free Wifi Main Building",
+            "site_id" : "default",
+            "host" : "203.177.127.150",
+            "port" : "8443",
+            "username" : "tech",
+            "password" : "CmoS23826867"
+        },
+        {
+            "name" : "Network 10 | Free Wifi Planning",
+            "site_id" : "z1qqymab",
+            "host" : "203.177.127.133",
+            "port" : "8443",
+            "username" : "tech",
+            "password" : "CmoS23826867"
+        },
+        {
+            "name" : "Network 07 | Annex Building 1st Floor",
+            "site_id" : "5n1pz4m9",
+            "host" : "119.92.162.132",
+            "port" : "8443",
+            "username" : "tech",
+            "password" : "CmoS23826867"
+        },
+        {
+            "name" : "Network 07 | Annex Building 2nd Floor",
+            "site_id" : "dqevxwsa",
+            "host" : "119.92.162.132",
+            "port" : "8443",
+            "username" : "tech",
+            "password" : "CmoS23826867"
+        }
+    ]
+}

@@ -517,6 +517,9 @@ input:checked + .slider:before {
 .wd-550 {
     width: 550px;
 }
+.wd-580 {
+    width: 580px;
+}
 .wd-600 {
     width: 600px;
 }
@@ -787,5 +790,9 @@ input:checked + .slider:before {
 
 input::placeholder, textarea::placeholder{
     font-size: 14px;
+    font-style: italic;
+}
+
+.f-i{
     font-style: italic;
 }
