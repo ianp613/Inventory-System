@@ -188,53 +188,7 @@ function loadTheme(){
   }
 }
 
-
-
 GetWifi()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function splash(message, seconds) {
   // Create splash element
