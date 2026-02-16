@@ -15,12 +15,13 @@
         <link rel="stylesheet" href="../assets/css/colorpicker.css">
         <link rel="stylesheet" href="../assets/css/style.css">
     </head>
-    <body>
+    <body class="light">
+        
         <div class="w-100 d-flex justify-content-center">
             <div class="wd-580 p-4">
                 <div class="d-flex w-100 mt-4">
                     <img class="wd-60 ht-60 me-2 rounded-circle" style="margin-top: -23px;" src="../../assets/img/unifi.jpg" alt="" srcset="">
-                    <h5 class="text-secondary mb-3 ms-2 d-flex"><div id="g_name_display"></div><span class="fa fa-wifi mt-1"></span> <span class="ms-2">WIFI TEAM | UNIFI MAC</span></h5>
+                    <h5 class="text-secondary mb-3 ms-2 d-flex"><div></div><span class="fa fa-wifi mt-1"></span> <span class="ms-2">WIFI TEAM | UNIFI MAC</span></h5>
                 </div>
                 <div class="modal-body">
                     <div class="row mt-2">
@@ -65,10 +66,19 @@
                     <label for="mac_remarks" class="mb-2 mt-2">Remarks</label>
                     <textarea maxlength="1000" rows="5" name="" id="mac_remarks" class="form-control" placeholder="Aa"></textarea>
                 </div>
-                <div class="modal-footer border-0 pt-0">
-                    <button id="clear_btn" type="button" class="btn btn-secondary btn-sm rounded-pill wd-90"><span class="fa fa-remove"></span> Clear</button>
-                    <button id="register_mac" type="button" class="btn btn-success btn-sm rounded-pill wd-90"><span class="fa fa-save"></span> Register</button>
-                    <button hidden disabled id="loading_mac" type="button" class="btn btn-success btn-sm rounded-pill"><div class="spinner-border wd-15 ht-15" role="status"></div> Loading</button>
+                <div class="modal-header border-0 pt-0">
+                    <div class=" input-group">
+                        <span class="input-group-text">Theme</span>
+                        <select name="" id="theme">
+                            <option selected value="light">Light</option>
+                            <option value="dark">Dark</option>
+                        </select>    
+                    </div>
+                    <div class="d-flex wd-500 justify-content-end">
+                        <button id="clear_btn" type="button" class="btn btn-secondary btn-sm rounded-pill wd-90 me-1"><span class="fa fa-remove"></span> Clear</button>
+                        <button id="register_mac" type="button" class="btn btn-success btn-sm rounded-pill wd-90"><span class="fa fa-save"></span> Register</button>
+                        <button hidden disabled id="loading_mac" type="button" class="btn btn-success btn-sm rounded-pill"><div class="spinner-border wd-15 ht-15" role="status"></div> Loading</button>     
+                    </div>
                 </div>
                 <div class="ps-3 pe-3" id="mac_message">
                     <!-- Message Here -->

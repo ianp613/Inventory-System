@@ -11,6 +11,8 @@ var clear_btn     = document.getElementById("clear_btn")
 var register_mac  = document.getElementById("register_mac")
 var loading_mac   = document.getElementById("loading_mac")
 
+var theme         = document.getElementById("theme")
+
 async function GetWifi(params) {
   await sole.get("../controllers/unifi-mac/get-wifi.php").then(res => {
     res.wifis.forEach(wifi => {
@@ -101,8 +103,92 @@ register_mac.addEventListener("click", e => {
     loading_mac.hidden      = true
     clear_btn.click()
   })
-
 })
+
+setTheme()
+loadTheme()
+
+theme.addEventListener("change", e => {
+  localStorage.setItem("unifi_mac_theme",theme.value)
+  setTheme()
+  loadTheme()
+})
+
+function setTheme(){
+  if(localStorage.getItem("unifi_mac_theme") === null){
+    localStorage.setItem("unifi_mac_theme","light")
+    theme.value = "light"
+  }else{
+    theme.value = localStorage.getItem("unifi_mac_theme")
+    if(localStorage.getItem("unifi_mac_theme") == "dark"){
+      if(!document.body.classList.contains("dark")){
+        document.body.classList.remove("light")
+        document.body.classList.add("dark")
+      }
+    }
+    if(localStorage.getItem("unifi_mac_theme") == "light"){
+      if(!document.body.classList.contains("light")){
+        document.body.classList.remove("dark")
+        document.body.classList.add("light")
+      }
+    }
+  }
+}
+
+
+function loadTheme(){
+  if(document.body.classList.contains("dark")){
+    document.body.classList.add("bg-dark")
+    document.body.classList.add("text-light")
+    document.getElementsByTagName("h5")[0].classList.add("text-light")
+    document.getElementsByTagName("img")[0].style = "border: solid 2px white; margin-top: -23px;"
+    document.getElementsByTagName("textarea")[0].classList.add("text-light")
+    document.getElementsByTagName("textarea")[0].classList.add("bg-dark")
+    var inps = document.getElementsByTagName("input")
+    for (let i = 0; i < inps.length; i++) {
+      inps[i].classList.add("bg-dark")
+      inps[i].classList.add("text-light")
+    }
+
+    var sels = document.getElementsByTagName("select")
+    for (let i = 0; i < sels.length; i++) {
+      sels[i].classList.add("bg-dark")
+      sels[i].classList.add("text-light")
+    }
+
+    var btns = document.getElementsByTagName("button")
+    for (let i = 0; i < btns.length; i++) {
+      btns[i].style = "border: solid 2px white;"
+      btns[i].style = "border: solid 2px white;"
+    }
+  }else{
+    document.body.classList.remove("bg-dark")
+    document.body.classList.remove("text-light")
+    document.getElementsByTagName("h5")[0].classList.remove("text-light")
+    document.getElementsByTagName("img")[0].style = "margin-top: -23px;"
+    document.getElementsByTagName("textarea")[0].classList.remove("text-light")
+    document.getElementsByTagName("textarea")[0].classList.remove("bg-dark")
+    var inps = document.getElementsByTagName("input")
+    for (let i = 0; i < inps.length; i++) {
+      inps[i].classList.remove("bg-dark")
+      inps[i].classList.remove("text-light")
+    }
+
+    var sels = document.getElementsByTagName("select")
+    for (let i = 0; i < sels.length; i++) {
+      sels[i].classList.remove("bg-dark")
+      sels[i].classList.remove("text-light")
+    }
+
+    var btns = document.getElementsByTagName("button")
+    for (let i = 0; i < btns.length; i++) {
+      btns[i].removeAttribute("style")
+      btns[i].removeAttribute("style")
+    }
+  }
+}
+
+
 
 GetWifi()
 
