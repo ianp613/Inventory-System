@@ -25,6 +25,7 @@
                 <td class="text-start">Tagged Device</td>
                 <td class="text-start">Project / Office</td>
                 <td class="text-start">Location</td>
+                <td class="text-start">Date Registered</td>
                 <td style="width: 100px !important;">Action</td>
             </tr>
         </thead>
