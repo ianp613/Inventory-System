@@ -10,7 +10,7 @@
             $bol = true;
             $wid = null;
 
-            $mac_temp = DB::where($mac,"mac","=",$data["mac"]);
+            $mac_temp = DB::where($mac,"wid","=",$data["wid"]);
             foreach ($mac_temp as $mt) {
                 if($mt["mac"] == $data["mac"] && $mt["id"] != $data["id"]){
                     $wid = $mt["wid"];

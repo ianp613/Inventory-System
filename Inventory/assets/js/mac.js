@@ -88,6 +88,7 @@ if(document.getElementById("mac")){
 
     var wifi_dropdown = document.getElementById("wifi_dropdown")
     var wifi_dropdown_toggle = document.getElementById("wifi_dropdown_toggle")
+    var Building = []
 
     add_wifi.addEventListener('shown.bs.modal', function () {
         wifi_name.focus()
@@ -220,6 +221,7 @@ if(document.getElementById("mac")){
         if(edit_mac_address.value && edit_mac_address.value.length == 17){
             sole.post("../../controllers/mac/edit_mac.php",{
                 id: this.getAttribute("m-id"),
+                wid: this.getAttribute("w-id"),
                 mac: edit_mac_address.value,
                 name: edit_mac_name.value,
                 device: edit_mac_device.value,
@@ -245,6 +247,83 @@ if(document.getElementById("mac")){
         }).then(res => validateResponse(res,"delete_mac"))
     })
 
+    GetLocations()
+    function GetLocations(){
+        sole.get("../controllers/equipments/get_equipment_location_preset.php").then(res => {
+            res.Building.forEach(bldg => {
+                Building.push([Object.keys(bldg)[0],bldg])
+            })
+            mac_location.innerHTML    = ""
+            var opt_building          = document.createElement("option")
+            opt_building.value        = ""
+            opt_building.innerText    = "-- Select Site / Location --"
+            opt_building.disabled     = true
+            opt_building.selected     = true
+            mac_location.appendChild(opt_building)
+            Building.forEach(bldg_ => {
+                var opt                 = document.createElement("option")
+                opt.value               = bldg_[0]
+                opt.innerText           = bldg_[0]
+                mac_location.appendChild(opt)
+            });
+
+            edit_mac_location.innerHTML    = ""
+            var opt_building          = document.createElement("option")
+            opt_building.value        = ""
+            opt_building.innerText    = "-- Select Site / Location --"
+            opt_building.disabled     = true
+            opt_building.selected     = true
+            edit_mac_location.appendChild(opt_building)
+            Building.forEach(bldg_ => {
+                var opt                 = document.createElement("option")
+                opt.value               = bldg_[0]
+                opt.innerText           = bldg_[0]
+                edit_mac_location.appendChild(opt)
+            });
+
+        })
+
+        mac_location.addEventListener("change", e => {
+            mac_project.innerHTML     = ""
+            var opt_project           = document.createElement("option")
+            opt_project.value         = ""
+            opt_project.innerText     = "-- Select Project / Office --"
+            opt_project.disabled      = true
+            opt_project.selected      = true
+            mac_project.appendChild(opt_project)
+            Building.forEach(bldg_ => {
+                if(bldg_[0] == mac_location.value){
+                    bldg_[1][bldg_[0]].Project.forEach(project => {
+                        var opt             = document.createElement("option")
+                        opt.value           = project
+                        opt.innerText       = project
+                        mac_project.appendChild(opt)
+                    })
+                }
+            });
+        })
+
+        edit_mac_location.addEventListener("change", e => {
+            edit_mac_project.innerHTML     = ""
+            var opt_project           = document.createElement("option")
+            opt_project.value         = ""
+            opt_project.innerText     = "-- Select Project / Office --"
+            opt_project.disabled      = true
+            opt_project.selected      = true
+            edit_mac_project.appendChild(opt_project)
+            Building.forEach(bldg_ => {
+                if(bldg_[0] == edit_mac_location.value){
+                    bldg_[1][bldg_[0]].Project.forEach(project => {
+                        var opt             = document.createElement("option")
+                        opt.value           = project
+                        opt.innerText       = project
+                        edit_mac_project.appendChild(opt)
+                    })
+                }
+            });
+        })
+    }
+
     function editwifiForm(res){
         if(res.status){
             edit_wifi_name.value = res.wifi[0].name
@@ -259,11 +338,36 @@ if(document.getElementById("mac")){
     }
 
     function editMACForm(res){
+        edit_mac_entry_btn.setAttribute("w-id",res.mac[0].wid)
         edit_mac_address.value = res.mac[0].mac
         edit_mac_name.value = res.mac[0].name != "-" ? res.mac[0].name : ""
         edit_mac_device.value = res.mac[0].device != "-" ? res.mac[0].device : ""
+        
+        edit_mac_project.innerHTML     = ""
+        var opt_project           = document.createElement("option")
+        opt_project.value         = ""
+        opt_project.innerText     = "-- Select Project / Office --"
+        opt_project.disabled      = true
+        opt_project.selected      = true
+        edit_mac_project.appendChild(opt_project)
+        Building.forEach(bldg_ => {
+            if(bldg_[0] == res.mac[0].location){
+                bldg_[1][bldg_[0]].Project.forEach(project => {
+                    var opt             = document.createElement("option")
+                    opt.value           = project
+                    opt.innerText       = project
+                    if(res.mac[0].project == project){
+                        opt.selected = true
+                    }
+                    edit_mac_project.appendChild(opt)
+                })
+            }
+        });
+
         edit_mac_project.value = res.mac[0].project != "-" ? res.mac[0].project : ""
         edit_mac_location.value = res.mac[0].location != "-" ? res.mac[0].location : ""
+
+
         edit_mac_remarks.value = res.mac[0].remarks != "-" ? res.mac[0].remarks : ""
         edit_mac_entry_modal.show()
     }

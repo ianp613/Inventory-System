@@ -103,12 +103,16 @@
                 </div>
                 <div class="row mt-2">
                     <div class="col-md-6">
-                        <label for="mac_project" class="mb-2">Project / Office</label>
-                        <input required type="text" name="" id="mac_project" class="form-control">
+                        <label for="mac_location" class="mb-2">Site / Location</label>
+                        <select name="" id="mac_location" class="form-control">
+                            <option selected disabled value="">-- Select Site / Location --</option>
+                        </select>
                     </div>
                     <div class="col-md-6">
-                        <label for="mac_location" class="mb-2">Location</label>
-                        <input required type="text" name="" id="mac_location" class="form-control">
+                        <label for="mac_project" class="mb-2">Project / Office</label>
+                        <select name="" id="mac_project" class="form-control">
+                            <option selected disabled value="">-- Select Project / Office --</option>
+                        </select>
                     </div>
                 </div>
                 <label for="mac_remarks" class="mb-2 mt-2">Remarks</label>
@@ -153,12 +157,16 @@
                 </div>
                 <div class="row mt-2">
                     <div class="col-md-6">
-                        <label for="edit_mac_project" class="mb-2">Project / Office</label>
-                        <input required type="text" name="" id="edit_mac_project" class="form-control">
+                        <label for="edit_mac_location" class="mb-2">Site / Location</label>
+                        <select name="" id="edit_mac_location" class="form-control">
+                            <option selected disabled value="">-- Select Site / Location --</option>
+                        </select>
                     </div>
                     <div class="col-md-6">
-                        <label for="edit_mac_location" class="mb-2">Location</label>
-                        <input required type="text" name="" id="edit_mac_location" class="form-control">
+                        <label for="edit_mac_project" class="mb-2">Project / Office</label>
+                        <select name="" id="edit_mac_project" class="form-control">
+                            <option selected disabled value="">-- Select Project / Office --</option>
+                        </select>
                     </div>
                 </div>
                 <label for="edit_mac_remarks" class="mb-2 mt-2">Remarks</label>

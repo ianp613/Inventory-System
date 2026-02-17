@@ -66,7 +66,6 @@
                                 <option selected disabled value="">-- Select Project / Office --</option>
                             </select>
                         </div>
-                        
                     </div>
                     <label for="mac_register_by" class="mb-2 mt-2">Who registers this MAC Address?</label>
                     <select name="" id="mac_register_by" class="form-control">
