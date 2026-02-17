@@ -1,11 +1,11 @@
 <div id="logs">
-    <?php if($_SESSION["privileges"] == "Administrator" || $_SESSION["privileges"] == "Supervisor"){  ?>
+    <?php //if($_SESSION["privileges"] == "Administrator" || $_SESSION["privileges"] == "Supervisor"){  ?>
         <div id="select_log_container" style="margin-bottom: -10px !important;" class="w-100 d-flex">
             <select id="select_log" style="width: 238px; height: 30px; position: absolute;" class="select_log f-13 pt-0 pb-0 form-control">
                 <option value="All" selected>Show all logs</option>
             </Select>
         </div>
-    <?php } ?>
+    <?php //} ?>
     <table id="log_table" class="table border table-hover">
         <thead class="fwt-5">
             <tr class="tr_exclude">

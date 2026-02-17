@@ -55,14 +55,23 @@
                     </div>
                     <div class="row mt-2">
                         <div class="col-md-6">
-                            <label for="mac_project" class="mb-2">Project / Office</label>
-                            <input required type="text" name="" id="mac_project" class="form-control">
+                            <label for="mac_location" class="mb-2">Site / Location</label>
+                            <select name="" id="mac_location" class="form-control">
+                                <option selected disabled value="">-- Select Site / Location --</option>
+                            </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="mac_location" class="mb-2">Location</label>
-                            <input required type="text" name="" id="mac_location" class="form-control">
+                            <label for="mac_project" class="mb-2">Project / Office</label>
+                            <select name="" id="mac_project" class="form-control">
+                                <option selected disabled value="">-- Select Project / Office --</option>
+                            </select>
                         </div>
+                        
                     </div>
+                    <label for="mac_register_by" class="mb-2 mt-2">Who registers this MAC Address?</label>
+                    <select name="" id="mac_register_by" class="form-control">
+                        <option selected disabled value="">-- Registered By  --</option>
+                    </select>
                     <label for="mac_remarks" class="mb-2 mt-2">Remarks</label>
                     <textarea maxlength="1000" rows="5" name="" id="mac_remarks" class="form-control" placeholder="Aa"></textarea>
                 </div>

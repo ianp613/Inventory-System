@@ -197,8 +197,21 @@
             if($bol){
                 DB::save($mac);
             }
-        }
-    }
 
+            $user = new User;
+            $user = DB::where($user,"name","=",$data["mac_register_by"])[0];
+
+            $log = new Logs;
+            $log->gid = $data["g_id"];
+            $log->uid = $user["id"];
+            $log->log = $user["name"]." has registered a MAC \"".$data["mac_address"]."\" to \"".$ssid[0]["name"]."\".";
+            if($_SESSION["log"] != $log->log){
+                $_SESSION["log"] = $log->log;
+                DB::save($log);
+            }
+        }
+
+        
+    }
     UNIFI_MAC::register($unifi_config,$ssid[0]["name"],$data["mac_address"]);
 ?>

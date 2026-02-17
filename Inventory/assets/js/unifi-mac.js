@@ -1,17 +1,19 @@
-var mac_ssid      = document.getElementById("mac_ssid")
-var mac_address   = document.getElementById("mac_address")
-var mac_name      = document.getElementById("mac_name")
-var mac_device    = document.getElementById("mac_device")
-var mac_project   = document.getElementById("mac_project")
-var mac_location  = document.getElementById("mac_location")
-var mac_remarks   = document.getElementById("mac_remarks")
-var mac_message   = document.getElementById("mac_message")
+var mac_ssid          = document.getElementById("mac_ssid")
+var mac_address       = document.getElementById("mac_address")
+var mac_name          = document.getElementById("mac_name")
+var mac_device        = document.getElementById("mac_device")
+var mac_project       = document.getElementById("mac_project")
+var mac_location      = document.getElementById("mac_location")
+var mac_remarks       = document.getElementById("mac_remarks")
+var mac_message       = document.getElementById("mac_message")
+var mac_register_by   = document.getElementById("mac_register_by")
 
-var clear_btn     = document.getElementById("clear_btn")
-var register_mac  = document.getElementById("register_mac")
-var loading_mac   = document.getElementById("loading_mac")
+var clear_btn         = document.getElementById("clear_btn")
+var register_mac      = document.getElementById("register_mac")
+var loading_mac       = document.getElementById("loading_mac")
 
-var theme         = document.getElementById("theme")
+var theme             = document.getElementById("theme")
+var Building          = []
 
 async function GetWifi(params) {
   await sole.get("../controllers/unifi-mac/get-wifi.php").then(res => {
@@ -35,13 +37,21 @@ mac_address.addEventListener("input",function(){
 })
 
 clear_btn.addEventListener("click", e => {
-  mac_address.value   = ""
-  mac_ssid.value      = ""
-  mac_name.value      = ""
-  mac_device.value    = ""
-  mac_project.value   = ""
-  mac_location.value  = ""
-  mac_remarks.value   = ""
+  mac_address.value       = ""
+  mac_ssid.value          = ""
+  mac_name.value          = ""
+  mac_device.value        = ""
+  mac_project.value       = ""
+  mac_location.value      = ""
+  mac_remarks.value       = ""
+  mac_register_by.value   = ""
+  mac_project.innerHTML   = ""
+  var opt_project         = document.createElement("option")
+  opt_project.value       = ""
+  opt_project.innerText   = "-- Select Project / Office --"
+  opt_project.disabled    = true
+  opt_project.selected    = true
+  mac_project.appendChild(opt_project)
 })
 
 register_mac.addEventListener("click", e => {
@@ -69,20 +79,22 @@ register_mac.addEventListener("click", e => {
     alert("Please input location.")
     return
   }
-
-
-
+  if(!mac_register_by.value){
+    alert("Please select registered by.")
+    return
+  }
 
   register_mac.hidden   = true
   loading_mac.hidden      = false
   sole.post("../controllers/unifi-mac/register-mac.php",{
-    mac_address   : mac_address.value,
-    mac_ssid      : mac_ssid.value,
-    mac_name      : mac_name.value,
-    mac_device    : mac_device.value,
-    mac_project   : mac_project.value,
-    mac_location  : mac_location.value,
-    mac_remarks   : mac_remarks.value,
+    mac_address       : mac_address.value,
+    mac_ssid          : mac_ssid.value,
+    mac_name          : mac_name.value,
+    mac_device        : mac_device.value,
+    mac_project       : mac_project.value,
+    mac_location      : mac_location.value,
+    mac_remarks       : mac_remarks.value,
+    mac_register_by   : mac_register_by.value,
     g_id          : localStorage.getItem("unifi_mac_gid")
   }).then(res => {
     mac_message.innerHTML = ""
@@ -99,7 +111,7 @@ register_mac.addEventListener("click", e => {
         )
       }
     }
-    register_mac.hidden   = false
+    register_mac.hidden     = false
     loading_mac.hidden      = true
     clear_btn.click()
   })
@@ -189,36 +201,94 @@ function loadTheme(){
 }
 
 GetWifi()
+GetLocations()
+GetUsers()
+
+function GetUsers(){
+  sole.get("../controllers/unifi-mac/get-users.php").then(res => {
+    res.forEach(user => {
+      if(user["name"].toLowerCase() != "administrator"){
+        if(user["username"].toLowerCase() != "703f_administrator"){
+          var opt                 = document.createElement("option")
+          opt.value               = user["name"]
+          opt.innerText           = user["name"]
+          mac_register_by.appendChild(opt)
+        }
+      }
+    })
+  })
+}
+
+function GetLocations(){
+  sole.get("../controllers/equipments/get_equipment_location_preset.php").then(res => {
+    res.Building.forEach(bldg => {
+      Building.push([Object.keys(bldg)[0],bldg])
+    })
+    mac_location.innerHTML    = ""
+    var opt_building          = document.createElement("option")
+    opt_building.value        = ""
+    opt_building.innerText    = "-- Select Site / Location --"
+    opt_building.disabled     = true
+    opt_building.selected     = true
+    mac_location.appendChild(opt_building)
+    Building.forEach(bldg_ => {
+      var opt                 = document.createElement("option")
+      opt.value               = bldg_[0]
+      opt.innerText           = bldg_[0]
+      mac_location.appendChild(opt)
+    });
+  })
+
+  mac_location.addEventListener("change", e => {
+    mac_project.innerHTML     = ""
+    var opt_project           = document.createElement("option")
+    opt_project.value         = ""
+    opt_project.innerText     = "-- Select Project / Office --"
+    opt_project.disabled      = true
+    opt_project.selected      = true
+    mac_project.appendChild(opt_project)
+    Building.forEach(bldg_ => {
+      if(bldg_[0] == mac_location.value){
+        bldg_[1][bldg_[0]].Project.forEach(project => {
+          var opt             = document.createElement("option")
+          opt.value           = project
+          opt.innerText       = project
+          mac_project.appendChild(opt)
+        })
+      }
+    });
+  })
+}
 
 function splash(message, seconds) {
   // Create splash element
-  const splashScreen = document.createElement("div");
-  const bs5_spinner = "<div class=\"spinner-border text-dark ht-70 wd-70 me-5\" role=\"status\"></div>"
-  splashScreen.innerHTML = bs5_spinner
-  splashScreen.id = "splash";
-  splashScreen.style.position = "fixed";
-  splashScreen.style.top = "0";
-  splashScreen.style.left = "0";
-  splashScreen.style.width = "100%";
-  splashScreen.style.height = "100%";
-  splashScreen.style.background = "white";
-  splashScreen.style.display = "flex";
-  splashScreen.style.alignItems = "center";
+  const splashScreen                = document.createElement("div");
+  const bs5_spinner                 = "<div class=\"spinner-border text-dark ht-70 wd-70 me-5\" role=\"status\"></div>"
+  splashScreen.innerHTML            = bs5_spinner
+  splashScreen.id                   = "splash";
+  splashScreen.style.position       = "fixed";
+  splashScreen.style.top            = "0";
+  splashScreen.style.left           = "0";
+  splashScreen.style.width          = "100%";
+  splashScreen.style.height         = "100%";
+  splashScreen.style.background     = "white";
+  splashScreen.style.display        = "flex";
+  splashScreen.style.alignItems     = "center";
   splashScreen.style.justifyContent = "center";
-  splashScreen.style.fontSize = "24px";
-  splashScreen.style.opacity = "1";
-  splashScreen.style.transition = "opacity 0.5s ease-out";
-  splashScreen.style.zIndex = "9999";
+  splashScreen.style.fontSize       = "24px";
+  splashScreen.style.opacity        = "1";
+  splashScreen.style.transition     = "opacity 0.5s ease-out";
+  splashScreen.style.zIndex         = "9999";
 
   if (message) {
-    splashScreen.innerHTML = message;
+    splashScreen.innerHTML          = message;
   }
 
   document.body.appendChild(splashScreen);
 
   // Remove after fade
   setTimeout(() => {
-    splashScreen.style.opacity = "0";
+    splashScreen.style.opacity      = "0";
     setTimeout(() => {
       splashScreen.remove();
     }, 500); // Matches fade transition duration

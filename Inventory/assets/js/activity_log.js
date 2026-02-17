@@ -47,37 +47,36 @@ if(document.getElementById("logs")){
 
     loadLogs()
 
+    loadUsers()
+    var clear_log_btn = document.getElementById("clear_log_btn")
+    var clear_log_name = document.getElementById("clear_log_name")
+    var clear_log_toggle = document.getElementById("clear_log_toggle")
+    // if(!JSON.parse(localStorage.getItem("g_member"))){
+    
+    select_log.addEventListener("change",function(){
+        loadLogs(select_log.value)
+    })
     if(localStorage.getItem("privileges") == "Administrator" || localStorage.getItem("privileges") == "Supervisor"){
-        loadUsers()
-        var clear_log_btn = document.getElementById("clear_log_btn")
-        var clear_log_name = document.getElementById("clear_log_name")
-        var clear_log_toggle = document.getElementById("clear_log_toggle")
-        // if(!JSON.parse(localStorage.getItem("g_member"))){
-        if(localStorage.getItem("privileges") == "Administrator" || localStorage.getItem("privileges") == "Supervisor"){
-            select_log.addEventListener("change",function(){
-                loadLogs(select_log.value)
-            })
-            clear_log_toggle.addEventListener("click",function(){
-                if(select_log.value == "All"){
-                    clear_log_name.innerHTML = "for all users"
-                }else if(select_log.value == localStorage.getItem("userid")){
-                    clear_log_name.innerHTML = "for your account"
-                }else{
-                    clear_log_name.innerHTML = "for user <b>\""+select_log.options[select_log.selectedIndex].text+"\"</b>"
-                }
-                clear_log_btn.setAttribute("uid",select_log.value)
-            })   
-        }
-        const clear_log_modal = new bootstrap.Modal(document.getElementById('clear_log'),unclose);
-        clear_log_btn.addEventListener("click",function(){
-            sole.post("../../controllers/logs/delete_logs.php",{
-                uid: this.getAttribute("uid")
-            }).then(res => {
-                bs5.toast("info","Logs has been cleared.")
-                loadLogs(this.getAttribute("uid"))
-            })
-        })
+        clear_log_toggle.addEventListener("click",function(){
+            if(select_log.value == "All"){
+                clear_log_name.innerHTML = "for all users"
+            }else if(select_log.value == localStorage.getItem("userid")){
+                clear_log_name.innerHTML = "for your account"
+            }else{
+                clear_log_name.innerHTML = "for user <b>\""+select_log.options[select_log.selectedIndex].text+"\"</b>"
+            }
+            clear_log_btn.setAttribute("uid",select_log.value)
+        })   
     }
+    const clear_log_modal = new bootstrap.Modal(document.getElementById('clear_log'),unclose);
+    clear_log_btn.addEventListener("click",function(){
+        sole.post("../../controllers/logs/delete_logs.php",{
+            uid: this.getAttribute("uid")
+        }).then(res => {
+            bs5.toast("info","Logs has been cleared.")
+            loadLogs(this.getAttribute("uid"))
+        })
+    })
     
     function loadLogs(logs = "All"){
         sole.post("../../controllers/logs/get_log.php",{
@@ -117,9 +116,8 @@ if(document.getElementById("logs")){
     }
 
     function loadUsers(){
-        console.log("running")
         // if(!JSON.parse(localStorage.getItem("g_member"))){
-        if(localStorage.getItem("privileges") == "Administrator" || localStorage.getItem("privileges") == "Supervisor"){
+        if(localStorage.getItem("privileges") == "Administrator" || localStorage.getItem("privileges") == "Supervisor"|| localStorage.getItem("privileges") == "User"){
             sole.get("../../controllers/logs/get_users.php")
             .then(res => {
                 res.forEach(e => {
@@ -134,6 +132,13 @@ if(document.getElementById("logs")){
                     op.innerText = e["id"] == localStorage.getItem("userid") ? "Your logs" : e["name"]
                     e["id"] != localStorage.getItem("userid") ? select_log.appendChild(op) : null
                 });
+
+                if(localStorage.getItem("g_member") != "null"){
+                    var op = document.createElement("option")
+                    op.value = "Others"
+                    op.innerText = "Others"
+                    select_log.appendChild(op)    
+                }
             })    
         }
     }
