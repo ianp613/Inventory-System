@@ -205,10 +205,7 @@
             $log->gid = $data["g_id"];
             $log->uid = $user["id"];
             $log->log = $user["name"]." has registered a MAC \"".$data["mac_address"]."\" to \"".$ssid[0]["name"]."\".";
-            if($_SESSION["log"] != $log->log){
-                $_SESSION["log"] = $log->log;
-                DB::save($log);
-            }
+            DB::save($log);
         }
 
         
