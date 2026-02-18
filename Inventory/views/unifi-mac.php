@@ -38,7 +38,7 @@
 
 
                 <!-- REGISTER FORM START -->
-                <div hidden id="register_form">
+                <div id="register_form">
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6">
@@ -147,7 +147,7 @@
 
 
                 <!-- PASSWORD FORM START -->
-                <div  id="password_form">
+                <div hidden id="password_form">
                     <div class="modal-body">
                         <div class="row mt-2">
                             <div class="col-md-12">
