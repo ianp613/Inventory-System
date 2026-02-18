@@ -383,8 +383,8 @@ if(document.getElementById("mac")){
                 e["mac"],
                 e["name"] != "-" ? e["name"] : "",
                 e["device"] != "-" ? e["device"] : "",
-                e["location"] != "-" ? e["location"] : "",
                 e["project"] != "-" ? e["project"] : "",
+                e["location"] != "-" ? e["location"] : "",
                 e["created_at"],
                 " <button id=\"edit_mac_"+ e["id"] +"\" m-id=\""+ e["id"] +"\" class=\"edit_mac_row btn btn-sm btn-secondary mb-1\"><i m-id=\""+ e["id"] +"\" class=\"edit_mac_row fa fa-edit\"></i></button>"+
                 " <button id=\"delete_mac_"+ e["id"] +"\" m-id=\""+ e["id"] +"\" class=\"delete_mac_row btn btn-sm btn-danger mb-1\"><i m-id=\""+ e["id"] +"\" class=\"delete_mac_row fa fa-trash-o\"></i></button>"
