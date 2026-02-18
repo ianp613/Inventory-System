@@ -1,19 +1,39 @@
-var mac_ssid          = document.getElementById("mac_ssid")
-var mac_address       = document.getElementById("mac_address")
-var mac_name          = document.getElementById("mac_name")
-var mac_device        = document.getElementById("mac_device")
-var mac_project       = document.getElementById("mac_project")
-var mac_location      = document.getElementById("mac_location")
-var mac_remarks       = document.getElementById("mac_remarks")
-var mac_message       = document.getElementById("mac_message")
-var mac_register_by   = document.getElementById("mac_register_by")
+var register_form_btn     = document.getElementById("register_form_btn")
+var delete_form_btn       = document.getElementById("delete_form_btn")
+var password_form_btn     = document.getElementById("password_form_btn")
 
-var clear_btn         = document.getElementById("clear_btn")
-var register_mac      = document.getElementById("register_mac")
-var loading_mac       = document.getElementById("loading_mac")
+var register_form         = document.getElementById("register_form")
+var delete_form           = document.getElementById("delete_form")
+var password_form         = document.getElementById("password_form")
 
-var theme             = document.getElementById("theme")
-var Building          = []
+var mac_ssid              = document.getElementById("mac_ssid")
+var mac_address           = document.getElementById("mac_address")
+var mac_name              = document.getElementById("mac_name")
+var mac_device            = document.getElementById("mac_device")
+var mac_project           = document.getElementById("mac_project")
+var mac_location          = document.getElementById("mac_location")
+var mac_remarks           = document.getElementById("mac_remarks")
+var mac_message           = document.getElementById("mac_message")
+var mac_register_by       = document.getElementById("mac_register_by")
+
+var clear_btn             = document.getElementById("clear_btn")
+var register_mac          = document.getElementById("register_mac")
+var loading_mac           = document.getElementById("loading_mac")
+
+var delete_mac_ssid       = document.getElementById("delete_mac_ssid")
+var delete_mac_address    = document.getElementById("delete_mac_address")
+
+var delete_clear_btn      = document.getElementById("delete_clear_btn")
+var delete_mac            = document.getElementById("delete_mac")
+var delete_loading_mac    = document.getElementById("delete_loading_mac")
+
+var password_mac_ssid     = document.getElementById("password_mac_ssid")
+var password_mac          = document.getElementById("password_mac")
+var password_loading_mac  = document.getElementById("password_loading_mac")
+
+
+var theme               = document.getElementById("theme")
+var Building            = []
 
 async function GetWifi(params) {
   await sole.get("../controllers/unifi-mac/get-wifi.php").then(res => {
@@ -22,19 +42,87 @@ async function GetWifi(params) {
       opt.value                 = wifi.id
       opt.innerText             = wifi.name
       mac_ssid.appendChild(opt)
+
+      var opt_                   = document.createElement("option")
+      opt_.value                 = wifi.id
+      opt_.innerText             = wifi.name
+      delete_mac_ssid.appendChild(opt_)
+
+      var opt__                   = document.createElement("option")
+      opt__.value                 = wifi.id
+      opt__.innerText             = wifi.name
+      password_mac_ssid.appendChild(opt__)
     });
     localStorage.setItem("unifi_mac_gid",res.g_id)
   })
 }
 
-mac_address.addEventListener("input",function(){
-    this.value = this.value.replace(/[^a-zA-Z0-9:]/g, "")
-    if(this.value){
-        var str       = this.value.replace(/:/g, "")
-        str           = str.match(/.{1,2}/g)
-        this.value    = str.join(":").toLowerCase()
-    }
+register_form_btn.addEventListener("click", e => {
+  register_form_btn.classList.remove("btn-secondary")
+  register_form_btn.classList.add("btn-light")
+
+  delete_form_btn.classList.remove("btn-light")
+  delete_form_btn.classList.add("btn-secondary")
+
+  password_form_btn.classList.remove("btn-light")
+  password_form_btn.classList.add("btn-secondary")
+
+  register_form.hidden  = false
+  delete_form.hidden    = true
+  password_form.hidden  = true
+  mac_message.innerHTML = ""
 })
+
+delete_form_btn.addEventListener("click", e => {
+  delete_form_btn.classList.remove("btn-secondary")
+  delete_form_btn.classList.add("btn-light")
+
+  register_form_btn.classList.remove("btn-light")
+  register_form_btn.classList.add("btn-secondary")
+  
+  password_form_btn.classList.remove("btn-light")
+  password_form_btn.classList.add("btn-secondary")
+
+  register_form.hidden  = true
+  delete_form.hidden    = false
+  password_form.hidden  = true
+  mac_message.innerHTML = ""
+})
+
+password_form_btn.addEventListener("click", e => {
+  password_form_btn.classList.remove("btn-secondary")
+  password_form_btn.classList.add("btn-light")
+
+  register_form_btn.classList.remove("btn-light")
+  register_form_btn.classList.add("btn-secondary")
+
+  delete_form_btn.classList.remove("btn-light")
+  delete_form_btn.classList.add("btn-secondary")
+
+  register_form.hidden  = true
+  delete_form.hidden    = true
+  password_form.hidden  = false
+  mac_message.innerHTML = ""
+})
+
+
+
+mac_address.addEventListener("input",function(){
+    fixMAC(this)
+})
+
+delete_mac_address.addEventListener("input",function(){
+    fixMAC(this)
+})
+
+function fixMAC(inp){
+  inp.value = inp.value.replace(/[^a-zA-Z0-9:]/g, "")
+  if(inp.value){
+      var str       = inp.value.replace(/:/g, "")
+      str           = str.match(/.{1,2}/g)
+      inp.value    = str.join(":").toLowerCase()
+  }
+}
 
 clear_btn.addEventListener("click", e => {
   mac_address.value       = ""
@@ -54,9 +142,14 @@ clear_btn.addEventListener("click", e => {
   mac_project.appendChild(opt_project)
 })
 
+delete_clear_btn.addEventListener("click", e => {
+  delete_mac_address.value  = ""
+  delete_mac_ssid.value     = ""
+})
+
 register_mac.addEventListener("click", e => {
   if(!mac_address.value){
-    alert("Please input mac address.")
+    alert("Please input MAC address.")
     return
   }
   if(!mac_ssid.value){
@@ -85,7 +178,7 @@ register_mac.addEventListener("click", e => {
   }
 
   register_mac.hidden   = true
-  loading_mac.hidden      = false
+  loading_mac.hidden    = false
   sole.post("../controllers/unifi-mac/register-mac.php",{
     mac_address       : mac_address.value,
     mac_ssid          : mac_ssid.value,
@@ -95,25 +188,53 @@ register_mac.addEventListener("click", e => {
     mac_location      : mac_location.value,
     mac_remarks       : mac_remarks.value,
     mac_register_by   : mac_register_by.value,
-    g_id          : localStorage.getItem("unifi_mac_gid")
+    g_id              : localStorage.getItem("unifi_mac_gid")
   }).then(res => {
-    mac_message.innerHTML = ""
-    if(res.site.length){
-      for (let i = 0; i < res.site.length; i++) {
-        mac_message.insertAdjacentHTML("afterbegin", 
-          `<div class="alert-`+res.status[i]+` p-3 pb-2 rounded-3 mb-2">`+
-              `<div class="d-flex justify-content-between">`+
-                  `<h6 class="f-13"><span class="fa fa-wifi"></span> `+res.site[i]+`</h6>`+
-                  `<span onclick="this.parentNode.parentNode.remove()" class="fa fa-remove"></span>`+
-              `</div>`+
-              `<h6 class="ms-4 f-i f-13">`+res.message[i]+`</h6>`+
-          `</div>`
-        )
-      }
-    }
+    displayMessage(res)
     register_mac.hidden     = false
     loading_mac.hidden      = true
     clear_btn.click()
+  })
+})
+
+delete_mac.addEventListener("click", e => {
+  if(!delete_mac_address.value){
+    alert("Please input MAC address.")
+    return
+  }
+  if(!delete_mac_ssid.value){
+    alert("Please select Wifi SSID.")
+    return
+  }
+  delete_mac.hidden           = true
+  delete_loading_mac.hidden   = false
+  sole.post("../controllers/unifi-mac/delete-mac.php",{
+    delete_mac_address    : delete_mac_address.value,
+    delete_mac_ssid       : delete_mac_ssid.value,
+    g_id                  : localStorage.getItem("unifi_mac_gid")
+  }).then(res => {
+    displayMessage(res)
+    delete_mac.hidden           = false
+    delete_loading_mac.hidden   = true
+    delete_clear_btn.click()
+  })
+})
+
+password_mac.addEventListener("click", e => {
+  if(!password_mac_ssid.value){
+    alert("Please select Wifi SSID.")
+    return
+  }
+
+  password_mac.hidden           = true
+  password_loading_mac.hidden   = false
+  sole.post("../controllers/unifi-mac/password-mac.php",{
+    password_mac_ssid       : password_mac_ssid.value,
+  }).then(res => {
+    displayMessage(res)
+    password_mac.hidden           = false
+    password_loading_mac.hidden   = true
+    password_mac_ssid.value       = ""
   })
 })
 
@@ -125,6 +246,23 @@ theme.addEventListener("change", e => {
   setTheme()
   loadTheme()
 })
+
+function displayMessage(res){
+  mac_message.innerHTML = ""
+    if(res.site.length){
+      for (let i = 0; i < res.site.length; i++) {
+        mac_message.insertAdjacentHTML("afterbegin", 
+          `<div class="alert-`+res.status[i]+` p-3 pb-2 rounded-3 mb-2">`+
+              `<div class="d-flex justify-content-between">`+
+                  `<h6 class="f-13"><span class="fa fa-wifi"></span> `+res.site[i]+`</h6>`+
+                  `<span onclick="this.parentNode.parentNode.remove()" class="fa fa-remove"></span>`+
+              `</div>`+
+              `<h6 class="ms-4 f-i f-13 unifi-message">`+res.message[i]+`</h6>`+
+          `</div>`
+        )
+      }
+    }
+}
 
 function setTheme(){
   if(localStorage.getItem("unifi_mac_theme") === null){

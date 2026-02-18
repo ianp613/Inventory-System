@@ -1,5 +1,5 @@
 <?php
-    class UNIFI_MAC{
+    class UNIFI_MAC_REGISTER{
         public static function register($config,$ssid,$client_mac){
             $response = [
                 "site" => [],
@@ -19,8 +19,8 @@
                 curl_setopt($ch, CURLOPT_URL, $controllerUrl);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_NOBODY, true);           // no body, faster
-                curl_setopt($ch, CURLOPT_TIMEOUT, 5);            // total timeout
-                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);     // connection timeout
+                curl_setopt($ch, CURLOPT_TIMEOUT, 7);            // total timeout
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);     // connection timeout
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
@@ -210,5 +210,5 @@
 
         
     }
-    UNIFI_MAC::register($unifi_config,$ssid[0]["name"],$data["mac_address"]);
+    UNIFI_MAC_REGISTER::register($unifi_config,$ssid[0]["name"],$data["mac_address"]);
 ?>

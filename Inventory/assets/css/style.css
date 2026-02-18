@@ -796,3 +796,7 @@ input::placeholder, textarea::placeholder{
 .f-i{
     font-style: italic;
 }
+.unifi-message{
+    white-space: pre-line;
+    overflow-wrap: break-word;
+}
