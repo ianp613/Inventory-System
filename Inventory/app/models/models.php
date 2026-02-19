@@ -11,6 +11,13 @@
             "username",
             "password"
         ];
+
+        public string $name;
+        public string $email;
+        public string $privileges;
+        public string $passkey;
+        public string $username;
+        public string $password;
     }
 
     class User_Group{
@@ -21,6 +28,11 @@
             "supervisors", // Format ID = [1|2|3|4|5|6|7]
             "users" // Format ID = [1|2|3|4|5|6|7]
         ];
+
+        public string $group_name;
+        public string $type;
+        public string $supervisors; // example: "1|2|3|4"
+        public string $users;       // example: "1|2|3|4"
     }
 
     class Equipment
@@ -31,6 +43,11 @@
             "uid",
             "name"
         ];
+
+        public string $gid;
+        public string $uid;
+        public string $name;
+
         public $label = [
             "gid:" => "GID:",
             "uid:" => "UID:",
@@ -61,6 +78,23 @@
             "cabinet",
             "remarks"
         ];
+
+        public string $gid;
+        public string $uid;
+        public string $eid;
+
+        public string $description;
+        public string $model_no;
+        public string $barcode;
+        public string $specifications;
+        public string $status;
+
+        public string $building;
+        public string $room;
+        public string $project;
+        public string $cabinet;
+        public string $remarks;
+
         public $label = [
             "gid:" => "GID:",
             "uid:" => "UID:",
@@ -98,6 +132,15 @@
             "to",
             "subnet"
         ];
+
+        public string $gid;
+        public string $uid;
+        public string $rid;
+        public string $name;
+        public string $from;
+        public string $to;
+        public string $subnet;
+
         public $label = [
             "gid:" => "GID:",
             "uid:" => "UID:",
@@ -137,6 +180,20 @@
             "username",
             "password"
         ];
+
+        public string $nid;
+        public string $ip;
+        public string $subnet;
+        public string $hostname;
+        public string $site;
+        public string $server;
+        public string $state;
+        public string $status;
+        public string $remarks;
+        public string $webmgmtpt;
+        public string $username;
+        public string $password;
+
         public $label = [
             "nid:" => "NID:",
             "ip:" => "IP:",
@@ -180,6 +237,16 @@
             "wan2",
             "active"
         ];
+
+        public string $gid;
+        public string $uid;
+        public string $name;
+        public string $ip;
+        public string $subnet;
+        public string $wan1;
+        public string $wan2;
+        public string $active;
+
         public $label = [
             "gid:" => "GID:",
             "uid:" => "UID:",
@@ -216,6 +283,18 @@
             "dns2",
             "webmgmtpt"
         ];
+
+        public string $gid;
+        public string $uid;
+        public string $isp_name;
+        public string $name;
+        public string $wan_ip;
+        public string $subnet;
+        public string $gateway;
+        public string $dns1;
+        public string $dns2;
+        public string $webmgmtpt;
+
         public $label = [
             "gid:" => "GID:",
             "uid:" => "UID:",
@@ -256,6 +335,12 @@
             "sound",
             "theme",
         ];
+
+        public string $gid;
+        public string $uid;
+        public string $sound;
+        public string $theme;
+
         public $ignore = [
             "id",
             "uid"
@@ -269,6 +354,11 @@
             "uid",
             "log"
         ];
+        
+        public string $gid;
+        public string $uid;
+        public string $log;
+
         public $ignore = [
             "id",
             "uid"
@@ -286,6 +376,14 @@
             "remarks",
             "camera_size",
         ];
+
+        public string $gid;
+        public string $uid;
+        public string $map_location;
+        public string $floorplan;
+        public string $remarks;
+        public string $camera_size;
+
         public $label = [
             "gid:" => "GID:",
             "uid:" => "UID:",
@@ -331,6 +429,27 @@
             "cx",
             "cy"
         ];
+
+        public string $gid;
+        public string $uid;
+        public string $lid;
+        public string $camera_id;
+        public string $camera_type;
+        public string $camera_subtype;
+        public string $camera_ip_address;
+        public string $camera_port_no;
+        public string $camera_username;
+        public string $camera_password;
+        public string $camera_angle;
+        public string $camera_location;
+        public string $camera_brand;
+        public string $camera_model_no;
+        public string $camera_barcode;
+        public string $camera_status;
+        public string $camera_remarks;
+        public string $cx;
+        public string $cy;
+
         public $label = [
             "gid:" => "GID:",
             "uid:" => "UID:",
@@ -388,6 +507,17 @@
             "location",
             "remarks"
         ];
+
+        public string $gid;
+        public string $uid;
+        public string $wid;
+        public string $mac;
+        public string $name;
+        public string $device;
+        public string $project;
+        public string $location;
+        public string $remarks;
+
         public $label = [
             "gid:" => "GID:",
             "uid:" => "UID:",
@@ -417,6 +547,12 @@
             "name",
             "password"
         ];
+
+        public string $gid;
+        public string $uid;
+        public string $name;
+        public string $password;
+
         public $label = [
             "gid:" => "GID:",
             "uid:" => "UID:",
@@ -442,6 +578,16 @@
             "stock",
             "restock_point"
         ];
+
+        public string $gid;
+        public string $uid;
+        public string $code;
+        public string $description;
+        public string $measurement;
+        public string $unit;
+        public string $stock;
+        public string $restock_point;
+
         public $label = [
             "gid:" => "GID:",
             "uid:" => "UID:",
@@ -484,6 +630,15 @@
             "quantity_deduction",
             "remarks",
         ];
+
+        public string $gid;
+        public string $uid;
+        public string $cid;
+        public string $date;
+        public string $time;
+        public string $quantity_deduction;
+        public string $remarks;
+
         public $label = [
             "gid:" => "GID:",
             "uid:" => "UID:",

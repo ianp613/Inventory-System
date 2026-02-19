@@ -1,7 +1,6 @@
 <?php
     class UNIFI_MAC_DELETE {
         public static function delete($config, $ssid, $client_mac) {
-
             $response = [
                 "site" => [],
                 "status" => [],
@@ -31,7 +30,7 @@
 
                 if (curl_errno($ch)) {
                     array_push($response["status"], "danger");
-                    array_push($response["message"], "⚠ Controller unreachable.");
+                    array_push($response["message"], "⚠ Controller unreachable, please check unifi controller and try again.");
                     curl_close($ch);
                     continue;
                 }
@@ -81,7 +80,7 @@
 
                 if (!$meta || $meta->meta->rc != "ok") {
                     array_push($response["status"], "danger");
-                    array_push($response["message"], "⚠ Failed to retrieve WLAN configs.");
+                    array_push($response["message"], "⚠ Failed to retrieve WLAN configs, please try again.");
                     continue;
                 }
 
@@ -151,6 +150,7 @@
 
     session_start();
     header('Content-Type: application/json');
+    include("../../exeptionhandler.php");
     include("../../includes.php");
     $data = json_decode(file_get_contents('php://input'), true);
     $unifi_config = json_decode(file_get_contents("../../assets/files/unifi-mac.config.json"));
