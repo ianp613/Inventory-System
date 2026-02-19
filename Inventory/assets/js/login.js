@@ -78,7 +78,7 @@ if(document.getElementById("login")){
         if(res.status){
             if(res.g_member){
                 bs5.toast(res.type,res.message + " " + res.user[0]["name"],res.size, true, false)    
-                login_sound ? audio.play() : null;
+                // login_sound ? audio.play() : null;
                 login_btn.setAttribute("disabled","")
                 setTimeout(() => {
                     window.location.replace("inventory.php?loc=dashboard");

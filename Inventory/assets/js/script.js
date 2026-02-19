@@ -202,7 +202,7 @@ if(document.getElementById("sidebar")){
     })
 
     document.getElementById("logout").addEventListener("click",function(){
-        sound ? audio.play() : null
+        // sound ? audio.play() : null
         logout_modal.show()
     })
 
