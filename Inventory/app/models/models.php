@@ -655,6 +655,64 @@
             "cid",
             "ti"
         ];
-        public $main = "description";
+        public $main = "remarks";
+    }
+
+    class Consumable_Request{
+        public $table = "consumable_requests";
+        public $fillable = [
+            "gid",
+            "uid",
+            "cid",
+            "date",
+            "time",
+            "requested_quantity",
+            "remarks",
+            "status",
+            "declined_remarks",
+        ];
+
+        public string $gid;
+        public string $uid;
+        public string $cid;
+        public string $date;
+        public string $time;
+        public string $requested_quantity;
+        public string $remarks;
+        public string $status;
+        public string $declined_remarks;
+
+        public $label = [
+            "gid:" => "GID:",
+            "uid:" => "UID:",
+            "cid:" => "CID:",
+            "date:" => "Date:",
+            "time:" => "Time:",
+            "requested_quantity:" => "Requested Quantity:",
+            "remarks:" => "Remarks:",
+            "status:" => "Status:",
+            "declined_remarks:" => "Declined Remarks:",
+        ];
+        public $ignore = [
+            "id",
+            "gid",
+            "uid",
+            "cid",
+            "ti",
+            "re",
+            "em",
+            "ma",
+            "ar",
+            "rk",
+            "ks",
+            "rem",
+            "ema",
+            "mar",
+            "ark",
+            "rks",
+            "ed"
+            
+        ];
+        public $main = "remarks";
     }
 ?>

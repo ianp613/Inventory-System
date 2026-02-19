@@ -11,7 +11,7 @@
         $log = new Logs;
         $log->gid = $_SESSION["g_id"];
         $log->uid = $_SESSION["userid"];
-        $log->log = $_SESSION["name"]." has cleared logs for \"".$group[0]["group_name"]."\" group.";
+        $log->log = $_SESSION["name"]." has cleared consumable logs for \"".$group[0]["group_name"]."\" group.";
         if($_SESSION["log"] != $log->log){
             $_SESSION["log"] = $log->log;
             DB::save($log);

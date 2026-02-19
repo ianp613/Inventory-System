@@ -33,6 +33,7 @@ if(document.getElementById("consumables")){
         rowCallback: function(row) {
             $(row).addClass("trow");
         },
+        scrollX: true,
         columnDefs: [
             {
                 target: 0,
@@ -47,7 +48,32 @@ if(document.getElementById("consumables")){
         autoWidth: false,
         language: {
            sLengthMenu: "Show _MENU_entries",
-           search: "<button id=\"clear_consumable_logs_btn\" class=\"btn btn-sm btn-danger me-3\">Clear Logs</button>Search: "
+           search: localStorage.getItem("privileges") != "User" ? "<button id=\"clear_consumable_logs_btn\" class=\"btn btn-sm btn-danger me-3\">Clear Logs</button>" : "" + "Search: "
+        }
+    });
+
+    let consumables_RequestsTable = new DataTable('#consumables_requests_table',{
+        pageLength: 25,
+        order: [[5, 'desc']],
+        rowCallback: function(row) {
+            $(row).addClass("trow");
+        },
+        scrollX: true,
+        columnDefs: [
+            {
+                target: 0,
+                visible: false,
+                searchable: false
+            },
+            { 
+                className: 'dt-left', 
+                targets: '_all' 
+            }
+        ],
+        autoWidth: false,
+        language: {
+           sLengthMenu: "Show _MENU_entries",
+           search: "Search: "
         }
     });
 
@@ -173,22 +199,26 @@ if(document.getElementById("consumables")){
     var delete_link_btn = document.getElementById("delete_link_btn")
     var add_log_link = document.getElementById("add_log_link")
     var show_logs = document.getElementById("show_logs")
+    var consumable_request = document.getElementById("consumable_request")
     var location_ = window.location.href
     
     var cons = document.getElementById("cons")
     var cons_log = document.getElementById("cons_log")
+    var cons_request = document.getElementById("cons_request")
 
     var clear_consumable_logs_btn = document.getElementById("clear_consumable_logs_btn")
     var clear_consumable_log_confirm = document.getElementById("clear_consumable_log_confirm")
 
-    clear_consumable_logs_btn.addEventListener("click", function () {
-        if(JSON.parse(localStorage.getItem("g_member"))){
-            clear_consumable_log_modal.show()
-        }else{
-            bs5.toast("info","Please operate as group member.")
-        }
-    })
-
+    if(localStorage.getItem("privileges") != "User"){
+        clear_consumable_logs_btn.addEventListener("click", function () {
+            if(JSON.parse(localStorage.getItem("g_member"))){
+                clear_consumable_log_modal.show()
+            }else{
+                bs5.toast("info","Please operate as group member.")
+            }
+        })    
+    }
+    
     clear_consumable_log_confirm.addEventListener("click", function () {
         sole.get("../../controllers/consumables/delete_consumables_log.php")
         .then(res => {
@@ -201,20 +231,32 @@ if(document.getElementById("consumables")){
         location_ = location_ + "&sub=consumable-logs"
         window.location.href = location_
     })
+    consumable_request.addEventListener("click", function() {
+        location_ = location_ + "&sub=consumable-requests"
+        window.location.href = location_
+    })
 
     var params = new URLSearchParams(location_)
     if(params.has('sub')){
         if(params.get('sub') == "consumable-logs" || params.get('sub') == "consumable-logs#"){
             cons.hidden = true
+            cons_request.hidden = true
             cons_log.hidden = false
+        }else if(params.get('sub') == "consumable-requests" || params.get('sub') == "consumable-requests#"){
+            cons.hidden = true
+            cons_request.hidden = false
+            cons_log.hidden = true
         }else{
             cons.hidden = false
+            cons_request.hidden = true
             cons_log.hidden = true
         }
     }else{
         cons.hidden = false
+        cons_request.hidden = true
+        cons_log.hidden = true
     }
-
+    
     if(localStorage.getItem("privileges") != "User"){
         cons.children[0].hidden = false
         cons.children[1].hidden = false
@@ -230,14 +272,14 @@ if(document.getElementById("consumables")){
                 res.users.forEach(user => {
                     if(log.uid == user.id){
                         !ids.includes(user.id) ? ids.push(user.id) : null
-                        datas.push([log["id"],user["name"],log["cid"],log["remarks"],log["quantity_deduction"],log["date"] + " " + log["time"]])
+                        datas.push([log["id"],user["name"],log["cid"],log["quantity_deduction"],log["remarks"],log["date"] + " " + log["time"]])
                     }
                 })
             });
 
             res.logs.forEach(log => {
                 if(!ids.includes(parseInt(log.uid))){
-                    datas.push([log["id"],"Others",log["cid"],log["remarks"],log["quantity_deduction"],log["date"] + " " + log["time"]])
+                    datas.push([log["id"],"Others",log["cid"],log["quantity_deduction"],log["remarks"],log["date"] + " " + log["time"]])
                 }
             })
 
@@ -262,7 +304,20 @@ if(document.getElementById("consumables")){
         })    
     }
 
+    function get_consumables_requests(){
+        if(localStorage.getItem("privileges") != "User"){
+
+        }else{
+            sole.post("../../controllers/consumables/get_consumables_requests.php",{
+                type : "user"
+            }).then(res => {
+                console.log(res)
+            })
+        }
+    }
+
     get_consumables_logs()
+    get_consumables_requests()
     
 
     add_consumables.addEventListener('shown.bs.modal', function () {

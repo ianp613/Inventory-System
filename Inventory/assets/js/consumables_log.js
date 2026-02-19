@@ -10,7 +10,7 @@ var log_consumables_code = document.getElementById("log_consumables_code")
 var log_consumables_stock = document.getElementById("log_consumables_stock")
 var log_consumables_description = document.getElementById("log_consumables_description")
 
-var quantity_deduction = document.getElementById("quantity_deduction");
+var requested_quantity = document.getElementById("requested_quantity");
 var date_today = document.getElementById("date_today");
 var time_today = document.getElementById("time_today");
 var remarks = document.getElementById("remarks");
@@ -19,7 +19,6 @@ var passkey = document.getElementById("passkey");
 
 var cancel_btn = document.getElementById("cancel_btn");
 var submit_btn = document.getElementById("submit_btn");
-
 
 var log_consumable_badge_danger = document.getElementById("log_consumable_badge_danger")
 var log_consumable_badge_success = document.getElementById("log_consumable_badge_success")
@@ -53,15 +52,15 @@ g_search.addEventListener("input", e => {
 
 submit_btn.addEventListener("click", e => {
     if(cid){
-        if(quantity_deduction.value){
+        if(requested_quantity.value){
             if(user_id.value && passkey.value){
-                sole.post("../../controllers/consumables/consumables_log/save_log.php",{
+                sole.post("../../controllers/consumables/consumables_log/save_request.php",{
                     gid : g_id,
                     cid : cid,
                     date_today : date_today.value,
                     time_today : time_today.value,
                     remarks : remarks.value,
-                    quantity_deduction : quantity_deduction.value,
+                    requested_quantity : requested_quantity.value,
                     user_id : user_id.value,
                     passkey : passkey.value
                 }).then(res => {
@@ -87,21 +86,21 @@ cancel_btn.addEventListener("click", e => {
     g_search.value = ""
     search()
     setdatetime()
-    quantity_deduction.value = 0
+    requested_quantity.value = 0
     remarks.value = ""
     user_id.value = ""
     passkey.value = ""
 })
 
-quantity_deduction.addEventListener("input",function(){
-    if(/^0+\d/.test(quantity_deduction.value)) {
-        quantity_deduction.value = quantity_deduction.value.replace(/^0+(?=\d)/,    '');
+requested_quantity.addEventListener("input",function(){
+    if(/^0+\d/.test(requested_quantity.value)) {
+        requested_quantity.value = requested_quantity.value.replace(/^0+(?=\d)/,    '');
     }
-    if(quantity_deduction.value < 0){
-        quantity_deduction.value = 0
+    if(requested_quantity.value < 0){
+        requested_quantity.value = 0
     }
-    if(!quantity_deduction.value){
-        quantity_deduction.value = 0
+    if(!requested_quantity.value){
+        requested_quantity.value = 0
     }
 })
 

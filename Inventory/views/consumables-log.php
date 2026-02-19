@@ -21,7 +21,7 @@
                 <div class="d-flex w-100 mt-4">
                     <img class="wd-90 ht-80 me-3" style="margin-top: -45px;" src="../../assets/img/fposi-logo.png" alt="" srcset="">
 
-                    <h5 class="text-secondary mb-3 d-flex"><div id="g_name_display"></div><span class="fa fa-cubes"></span> Consumable Log</h5>
+                    <h5 class="text-secondary mb-3 d-flex"><div id="g_name_display"></div><span class="fa fa-cubes"></span> Request Form</h5>
                 </div>
                 <div class="w-100 btn-group">
                     <input type="text" name="" id="g_search" class="form-control" placeholder="Search code or description">
@@ -39,8 +39,8 @@
                 </div>
                 <hr>
 
-                <label for="quantity_deduction" class="mb-2">Quantity</label>
-                <input type="number" name="" id="quantity_deduction" class="form-control" min="0" value="0">
+                <label for="requested_quantity" class="mb-2">Quantity</label>
+                <input type="number" name="" id="requested_quantity" class="form-control" min="0" value="0">
                 <div class="row mt-2 mb-2">
                     <div class="col-6">
                         <label for="date_today" class="mb-2">Date</label>

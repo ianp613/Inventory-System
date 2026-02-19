@@ -30,7 +30,7 @@
     $consumable = new Consumables;
     $consumables = DB::find($consumable,$data["cid"]);
     
-    if($consumables[0]["stock"] >= $data["quantity_deduction"] && $data["quantity_deduction"] != 0){
+    if($consumables[0]["stock"] >= $data["requested_quantity"] && $data["requested_quantity"] != 0){
         $pass2 = true;
     }else{
         $response["message"] = "Insufficient stock for the quantity entered.";
@@ -61,23 +61,25 @@
 
 
         // Update consumable stock
-        $consumable_temp = DB::prepare($consumable,$data["cid"]);
-        $consumable_temp->stock -= $data["quantity_deduction"];
-        DB::update($consumable_temp);
+        // $consumable_temp = DB::prepare($consumable,$data["cid"]);
+        // $consumable_temp->stock -= $data["requested_quantity"];
+        // DB::update($consumable_temp);
 
         // Add consumable log
-        $consumable_log = new Consumable_Log;
-        $consumable_log->gid = $data["gid"];
-        $consumable_log->uid = $users[0]["id"];
-        $consumable_log->cid = $data["cid"];
-        $consumable_log->date = $data["date_today"];
-        $consumable_log->time = $data["time_today"];
-        $consumable_log->quantity_deduction = $data["quantity_deduction"];
-        $consumable_log->remarks = $data["remarks"] ? $data["remarks"] : "-";
-        DB::save($consumable_log);
+        $consumable_request = new Consumable_Request;
+        $consumable_request->gid = $data["gid"];
+        $consumable_request->uid = $users[0]["id"];
+        $consumable_request->cid = $data["cid"];
+        $consumable_request->date = $data["date_today"];
+        $consumable_request->time = $data["time_today"];
+        $consumable_request->requested_quantity = $data["requested_quantity"];
+        $consumable_request->remarks = $data["remarks"] ? $data["remarks"] : "-";
+        $consumable_request->status = "For Approval";
+        $consumable_request->declined_remarks = "-";
+        DB::save($consumable_request);
 
         $response["status"] = true;
-        $response["message"] = "Log has been saved.";
+        $response["message"] = "Request has been submitted.";
     }
     
     echo json_encode($response);

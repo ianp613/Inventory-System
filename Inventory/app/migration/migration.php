@@ -15,7 +15,8 @@
         "mac_addressMigration",
         "wifiMigration",
         "ConsumablesMigration",
-        "Consumable_LogMigration"
+        "Consumable_LogMigration",
+        "Consumable_RequestMigration"
     ];
 
     class UserMigration
@@ -259,12 +260,30 @@
         public static function index(){
             Migrate::attrib_table("consumable_logs");
             Migrate::attrib_string(1000);
+            Migrate::string("gid");
             Migrate::string("uid");
             Migrate::string("cid");
             Migrate::string("date");
             Migrate::string("time");
             Migrate::string("quantity_deduction");
             Migrate::string("remarks");
+        }
+    }
+
+    class Consumable_RequestMigration
+    {
+        public static function index(){
+            Migrate::attrib_table("consumable_requests");
+            Migrate::attrib_string(1000);
+            Migrate::string("gid");
+            Migrate::string("uid");
+            Migrate::string("cid");
+            Migrate::string("date");
+            Migrate::string("time");
+            Migrate::string("requested_quantity");
+            Migrate::string("remarks");
+            Migrate::string("status");
+            Migrate::string("declined_remarks");
         }
     }
 ?>

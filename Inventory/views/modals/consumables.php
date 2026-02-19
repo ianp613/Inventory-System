@@ -132,11 +132,11 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h6><span class="fa fa-external-link"></span> Add Log</h6>
+                <h6><span class="fa fa-file-text"></span> Request Form</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h6 class="f-15">Click the link to open the Add Log page. You can also copy and share the link with others so they can add a log.</h6>
+                <h6 class="f-15">Click the link to open the consumable request form. You can also copy and share the link with others so they can request for consumables.</h6>
                 <h6 class="f-15"><i><a href="#" id="add_log_link">Click Generate Link</a></i></h6>
             </div>
             <div class="modal-footer" id="generate_link_controls">
