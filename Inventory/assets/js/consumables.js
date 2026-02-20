@@ -54,7 +54,7 @@ if(document.getElementById("consumables")){
 
     let consumables_RequestsTable = new DataTable('#consumables_requests_table',{
         pageLength: 25,
-        order: [[5, 'desc']],
+        order: [[5, 'asc']],
         rowCallback: function(row) {
             $(row).addClass("trow");
         },
@@ -272,14 +272,14 @@ if(document.getElementById("consumables")){
                 res.users.forEach(user => {
                     if(log.uid == user.id){
                         !ids.includes(user.id) ? ids.push(user.id) : null
-                        datas.push([log["id"],user["name"],log["cid"],log["quantity_deduction"],log["remarks"],log["date"] + " " + log["time"]])
+                        datas.push([log.id,user.name,log.cid,log.quantity_deduction,log.remarks,log.date + " " + log.time])
                     }
                 })
             });
 
             res.logs.forEach(log => {
                 if(!ids.includes(parseInt(log.uid))){
-                    datas.push([log["id"],"Others",log["cid"],log["quantity_deduction"],log["remarks"],log["date"] + " " + log["time"]])
+                    datas.push([log.id,"Others",log.cid,log.quantity_deduction,log.remarks,log.date + " " + log.time])
                 }
             })
 
@@ -311,8 +311,52 @@ if(document.getElementById("consumables")){
             sole.post("../../controllers/consumables/get_consumables_requests.php",{
                 type : "user"
             }).then(res => {
-                console.log(res)
+                consumables_RequestsTable.clear().draw()
+                var datas = []
+                var ids = []
+
+                res.requests.forEach(request => {
+                    res.consumables.forEach(cons => {
+                        if(cons.id == request.cid){
+                            ids.push(cons.id)
+                            datas.push([request.id,request.gid,cons.description,request.requested_quantity,request.remarks,request.status,request.date + " " + request.time])
+                        }
+                    })
+                })
+
+                res.requests.forEach(request => {
+                    if(!ids.includes(parseInt(request.cid))){
+                        datas.push([request.id,request.gid,"Not Available",request.requested_quantity,request.remarks,request.status,request.date + " " + request.time])
+                    }
+                })
+
+                datas.forEach(data => {
+                    res.groups.forEach(group => {
+                        if(group.id == parseInt(data[1])){
+                            consumables_RequestsTable.row.add([
+                                data[0],
+                                group.group_name,
+                                data[2] == "Not Available" ? "<h6 class=\"text-danger\">"+data[2]+"</h6>" : data[2],
+                                data[3],
+                                data[4] == "-" ? "" : data[4],
+                                data[5] == "For Approval" ? "<h6 class=\"text-primary\">"+data[5]+"</h6>" : data[5] == "Approved" ? "<h6 class=\"text-success\">"+data[5]+"</h6>" : "<h6 class=\"text-danger\">"+data[5]+"</h6>",
+                                data[6],
+                                get_UserRequestBotton(data)
+                            ]).draw(false)
+                        }
+                    })
+                })
             })
+        }
+    }
+
+    function get_UserRequestBotton(data){
+        if(data[5] == "For Approval"){
+            return "<button class=\"btn btn-sm btn-danger\"><span class=\"fa fa-remove\"></span> Cancel</button>";
+        }else if(data[5] == "Declined"){
+            return "<button class=\"btn btn-sm alert-danger fw-bolder\"><span class=\"fa fa-question-circle-o\"></span> Details</button>";
+        }else{
+            return ""
         }
     }
 

@@ -48,7 +48,7 @@
                     <td>ID</td>
                     <td>Submitted to</td>
                     <td>Item</td>
-                    <td>Requested Quantity</td>
+                    <td>Quantity</td>
                     <td>Remarks</td>
                     <td>Status</td>
                     <td>Date</td>

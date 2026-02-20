@@ -17,7 +17,7 @@
         $request = DB::where($request,"uid","=",$_SESSION["userid"]);
         
         $consumables = new Consumables;
-        $consumables = $_SESSION["g_id"] ? DB::where($consumables,"gid","=",$_SESSION["g_id"]) : DB::all($consumables);
+        $consumables = DB::all($consumables);
 
         $response = [
             "status" => true,
