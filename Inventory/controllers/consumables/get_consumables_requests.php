@@ -5,9 +5,7 @@
     $data = json_decode(file_get_contents('php://input'), true);
     $request = new Consumable_Request;
 
-    
-
-    if($data["type"] != "user"){
+    if($data["type"] == "group" && $_SESSION["c_authority"] == "true"){
         $users = new User;
         $users = DB::all($users);
     }else{

@@ -7,6 +7,7 @@
             "name",
             "email",
             "privileges",
+            "c_authority",
             "passkey",
             "username",
             "password"

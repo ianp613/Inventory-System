@@ -130,6 +130,7 @@ if(document.getElementById("sidebar")){
             localStorage.setItem("username",res.user[0]["username"])
             localStorage.setItem("password",res.user[0]["password"])
             localStorage.setItem("privileges",res.user[0]["privileges"])
+            localStorage.setItem("c_authority",res.user[0]["c_authority"])
             localStorage.setItem("passkey",res.user[0]["passkey"])
             localStorage.setItem("g_member",res.g_member)
             if(document.getElementById("dashboard")){

@@ -23,6 +23,7 @@
     $_SESSION["auth"] = false;
     $_SESSION["name"] = null;
     $_SESSION["privileges"] = null;
+    $_SESSION["c_authority"] = null;
     $_SESSION["code_hash"] = null;
     $_SESSION["assign_camera_id"] = null;
     $_SESSION["assign_type"] = null;

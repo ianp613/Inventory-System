@@ -138,6 +138,7 @@
                     }
                 }
                 $user2->privileges = $data["privilege"];
+                $user->c_authority = $data["privilege"] != "User" ? "true" : "false";
 
                 DB::update($user2);
                 $response = [
@@ -163,6 +164,7 @@
             $user2->passkey = $data["passkey"];
             // $user2->password = $data["password"] ? Data::encrypt($data["password"]) : Data::encrypt("12345");
             $user2->privileges = $data["privilege"];
+            $user->c_authority = $data["privilege"] != "User" ? "true" : "false";
             DB::update($user2);
                 $response = [
                 "status" => true,

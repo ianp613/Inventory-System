@@ -27,6 +27,7 @@
             $_SESSION["userid"] = $user[0]["id"];
             $_SESSION["name"] = $user[0]["name"];
             $_SESSION["privileges"] = $user[0]["privileges"];
+            $_SESSION["c_authority"] = $user[0]["c_authority"];
 
 
             // Check if user is part of a group
