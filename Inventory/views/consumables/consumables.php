@@ -51,7 +51,7 @@
             <thead>
                 <tr>
                     <td>ID</td>
-                    <td>Submitted to</td>
+                    <td>Requested to</td>
                     <td>Item</td>
                     <td>Quantity</td>
                     <td>Remarks</td>
