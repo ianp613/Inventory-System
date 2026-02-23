@@ -250,7 +250,12 @@ if(document.getElementById("consumables")){
             cons.hidden = true
             cons_request.hidden = false
             cons_log.hidden = true
-            request_menu_btn.hidden = false
+            if(localStorage.getItem("c_authority") == "true"){
+                request_menu_btn.hidden = false    
+            }else{
+                request_menu_btn.hidden = true 
+            }
+            
         }else{
             cons.hidden = false
             cons_request.hidden = true
