@@ -173,6 +173,29 @@
     </div>
 </div>
 
+<!-- CANCEL REQUEST MODAL -->
+<div class="modal fade" id="cancel_request" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <div class="w-100">
+                    <span class="fa fa-info-circle text-primary h2"></span>
+                    <h5 id="cancel_request_title" class="modal-title fw-bolder">Cancel Request</h5>    
+                </div>
+            </div>
+            <div class="modal-header text-center">
+                <div class="w-100">
+                    <div>You're going to cancel this request. Do you wish to proceed?</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><span class="fa fa-remove"></span> No</button>
+                <button id="cancel_request_btn" e-id="" type="button" data-bs-dismiss="" class="btn btn-danger btn-sm"><span class="fa fa-trash-o"></span> Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- CLEAR CONSUMABLE LOG MODAL -->
 <div class="modal fade" id="clear_consumable_log" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered ">
