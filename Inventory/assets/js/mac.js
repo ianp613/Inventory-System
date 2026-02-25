@@ -1,6 +1,6 @@
 if(document.getElementById("mac")){
     let macTable = new DataTable('#wifi_table',{
-        order: [[5, 'asc']],
+        order: [[6, 'desc']],
         rowCallback: function(row) {
             $(row).addClass("trow");
         },
