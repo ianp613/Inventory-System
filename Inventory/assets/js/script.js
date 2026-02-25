@@ -218,22 +218,22 @@ if(document.getElementById("sidebar")){
     const pressedKeys = {};
     const LONG_PRESS_DURATION = 600; // milliseconds
 
-    // function handleKeyDown(event) {
-    //     const key = event.key;
+    function handleKeyDown(event) {
+        const key = event.key;
 
-    //     // Prevent repeated keydown events from resetting the timer
-    //     if (pressedKeys[key]) return; 
+        // Prevent repeated keydown events from resetting the timer
+        if (pressedKeys[key]) return; 
 
-    //     // Record the key as pressed and set the timer
-    //     pressedKeys[key] = setTimeout(() => {
-    //         // console.log(`Long press detected for key: ${key}`);
-    //         // Perform long press action here
-    //         if(key == "l" || key == "L"){
-    //             sound ? audio.play() : null
-    //             logout_modal.show()
-    //         }
-    //     }, LONG_PRESS_DURATION);
-    // }
+        // Record the key as pressed and set the timer
+        pressedKeys[key] = setTimeout(() => {
+            // console.log(`Long press detected for key: ${key}`);
+            // Perform long press action here
+            if(key == "l" || key == "L"){
+                // sound ? audio.play() : null
+                logout_modal.show()
+            }
+        }, LONG_PRESS_DURATION);
+    }
 
     function handleKeyUp(event) {
         const key = event.key;
@@ -248,7 +248,7 @@ if(document.getElementById("sidebar")){
     }
 
     // Add event listeners to the document
-    // document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
 
     confirm_logout.addEventListener("click",function(){

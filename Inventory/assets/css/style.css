@@ -507,6 +507,10 @@ input:checked + .slider:before {
     width: 180px;
 }
 
+.wd-200 {
+    width: 200px;
+}
+
 .wd-240 {
     width: 240px;
 }

@@ -46,6 +46,25 @@
             </tbody>
         </table>
     </div>
+    <div hidden id="cons_request_others">
+        <table id="consumables_requests_others_table" class="table table-hover border">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>Requested by</td>
+                    <td>Item</td>
+                    <td>Quantity</td>
+                    <td>Remarks</td>
+                    <td>Status</td>
+                    <td>Date</td>
+                    <td class="wd-200">Action</td>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Entry Here -->
+            </tbody>
+        </table>
+    </div>
     <div hidden id="cons_request">
         <table id="consumables_requests_table" class="table table-hover border">
             <thead>

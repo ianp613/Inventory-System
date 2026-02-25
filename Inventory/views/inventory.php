@@ -169,12 +169,12 @@
                             <!-- User Name -->
                         </div>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li id="account"><a class="dropdown-item f-13" href="#"><span class="fa fa-user me-2 text-secondary" style="width: 12px;"></span> Account</a></li>
-                            <li id="settings"><a class="dropdown-item f-13" href="#"><span class="fa fa-gears me-2 text-secondary" style="width: 12px;"></span> Settings</a></li>
-                            <li id="activity_log"><a class="dropdown-item f-13" href="#"><span class="fa fa-list me-2 text-secondary" style="width: 12px;"></span> Activity Logs</a></li>
-                            <li id="artisanry"><a class="dropdown-item f-13" href="#"><span class="fa fa-wrench me-2 text-secondary" style="width: 12px;"></span> Artisanry</a></li>
+                            <li id="account"><button class="dropdown-item f-13" ><span class="fa fa-user me-2 text-secondary" style="width: 12px;"></span> Account</button></li>
+                            <li id="settings"><button class="dropdown-item f-13"><span class="fa fa-gears me-2 text-secondary" style="width: 12px;"></span> Settings</button></li>
+                            <li id="activity_log"><button class="dropdown-item f-13"><span class="fa fa-list me-2 text-secondary" style="width: 12px;"></span> Activity Logs</button></li>
+                            <li id="artisanry"><button class="dropdown-item f-13"><span class="fa fa-wrench me-2 text-secondary" style="width: 12px;"></span> Artisanry</button></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li title="Long press L key" id="logout"><a class="dropdown-item f-13"><span class="fa fa-sign-out me-2 text-secondary" style="width: 12px;"></span> Log Out</a></li>
+                            <li title="Long press L key" id="logout"><button class="dropdown-item f-13"><span class="fa fa-sign-out me-2 text-secondary" style="width: 12px;"></span> Log Out</button></li>
                         </ul>
                     </div>
                 </div>

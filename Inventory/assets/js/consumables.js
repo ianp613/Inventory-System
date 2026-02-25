@@ -77,6 +77,31 @@ if(document.getElementById("consumables")){
         }
     });
 
+    let consumables_RequestsOthersTable = new DataTable('#consumables_requests_others_table',{
+        pageLength: 25,
+        order: [[5, 'asc']],
+        rowCallback: function(row) {
+            $(row).addClass("trow");
+        },
+        // scrollX: true,
+        columnDefs: [
+            {
+                target: 0,
+                visible: false,
+                searchable: false
+            },
+            { 
+                className: 'dt-left', 
+                targets: '_all' 
+            }
+        ],
+        autoWidth: false,
+        language: {
+           sLengthMenu: "Show _MENU_entries",
+           search: "Search: "
+        }
+    });
+
     loadPage();
     // LOAD PAGE DATA
     function loadPage(){
@@ -205,6 +230,7 @@ if(document.getElementById("consumables")){
     var cons = document.getElementById("cons")
     var cons_log = document.getElementById("cons_log")
     var cons_request = document.getElementById("cons_request")
+    var cons_request_others = document.getElementById("cons_request_others")
     var request_menu_btn = document.getElementById("request_menu_btn")
     var other_request = document.getElementById("other_request")
     var your_request = document.getElementById("your_request")
@@ -251,6 +277,7 @@ if(document.getElementById("consumables")){
             cons_request.hidden = false
             cons_log.hidden = true
             if(localStorage.getItem("c_authority") == "true"){
+                cons_request_others.hidden = false
                 request_menu_btn.hidden = false    
             }else{
                 request_menu_btn.hidden = true 
@@ -270,12 +297,14 @@ if(document.getElementById("consumables")){
     }
 
     your_request.addEventListener("click", e => {
+        cons_request_others.hidden = true
         cons_request.hidden = false
         your_request.classList.add("alert-dark")
         other_request.classList.remove("alert-dark")
     })
 
     other_request.addEventListener("click", e => {
+        cons_request_others.hidden = false
         cons_request.hidden = true
         your_request.classList.remove("alert-dark")
         other_request.classList.add("alert-dark")
@@ -326,6 +355,49 @@ if(document.getElementById("consumables")){
                 ]).draw(false)
             })
         })    
+    }
+    function get_consumables_requests_others(){
+        sole.post("../../controllers/consumables/get_consumables_requests.php",{
+            type : "group"
+        }).then(res => {
+            console.log(res)
+
+            consumables_RequestsOthersTable.clear().draw()
+            var datas = []
+            var ids = []
+
+            res.requests.forEach(request => {
+                res.consumables.forEach(cons => {
+                    if(cons.id == request.cid){
+                        ids.push(cons.id)
+                        datas.push([request.id,request.gid,cons.description,request.requested_quantity,request.remarks,request.status,request.date + " " + request.time])
+                    }
+                })
+            })
+
+            res.requests.forEach(request => {
+                if(!ids.includes(parseInt(request.cid))){
+                    datas.push([request.id,request.gid,"Not Available",request.requested_quantity,request.remarks,request.status,request.date + " " + request.time])
+                }
+            })
+
+            datas.forEach(data => {
+                res.users.forEach(user => {
+                    if(user.id == parseInt(data[1])){
+                        consumables_RequestsOthersTable.row.add([
+                            data[0],
+                            user.name,
+                            data[2] == "Not Available" ? "<h6 class=\"text-danger\">"+data[2]+"</h6>" : data[2],
+                            data[3],
+                            data[4] == "-" ? "" : data[4],
+                            data[5] == "For Approval" ? "<h6 class=\"text-primary\">"+data[5]+"</h6>" : data[5] == "Approved" ? "<h6 class=\"text-success\">"+data[5]+"</h6>" : "<h6 class=\"text-danger\">"+data[5]+"</h6>",
+                            data[6],
+                            get_UserRequestOthersBotton(data)
+                        ]).draw(false)
+                    }
+                })
+            })
+        })
     }
 
     function get_consumables_requests(){
@@ -385,8 +457,23 @@ if(document.getElementById("consumables")){
         }
     }
 
+    function get_UserRequestOthersBotton(data){
+        if(data[5] == "For Approval"){
+            return "<button class=\"btn btn-sm btn-primary\"><span class=\"fa fa-check\"></span> Approve </button> <button class=\"btn btn-sm btn-danger\"><span class=\"fa fa-remove\"></span> Decline</button>";
+        }else if(data[5] == "Declined"){
+            return "<button class=\"btn btn-sm btn-danger alert-danger fw-bolder\"><span class=\"fa fa-question-circle-o\"></span> Details</button>";
+        }else if(data[5] == "Approved"){
+            return "<button class=\"btn btn-sm btn-success\"><span class=\"fa fa-check\"></span> Claimed</button>";
+        }else{
+            return ""
+        }
+    }
+
     get_consumables_logs()
     get_consumables_requests()
+    if(localStorage.getItem("c_authority") == "true"){
+        get_consumables_requests_others()
+    }
     
 
     add_consumables.addEventListener('shown.bs.modal', function () {
