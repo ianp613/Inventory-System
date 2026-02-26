@@ -51,35 +51,40 @@ g_search.addEventListener("input", e => {
 })
 
 submit_btn.addEventListener("click", e => {
-    if(cid){
-        if(requested_quantity.value){
-            if(user_id.value && passkey.value){
-                sole.post("../../controllers/consumables/consumables_log/save_request.php",{
-                    gid : g_id,
-                    cid : cid,
-                    date_today : date_today.value,
-                    time_today : time_today.value,
-                    remarks : remarks.value,
-                    requested_quantity : requested_quantity.value,
-                    user_id : user_id.value,
-                    passkey : passkey.value
-                }).then(res => {
-                    if(res.status){
-                        bs5.toast("success",res.message)
-                        cancel_btn.click()
-                    }else{
-                        alert(res.message)
-                    }
-                })
-            }else{
-                alert("Please input User ID and Passkey.")
-            }
-        }else{
-            alert("Please input a valid quantity.")
-        }
-    }else{
+    if(!cid){
         alert("Please select an item first.")
+        return
     }
+    if(!requested_quantity.value){
+        alert("Please input a valid quantity.")
+        return
+    }
+    if(!remarks.value){
+        alert("Please input remarks.")
+        return
+    }
+    if(!user_id.value || !passkey.value){
+        alert("Please input User ID and Passkey.")
+        return
+    }
+    sole.post("../../controllers/consumables/consumables_log/save_request.php",{
+        gid : g_id,
+        cid : cid,
+        date_today : date_today.value,
+        time_today : time_today.value,
+        remarks : remarks.value,
+        requested_quantity : requested_quantity.value,
+        user_id : user_id.value,
+        passkey : passkey.value
+    }).then(res => {
+        if(res.status){
+            bs5.toast("success",res.message)
+            cancel_btn.click()
+        }else{
+            alert(res.message)
+        }
+    })
+
 })
 
 cancel_btn.addEventListener("click", e => {
@@ -149,6 +154,10 @@ function locationRedirect(){
         window.location.replace("../index.php");
     }, 5000);
 }
+
+setInterval(() => {
+    setdatetime()
+}, 1000);
 
 function setdatetime(){
     const date = new Date();

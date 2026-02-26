@@ -70,6 +70,50 @@
                 exception_handler(0,$e->getMessage(),$e->getFile(),$e->getLine());
             }
         }
+        public static function where2($data,$col,$op,$val,$col2,$op2,$val2,$on=null,$or=null){
+            try{
+                try{
+                    $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }catch(PDOException $e){
+                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
+                }
+                $table = $data->table;
+                $fillable = [];
+                if(strtoupper($op) == "LIKE" && strtoupper($op2) == "LIKE"){
+                    if($on && $or){
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '%$val%' AND `$col2` $op2 '%$val2%' ORDER BY `$table`.`$on` ".strtoupper($or));     
+                    }else{
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '%$val%' AND `$col2` $op2 '%$val2%'");
+                    }   
+                }elseif(strtoupper($op) == "LIKE" && $op2 == "="){
+                    if($on && $or){
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '%$val%' AND `$col2` $op2 '$val2' ORDER BY `$table`.`$on` ".strtoupper($or));     
+                    }else{
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '%$val%' AND `$col2` $op2 '$val2'");
+                    }
+                }elseif($op == "=" && strtoupper($op2) == "LIKE"){
+                    if($on && $or){
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' AND `$col2` $op2 '%$val2%' ORDER BY `$table`.`$on` ".strtoupper($or));     
+                    }else{
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' AND `$col2` $op2 '%$val2%'");
+                    }
+                }else{
+                    if($on && $or){
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' AND `$col2` $op2 '$val2' ORDER BY `$table`.`$on` ".strtoupper($or));
+                    }else{
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' AND `$col2` $op2 '$val2'");
+                    } 
+                }
+                $SQL->execute();
+                $fillable = $SQL->fetchAll(PDO::FETCH_ASSOC);
+                return $fillable;    
+            }catch(Exception $e){
+                echo "Fetch where error: ".$e->getMessage().DB::$br;
+                $_SESSION["soleexceptionerror"] = $e;
+                exception_handler(0,$e->getMessage(),$e->getFile(),$e->getLine());
+            }
+        }
         public static function find($data,$row){
             try{
                 try{

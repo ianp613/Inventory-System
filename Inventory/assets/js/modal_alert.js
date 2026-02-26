@@ -107,8 +107,12 @@ class BS5_Toaster {
                     const alertModal = document.getElementById("alert_modal");
                     if(alertModal) {
                         alertModal.remove();
+                        let el = document.getElementsByClassName("modal-backdrop")
+                        if(el.length){
+                            el[0].remove()
+                        }
                     }
-                }, 1000);
+                }, 500);
             });      
         }
     }

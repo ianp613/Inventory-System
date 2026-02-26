@@ -43,6 +43,10 @@ if(document.getElementById("consumables")){
             { 
                 className: 'dt-left', 
                 targets: '_all' 
+            },
+            { 
+                className: 'word-nl', 
+                target: 4
             }
         ],
         autoWidth: false,
@@ -369,8 +373,8 @@ if(document.getElementById("consumables")){
                     data[0],
                     data[1],
                     data[2],
-                    data[3] == "-" ? "" : data[3],
-                    data[4],
+                    data[3],
+                    data[4] == "-" ? "" : data[4],
                     data[5]
                 ]).draw(false)
             })
@@ -380,8 +384,6 @@ if(document.getElementById("consumables")){
         sole.post("../../controllers/consumables/get_consumables_requests.php",{
             type : "group"
         }).then(res => {
-            console.log(res)
-
             consumables_RequestsOthersTable.clear().draw()
             var datas = []
             var ids = []
@@ -417,41 +419,49 @@ if(document.getElementById("consumables")){
                     }
                 })
             })
-
-            document.querySelector('#consumables_requests_others_table').addEventListener("click", e=>{
-                let tr = "";
-                if(e.target.tagName == "I"){
-                    tr = e.target.parentNode.parentNode.parentNode.children
-                }
-                if(e.target.tagName == "BUTTON"){
-                    tr = e.target.parentNode.parentNode.children    
-                }
-                if(e.target.classList.contains('declined_request_row')) {
-                    declined_request_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
-                    sole.post("../../controllers/consumables/get_request.php",{
-                        id : e.target.getAttribute("r-id")
-                    }).then(res => {
-                        declined_request_remarks.innerText = res[0].declined_remarks != "-" ? res[0].declined_remarks : "Request is invalid."
-                    })
-                    declined_request_modal.show()
-                }
-
-                if(e.target.classList.contains('decline_request_row')) {
-                    decline_request_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
-                    decline_request_modal.show()
-                }
-
-                if(e.target.classList.contains('approve_request_row')) {
-                    sole.post("../../controllers/consumables/approve_request.php",{
-                        id : e.target.getAttribute("r-id")
-                    }).then(res => {
-                        get_consumables_requests_others()
-                        bs5.toast(res.type,res.message,res.size)
-                    })
-                }
-            })
+            
         })
     }
+    document.querySelector('#consumables_requests_others_table').addEventListener("click", e=>{
+        let tr = "";
+        if(e.target.tagName == "I"){
+            tr = e.target.parentNode.parentNode.parentNode.children
+        }
+        if(e.target.tagName == "BUTTON"){
+            tr = e.target.parentNode.parentNode.children    
+        }
+        if(e.target.classList.contains('declined_request_row')) {
+            declined_request_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
+            sole.post("../../controllers/consumables/get_request.php",{
+                id : e.target.getAttribute("r-id")
+            }).then(res => {
+                declined_request_remarks.innerText = res[0].declined_remarks != "-" ? res[0].declined_remarks : "Request is invalid."
+            })
+            declined_request_modal.show()
+        }
+
+        if(e.target.classList.contains('decline_request_row')) {
+            decline_request_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
+            decline_request_modal.show()
+        }
+
+        if(e.target.classList.contains('approve_request_row')) {
+            sole.post("../../controllers/consumables/approve_request.php",{
+                id : e.target.getAttribute("r-id")
+            }).then(res => {
+                get_consumables_requests_others()
+                bs5.toast(res.type,res.message,res.size)
+            })
+        }
+        if(e.target.classList.contains('claimed_request_row')) {
+            sole.post("../../controllers/consumables/claimed_request.php",{
+                id : e.target.getAttribute("r-id")
+            }).then(res => {
+                get_consumables_requests_others()
+                bs5.toast(res.type,res.message,res.size)    
+            })
+        }
+    })
 
     function get_consumables_requests(){
         sole.post("../../controllers/consumables/get_consumables_requests.php",{
@@ -492,31 +502,31 @@ if(document.getElementById("consumables")){
                     }
                 })
             })
-
-            document.querySelector('#consumables_requests_table').addEventListener("click", e=>{
-                let tr = "";
-                if(e.target.tagName == "I"){
-                    tr = e.target.parentNode.parentNode.parentNode.children
-                }
-                if(e.target.tagName == "BUTTON"){
-                    tr = e.target.parentNode.parentNode.children    
-                }
-                if(e.target.classList.contains('cancel_request_row')) {
-                    cancel_request_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
-                    cancel_request_modal.show()
-                }
-                if(e.target.classList.contains('declined_request_row')) {
-                    declined_request_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
-                    sole.post("../../controllers/consumables/get_request.php",{
-                        id : e.target.getAttribute("r-id")
-                    }).then(res => {
-                        declined_request_remarks.innerText = res[0].declined_remarks
-                    })
-                    declined_request_modal.show()
-                }
-            })
         })
     }
+
+    document.querySelector('#consumables_requests_table').addEventListener("click", e=>{
+        let tr = "";
+        if(e.target.tagName == "I"){
+            tr = e.target.parentNode.parentNode.parentNode.children
+        }
+        if(e.target.tagName == "BUTTON"){
+            tr = e.target.parentNode.parentNode.children    
+        }
+        if(e.target.classList.contains('cancel_request_row')) {
+            cancel_request_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
+            cancel_request_modal.show()
+        }
+        if(e.target.classList.contains('declined_request_row')) {
+            declined_request_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
+            sole.post("../../controllers/consumables/get_request.php",{
+                id : e.target.getAttribute("r-id")
+            }).then(res => {
+                declined_request_remarks.innerText = res[0].declined_remarks
+            })
+            declined_request_modal.show()
+        }
+    })
 
     function get_UserRequestBotton(data){
         if(data[5] == "For Approval"){
