@@ -60,7 +60,7 @@
                     </div>
                     <div class="col-6">
                         <label for="passkey" class="mb-2">Passkey</label>
-                        <input type="number" name="" id="passkey" class="form-control passkey">
+                        <input type="password" type="number" name="" id="passkey" class="form-control passkey">
                     </div>
                 </div>
                 <div class="w-100 d-flex justify-content-end">

@@ -180,7 +180,8 @@ if(document.getElementById("consumables")){
         "Sachet (sac)",
         "Sack (fibc)",
         "Tray (tray)",
-        "Ream (rm)"
+        "Ream (rm)",
+        "Can (cn)"
     ];
 
     const add_consumables_modal = new bootstrap.Modal(document.getElementById('add_consumables'),unclose);
