@@ -25,6 +25,13 @@
                 DB::delete($consumable_log,$clog["id"]);
             }
 
+            $consumable_request = new Consumable_Request;
+            $consumable_request_temp = DB::where($consumable_request,"cid","=",$data["id"]);
+
+            foreach ($consumable_request_temp as $creq) {
+                DB::delete($consumable_request,$creq["id"]);
+            }
+
             DB::delete($consumable,$data["id"]);
             $response = [
                 "status" => true,

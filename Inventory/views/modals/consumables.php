@@ -161,7 +161,7 @@
             <div class="modal-header text-center">
                 <div class="w-100">
                     <div>You're going to delete <b>"<span id="delete_consumables_description">consumables</span>"</b>.</div>
-                    <div>All logs of this item will also be deleted.</div>
+                    <div class="fw-bold">All logs and request for this item will also be deleted.</div>
                     <div>This action cannot be undone. Do you wish to proceed?</div>    
                 </div>
             </div>

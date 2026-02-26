@@ -244,3 +244,6 @@ LOCATION
 
 RESTOCK LOG
 CLEAR LOG FIX
+
+
+Delete Consumable, should also delete all of the request

@@ -399,7 +399,7 @@ if(document.getElementById("consumables")){
 
             res.requests.forEach(request => {
                 if(!ids.includes(parseInt(request.cid))){
-                    datas.push([request.id,request.gid,"Not Available",request.requested_quantity,request.remarks,request.status,request.date + " " + request.time])
+                    datas.push([request.id,request.gid,"Not Found",request.requested_quantity,request.remarks,request.status,request.date + " " + request.time])
                 }
             })
 
@@ -409,7 +409,7 @@ if(document.getElementById("consumables")){
                         consumables_RequestsOthersTable.row.add([
                             data[0],
                             user.name,
-                            data[2] == "Not Available" ? "<h6 class=\"text-danger\">"+data[2]+"</h6>" : data[2],
+                            data[2] == "Not Found" ? "<h6 class=\"text-danger\">"+data[2]+"</h6>" : data[2],
                             data[3],
                             data[4] == "-" ? "" : data[4],
                             data[5] == "For Approval" ? "<h6 class=\"text-primary\">"+data[5]+"</h6>" : data[5] == "Approved" ? "<h6 class=\"text-success\">"+data[5]+"</h6>" : "<h6 class=\"text-danger\">"+data[5]+"</h6>",
@@ -461,6 +461,10 @@ if(document.getElementById("consumables")){
                 bs5.toast(res.type,res.message,res.size)    
             })
         }
+        if(e.target.classList.contains('cancel_request_row')) {
+            cancel_request_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
+            cancel_request_modal.show()
+        }
     })
 
     function get_consumables_requests(){
@@ -482,7 +486,7 @@ if(document.getElementById("consumables")){
 
             res.requests.forEach(request => {
                 if(!ids.includes(parseInt(request.cid))){
-                    datas.push([request.id,request.gid,"Not Available",request.requested_quantity,request.remarks,request.status,request.date + " " + request.time])
+                    datas.push([request.id,request.gid,"Not Found",request.requested_quantity,request.remarks,request.status,request.date + " " + request.time])
                 }
             })
 
@@ -492,7 +496,7 @@ if(document.getElementById("consumables")){
                         consumables_RequestsTable.row.add([
                             data[0],
                             group.group_name,
-                            data[2] == "Not Available" ? "<h6 class=\"text-danger\">"+data[2]+"</h6>" : data[2],
+                            data[2] == "Not Found" ? "<h6 class=\"text-danger\">"+data[2]+"</h6>" : data[2],
                             data[3],
                             data[4] == "-" ? "" : data[4],
                             data[5] == "For Approval" ? "<h6 class=\"text-primary\">"+data[5]+"</h6>" : data[5] == "Approved" ? "<h6 class=\"text-success\">"+data[5]+"</h6>" : "<h6 class=\"text-danger\">"+data[5]+"</h6>",
@@ -539,6 +543,9 @@ if(document.getElementById("consumables")){
     }
 
     function get_UserRequestOthersBotton(data){
+        if(data[2] == "Not Found"){
+            return "<button r-id=\""+data[0]+"\" class=\"cancel_request_row btn btn-sm btn-secondary\"><i r-id=\""+data[0]+"\" class=\"cancel_request_row fa fa-trash\"></i> Cancel</button>";
+        }
         if(data[5] == "For Approval"){
             return "<button r-id=\""+data[0]+"\" class=\"approve_request_row btn btn-sm btn-primary\"><i r-id=\""+data[0]+"\" class=\"approve_request_row fa fa-check\"></i> Approve </button> <button r-id=\""+data[0]+"\" class=\"decline_request_row btn btn-sm btn-danger\"><i r-id=\""+data[0]+"\" class=\"decline_request_row fa fa-remove\"></i> Decline</button>";
         }else if(data[5] == "Declined"){
