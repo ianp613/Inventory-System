@@ -68,6 +68,10 @@ if(document.getElementById("consumables")){
             { 
                 className: 'dt-left', 
                 targets: '_all' 
+            },
+            { 
+                className: 'word-nl', 
+                target: 4
             }
         ],
         autoWidth: false,
@@ -93,6 +97,10 @@ if(document.getElementById("consumables")){
             { 
                 className: 'dt-left', 
                 targets: '_all' 
+            },
+            { 
+                className: 'word-nl', 
+                target: 4
             }
         ],
         autoWidth: false,
@@ -182,6 +190,8 @@ if(document.getElementById("consumables")){
     const delete_consumables_modal = new bootstrap.Modal(document.getElementById('delete_consumables'),unclose);
     const clear_consumable_log_modal = new bootstrap.Modal(document.getElementById('clear_consumable_log'),unclose);
     const cancel_request_modal = new bootstrap.Modal(document.getElementById('cancel_request'),unclose);
+    const declined_request_modal = new bootstrap.Modal(document.getElementById('declined_request'),unclose);
+    const decline_request_modal = new bootstrap.Modal(document.getElementById('decline_request'),unclose);
 
 
     var add_consumables = document.getElementById("add_consumables")
@@ -210,6 +220,11 @@ if(document.getElementById("consumables")){
     var delete_consumables_btn = document.getElementById("delete_consumables_btn")
 
     var cancel_request_btn = document.getElementById("cancel_request_btn")
+    var declined_request_btn = document.getElementById("declined_request_btn")
+    var declined_request_remarks = document.getElementById("declined_request_remarks")
+
+    var decline_request_btn = document.getElementById("decline_request_btn")
+    var decline_request_remarks = document.getElementById("decline_request_remarks")
 
     var search_consumable = document.getElementById("search_consumable")
     var restock_consumables_code = document.getElementById("restock_consumables_code")
@@ -401,6 +416,39 @@ if(document.getElementById("consumables")){
                     }
                 })
             })
+
+            document.querySelector('#consumables_requests_others_table').addEventListener("click", e=>{
+                let tr = "";
+                if(e.target.tagName == "I"){
+                    tr = e.target.parentNode.parentNode.parentNode.children
+                }
+                if(e.target.tagName == "BUTTON"){
+                    tr = e.target.parentNode.parentNode.children    
+                }
+                if(e.target.classList.contains('declined_request_row')) {
+                    declined_request_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
+                    sole.post("../../controllers/consumables/get_request.php",{
+                        id : e.target.getAttribute("r-id")
+                    }).then(res => {
+                        declined_request_remarks.innerText = res[0].declined_remarks != "-" ? res[0].declined_remarks : "Request is invalid."
+                    })
+                    declined_request_modal.show()
+                }
+
+                if(e.target.classList.contains('decline_request_row')) {
+                    decline_request_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
+                    decline_request_modal.show()
+                }
+
+                if(e.target.classList.contains('approve_request_row')) {
+                    sole.post("../../controllers/consumables/approve_request.php",{
+                        id : e.target.getAttribute("r-id")
+                    }).then(res => {
+                        get_consumables_requests_others()
+                        bs5.toast(res.type,res.message,res.size)
+                    })
+                }
+            })
         })
     }
 
@@ -455,18 +503,16 @@ if(document.getElementById("consumables")){
                 if(e.target.classList.contains('cancel_request_row')) {
                     cancel_request_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
                     cancel_request_modal.show()
-
-                    // sole.post("../../controllers/consumables/find_consumables.php",{
-                    //     id: e.target.getAttribute("r-id")
-                    // }).then(res => {
-                    //     console.log(res)
-                    // })
                 }
-                // if(e.target.classList.contains('declined_request_row')){
-                //     delete_consumables_description.innerText = tr[1].innerText
-                //     delete_consumables_btn.setAttribute("c-id",e.target.getAttribute("c-id"))
-                //     delete_consumables_modal.show()
-                // }
+                if(e.target.classList.contains('declined_request_row')) {
+                    declined_request_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
+                    sole.post("../../controllers/consumables/get_request.php",{
+                        id : e.target.getAttribute("r-id")
+                    }).then(res => {
+                        declined_request_remarks.innerText = res[0].declined_remarks
+                    })
+                    declined_request_modal.show()
+                }
             })
         })
     }
@@ -483,25 +529,52 @@ if(document.getElementById("consumables")){
 
     function get_UserRequestOthersBotton(data){
         if(data[5] == "For Approval"){
-            return "<button class=\"btn btn-sm btn-primary\"><span class=\"fa fa-check\"></span> Approve </button> <button class=\"btn btn-sm btn-danger\"><span class=\"fa fa-remove\"></span> Decline</button>";
+            return "<button r-id=\""+data[0]+"\" class=\"approve_request_row btn btn-sm btn-primary\"><i r-id=\""+data[0]+"\" class=\"approve_request_row fa fa-check\"></i> Approve </button> <button r-id=\""+data[0]+"\" class=\"decline_request_row btn btn-sm btn-danger\"><i r-id=\""+data[0]+"\" class=\"decline_request_row fa fa-remove\"></i> Decline</button>";
         }else if(data[5] == "Declined"){
-            return "<button class=\"btn btn-sm btn-danger alert-danger fw-bolder\"><span class=\"fa fa-question-circle-o\"></span> Details</button>";
+            return "<button r-id=\""+data[0]+"\" class=\"declined_request_row btn btn-sm btn-danger alert-danger fw-bolder\"><i r-id=\""+data[0]+"\" class=\"declined_request_row fa fa-question-circle-o\"></i> Details</button>";
         }else if(data[5] == "Approved"){
-            return "<button class=\"btn btn-sm btn-success\"><span class=\"fa fa-check\"></span> Claimed</button>";
+            return "<button r-id=\""+data[0]+"\" class=\"claimed_request_row btn btn-sm btn-success\"><i r-id=\""+data[0]+"\" class=\"claimed_request_row fa fa-check\"></i> Claimed</button>";
         }else{
             return ""
         }
     }
 
     cancel_request_btn.addEventListener("click", e => {
-        sole.post("../../controllers/consumables/cancel_request.php",{
-            id : cancel_request_btn.getAttribute("r-id")
+        deleteRequest(cancel_request_btn)
+        cancel_request_modal.hide()
+    })
+
+    declined_request_btn.addEventListener("click", e => {
+        deleteRequest(declined_request_btn)
+        declined_request_modal.hide()
+    })
+
+    decline_request_btn.addEventListener("click", e => {
+        if(!decline_request_remarks.value){
+            bs5.toast("warning","Please input a reason for declining.")
+            return
+        }
+        sole.post("../../controllers/consumables/decline_request.php",{
+            id : decline_request_btn.getAttribute("r-id"),
+            remarks : decline_request_remarks.value ? decline_request_remarks.value : "-"
         }).then(res => {
-            cancel_request_modal.hide()
+            decline_request_modal.hide()
             bs5.toast(res.type,res.message,res.size)
-            get_consumables_requests()
+            get_consumables_requests_others()
         })
     })
+
+    function deleteRequest(el){
+        sole.post("../../controllers/consumables/cancel_request.php",{
+            id : el.getAttribute("r-id")
+        }).then(res => {
+            bs5.toast(res.type,res.message,res.size)
+            get_consumables_requests()
+            if(localStorage.getItem("c_authority") == "true"){
+                get_consumables_requests_others()
+            }
+        })
+    }
 
     get_consumables_logs()
     get_consumables_requests()

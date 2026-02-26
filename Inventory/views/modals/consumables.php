@@ -196,6 +196,48 @@
     </div>
 </div>
 
+<!-- DECLINED REQUEST MODAL -->
+<div class="modal fade" id="declined_request" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <div class="w-100">
+                    <span class="fa fa-exclamation-triangle text-warning h2"></span>
+                    <h5 id="declined_request_title" class="modal-title fw-bolder">Request Has Been Declined</h5>    
+                </div>
+            </div>
+            <div class="modal-header">
+                <div class="w-100 ps-3 pe-3">
+                    <div class="word-nl" id="declined_request_remarks"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">OK</button>
+                <button id="declined_request_btn" e-id="" type="button" data-bs-dismiss="" class="btn btn-danger btn-sm"><span class="fa fa-trash-o"></span> Cancel Request</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DECLINE REQUEST MODAL -->
+<div class="modal fade" id="decline_request" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6>Decline Request</h6>
+            </div>
+            <div class="modal-body">
+                <label for="decline_request_remarks">Please input a reason for declining</label>
+                <textarea name="" id="decline_request_remarks" rows="5" class="form-control mt-2" placeholder="Aa"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button data-bs-dismiss="modal" class="btn btn-sm btn-secondary"><span class="fa fa-remove"></span> Cancel</button>
+                <button sid="" id="decline_request_btn" class="btn btn-sm btn-success"><span class="fa fa-save"></span> Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- CLEAR CONSUMABLE LOG MODAL -->
 <div class="modal fade" id="clear_consumable_log" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered ">

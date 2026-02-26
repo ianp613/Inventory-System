@@ -804,3 +804,7 @@ input::placeholder, textarea::placeholder{
     white-space: pre-line;
     overflow-wrap: break-word;
 }
+.word-nl{
+    white-space: pre-line;
+    overflow-wrap: break-word;
+}
