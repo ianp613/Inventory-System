@@ -846,8 +846,9 @@ if(document.getElementById("routers")){
     function validateResponseWANSettings(res){
         var bol = false;
         bol_unset = false
-        wan_settings_router.innerText = res.router.name
+        
         if(res.status){
+            wan_settings_router.innerText = res.router.name
             save_active_wan.setAttribute("hidden","")
             active_wan.innerHTML = "<option disabled selected value=\"-\">-- Select Active WAN --</option>"
             routerISPTable.clear().draw();
