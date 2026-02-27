@@ -58,6 +58,38 @@
     </div>
 </div>
 
+<!-- WAN SETTINGS -->
+<div class="modal" id="wan_settings" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h6 id="wan_settings_router">Router Name</h6>
+                    <h6 class="fw-bold" style="cursor: pointer;">x</h6>
+                </div>
+                <table id="router_isp_table" class="table border" style="overflow: hidden;">
+                    <thead class="fwt-5">
+                        <tr>
+                            <td class="text-start">
+                                WAN Settings   
+                                <select class="form-control mt-2 drop_active_wan" name="" id="active_wan">
+                                    <option disabled selected value="-">-- Select Active WAN --</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Entry Here -->
+                    </tbody>
+                </table> 
+                <div class="w-100 text-end">
+                    <button hidden id="save_active_wan" class="save_active_wan btn btn-sm btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- EDIT ROUTER MODAL -->
 <div class="modal fade" id="edit_router" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">

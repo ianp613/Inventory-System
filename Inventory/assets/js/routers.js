@@ -70,6 +70,7 @@ if(document.getElementById("routers")){
     const add_router_modal = new bootstrap.Modal(document.getElementById('add_router'),unclose)
     const edit_router_modal = new bootstrap.Modal(document.getElementById('edit_router'),unclose)
     const delete_router_modal = new bootstrap.Modal(document.getElementById('delete_router'),unclose)
+    const wan_settings_modal = new bootstrap.Modal(document.getElementById('wan_settings'))
 
     var add_router_btn = document.getElementById("add_router_btn")
     var router_name = document.getElementById("router_name")
@@ -82,6 +83,7 @@ if(document.getElementById("routers")){
     var wan1_info = document.getElementById("wan1_info")
     var wan2_info = document.getElementById("wan2_info")
     var add_router = document.getElementById("add_router")
+    var wan_settings_router = document.getElementById("wan_settings_router")
 
     var save_router_btn = document.getElementById("save_router_btn")
 
@@ -117,6 +119,8 @@ if(document.getElementById("routers")){
     var temp_wan1 = ""
     var temp_wan2 = ""
 
+    var saved_wan = false
+
     loadPage();
     // LOAD PAGE DATA
     function loadPage(){
@@ -131,64 +135,87 @@ if(document.getElementById("routers")){
                 e["name"],
                 e["ip"],
                 e["subnet"],
+                getWANIP(e["wan1"],res.isp,e["active"]),
+                getWANIP(e["wan2"],res.isp,e["active"]),
                 "<button id=\"edit_router_"+ e["id"] +"\" r-id=\""+ e["id"] +"\" class=\"edit_router_row btn btn-sm btn-secondary\"><i r-id=\""+ e["id"] +"\" class=\"edit_router_row fa fa-edit\"></i></button>" +
                 "<button id=\"delete_router_"+ e["id"] +"\" r-id=\""+ e["id"] +"\" class=\"delete_router_row btn btn-sm btn-danger ms-1\"><i r-id=\""+ e["id"] +"\" class=\"delete_router_row fa fa-trash\"></i></button>" 
             ]).draw(false)   
         });
-        document.querySelector('#router_table').addEventListener("click", e=>{
-            let tr = "";
-            if(e.target.tagName == "I"){
-                tr = e.target.parentNode.parentNode.parentNode.children
-            }
-            if(e.target.tagName == "BUTTON"){
-                tr = e.target.parentNode.parentNode.children    
-            }
-            if(e.target.parentNode.tagName == "TR" && !e.target.parentNode.classList.contains("tr_exclude")){
-                if(temp_tr_id){
-                    if(temp_tr_id != e.target.parentNode.children[3].children[0].getAttribute("r-id")){
-                        temp_btn_edit.classList.remove("bg-light")
-                        temp_btn_edit.classList.remove("text-dark")
-                        temp_btn_edit.classList.add("bg-secondary")
-                        temp_btn_edit = e.target.parentNode.children[3].children[0]
-                        temp_btn_edit.classList.add("bg-light")
-                        temp_btn_edit.classList.add("text-dark")
-                        temp_btn_edit.classList.remove("bg-secondary")
-                        temp_tr.removeAttribute("class")
-                        temp_tr = e.target.parentNode
-                        temp_tr_id = e.target.parentNode.children[3].children[0].getAttribute("r-id")
-                        temp_tr.setAttribute("class","bg-secondary text-light")
+    }
+
+    function getWANIP(id,isp,active){
+        var res = ""
+        if(id == "-"){
+            return res
+        }else{
+            isp.forEach(i => {
+                if(i.id.toString() == id){
+                    if(active == i.id.toString()){
+                        res = "<span class=\"text-success fw-bold\">"+i.wan_ip+"</span>"
+                    }else{
+                        res = i.wan_ip
                     }
-                }else{
-                    temp_btn_edit = e.target.parentNode.children[3].children[0]
+                }
+            });
+        }
+        return res
+    }
+
+    document.querySelector('#router_table').addEventListener("click", e=>{
+        let tr = "";
+        if(e.target.tagName == "I"){
+            tr = e.target.parentNode.parentNode.parentNode.children
+        }
+        if(e.target.tagName == "BUTTON"){
+            tr = e.target.parentNode.parentNode.children    
+        }
+        if(e.target.parentNode.tagName == "TR" && !e.target.parentNode.classList.contains("tr_exclude")){
+            wan_settings_modal.show()
+            if(temp_tr_id){
+                if(temp_tr_id != e.target.parentNode.children[5].children[0].getAttribute("r-id")){
+                    temp_btn_edit.classList.remove("bg-light")
+                    temp_btn_edit.classList.remove("text-dark")
+                    temp_btn_edit.classList.add("bg-secondary")
+                    temp_btn_edit = e.target.parentNode.children[5].children[0]
                     temp_btn_edit.classList.add("bg-light")
                     temp_btn_edit.classList.add("text-dark")
                     temp_btn_edit.classList.remove("bg-secondary")
+                    temp_tr.removeAttribute("class")
                     temp_tr = e.target.parentNode
-                    temp_tr_id = e.target.parentNode.children[3].children[0].getAttribute("r-id")
+                    temp_tr_id = e.target.parentNode.children[5].children[0].getAttribute("r-id")
                     temp_tr.setAttribute("class","bg-secondary text-light")
+                    
                 }
-                sole.post("../../controllers/routers/get_router_wan.php",{
-                    id: temp_tr_id
-                }).then(res => validateResponseWANSettings(res))
+            }else{
+                temp_btn_edit = e.target.parentNode.children[5].children[0]
+                temp_btn_edit.classList.add("bg-light")
+                temp_btn_edit.classList.add("text-dark")
+                temp_btn_edit.classList.remove("bg-secondary")
+                temp_tr = e.target.parentNode
+                temp_tr_id = e.target.parentNode.children[5].children[0].getAttribute("r-id")
+                temp_tr.setAttribute("class","bg-secondary text-light")
             }
-            if(e.target.classList.contains('edit_router_row')) {
-                edit_router_title.innerText = "Edit Router: " + tr[0].innerText
-                update_router_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
-                sole.post("../../controllers/routers/find_router.php",{
-                    id: e.target.getAttribute("r-id")
-                }).then(res => editForm(res))
-            }
-            if(e.target.classList.contains('delete_router_row')) {
-                delete_router_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
-                sole.post("../../controllers/routers/find_router_delete.php",{
-                    id: e.target.getAttribute("r-id")
-                }).then(res => deleteForm(res))
-            }
-            // if(e.target.classList.contains('delete_isp_row')) {
-            //     console.log(e.target.getAttribute("i-id"))
-            // }
-        })
-    }
+            sole.post("../../controllers/routers/get_router_wan.php",{
+                id: temp_tr_id
+            }).then(res => validateResponseWANSettings(res))
+        }
+        if(e.target.classList.contains('edit_router_row')) {
+            edit_router_title.innerText = "Edit Router: " + tr[0].innerText
+            update_router_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
+            sole.post("../../controllers/routers/find_router.php",{
+                id: e.target.getAttribute("r-id")
+            }).then(res => editForm(res))
+        }
+        if(e.target.classList.contains('delete_router_row')) {
+            delete_router_btn.setAttribute("r-id",e.target.getAttribute("r-id"))
+            sole.post("../../controllers/routers/find_router_delete.php",{
+                id: e.target.getAttribute("r-id")
+            }).then(res => deleteForm(res))
+        }
+        // if(e.target.classList.contains('delete_isp_row')) {
+        //     console.log(e.target.getAttribute("i-id"))
+        // }
+    })
 
     // ADD ROUTER FOCUS
     add_router.addEventListener('shown.bs.modal', function () {
@@ -320,13 +347,6 @@ if(document.getElementById("routers")){
 
         edit_router_modal.show()
     }
-
-
-
-
-
-
-
 
     delete_router_btn.addEventListener("click",function(){
         sole.post("../../controllers/routers/delete_router.php",{
@@ -820,11 +840,13 @@ if(document.getElementById("routers")){
             active_wan: active_wan.value
         }).then(res => validateResponseWANSettings(res))
         active_wan_id = null
+        saved_wan = true
     })
 
     function validateResponseWANSettings(res){
         var bol = false;
         bol_unset = false
+        wan_settings_router.innerText = res.router.name
         if(res.status){
             save_active_wan.setAttribute("hidden","")
             active_wan.innerHTML = "<option disabled selected value=\"-\">-- Select Active WAN --</option>"
@@ -892,6 +914,13 @@ if(document.getElementById("routers")){
             routerISPTable.clear().draw();
             save_active_wan.setAttribute("hidden","")
             active_wan.innerHTML = "<option disabled selected value=\"-\">-- Select Active WAN --</option>"
+            wan_settings_modal.hide()
+
+            if(saved_wan){
+                console.log("OK")
+                loadPage()
+                saved_wan = false
+            }
         }
     })
 }

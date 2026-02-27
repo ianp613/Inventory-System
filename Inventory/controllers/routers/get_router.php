@@ -4,9 +4,14 @@
     include("../../includes.php");
     $router = new Routers;
     $router = $_SESSION["g_id"] ? DB::where($router,"gid","=",$_SESSION["g_id"]) : DB::all($router);
+
+    $isp = new ISP;
+    $isp = DB::all($isp);
+
     $response = [
         "status" => true,
-        "router" => $router
+        "router" => $router,
+        "isp" => $isp
     ];    
     echo json_encode($response);
 ?>
