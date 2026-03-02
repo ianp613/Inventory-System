@@ -392,14 +392,14 @@ if(document.getElementById("consumables")){
                 res.consumables.forEach(cons => {
                     if(cons.id == request.cid){
                         ids.push(cons.id)
-                        datas.push([request.id,request.gid,cons.description,request.requested_quantity,request.remarks,request.status,request.date + " " + request.time])
+                        datas.push([request.id,request.uid,cons.description,request.requested_quantity,request.remarks,request.status,request.date + " " + request.time])
                     }
                 })
             })
 
             res.requests.forEach(request => {
                 if(!ids.includes(parseInt(request.cid))){
-                    datas.push([request.id,request.gid,"Not Found",request.requested_quantity,request.remarks,request.status,request.date + " " + request.time])
+                    datas.push([request.id,request.uid,"Not Found",request.requested_quantity,request.remarks,request.status,request.date + " " + request.time])
                 }
             })
 
