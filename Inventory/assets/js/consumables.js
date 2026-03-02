@@ -420,6 +420,7 @@ if(document.getElementById("consumables")){
                 })
             })
             console.log(res)
+            console.log(datas)
         })
     }
     document.querySelector('#consumables_requests_others_table').addEventListener("click", e=>{
