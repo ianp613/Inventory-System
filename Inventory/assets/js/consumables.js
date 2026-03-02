@@ -384,7 +384,7 @@ if(document.getElementById("consumables")){
         sole.post("../../controllers/consumables/get_consumables_requests.php",{
             type : "group"
         }).then(res => {
-            // consumables_RequestsOthersTable.clear().draw()
+            consumables_RequestsOthersTable.clear().draw()
             var datas = []
             var ids = []
 
@@ -406,6 +406,7 @@ if(document.getElementById("consumables")){
             datas.forEach(data => {
                 res.users.forEach(user => {
                     if(user.id == parseInt(data[1])){
+                        console.log(data)
                         consumables_RequestsOthersTable.row.add([
                             data[0],
                             user.name,
