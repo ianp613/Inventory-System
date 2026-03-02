@@ -384,7 +384,7 @@ if(document.getElementById("consumables")){
         sole.post("../../controllers/consumables/get_consumables_requests.php",{
             type : "group"
         }).then(res => {
-            consumables_RequestsOthersTable.clear().draw()
+            // consumables_RequestsOthersTable.clear().draw()
             var datas = []
             var ids = []
 
