@@ -419,7 +419,7 @@ if(document.getElementById("consumables")){
                     }
                 })
             })
-            
+            console.log(res)
         })
     }
     document.querySelector('#consumables_requests_others_table').addEventListener("click", e=>{
