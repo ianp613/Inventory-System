@@ -405,6 +405,7 @@ if(document.getElementById("consumables")){
 
             datas.forEach(data => {
                 res.users.forEach(user => {
+                    console.log(user.id,data[1])
                     if(user.id == parseInt(data[1])){
                         console.log(data)
                         consumables_RequestsOthersTable.row.add([
