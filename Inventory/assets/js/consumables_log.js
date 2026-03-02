@@ -33,7 +33,7 @@ function loadPage() {
             link: link[1]
         }).then(res => {
             if(res.status){
-                g_name_display.innerHTML = "<span class=\"fa fa-users\"></span> " + res.g_name + " |"
+                g_name_display.innerHTML = "<span class=\"fa fa-users wd-30\"></span> " + res.g_name
                 g_name_display.classList.add("me-2")
                 g_id = res.g_id
             }else{

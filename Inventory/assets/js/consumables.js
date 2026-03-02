@@ -242,10 +242,13 @@ if(document.getElementById("consumables")){
     var consumable_badge_success = document.getElementById("consumable_badge_success")
 
     var generate_link_controls = document.getElementById("generate_link_controls")
+    generate_link_controls.hidden = true
     var generate_link_btn = document.getElementById("generate_link_btn")
     var regenerate_link_btn = document.getElementById("regenerate_link_btn")
     var delete_link_btn = document.getElementById("delete_link_btn")
     var add_log_link = document.getElementById("add_log_link")
+    var your_passkey = document.getElementById("your_passkey")
+    var group_links = document.getElementById("group_links")
     var show_logs = document.getElementById("show_logs")
     var consumable_request = document.getElementById("consumable_request")
     var location_ = window.location.href
@@ -260,6 +263,7 @@ if(document.getElementById("consumables")){
 
     var clear_consumable_logs_btn = document.getElementById("clear_consumable_logs_btn")
     var clear_consumable_log_confirm = document.getElementById("clear_consumable_log_confirm")
+    var glink_temp = " +++ +++ "
 
     if(localStorage.getItem("privileges") != "User"){
         clear_consumable_logs_btn.addEventListener("click", function () {
@@ -613,26 +617,84 @@ if(document.getElementById("consumables")){
     })
 
     add_log_m.addEventListener('shown.bs.modal', function () {
+        your_passkey.innerText = localStorage.getItem("passkey")
+        getLinks()
+    })
+
+    function getLinks(call = false){
         sole.get("../../controllers/consumables/find_link.php")
         .then(res => {
-            if(res.status){
-                let url = window.location.origin + window.location.pathname;
-                let baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
-                add_log_link.setAttribute("target","_blank");
-                add_log_link.setAttribute("href",baseUrl + "consumables-log.php?glog="+res.link);
-                add_log_link.innerText = baseUrl + "consumables-log.php?glog="+res.link;
-                regenerate_link_btn.hidden = false
-                delete_link_btn.hidden = false
-                generate_link_btn.hidden = true
-            }else{ 
-                add_log_link.innerText = "Click Generate Link"
-                add_log_link.removeAttribute("target");
-                add_log_link.setAttribute("href","#");
-                regenerate_link_btn.hidden = true
-                delete_link_btn.hidden = true
-                generate_link_btn.hidden = false
+            group_links.innerHTML = ""
+            var op = document.createElement("option")
+            op.value = " +++ +++ "
+            op.selected = true
+            op.disabled = true
+            op.innerText = "-- Group List --"
+            group_links.appendChild(op)
+            
+            var lid = []
+
+            res.links.forEach(li => {
+                lid.push(li[0])
+            })
+
+            res.groups.forEach(gr => {
+                var op = document.createElement("option")
+                if(lid.includes(gr.id)){
+                    res.links.forEach(li => {
+                        if(li[0] == gr.id){
+                            op.value = gr.group_name + "+++" + li[1] + "+++" + "1"
+                        }
+                    })
+                }else{
+                    op.value = gr.group_name + "+++" + "Link unavailable, please ask the " + gr.group_name + " to generate a link." + "+++" + "0"
+                }
+                op.innerText = gr.group_name
+                group_links.appendChild(op)
+            })
+            if(call){
+                group_links.value = glink_temp    
+            }else{
+                add_log_link.innerText = "Please select a group."
+                add_log_link.classList.add("no-event")
+                generate_link_controls.hidden = true
             }
         })
+    }
+
+    group_links.addEventListener("change", e => {
+        var data = group_links.value.split("+++")
+        add_log_link.innerText = data[1]
+
+        let url = window.location.origin + window.location.pathname;
+        let baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
+        add_log_link.setAttribute("target","_blank");
+
+        if(data[2] == "1"){
+            add_log_link.setAttribute("href",baseUrl + "consumables-log.php?glog="+data[1]);
+            add_log_link.innerText = baseUrl + "consumables-log.php?glog="+data[1];
+            add_log_link.classList.remove("no-event")
+        }else{
+            add_log_link.setAttribute("href","#");
+            if(data[0] == localStorage.getItem("g_name")){
+                add_log_link.innerText = "Click generate link.";
+            }
+            add_log_link.classList.add("no-event")
+        }
+        if(data[0] == localStorage.getItem("g_name")){
+            generate_link_controls.hidden = false
+            if(data[2] == "1"){
+                generate_link_btn.hidden = true
+                regenerate_link_btn.hidden = false
+                delete_link_btn.hidden = false
+            }else{
+                generate_link_btn.hidden = false
+                regenerate_link_btn.hidden = true
+                delete_link_btn.hidden = true
+            }
+        }else{
+            generate_link_controls.hidden = true
+        }
     })
 
     restock_consumables.addEventListener('shown.bs.modal', function () {
@@ -837,6 +899,8 @@ if(document.getElementById("consumables")){
                 regenerate_link_btn.hidden = false
                 delete_link_btn.hidden = false
                 generate_link_btn.hidden = true
+                glink_temp = localStorage.getItem("g_name") + "+++" + res + "+++" + "1"
+                getLinks(true)
             })
             
         }else{
@@ -859,6 +923,8 @@ if(document.getElementById("consumables")){
                 add_log_link.setAttribute("target","_blank");
                 add_log_link.setAttribute("href",baseUrl + "consumables-log.php?glog="+res);
                 add_log_link.innerText = baseUrl + "consumables-log.php?glog="+res;
+                glink_temp = localStorage.getItem("g_name") + "+++" + res + "+++" + "1"
+                getLinks(true)
             })
         }
     })
@@ -868,7 +934,7 @@ if(document.getElementById("consumables")){
             sole.post("../../controllers/consumables/delete_link.php",{
                 link: add_log_link.getAttribute("href").split("glog=")[1]
             }).then(res => {
-                add_log_link.innerText = "Click Generate Link"
+                add_log_link.innerText = "Click generate link."
                 add_log_link.removeAttribute("target");
                 add_log_link.setAttribute("href","#");
                 

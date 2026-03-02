@@ -135,9 +135,14 @@
                 <h6><span class="fa fa-file-text"></span> Request Form</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <h6 class="f-15">Click the link to open the consumable request form. You can also copy and share the link with others so they can request for consumables.</h6>
-                <h6 class="f-15"><i><a href="#" id="add_log_link">Click Generate Link</a></i></h6>
+            <div class="modal-body" style="overflow: auto;">
+                <label for="group_links" class="mb-2">Send Request To: </label>
+                <Select class="form-control mb-2" id="group_links">
+                    <option value=" +++ +++ " selected disabled>-- Group List --</option>
+                </Select>
+                <h6 class="mb-2 f-i">Your Passkey: <span class="fw-bolder text-success" id="your_passkey">-</span></h6>
+                <h6 class="f-15 mt-4">Click the link to view the consumable request form.</h6>
+                <h6 class="f-14"><i><a class="no-event" href="#" id="add_log_link">Please select a group.</a></i></h6>
             </div>
             <div class="modal-footer" id="generate_link_controls">
                 <button hidden id="regenerate_link_btn" class="btn btn-sm alert-success btn-success"><span class="fa fa-link"></span> Regenerate Link</button>

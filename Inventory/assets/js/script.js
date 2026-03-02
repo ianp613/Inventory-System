@@ -133,6 +133,10 @@ if(document.getElementById("sidebar")){
             localStorage.setItem("c_authority",res.user[0]["c_authority"])
             localStorage.setItem("passkey",res.user[0]["passkey"])
             localStorage.setItem("g_member",res.g_member)
+            if(localStorage.getItem("g_member") == "true"){
+                localStorage.setItem("g_id",res.group[0].id)
+                localStorage.setItem("g_name",res.group[0].group_name)
+            }
             if(document.getElementById("dashboard")){
                 !localStorage.getItem("email") ? alert("Your account doesn’t have an email address associated with it. Please add one to enhance your account’s security.") : null
             }
@@ -402,6 +406,7 @@ if(document.getElementById("sidebar")){
         sole.post("../../controllers/generate_key.php",{
             id : localStorage.getItem("userid")
         }).then(res => {
+            localStorage.setItem("passkey",res.key)
             passkey.value = res.key
         })
     })

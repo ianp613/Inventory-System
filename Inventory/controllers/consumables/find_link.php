@@ -4,11 +4,20 @@
     include("../../includes.php");
     $response = [
         "status" => false,
-        "link" => ""
+        "link" => "",
+        "groups" => [],
+        "links" => []
     ];
 
+    $links = glob("links/*");
+
+
     if($_SESSION["g_member"]){
-        $links = glob("links/*");
+        $group = new User_Group;
+        $groups = DB::all($group);
+
+        $response["groups"] = $groups;
+
         $glog = [];
         foreach($links as $link){
             $temp = explode("/",$link);
@@ -21,13 +30,12 @@
                 array_push($ids,$temp[50]);
             }
         }
-        if(in_array($_SESSION["g_id"],$ids)){
-            $position = array_search($_SESSION["g_id"],$ids);
-            $link = explode("/",glob("links/*")[$position]);
-            $response = [
-                "status" => true,
-                "link" => end($link)
-            ];
+        foreach ($groups as $gr) {
+            if(in_array($gr["id"],$ids)){
+                $position = array_search($gr["id"],$ids);
+                $link = explode("/",glob("links/*")[$position]);
+                array_push($response["links"],[$gr["id"],end($link)]);
+            }
         }
     }
 

@@ -808,3 +808,7 @@ input::placeholder, textarea::placeholder{
     white-space: pre-line;
     overflow-wrap: break-word;
 }
+
+.no-event{
+    pointer-events: none;
+}
