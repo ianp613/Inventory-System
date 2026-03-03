@@ -15,7 +15,11 @@
         $filename = end($site);
 
         // $filename = $data["map_name"].".png";
-        $filepath = "../../assets/img/maps_output/".$filename;
+        $folder = "../../assets/img/maps_output/";
+        if(!is_dir($folder)){
+            mkdir($folder);
+        }
+        $filepath = $folder.$filename;
         
         file_exists($filepath) ? unlink($filepath) : null;
 
