@@ -264,65 +264,6 @@ if(document.getElementById("cctv")){
                     "<button id=\"delete_camera_"+ e["id"] +"\" c-id=\""+ e["id"] +"\" class=\"delete_camera_row btn btn-sm btn-danger ms-1\"><i c-id=\""+ e["id"] +"\" class=\"delete_camera_row fa fa-trash\"></i></button>" 
                 ]).draw(false)   
             });
-            document.querySelector('#camera_table').addEventListener("click", e=>{
-                let tr = "";
-                if(e.target.tagName == "I"){
-                    tr = e.target.parentNode.parentNode.parentNode.children
-                }
-                if(e.target.tagName == "BUTTON"){
-                    tr = e.target.parentNode.parentNode.children    
-                }
-                if(e.target.classList.contains('delete_camera_row')){
-                    if(localStorage.getItem("log_delete") != tr[0].innerText){
-                        localStorage.setItem("log_delete",tr[0].innerText)
-                        if(confirm("You're going to delete "+tr[0].innerText+". This can't be undone, do you wish to proceed?")){
-                            sole.post("../../controllers/cctv/delete_camera.php",{
-                                id: e.target.getAttribute("c-id")
-                            }).then(res => {
-                                if(res.status){
-                                    alert(res.message)
-                                    loadMAP_CAMERA()
-                                    saveCanvas()
-                                }
-                            })
-                        }
-                    }
-                }
-                if(e.target.classList.contains('edit_camera_row')){
-
-                        sole.post("../../controllers/cctv/get_current_camera.php",{
-                            id: e.target.getAttribute("c-id")
-                        }).then(res => {
-                            if(res.status){
-                                update_camera_form_btn.setAttribute("c-id",e.target.getAttribute("c-id"))
-                                camera_menu.setAttribute("hidden","")
-                                camera_form.removeAttribute("hidden")
-                                camera_form_control.removeAttribute("hidden")
-                                update_camera_form_btn.removeAttribute("hidden")
-                                save_camera_form_btn.setAttribute("hidden","")
-                                camera_id.value = res.camera[0].camera_id
-                                camera_type.value = res.camera[0].camera_type
-                                camera_subtype.value = res.camera[0].camera_subtype
-                                camera_ip_address.value = res.camera[0].camera_ip_address != "-" ? res.camera[0].camera_ip_address : null
-                                camera_port_no.value = res.camera[0].camera_port_no != "-" ? res.camera[0].camera_port_no : null
-                                camera_username.value = res.camera[0].camera_username != "-" ? res.camera[0].camera_username : null
-                                camera_password.value = res.camera[0].camera_password != "-" ? res.camera[0].camera_password : null
-                                camera_angle.value = res.camera[0].camera_angle
-                                camera_preview.setAttribute("style","transform: rotate("+res.camera[0].camera_angle+"deg);")
-                                camera_location.value = res.camera[0].camera_location != "-" ? res.camera[0].camera_location : null
-                                camera_brand.value = res.camera[0].camera_brand != "-" ? res.camera[0].camera_brand : null
-                                camera_model_no.value = res.camera[0].camera_model_no != "-" ? res.camera[0].camera_model_no : null
-                                camera_barcode.value = res.camera[0].camera_barcode != "-" ? res.camera[0].camera_barcode : null
-                                camera_status.value = res.camera[0].camera_status != "-" ? res.camera[0].camera_status : null
-                                camera_remarks.value = res.camera[0].camera_remarks != "-" ? res.camera[0].camera_remarks : null
-                                res.camera[0].camera_subtype != "Coaxial Camera" && res.camera[0].camera_subtype != "-" ? camera_subtype_form.removeAttribute("hidden") : camera_subtype_form.setAttribute("hidden","")
-                            }
-                        })
-                    
-                }
-            })
-
-
             cameraListTable.clear().draw();
             res.camera.forEach(e => {
                 // if(e.cx == "-" && e.cy == "-"){
@@ -335,39 +276,97 @@ if(document.getElementById("cctv")){
                     ]).draw(false)  
                 // }
             });
-
-            document.querySelector('#camera_list').addEventListener("click", e=>{
-                if(e.target.classList.contains('remove_camera_row')){
-                    sole.post("../../controllers/cctv/assign_camera.php",{
-                        id: e.target.getAttribute("c-id"),
-                        type: "unassign"
-                    }).then(res => {
-                        if(res.status){
-                            // alert(res.message)
-                            loadMAP_CAMERA()
-                            saveCanvas()
-                            camera_list_modal.hide()
-                        }
-                    })
-                }
-                if(e.target.classList.contains('select_camera_row')) {
-                    sole.post("../../controllers/cctv/assign_camera.php",{
-                        id: e.target.getAttribute("c-id"),
-                        cx: canvas.dataset.clickX,
-                        cy: canvas.dataset.clickY,
-                        type: "assign"
-                    }).then(res => {
-                        if(res.status){
-                            // alert(res.message)
-                            loadMAP_CAMERA()
-                            saveCanvas()
-                            camera_list_modal.hide()    
-                        }
-                    })
-                }
-            })
         })
     }
+
+    document.querySelector('#camera_table').addEventListener("click", e=>{
+        let tr = "";
+        if(e.target.tagName == "I"){
+            tr = e.target.parentNode.parentNode.parentNode.children
+        }
+        if(e.target.tagName == "BUTTON"){
+            tr = e.target.parentNode.parentNode.children    
+        }
+        if(e.target.classList.contains('delete_camera_row')){
+            if(localStorage.getItem("log_delete") != tr[0].innerText){
+                localStorage.setItem("log_delete",tr[0].innerText)
+                if(confirm("You're going to delete "+tr[0].innerText+". This can't be undone, do you wish to proceed?")){
+                    sole.post("../../controllers/cctv/delete_camera.php",{
+                        id: e.target.getAttribute("c-id")
+                    }).then(res => {
+                        if(res.status){
+                            alert(res.message)
+                            loadMAP_CAMERA()
+                            saveCanvas()
+                        }
+                    })
+                }
+            }
+        }
+        if(e.target.classList.contains('edit_camera_row')){
+
+                sole.post("../../controllers/cctv/get_current_camera.php",{
+                    id: e.target.getAttribute("c-id")
+                }).then(res => {
+                    if(res.status){
+                        update_camera_form_btn.setAttribute("c-id",e.target.getAttribute("c-id"))
+                        camera_menu.setAttribute("hidden","")
+                        camera_form.removeAttribute("hidden")
+                        camera_form_control.removeAttribute("hidden")
+                        update_camera_form_btn.removeAttribute("hidden")
+                        save_camera_form_btn.setAttribute("hidden","")
+                        camera_id.value = res.camera[0].camera_id
+                        camera_type.value = res.camera[0].camera_type
+                        camera_subtype.value = res.camera[0].camera_subtype
+                        camera_ip_address.value = res.camera[0].camera_ip_address != "-" ? res.camera[0].camera_ip_address : null
+                        camera_port_no.value = res.camera[0].camera_port_no != "-" ? res.camera[0].camera_port_no : null
+                        camera_username.value = res.camera[0].camera_username != "-" ? res.camera[0].camera_username : null
+                        camera_password.value = res.camera[0].camera_password != "-" ? res.camera[0].camera_password : null
+                        camera_angle.value = res.camera[0].camera_angle
+                        camera_preview.setAttribute("style","transform: rotate("+res.camera[0].camera_angle+"deg);")
+                        camera_location.value = res.camera[0].camera_location != "-" ? res.camera[0].camera_location : null
+                        camera_brand.value = res.camera[0].camera_brand != "-" ? res.camera[0].camera_brand : null
+                        camera_model_no.value = res.camera[0].camera_model_no != "-" ? res.camera[0].camera_model_no : null
+                        camera_barcode.value = res.camera[0].camera_barcode != "-" ? res.camera[0].camera_barcode : null
+                        camera_status.value = res.camera[0].camera_status != "-" ? res.camera[0].camera_status : null
+                        camera_remarks.value = res.camera[0].camera_remarks != "-" ? res.camera[0].camera_remarks : null
+                        res.camera[0].camera_subtype != "Coaxial Camera" && res.camera[0].camera_subtype != "-" ? camera_subtype_form.removeAttribute("hidden") : camera_subtype_form.setAttribute("hidden","")
+                    }
+                })
+            
+        }
+    })
+
+    document.querySelector('#camera_list').addEventListener("click", e=>{
+        if(e.target.classList.contains('remove_camera_row')){
+            sole.post("../../controllers/cctv/assign_camera.php",{
+                id: e.target.getAttribute("c-id"),
+                type: "unassign"
+            }).then(res => {
+                if(res.status){
+                    // alert(res.message)
+                    loadMAP_CAMERA()
+                    saveCanvas()
+                    camera_list_modal.hide()
+                }
+            })
+        }
+        if(e.target.classList.contains('select_camera_row')) {
+            sole.post("../../controllers/cctv/assign_camera.php",{
+                id: e.target.getAttribute("c-id"),
+                cx: canvas.dataset.clickX,
+                cy: canvas.dataset.clickY,
+                type: "assign"
+            }).then(res => {
+                if(res.status){
+                    // alert(res.message)
+                    loadMAP_CAMERA()
+                    saveCanvas()
+                    camera_list_modal.hide()    
+                }
+            })
+        }
+    })
 
     function loadMAP_CAMERA(){
         sole.post("../../controllers/cctv/get_site_info.php", {
@@ -574,8 +573,6 @@ if(document.getElementById("cctv")){
             alert(res.message)
         }
     }
-
-
 
     add_camera_btn.addEventListener("click",function(){
         camera_menu.setAttribute("hidden","")
