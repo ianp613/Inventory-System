@@ -955,7 +955,7 @@ if(document.getElementById("consumables")){
                 e["measurement"],
                 e["unit"],
                 e["stock"],
-                parseFloat(e["stock"]) <= parseFloat(e["restock_point"]) ? "<span class=\"badge bg-danger\">Low Stock</span>" :  "<span class=\"badge bg-success\">In Stock</span>",
+                parseFloat(e["stock"]) < parseFloat(e["restock_point"]) && parseFloat(e["stock"]) > 0 ? "<span class=\"badge bg-warning\">Low Stock</span>" : (parseFloat(e["stock"]) == 0) ? "<span class=\"badge bg-danger\">Out of Stock</span>" : "<span class=\"badge bg-success\">In Stock</span>",
                 " <button id=\"edit_consumables_"+ e["id"] +"\" c-id=\""+ e["id"] +"\" class=\"edit_consumables_row btn btn-sm btn-secondary mb-1\"><i c-id=\""+ e["id"] +"\" class=\"edit_consumables_row fa fa-edit\"></i></button>"+
                 " <button id=\"delete_consumables_"+ e["id"] +"\" c-id=\""+ e["id"] +"\" class=\"delete_consumables_row btn btn-sm btn-danger mb-1\"><i c-id=\""+ e["id"] +"\" class=\"delete_consumables_row fa fa-trash-o\"></i></button>"
             ]).draw(false) 

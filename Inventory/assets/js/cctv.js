@@ -191,7 +191,6 @@ if(document.getElementById("cctv")){
     })
 
     function loadSite(res){
-        console.log(res)
         cctv_dropdown.innerHTML = ""
         res.cctvs.forEach(cctv => {
             cctv_dropdown.innerHTML += "<li><a href=\"#\" class=\"dropdown-item\" id=\""+ cctv["id"] +"\" size=\""+ cctv["camera_size"] +"\">"+ cctv["map_location"] +"</a></li>"
