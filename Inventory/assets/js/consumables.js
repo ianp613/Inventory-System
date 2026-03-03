@@ -425,6 +425,7 @@ if(document.getElementById("consumables")){
             })
         })
     }
+
     document.querySelector('#consumables_requests_others_table').addEventListener("click", e=>{
         let tr = "";
         if(e.target.tagName == "I"){
@@ -960,28 +961,28 @@ if(document.getElementById("consumables")){
                 " <button id=\"delete_consumables_"+ e["id"] +"\" c-id=\""+ e["id"] +"\" class=\"delete_consumables_row btn btn-sm btn-danger mb-1\"><i c-id=\""+ e["id"] +"\" class=\"delete_consumables_row fa fa-trash-o\"></i></button>"
             ]).draw(false) 
         });
-
-        document.querySelector('#consumables_table').addEventListener("click", e=>{
-            let tr = "";
-            if(e.target.tagName == "I"){
-                tr = e.target.parentNode.parentNode.parentNode.children
-            }
-            if(e.target.tagName == "BUTTON"){
-                tr = e.target.parentNode.parentNode.children    
-            }
-            if(e.target.classList.contains('edit_consumables_row')) {
-                edit_consumables_btn.setAttribute("c-id",e.target.getAttribute("c-id"))
-                sole.post("../../controllers/consumables/find_consumables.php",{
-                    id: e.target.getAttribute("c-id")
-                }).then(res => editConsumablesForm(res))
-            }
-            if(e.target.classList.contains('delete_consumables_row')){
-                delete_consumables_description.innerText = tr[1].innerText
-                delete_consumables_btn.setAttribute("c-id",e.target.getAttribute("c-id"))
-                delete_consumables_modal.show()
-            }
-        })
     }
+
+    document.querySelector('#consumables_table').addEventListener("click", e=>{
+        let tr = "";
+        if(e.target.tagName == "I"){
+            tr = e.target.parentNode.parentNode.parentNode.children
+        }
+        if(e.target.tagName == "BUTTON"){
+            tr = e.target.parentNode.parentNode.children    
+        }
+        if(e.target.classList.contains('edit_consumables_row')) {
+            edit_consumables_btn.setAttribute("c-id",e.target.getAttribute("c-id"))
+            sole.post("../../controllers/consumables/find_consumables.php",{
+                id: e.target.getAttribute("c-id")
+            }).then(res => editConsumablesForm(res))
+        }
+        if(e.target.classList.contains('delete_consumables_row')){
+            delete_consumables_description.innerText = tr[1].innerText
+            delete_consumables_btn.setAttribute("c-id",e.target.getAttribute("c-id"))
+            delete_consumables_modal.show()
+        }
+    })
 
     function editSelectMeasurement(data){
         edit_consumable_unit.innerText = ""

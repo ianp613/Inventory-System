@@ -594,97 +594,99 @@ if(document.getElementById("equipments")){
         });
         for_status_count ? document.getElementById("for_status_count").innerText = for_status_count : document.getElementById("for_status_count").innerText = ""
         
-        document.querySelector('#equipment_table').addEventListener("click", e=>{
-            if (e.target.classList.contains('delete_entry_row')) {
-                let tr = "";
-                if(e.target.tagName == "I"){
-                    tr = e.target.parentNode.parentNode.parentNode.children
-                }
-                if(e.target.tagName == "BUTTON"){
-                    tr = e.target.parentNode.parentNode.children    
-                }
-                document.getElementById("delete_entry_name").innerText = tr[0].innerText
-                delete_entry_modal.show()
-                let delete_entry_btn = document.getElementById("delete_entry_btn")
-                delete_entry_btn.setAttribute("e-id",e.target.getAttribute("e-id"))
-                delete_entry_btn.addEventListener("click", function(){
-                    sole.delete("../../controllers/equipments/delete_entry.php",{
-                        eid: localStorage.getItem("selected_equipment_id"),
-                        description: tr[0].innerText,
-                        id: delete_entry_btn.getAttribute("e-id")
-                    }).then(res => validateResponse(res,"delete_entry"))
-                    delete_entry_modal.hide()
-                })
+        // let tr = document.getElementsByClassName("trow");
+        // for (let i = 0; i < tr.length; i++) {
+        //     tr[i].addEventListener("contextmenu",function(){
+        //         console.log(tr[i])
+        //     })
+        // }
+    }
+
+    document.querySelector('#equipment_table').addEventListener("click", e=>{
+        if (e.target.classList.contains('delete_entry_row')) {
+            let tr = "";
+            if(e.target.tagName == "I"){
+                tr = e.target.parentNode.parentNode.parentNode.children
             }
-        })
-        let tr = document.getElementsByClassName("trow");
-        for (let i = 0; i < tr.length; i++) {
-            tr[i].addEventListener("contextmenu",function(){
-                console.log(tr[i])
+            if(e.target.tagName == "BUTTON"){
+                tr = e.target.parentNode.parentNode.children    
+            }
+            document.getElementById("delete_entry_name").innerText = tr[0].innerText
+            delete_entry_modal.show()
+            let delete_entry_btn = document.getElementById("delete_entry_btn")
+            delete_entry_btn.setAttribute("e-id",e.target.getAttribute("e-id"))
+            delete_entry_btn.addEventListener("click", function(){
+                sole.delete("../../controllers/equipments/delete_entry.php",{
+                    eid: localStorage.getItem("selected_equipment_id"),
+                    description: tr[0].innerText,
+                    id: delete_entry_btn.getAttribute("e-id")
+                }).then(res => validateResponse(res,"delete_entry"))
+                delete_entry_modal.hide()
             })
         }
-        document.querySelector('#equipment_table').addEventListener("click", e=>{
-            if (e.target.classList.contains('edit_entry_row')) {
-                let tr = "";
-                if(e.target.tagName == "I"){
-                    tr = e.target.parentNode.parentNode.parentNode.children
-                }
-                if(e.target.tagName == "BUTTON"){
-                    tr = e.target.parentNode.parentNode.children    
-                }
-                edit_entry_title.innerText = "Edit Entry: " + tr[0].innerText
-                edit_entry_btn.setAttribute("e-id",e.target.getAttribute("e-id"))
-                sole.post("../../controllers/equipments/find_entry.php",{
-                    id: e.target.getAttribute("e-id")
-                }).then(res => editForm(res))
-                edit_entry_btn.addEventListener("click", e =>{
-                    var building = "-";
-                    var room = "-";
-                    var project = "-";
-                    if(edit_location_building.value && edit_location_building.value != "Others"){
-                        building = edit_location_building.value
-                    }else if(edit_location_building.value == "Others"){
-                        building = edit_location_building_others.value
-                    }
-                    if(edit_location_room.value && edit_location_room.value != "Others"){
-                        room = edit_location_room.value
-                    }else if(edit_location_room.value == "Others"){
-                        room = edit_location_room_others.value
-                    }
-                    if(edit_location_project.value && edit_location_project.value != "Others"){
-                        project = edit_location_project.value
-                    }else if(edit_location_project.value == "Others"){
-                        project = edit_location_project_others.value
-                    }
-                    if(edit_entry_description_input.value){
-                        if(localStorage.getItem("selected_equipment")){
-                            var id = null;
-                            e.target.tagName == "SPAN" ? id = e.target.parentNode.getAttribute("e-id") : id = e.target.getAttribute("e-id")
-                            sole.post("../../controllers/equipments/edit_entry.php",{
-                                eid: localStorage.getItem("selected_equipment_id"),
-                                id: id,
-                                description: edit_entry_description_input.value,
-                                model_no: edit_entry_model_no_input.value,
-                                barcode: edit_entry_barcode_input.value,
-                                specifications: edit_entry_specifications_input.value,
-                                status: edit_entry_status_input.value,
-                                building: building,
-                                room: room,
-                                project: project,
-                                cabinet: edit_location_cabinet.value,
-                                remarks: edit_entry_remarks_input.value
-                            }).then(res => validateResponse(res,"edit_entry"))
-                        }else{
-                            bs5.toast("warning","Please select equipment first.")
-                        }
-                    }else{
-                        bs5.toast("warning","Please input description.")
-                    }
-                    
-                })
+    })
+
+    document.querySelector('#equipment_table').addEventListener("click", e=>{
+        if (e.target.classList.contains('edit_entry_row')) {
+            let tr = "";
+            if(e.target.tagName == "I"){
+                tr = e.target.parentNode.parentNode.parentNode.children
             }
-        })
-    }
+            if(e.target.tagName == "BUTTON"){
+                tr = e.target.parentNode.parentNode.children    
+            }
+            edit_entry_title.innerText = "Edit Entry: " + tr[0].innerText
+            edit_entry_btn.setAttribute("e-id",e.target.getAttribute("e-id"))
+            sole.post("../../controllers/equipments/find_entry.php",{
+                id: e.target.getAttribute("e-id")
+            }).then(res => editForm(res))
+            edit_entry_btn.addEventListener("click", e =>{
+                var building = "-";
+                var room = "-";
+                var project = "-";
+                if(edit_location_building.value && edit_location_building.value != "Others"){
+                    building = edit_location_building.value
+                }else if(edit_location_building.value == "Others"){
+                    building = edit_location_building_others.value
+                }
+                if(edit_location_room.value && edit_location_room.value != "Others"){
+                    room = edit_location_room.value
+                }else if(edit_location_room.value == "Others"){
+                    room = edit_location_room_others.value
+                }
+                if(edit_location_project.value && edit_location_project.value != "Others"){
+                    project = edit_location_project.value
+                }else if(edit_location_project.value == "Others"){
+                    project = edit_location_project_others.value
+                }
+                if(edit_entry_description_input.value){
+                    if(localStorage.getItem("selected_equipment")){
+                        var id = null;
+                        e.target.tagName == "SPAN" ? id = e.target.parentNode.getAttribute("e-id") : id = e.target.getAttribute("e-id")
+                        sole.post("../../controllers/equipments/edit_entry.php",{
+                            eid: localStorage.getItem("selected_equipment_id"),
+                            id: id,
+                            description: edit_entry_description_input.value,
+                            model_no: edit_entry_model_no_input.value,
+                            barcode: edit_entry_barcode_input.value,
+                            specifications: edit_entry_specifications_input.value,
+                            status: edit_entry_status_input.value,
+                            building: building,
+                            room: room,
+                            project: project,
+                            cabinet: edit_location_cabinet.value,
+                            remarks: edit_entry_remarks_input.value
+                        }).then(res => validateResponse(res,"edit_entry"))
+                    }else{
+                        bs5.toast("warning","Please select equipment first.")
+                    }
+                }else{
+                    bs5.toast("warning","Please input description.")
+                }
+                
+            })
+        }
+    })
 
     // SET EDIT ENTRY FORM VALUE
     var edit_entry_description_input = document.getElementById('edit_entry_description_input')

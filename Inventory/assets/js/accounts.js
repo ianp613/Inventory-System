@@ -513,36 +513,37 @@ if(document.getElementById("accounts")){
                 "<button id=\"delete_account_"+ e["id"] +"\" u-id=\""+ e["id"] +"\" class=\"delete_account_row btn btn-sm btn-danger ms-1\"><i u-id=\""+ e["id"] +"\" class=\"delete_account_row fa fa-trash\"></i></button>" : ""
             ]).draw(false)   
         });
-        document.querySelector('#accounts_table').addEventListener("click", e=>{
-            let tr = "";
-            if(e.target.tagName == "I"){
-                tr = e.target.parentNode.parentNode.parentNode.children
-            }
-            if(e.target.tagName == "BUTTON"){
-                tr = e.target.parentNode.parentNode.children    
-            }
-            if(e.target.classList.contains('edit_account_row')) {
-                edit_account_title.innerHTML = "<span class=\"fa fa-user\"></span> Edit Account: " + tr[0].innerText
-                edit_account_btn.setAttribute("u-id",e.target.getAttribute("u-id"))
-                generate_passkey_btn.setAttribute("u-id",e.target.getAttribute("u-id"))
-                sole.post("../../controllers/administrator/find_account.php",{
-                    id: e.target.getAttribute("u-id")
-                }).then(res => {
-                    edit_account_name.value = res.user[0].name
-                    edit_email.value = res.user[0].email != "-" ? res.user[0].email : ""
-                    edit_username.value = res.user[0].username
-                    edit_passkey.value = res.user[0].passkey
-                    edit_privilege.value = res.user[0].privileges
-                    edit_account_modal.show()
-                })
-            }
-            if(e.target.classList.contains('delete_account_row')) {
-                delete_account_name.innerText = tr[0].innerText
-                delete_account_btn.setAttribute("u-id",e.target.getAttribute("u-id"))
-                delete_account_modal.show()
-            }
-        })
     }
+
+    document.querySelector('#accounts_table').addEventListener("click", e=>{
+        let tr = "";
+        if(e.target.tagName == "I"){
+            tr = e.target.parentNode.parentNode.parentNode.children
+        }
+        if(e.target.tagName == "BUTTON"){
+            tr = e.target.parentNode.parentNode.children    
+        }
+        if(e.target.classList.contains('edit_account_row')) {
+            edit_account_title.innerHTML = "<span class=\"fa fa-user\"></span> Edit Account: " + tr[0].innerText
+            edit_account_btn.setAttribute("u-id",e.target.getAttribute("u-id"))
+            generate_passkey_btn.setAttribute("u-id",e.target.getAttribute("u-id"))
+            sole.post("../../controllers/administrator/find_account.php",{
+                id: e.target.getAttribute("u-id")
+            }).then(res => {
+                edit_account_name.value = res.user[0].name
+                edit_email.value = res.user[0].email != "-" ? res.user[0].email : ""
+                edit_username.value = res.user[0].username
+                edit_passkey.value = res.user[0].passkey
+                edit_privilege.value = res.user[0].privileges
+                edit_account_modal.show()
+            })
+        }
+        if(e.target.classList.contains('delete_account_row')) {
+            delete_account_name.innerText = tr[0].innerText
+            delete_account_btn.setAttribute("u-id",e.target.getAttribute("u-id"))
+            delete_account_modal.show()
+        }
+    })
 
     function validateResponse(res,func){
         if(res.status){

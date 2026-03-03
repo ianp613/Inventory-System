@@ -91,23 +91,24 @@ if(document.getElementById("logs")){
                     localStorage.getItem("privileges") == "Administrator" || localStorage.getItem("privileges") == "Supervisor"? "<button id=\"delete_log_"+ e["id"] +"\" l-id=\""+ e["id"] +"\" class=\"delete_log_row btn btn-sm btn-danger ms-1\"><i l-id=\""+ e["id"] +"\" class=\"delete_log_row fa fa-trash\"></i></button>" : ""
                 ]).draw(false)   
             });
-            document.querySelector('#log_table').addEventListener("click", e=>{
-                let tr = "";
-                if(e.target.tagName == "I"){
-                    tr = e.target.parentNode.parentNode.parentNode.children
-                }
-                if(e.target.tagName == "BUTTON"){
-                    tr = e.target.parentNode.parentNode.children    
-                }
-                if(e.target.classList.contains('delete_log_row')) {
-                    sole.post("../../controllers/logs/delete_log.php",{
-                        id: e.target.getAttribute("l-id")
-                    }).then(res => bs5.toast(res.type,res.message))
-                    loadLogs(select_log.value)
-                }
-            })
         })
     }
+
+    document.querySelector('#log_table').addEventListener("click", e=>{
+        let tr = "";
+        if(e.target.tagName == "I"){
+            tr = e.target.parentNode.parentNode.parentNode.children
+        }
+        if(e.target.tagName == "BUTTON"){
+            tr = e.target.parentNode.parentNode.children    
+        }
+        if(e.target.classList.contains('delete_log_row')) {
+            sole.post("../../controllers/logs/delete_log.php",{
+                id: e.target.getAttribute("l-id")
+            }).then(res => bs5.toast(res.type,res.message))
+            loadLogs(select_log.value)
+        }
+    })
 
     function replaceName(id,log){
         id == localStorage.getItem("userid") ? log = log.replace(localStorage.getItem("yourname"), 'You') : null;

@@ -341,31 +341,31 @@ if(document.getElementById("ipaddress")){
                 + setUnassignBtn(e)
             ]).draw(false)   
         });
-
         used_ip.innerText = "Used IP: " + ip_count[0]
         available_ip.innerText = "Available IP: " + ip_count[1]
-        document.querySelector('#network_table').addEventListener("click", e=>{
-            let tr = "";
-            if(e.target.tagName == "I"){
-                tr = e.target.parentNode.parentNode.parentNode.children
-            }
-            if(e.target.tagName == "BUTTON"){
-                tr = e.target.parentNode.parentNode.children    
-            }
-            if(e.target.classList.contains('edit_ip_row')) {
-                edit_ip_title.innerText = "Edit IP: " + tr[0].innerText
-                edit_ip_btn.setAttribute("i-id",e.target.getAttribute("i-id"))
-                sole.post("../../controllers/ipaddress/find_ip.php",{
-                    id: e.target.getAttribute("i-id")
-                }).then(res => editForm(res))
-            }
-            if(e.target.classList.contains('unassign_ip_row')){
-                unassign_ip_name.innerText = "Unassign IP: " + tr[0].innerText
-                unassign_ip_btn.setAttribute("i-id",e.target.getAttribute("i-id"))
-                unassign_ip_modal.show()
-            }
-        })
     }
+
+    document.querySelector('#network_table').addEventListener("click", e=>{
+        let tr = "";
+        if(e.target.tagName == "I"){
+            tr = e.target.parentNode.parentNode.parentNode.children
+        }
+        if(e.target.tagName == "BUTTON"){
+            tr = e.target.parentNode.parentNode.children    
+        }
+        if(e.target.classList.contains('edit_ip_row')) {
+            edit_ip_title.innerText = "Edit IP: " + tr[0].innerText
+            edit_ip_btn.setAttribute("i-id",e.target.getAttribute("i-id"))
+            sole.post("../../controllers/ipaddress/find_ip.php",{
+                id: e.target.getAttribute("i-id")
+            }).then(res => editForm(res))
+        }
+        if(e.target.classList.contains('unassign_ip_row')){
+            unassign_ip_name.innerText = "Unassign IP: " + tr[0].innerText
+            unassign_ip_btn.setAttribute("i-id",e.target.getAttribute("i-id"))
+            unassign_ip_modal.show()
+        }
+    })
 
     function editFormClear(){
         hostname.value = ""

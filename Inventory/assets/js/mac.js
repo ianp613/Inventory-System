@@ -391,30 +391,29 @@ if(document.getElementById("mac")){
             ]).draw(false) 
         });
         mac_record.innerText = "MAC Address: " + mac_count
-
-        document.querySelector('#wifi_table').addEventListener("click", e=>{
-            let tr = "";
-            if(e.target.tagName == "I"){
-                tr = e.target.parentNode.parentNode.parentNode.children
-            }
-            if(e.target.tagName == "BUTTON"){
-                tr = e.target.parentNode.parentNode.children    
-            }
-            if(e.target.classList.contains('edit_mac_row')) {
-                edit_mac_entry_title.innerText = "Edit MAC Address: " + tr[0].innerText.toUpperCase()
-                edit_mac_entry_btn.setAttribute("m-id",e.target.getAttribute("m-id"))
-                sole.post("../../controllers/mac/find_mac.php",{
-                    id: e.target.getAttribute("m-id")
-                }).then(res => editMACForm(res))
-            }
-            if(e.target.classList.contains('delete_mac_row')){
-                delete_mac_address.innerText = tr[0].innerText
-                delete_mac_btn.setAttribute("m-id",e.target.getAttribute("m-id"))
-                delete_mac_entry_modal.show()
-            }
-        })
     }
 
+    document.querySelector('#wifi_table').addEventListener("click", e=>{
+        let tr = "";
+        if(e.target.tagName == "I"){
+            tr = e.target.parentNode.parentNode.parentNode.children
+        }
+        if(e.target.tagName == "BUTTON"){
+            tr = e.target.parentNode.parentNode.children    
+        }
+        if(e.target.classList.contains('edit_mac_row')) {
+            edit_mac_entry_title.innerText = "Edit MAC Address: " + tr[0].innerText.toUpperCase()
+            edit_mac_entry_btn.setAttribute("m-id",e.target.getAttribute("m-id"))
+            sole.post("../../controllers/mac/find_mac.php",{
+                id: e.target.getAttribute("m-id")
+            }).then(res => editMACForm(res))
+        }
+        if(e.target.classList.contains('delete_mac_row')){
+            delete_mac_address.innerText = tr[0].innerText
+            delete_mac_btn.setAttribute("m-id",e.target.getAttribute("m-id"))
+            delete_mac_entry_modal.show()
+        }
+    })
 
     function loadWifi(res){
         if(wifi_dropdown_toggle.innerText == "-- Select Wifi --"){

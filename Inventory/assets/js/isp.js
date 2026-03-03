@@ -90,31 +90,32 @@ if(document.getElementById("isp")){
                 "<button id=\"delete_isp_"+ e["id"] +"\" i-id=\""+ e["id"] +"\" class=\"delete_isp_row btn btn-sm btn-danger ms-1\"><i i-id=\""+ e["id"] +"\" class=\"delete_isp_row fa fa-trash\"></i></button>" 
             ]).draw(false)   
         });
-        document.querySelector('#isp_table').addEventListener("click", e=>{
-            let tr = "";
-            if(e.target.tagName == "I"){
-                tr = e.target.parentNode.parentNode.parentNode.children
-            }
-            if(e.target.tagName == "BUTTON"){
-                tr = e.target.parentNode.parentNode.children    
-            }
-            if(e.target.classList.contains('edit_isp_row')) {
-                edit_isp_title.innerText = "Edit ISP: " + tr[1].innerText
-                edit_isp_btn.setAttribute("i-id",e.target.getAttribute("i-id"))
-                sole.post("../../controllers/isp/find_isp.php",{
-                    id: e.target.getAttribute("i-id")
-                }).then(res => editForm(res))
-            }
-            if(e.target.classList.contains('delete_isp_row')) {
-                delete_isp_name.innerText = tr[1].innerText
-                delete_isp_btn.setAttribute("i-id",e.target.getAttribute("i-id"))
-                sole.post("../../controllers/isp/get_router_assigned.php",{
-                    id: e.target.getAttribute("i-id")
-                }).then(res => deleteMessage(res))
-                delete_isp_modal.show()
-            }
-        })
     }
+
+    document.querySelector('#isp_table').addEventListener("click", e=>{
+        let tr = "";
+        if(e.target.tagName == "I"){
+            tr = e.target.parentNode.parentNode.parentNode.children
+        }
+        if(e.target.tagName == "BUTTON"){
+            tr = e.target.parentNode.parentNode.children    
+        }
+        if(e.target.classList.contains('edit_isp_row')) {
+            edit_isp_title.innerText = "Edit ISP: " + tr[1].innerText
+            edit_isp_btn.setAttribute("i-id",e.target.getAttribute("i-id"))
+            sole.post("../../controllers/isp/find_isp.php",{
+                id: e.target.getAttribute("i-id")
+            }).then(res => editForm(res))
+        }
+        if(e.target.classList.contains('delete_isp_row')) {
+            delete_isp_name.innerText = tr[1].innerText
+            delete_isp_btn.setAttribute("i-id",e.target.getAttribute("i-id"))
+            sole.post("../../controllers/isp/get_router_assigned.php",{
+                id: e.target.getAttribute("i-id")
+            }).then(res => deleteMessage(res))
+            delete_isp_modal.show()
+        }
+    })
 
     // ADD ISP FOCUS
     add_isp.addEventListener('shown.bs.modal', function () {
