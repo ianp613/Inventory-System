@@ -44,9 +44,14 @@
                 <div class="w-100 text-center mt-3"><a class="text-light" style="text-decoration: none;" href="forgot_password.php">Forgot password?</a></div>
             </div>
           </div>
-          <div class="bg-dark text-light mt-3 p-3 text-center rounded-3">
-            <h6 class="blink"><span class="fa fa-folder"></span> DDC LEYTE E-KATALOG</h6>
-            <a class="text-success" target="_blank" href="https://e-katalog.ddns.net:58787/TECH"><span class="fa fa-external-link"></span> https://e-katalog.ddns.net:58787/TECH</a>
+          <div class="bg-dark text-light mt-3 p-3 rounded-3">
+            <div class="ms-3">
+              <h6 class="m-0"><span class="fa fa-folder"></span> DDC LEYTE E-KATALOG</h6>
+              <a class="text-success" target="_blank" href="https://e-katalog.ddns.net:58787/TECH"><span class="fa fa-external-link"></span> https://e-katalog.ddns.net:58787/TECH</a>
+              <h6 class="m-0 mt-3"><span class="fa fa-wifi"></span> WIFI TEAM UNIFI MAC</h6>
+              <a class="text-success" target="_blank" href="https://ddc-artisan.ddns.net:9552/views/unifi-mac.php"><span class="fa fa-external-link"></span> https://ddc-artisan.ddns.net:9552/views/unifi-mac.php</a>
+            </div>  
+            </div>
           </div>
         </div>
       </div>

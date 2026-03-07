@@ -117,7 +117,7 @@
     </div>
     <h6 <?php $_SESSION["g_type"] == "IT" ? "" : print("hidden");?> class="mt-3" style="margin-bottom: -2px;"><span class="fa fa-info-circle"></span> Your IP</h6>
     <div <?php $_SESSION["g_type"] == "IT" ? "" : print("hidden");?> class="row p-3">
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="row">
                 <div class="col-md-6">
                     <p id="wmi_ip" class="f-13 mb-1 text-primary fw-bold"><span class="fwt-5 text-dark">IP:</span></p>
