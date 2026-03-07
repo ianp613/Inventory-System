@@ -70,7 +70,8 @@ if(document.getElementById("login")){
             "userid" : userid.value,
             "password" : password.value
         }).then(res => {
-            validateLogin(res)
+            console.log(res)
+            // validateLogin(res)
         })
     }
 
