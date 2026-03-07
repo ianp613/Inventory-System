@@ -44,6 +44,10 @@
                 <div class="w-100 text-center mt-3"><a class="text-light" style="text-decoration: none;" href="forgot_password.php">Forgot password?</a></div>
             </div>
           </div>
+          <div class="bg-dark text-light mt-3 p-3 text-center rounded-3">
+            <h6 class="blink"><span class="fa fa-folder"></span> DDC LEYTE E-KATALOG</h6>
+            <a class="text-success" target="_blank" href="https://e-katalog.ddns.net:58787/TECH"><span class="fa fa-link"></span> https://e-katalog.ddns.net:58787/TECH</a>
+          </div>
         </div>
       </div>
     </div>
