@@ -895,7 +895,7 @@ if(document.getElementById("consumables")){
                 let baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
                 add_log_link.setAttribute("target","_blank");
                 add_log_link.setAttribute("href",baseUrl + "consumables-log.php?glog="+res);
-                add_log_link.innerText = baseUrl + "consumables-log.php?glog="+res;
+                add_log_link.innerText = "<span class=\"fa fa-external-link\"></span>" + baseUrl + "consumables-log.php?glog="+res;
 
                 regenerate_link_btn.hidden = false
                 delete_link_btn.hidden = false
@@ -923,7 +923,7 @@ if(document.getElementById("consumables")){
                 let baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
                 add_log_link.setAttribute("target","_blank");
                 add_log_link.setAttribute("href",baseUrl + "consumables-log.php?glog="+res);
-                add_log_link.innerText = baseUrl + "consumables-log.php?glog="+res;
+                add_log_link.innerText = "<span class=\"fa fa-external-link\"></span>" + baseUrl + "consumables-log.php?glog="+res;
                 glink_temp = localStorage.getItem("g_name") + "+++" + res + "+++" + "1"
                 getLinks(true)
             })
