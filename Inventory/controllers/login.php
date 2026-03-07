@@ -78,7 +78,7 @@
                     $user_temp = DB::prepare($user_,$user[0]["id"]);
                     $user_temp->last_login_ip = $_SERVER['REMOTE_ADDR'];
                     DB::update($user_temp);
-                    
+
                 }else{
                     $response = [
                         "status" => true,
@@ -112,5 +112,5 @@
             ];    
         }
     }
-    echo json_encode($response);
+    echo json_encode($_SERVER);
 ?>
