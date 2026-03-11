@@ -17,7 +17,7 @@
             $user->username = $data["username"];
             $user->password = $data["password"];
             $user->privileges = $data["privilege"];
-            $user->$last_login_ip = "-";
+            $user->last_login_ip = "-";
             $user->c_authority = $data["privilege"] != "User" ? "true" : "false";
             $user->passkey = $passkey;
             
