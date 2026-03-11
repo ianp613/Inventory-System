@@ -140,7 +140,7 @@
                 <Select class="form-control mb-2" id="group_links">
                     <option value=" +++ +++ " selected disabled>-- Group List --</option>
                 </Select>
-                <h6 class="mb-2 f-i">Your Passkey: <span class="fw-bolder text-success" id="your_passkey">-</span></h6>
+                <h2 class="mb-2 f-i">Your Passkey: <span class="fw-bolder text-danger" id="your_passkey">-</span></h2>
                 <h6 class="f-15 mt-4">Click the link to view the consumable request form.</h6>
                 <h6 class="f-14"><i><a class="no-event" href="#" id="add_log_link">Please select a group.</a></i></h6>
             </div>
