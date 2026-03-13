@@ -21,6 +21,18 @@
         public string $last_login_ip;
         public string $username;
         public string $password;
+
+        public $label = [
+            "name:" => "Name:",
+            "email:" => "Email:",
+            "privileges:" => "Privileges:",
+            "c_authority:" => "Consumable Authority:",
+            "passkey:" => "Passkey:",
+            "username:" => "Username:",
+            "password:" => "Password:",
+        ];
+        public $ignore = [];
+        public $main = "name";
     }
 
     class User_Group{
