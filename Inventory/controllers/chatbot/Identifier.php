@@ -4,6 +4,7 @@
             $input = str_replace(",","",$input);
             $input = str_replace(":","",$input);
             $models = [
+                "user" => new User(),
                 "ipaddress" => new IP_Address(),
                 "equipment" => new Equipment(),
                 "entry" => new Equipment_Entry(),
