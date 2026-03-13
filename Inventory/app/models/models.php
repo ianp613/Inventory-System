@@ -591,6 +591,7 @@
         public string $unit;
         public string $stock;
         public string $restock_point;
+        public string $last_restock;
 
         public $label = [
             "gid:" => "GID:",
@@ -600,7 +601,8 @@
             "measurement:" => "Measurement:",
             "unit:" => "Unit:",
             "stock:" => "Stock:",
-            "restock_point:" => "Restock Point:"
+            "restock_point:" => "Restock Point:",
+            "last_restock" => "Last Restock:"
         ];
         public $ignore = [
             "id",
@@ -618,7 +620,9 @@
             "sto",
             "toc",
             "ock",
-            "stock",
+            "es",
+            "res",
+            "est",
         ];
         public $main = "description";
     }
