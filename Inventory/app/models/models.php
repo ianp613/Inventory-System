@@ -602,7 +602,8 @@
             "unit:" => "Unit:",
             "stock:" => "Stock:",
             "restock_point:" => "Restock Point:",
-            "last_restock:" => "Last Restock:"
+            "last_restock:" => "Last Restock:",
+            "last_reStock:" => "Last Restock:"
         ];
         public $ignore = [
             "id",
