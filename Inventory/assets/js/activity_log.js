@@ -88,10 +88,11 @@ if(document.getElementById("logs")){
                     e["id"],
                     replaceName(e["uid"],e["log"]),
                     e["created_at"],
-                    localStorage.getItem("privileges") == "Administrator" || localStorage.getItem("privileges") == "Supervisor"? "<button id=\"delete_log_"+ e["id"] +"\" l-id=\""+ e["id"] +"\" class=\"delete_log_row btn btn-sm btn-danger ms-1\"><i l-id=\""+ e["id"] +"\" class=\"delete_log_row fa fa-trash\"></i></button>" : ""
+                    "<button id=\"delete_log_"+ e["id"] +"\" l-id=\""+ e["id"] +"\" class=\"delete_log_row btn btn-sm btn-danger ms-1\"><i l-id=\""+ e["id"] +"\" class=\"delete_log_row fa fa-trash\"></i></button>"
                 ]).draw(false)   
             });
         })
+        localStorage.getItem("privileges") != "User" ? logTable.column(3).visible(true) : logTable.column(3).visible(false)
     }
 
     document.querySelector('#log_table').addEventListener("click", e=>{

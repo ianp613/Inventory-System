@@ -21,7 +21,8 @@
                     <td>Unit</td>
                     <td>Stock</td>
                     <td>Status</td>
-                    <td class="wd-100">Action</td>
+                    <td>Last Restock</td>
+                    <td class="text-start" style="width: 50px;">Action</td>
                 </tr>
             </thead>
             <tbody>

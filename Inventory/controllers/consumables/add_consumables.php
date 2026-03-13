@@ -3,6 +3,11 @@
     header('Content-Type: application/json');
     include("../../includes.php");
     $data = json_decode(file_get_contents('php://input'), true);
+    
+    // Set timezone (Philippines)
+    date_default_timezone_set("Asia/Manila");
+    // Get current date and time
+    $currentDateTime = date("Y-m-d H:i:s");
 
     if($_SESSION["g_member"]){
         if($data) {
@@ -20,6 +25,7 @@
                 $consumables->unit = $data["unit"];
                 $consumables->stock = $data["stock"];
                 $consumables->restock_point = $data["restock_point"];
+                $consumables->last_restock = $currentDateTime;
 
                 DB::save($consumables);
 

@@ -17,7 +17,7 @@ if(document.getElementById("consumables")){
             },
             { 
                 className: 'dt-right', 
-                targets: 7
+                targets: 8
             }
         ],
         autoWidth: false,
@@ -957,10 +957,13 @@ if(document.getElementById("consumables")){
                 e["unit"],
                 e["stock"],
                 parseFloat(e["stock"]) < parseFloat(e["restock_point"]) && parseFloat(e["stock"]) > 0 ? "<span class=\"badge bg-warning\">Low Stock</span>" : (parseFloat(e["stock"]) == 0) ? "<span class=\"badge bg-danger\">Out of Stock</span>" : "<span class=\"badge bg-success\">In Stock</span>",
+                e["last_restock"] ? e["last_restock"] : e["created_at"],
                 " <button id=\"edit_consumables_"+ e["id"] +"\" c-id=\""+ e["id"] +"\" class=\"edit_consumables_row btn btn-sm btn-secondary mb-1\"><i c-id=\""+ e["id"] +"\" class=\"edit_consumables_row fa fa-edit\"></i></button>"+
                 " <button id=\"delete_consumables_"+ e["id"] +"\" c-id=\""+ e["id"] +"\" class=\"delete_consumables_row btn btn-sm btn-danger mb-1\"><i c-id=\""+ e["id"] +"\" class=\"delete_consumables_row fa fa-trash-o\"></i></button>"
             ]).draw(false) 
         });
+
+        localStorage.getItem("privileges") != "User" ? consumablesTable.column(8).visible(true) : consumablesTable.column(8).visible(false)
     }
 
     document.querySelector('#consumables_table').addEventListener("click", e=>{

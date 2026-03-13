@@ -12,7 +12,7 @@
                 <td class="text-start">ID</td>
                 <td class="text-start" style="width: 70%;">Logs</td>
                 <td class="text-start">Date & Time</td>
-                <?php $_SESSION["privileges"] == "Administrator" || $_SESSION["privileges"] == "Supervisor" ? printf("<td class=\"text-start\" style=\"width: 50px;\">Action</td>") : ""; ?>
+                <td class="text-start" style="width: 50px;">Action</td>
             </tr>
         </thead>
         <tbody>

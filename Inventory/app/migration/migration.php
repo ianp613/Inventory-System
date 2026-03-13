@@ -254,6 +254,7 @@
             Migrate::string("unit");
             Migrate::string("stock");
             Migrate::string("restock_point");
+            Migrate::string("last_restock");
         }
     }
 

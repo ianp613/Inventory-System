@@ -579,7 +579,8 @@
             "measurement",
             "unit",
             "stock",
-            "restock_point"
+            "restock_point",
+            "last_restock"
         ];
 
         public string $gid;
