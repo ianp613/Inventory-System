@@ -12,7 +12,7 @@ var sound = null;
 var theme = null;
 
 if(document.getElementById("sidebar")){
-    let inactivityTime = 60000 * 5; // 5 minutes
+    let inactivityTime = 60000 * 30; // 30 minutes
     let timeout;
 
     function inactive_logout() {
