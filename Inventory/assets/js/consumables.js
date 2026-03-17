@@ -678,11 +678,11 @@ if(document.getElementById("consumables")){
         }else{
             add_log_link.setAttribute("href","#");
             if(data[0] == localStorage.getItem("g_name")){
-                add_log_link.innerText = "Click generate link.";
+                add_log_link.innerText = localStorage.getItem("privileges") == "User" ? "Link unavailable, please ask your group supervisor to generate a link." : "Click generate link."
             }
             add_log_link.classList.add("no-event")
         }
-        if(data[0] == localStorage.getItem("g_name")){
+        if(data[0] == localStorage.getItem("g_name") && localStorage.getItem("privileges") != "User"){
             generate_link_controls.hidden = false
             if(data[2] == "1"){
                 generate_link_btn.hidden = true
@@ -897,6 +897,8 @@ if(document.getElementById("consumables")){
                 add_log_link.setAttribute("href",baseUrl + "consumables-log.php?glog="+res);
                 add_log_link.innerHTML = "<span class=\"fa fa-external-link\"></span> " + baseUrl + "consumables-log.php?glog="+res;
 
+                add_log_link.classList.remove("no-event")
+
                 regenerate_link_btn.hidden = false
                 delete_link_btn.hidden = false
                 generate_link_btn.hidden = true
@@ -925,6 +927,9 @@ if(document.getElementById("consumables")){
                 add_log_link.setAttribute("href",baseUrl + "consumables-log.php?glog="+res);
                 add_log_link.innerHTML = "<span class=\"fa fa-external-link\"></span> " + baseUrl + "consumables-log.php?glog="+res;
                 glink_temp = localStorage.getItem("g_name") + "+++" + res + "+++" + "1"
+
+                add_log_link.classList.remove("no-event")
+
                 getLinks(true)
             })
         }
@@ -935,9 +940,11 @@ if(document.getElementById("consumables")){
             sole.post("../../controllers/consumables/delete_link.php",{
                 link: add_log_link.getAttribute("href").split("glog=")[1]
             }).then(res => {
-                add_log_link.innerText = "Click generate link."
+                add_log_link.innerText = localStorage.getItem("privileges") == "User" ? "Link unavailable, please ask your group supervisor to generate a link." : "Click generate link."
                 add_log_link.removeAttribute("target");
                 add_log_link.setAttribute("href","#");
+
+                add_log_link.classList.add("no-event")
                 
                 regenerate_link_btn.hidden = true
                 delete_link_btn.hidden = true
