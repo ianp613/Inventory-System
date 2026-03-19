@@ -40,9 +40,16 @@
                     <input type="password" id="password" class="form-control" placeholder="Enter Password">
                     <span id="togglePassword" class="fa fa-eye-slash text-secondary"></span>
                 </div>
+
+                <input type="checkbox" name="" id="remember_me">
+                <label  for="remember_me" class="mb-2">Remember me until this site close.</label>
+
                 <button id="login_btn" type="submit" class="btn btn-dark w-100"><span class="fa fa-sign-in"></span> Login</button>
                 <div class="w-100 text-center mt-3"><a class="text-light" style="text-decoration: none;" href="forgot_password.php">Forgot password?</a></div>
             </div>
+          </div>
+          <div hidden id="remembered_user_container" class="remembered_user_container">
+            <!-- USERS HERE -->
           </div>
           <div class="bg-dark text-light mt-3 p-3 rounded-3">
             <div class="ms-3">

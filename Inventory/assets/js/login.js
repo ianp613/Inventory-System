@@ -15,6 +15,7 @@ if(document.getElementById("login")){
     let login_btn = document.getElementById("login_btn")
     let login_alert = document.getElementById("login_alert")
     let login_sound = false
+    let rem_user_ = false
 
     sole.post("../../controllers/settings.php")
     .then(res => {
@@ -68,7 +69,8 @@ if(document.getElementById("login")){
     function login(){
         sole.post("../controllers/login.php",{
             "userid" : userid.value,
-            "password" : password.value
+            "password" : password.value,
+            "rem_user" : rem_user_
         }).then(res => {
             validateLogin(res)
         })
@@ -294,10 +296,107 @@ if(document.getElementById("login")){
         scrollToBottom()
     }
 
-    // function typeWriter() {
-        
-    // }
-    
+    const pastelColors = [
+        '#AEC6CF', // pastel blue
+        '#FFB347', // pastel orange
+        '#77DD77', // pastel green
+        '#F49AC2', // pastel pink
+        '#CFCFC4', // pastel gray
+        '#B39EB5', // pastel purple
+        '#FFD1DC', // baby pink
+        '#CB99C9', // pastel lavender
+        // '#FDFD96', // pastel yellow
+        '#B5EAD7', // mint pastel
+        '#C7CEEA'  // sky pastel
+    ];
 
+    function getUniquePastelColor() {
+        return pastelColors[Math.floor(Math.random() * pastelColors.length)]
+    }
 
+    var remembered_user_container = document.getElementById("remembered_user_container")
+    var remember_me = document.getElementById("remember_me")
+    var users = []
+    var initial_load = true
+    if(sessionStorage.getItem("rem_user") !== null){
+        users = sessionStorage.getItem("rem_user").split("+++")
+        users.pop()
+        users.forEach(user => {
+            var data = user.split("|")
+            var initials = data[3].split(" ")
+            
+            var h6 = document.createElement("h6")
+            h6.innerHTML = initials[0][0] + initials[1][0] + "<span hidden class=\"remembered_user_notification_counter\">0</span>"
+            h6.classList.add("remembered_user")
+            h6.setAttribute("gid",data[0])
+            h6.setAttribute("uid",data[1])
+            h6.setAttribute("user",data[2])
+            h6.setAttribute("title",data[3])
+            h6.style.backgroundColor = getUniquePastelColor()
+            remembered_user_container.appendChild(h6)
+            remembered_user_container.hidden = false
+        })
+    }else{
+        remembered_user_container.hidden = true
+    }
+
+    remembered_user_container.addEventListener("click", e => {
+        if(e.target.tagName == "H6"){
+            var rem_attemp = e.target.getAttribute("gid")+"|"+e.target.getAttribute("uid")+"|"+e.target.getAttribute("user")+"|"+e.target.getAttribute("title")
+            
+            if(users.includes(rem_attemp)){
+                userid.value = e.target.getAttribute("user")
+                rem_user_ = true
+                login_btn.click()
+            }else{
+                bs5.toast("error","<b>System Error - Invalid Attemp - Do not try this again<b>","lg",false)
+            }
+        }
+    })
+
+    remember_me.addEventListener("change", e => {
+        sessionStorage.setItem("remember_me",remember_me.checked)
+    })
+
+    const socket = new WebSocket("ws://localhost:8080");
+    function getUpdates(){
+        var msg = [
+            "get"
+        ]
+        socket.send(msg);
+    }
+    socket.onmessage = function(event){
+        const data = JSON.parse(event.data);
+        var elements = remembered_user_container.children
+        if(remembered_user_container.children.length){
+            for (let i = 0; i < elements.length; i++) {
+                var count = 0
+                data.forEach(dat => {
+                    if(dat["gid"] == elements[i].getAttribute("gid")){
+                        count++
+                    }
+                })
+                if(count){
+                    if(count > parseInt(elements[i].children[0].innerText) && !initial_load){
+                        bs5.toast("info","You have new Notification")
+                        if(unlocked){
+                            audio.play()    
+                        }
+                    }
+                    elements[i].children[0].innerText = count
+                    elements[i].children[0].hidden = false
+                }
+            }
+            initial_load = false
+        }
+    };
+    setTimeout(() => {
+        getUpdates()
+    }, 2000);
+
+    let unlocked = false;
+
+    document.addEventListener("click", () => {
+        unlocked = true;
+    }, { once: true });
 }

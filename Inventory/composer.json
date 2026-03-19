@@ -4,6 +4,7 @@
         "ext-fileinfo": "*",
         "phpoffice/phpspreadsheet": "^4.2",
         "phpmailer/phpmailer": "^6.10",
-        "amirezaeb/heroqr": "^1.1"
+        "amirezaeb/heroqr": "^1.1",
+        "cboden/ratchet": "^0.4.4"
     }
 }

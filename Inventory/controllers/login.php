@@ -21,6 +21,10 @@
             }
         }
 
+        if($data['rem_user'] == true && count($users) == 1){
+            $auth = true;
+        }
+
         if($auth){
             $user = DB::where($user,"username","=",$userid);
             $_SESSION["auth"] = true;
@@ -84,7 +88,7 @@
                         "status" => true,
                         "type" => "info",
                         "size" => "lg",
-                        "message" => "Your account is currently inactive, and is not assigned to any office yet. Please ask your supervisor for additional info.",
+                        "message" => "Your account is currently inactive, and is not assigned to any group yet. Please ask your supervisor for additional info.",
                         "g_member" => false,
                         "user" => $user
                         

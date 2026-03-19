@@ -134,6 +134,22 @@ if(document.getElementById("sidebar")){
             localStorage.setItem("passkey",res.user[0]["passkey"])
             localStorage.setItem("g_member",res.g_member)
             if(localStorage.getItem("g_member") == "true"){
+                localStorage.setItem("ws_g_id",res.group[0].id)
+                if(sessionStorage.getItem("remember_me") !== null){
+                    if(JSON.parse(sessionStorage.getItem("remember_me"))){
+                        if(sessionStorage.getItem("rem_user") !== null){
+                            var users = sessionStorage.getItem("rem_user").split("+++")
+                            // gid|uid|name+++
+                            var sS_temp = sessionStorage.getItem("rem_user")
+                            if(!users.includes(res.group[0].id+"|"+res.user[0]["id"]+"|"+res.user[0]["username"]+"|"+res.user[0]["name"])){
+                                sessionStorage.setItem("rem_user",sS_temp+res.group[0].id+"|"+res.user[0]["id"]+"|"+res.user[0]["username"]+"|"+res.user[0]["name"]+"+++")
+                            }
+                        }else{
+                            sessionStorage.setItem("rem_user",res.group[0].id+"|"+res.user[0]["id"]+"|"+res.user[0]["username"]+"|"+res.user[0]["name"]+"+++")
+                        }
+                    }
+                    sessionStorage.removeItem("remember_me")
+                }
                 localStorage.setItem("g_id",res.group[0].id)
                 localStorage.setItem("g_name",res.group[0].group_name)
             }

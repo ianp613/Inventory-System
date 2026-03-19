@@ -2,6 +2,7 @@
     Migrate::$migration = [
         "UserMigration",
         "UserGroupMigration",
+        "WebSocket_PromiseMigration",
         "EquipmentMigration",
         "EquipmentEntryMigration",
         "ip_networkMigration",
@@ -44,6 +45,18 @@
             Migrate::string("type");
             Migrate::string("supervisors");
             Migrate::string("users");
+        }
+    }
+
+    class WebSocket_PromiseMigration
+    {
+        public static function index(){
+            Migrate::attrib_table("websocket_promise");
+            Migrate::attrib_string(1000);
+            Migrate::string("gid");
+            Migrate::string("type");
+            Migrate::string("message");
+            Migrate::string("recipient");
         }
     }
 

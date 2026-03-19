@@ -38,6 +38,21 @@
         public string $users;       // example: "1|2|3|4"
     }
 
+    class WebSocket_Promise{
+        public $table = "websocket_promise";
+        public $fillable = [
+            "gid",
+            "type", // example: text / action
+            "message",
+            "recipient",
+        ];
+
+        public string $gid;
+        public string $type;
+        public string $message;
+        public string $recipient;
+    }
+
     class Equipment
     {
         public $table = "equipment";
