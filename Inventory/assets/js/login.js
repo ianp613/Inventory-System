@@ -380,7 +380,7 @@ if(document.getElementById("login")){
                     if(count > parseInt(elements[i].children[0].innerText) && !initial_load){
                         bs5.toast("info","You have new Notification")
                         if(unlocked){
-                            audio.play()    
+                            // audio.play()    
                         }
                     }
                     elements[i].children[0].innerText = count
