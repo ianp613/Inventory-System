@@ -21,6 +21,7 @@ var cancel_btn = document.getElementById("cancel_btn");
 var submit_btn = document.getElementById("submit_btn");
 
 var log_consumable_badge_danger = document.getElementById("log_consumable_badge_danger")
+var log_consumable_badge_warning = document.getElementById("log_consumable_badge_warning")
 var log_consumable_badge_success = document.getElementById("log_consumable_badge_success")
 
 loadPage()
@@ -124,10 +125,16 @@ function search(){
                 remaining_stock = res.data[0].stock
                 cid = res.data[0].id
 
-                if(parseFloat(res.data[0].stock) <= parseFloat(res.data[0].restock_point)){
+                if(parseFloat(res.data[0].stock) <= parseFloat(res.data[0].restock_point) && parseFloat(res.data[0].stock) != 0){
+                    log_consumable_badge_warning.hidden = false
+                    log_consumable_badge_danger.hidden = true
+                    log_consumable_badge_success.hidden = true
+                }else if(parseFloat(res.data[0].stock) == 0){
+                    log_consumable_badge_warning.hidden = true
                     log_consumable_badge_danger.hidden = false
                     log_consumable_badge_success.hidden = true
                 }else{
+                    log_consumable_badge_warning.hidden = true
                     log_consumable_badge_danger.hidden = true
                     log_consumable_badge_success.hidden = false
                 }

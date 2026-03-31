@@ -38,7 +38,8 @@
                     <label>Remaining Stock: <span id="log_consumables_stock"></span></label>
                     <br>
                     <span>Status: </span>
-                    <span id="log_consumable_badge_danger" hidden class="badge bg-danger">Low Stock</span>
+                    <span id="log_consumable_badge_danger" hidden class="badge bg-danger">No Stock</span>
+                    <span id="log_consumable_badge_warning" hidden class="badge bg-warning">Low Stock</span>
                     <span id="log_consumable_badge_success" hidden class="badge bg-success">In Stock</span>
                 </div>
                 <hr>
