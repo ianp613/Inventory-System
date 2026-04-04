@@ -109,7 +109,8 @@
                 <div id="search_results" class="mt-2"></div>
                 <hr>
                 <div id="restock_consumable_info">
-                    <span id="consumable_badge_danger" hidden class="badge bg-danger" style="position: absolute; right: 15px;">Low Stock</span>
+                    <span id="consumable_badge_danger" hidden class="badge bg-danger" style="position: absolute; right: 15px;">Out of Stock</span>
+                    <span id="consumable_badge_warning" hidden class="badge bg-warning" style="position: absolute; right: 15px;">Low Stock</span>
                     <span id="consumable_badge_success" hidden class="badge bg-success" style="position: absolute; right: 15px;">In Stock</span>
                     <label>Code: <b id="restock_consumables_code"></b></label><br>
                     <label>Description: <span id="restock_consumables_description"></span></label><br>
