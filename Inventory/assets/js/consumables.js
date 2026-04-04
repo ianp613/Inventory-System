@@ -712,6 +712,10 @@ if(document.getElementById("consumables")){
     })
 
     add_consumables_btn.addEventListener("click",function(){
+        if(!consumable_measurement.value){
+            bs5.toast("info","Please select measurement.")
+            return
+        }
         if(consumable_description.value){
             sole.post("../../controllers/consumables/add_consumables.php",{
                 uid: localStorage.getItem("userid"),
