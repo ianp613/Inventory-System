@@ -120,7 +120,7 @@ function search(){
         if(res.status){
             if(res.data.length && g_search.value){
                 log_consumables_code.innerText = res.data[0].code
-                log_consumables_description.innerText = res.data[0].description
+                log_consumables_description.innerHTML = res.data[0].description
                 log_consumables_stock.innerText = res.data[0].stock
 
                 remaining_stock = res.data[0].stock
