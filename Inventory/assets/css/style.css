@@ -850,3 +850,21 @@ input::placeholder, textarea::placeholder{
     margin-right: -8px;
     margin-top: -8px;
 }
+
+.ff-content{
+    cursor: pointer;
+    border-radius: 3px;
+    overflow-x: hidden;
+}
+.ff-content:hover{
+    background-color: #6c757d;
+    color: white;
+    transition: 0.3s;
+}
+
+* {
+    -webkit-user-select: none; /* Chrome, Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* Old Edge/IE */
+    user-select: none;         /* Standard */
+}
