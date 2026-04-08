@@ -247,3 +247,18 @@ CLEAR LOG FIX
 
 
 Delete Consumable, should also delete all of the request
+
+
+
+C/O sir Joel 
+Termicnal No
+System unit (Inside of unit) with barcode/ NA if no
+Perephrals (IO divice)
+UPS (Case / Battery) w/ barcode
+
+
+
+
+FR3156069
+SERVR PORT 28279
+HTTP PORT 15690

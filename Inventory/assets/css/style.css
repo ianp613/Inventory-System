@@ -868,3 +868,46 @@ input::placeholder, textarea::placeholder{
     -ms-user-select: none;     /* Old Edge/IE */
     user-select: none;         /* Standard */
 }
+
+.ff-options{
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 60px;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 10px;
+    z-index: 1000;
+    gap: 10px;
+    max-width: 600px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.ff-options div{
+    background-color: #6c757d;
+    flex: 1;              /* 🔑 makes all buttons equal width */
+    text-align: center;
+    padding: 10px 0;
+    height: 40px;
+    color: #f8f8f8;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.ff-option-disabled{
+    background-color: #cccccc !important;
+    color: gray !important;
+    pointer-events: none;
+}
+.ff-options div:hover{
+    background-color: #cccccc;
+    color: #000000;
+    transition: 0.3s;
+}
+.ff-options div span{
+    font-weight: bold;
+}

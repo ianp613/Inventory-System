@@ -1,7 +1,3 @@
-let unclose = {
-    backdrop: 'static',
-    keyboard: false
-}
 const audio = new Audio("../assets/sound/ph.mp3");
 const click = new Audio("../assets/sound/click.wav");
 var switch_sound = document.getElementById("switch_sound")

@@ -80,3 +80,8 @@ if(document.getElementsByClassName("copyright-1").length){
 if(document.getElementsByClassName("copyright").length){
     document.getElementsByClassName("copyright")[0].innerHTML = "<i>Copyright 2025 @ Wifi Team | Ian</i>"
 }
+
+let unclose = {
+    backdrop: 'static',
+    keyboard: false
+}

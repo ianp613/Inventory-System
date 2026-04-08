@@ -30,17 +30,23 @@
                     <div id="navigation_container" class="d-flex flex-wrap">
                         <!-- Navigation Folder Here -->
                     </div>
-                    <span class="fa fa-ellipsis-v me-2 btn btn-sm"></span> 
+                    <span hidden id="ellipsis_btn" class="fa fa-ellipsis-v me-2 mt-1 btn btn-sm"></span>
+                    <span id="ff_select_cancel" class="fa fa-remove mt-2 me-2"></span>
                 </div>
-                
-
             </div>
             <hr class="mt-1 mb-1">
-            <div id="file_folder_container" class="row p-2">
+            <div id="file_folder_container" class="row p-2 mb-5">
                 <!-- Files and Folders Here -->
+            </div>
+            <div hidden id="ff_options" class="ff-options">
+                <div id="ff_option_copy" class="copy_btn ff-option-disabled"><span class="fa fa-copy"></span> Copy</div>
+                <div id="ff_option_move" class="copy_btn ff-option-disabled"><span class="fa fa-scissors"></span> Move</div>
+                <div id="ff_option_rename" class="copy_btn ff-option-disabled"><span class="fa fa-i-cursor"></span> Rename</div>
+                <div id="ff_option_delete" class="copy_btn ff-option-disabled"><span class="fa fa-trash"></span> Delete</div>
             </div>
         </div>
         <h6 class="copyright f-10 text-secondary"></h6>
+        <?php include("modals/file-browser.php"); ?>
         <script src="../assets/js/jquery/jquery-3.7.1.js"></script>
         <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
         <script src="../assets/js/sole.js"></script>
