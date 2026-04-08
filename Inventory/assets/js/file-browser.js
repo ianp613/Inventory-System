@@ -12,8 +12,12 @@ var ff_option_copy          = document.getElementById("ff_option_copy");
 var ff_option_move          = document.getElementById("ff_option_move");
 var ff_option_rename        = document.getElementById("ff_option_rename");
 var ff_option_delete        = document.getElementById("ff_option_delete");
+var ff_rename_input         = document.getElementById("ff_rename_input");
+var ff_rename_cancel        = document.getElementById("ff_rename_cancel");
+var ff_rename_save          = document.getElementById("ff_rename_save");
 
 var selections              = [];
+var ext                     = "";
 
 const randomNumber          = Math.floor(Math.random() * 6) + 1;
 const favicon               = document.querySelector("link[rel='shortcut icon']");
@@ -21,6 +25,9 @@ favicon.href                = `../../assets/img/labubu/labubu-folder-icons/labub
 browser_icon.src            = `../../assets/img/labubu/labubu-folder-icons/labubu-folder-icon-${randomNumber}.ico`;
 
 const ellipsis_menu         = new bootstrap.Modal(document.getElementById('ellipsis_menu'));
+const ff_rename             = new bootstrap.Modal(document.getElementById('ff_rename'),unclose);
+
+const ff_rename_modal       = document.getElementById('ff_rename');
 
 
 scanFolder()
@@ -46,9 +53,10 @@ function scanFolder(){
             }
         }
         
+        ff_options.hidden = true
+
         if(res.length){
             ff_select_btn.hidden = false
-            ff_options.hidden = true
             cancelSelection()
         }else{
             ff_select_btn.hidden = true
@@ -186,10 +194,50 @@ ff_select_cancel.addEventListener("click", e => {
 
 ff_option_rename.addEventListener("click", e => {
     if(selections.length == 1){
-
+        var selection_temp = selections[0].split(".")
+        if(selection_temp.length > 1){
+            ext = selection_temp.pop()
+        }else{
+            ext = ""
+        }
+        
+        ff_rename_input.value = selection_temp.join(".")
+        ff_rename.show()
     }else{
         bs5.toast("error","Something went wrong, please try again.","lg",false)
     }
+})
+
+const safeRegex = /[^a-zA-Z0-9._-]/g;
+
+ff_rename_input.addEventListener("input", function () {
+    this.value = this.value.replace(safeRegex, '');
+});
+
+ff_rename_modal.addEventListener('shown.bs.modal', function () {
+    ff_rename_input.focus()
+})
+
+ff_rename_cancel.addEventListener("click", e => {
+    ff_select_cancel.click()
+    cancelSelection()
+    ff_rename_input.value = ""
+    ff_rename.hide()
+})
+
+ff_rename_save.addEventListener("click", e => {
+    sole.post("../../controllers/file-browser/rename-files.php",{
+        folder : localStorage.getItem("folder"),
+        old : selections[0],
+        new : ff_rename_input.value + "." + ext
+    }).then(res => {
+        if(res.status){
+            ff_rename.hide()
+            scanFolder()
+        }else{
+            bs5.toast(res.type,res.message)
+        }
+    })
 })
 
 function cancelSelection(){
@@ -198,6 +246,10 @@ function cancelSelection(){
     for (let i = 0; i < ff_content.length; i++) {
         ff_content[i].checked = false
     }
+    ff_option_copy.classList.add("ff-option-disabled")
+    ff_option_move.classList.add("ff-option-disabled")
+    ff_option_rename.classList.add("ff-option-disabled")
+    ff_option_delete.classList.add("ff-option-disabled")
 }
 
 document.addEventListener('contextmenu', event => {
