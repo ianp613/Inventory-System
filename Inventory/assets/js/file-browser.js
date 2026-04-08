@@ -208,10 +208,10 @@ ff_option_rename.addEventListener("click", e => {
     }
 })
 
-const safeRegex = /[^a-zA-Z0-9._-]/g;
+const bannedRegex = /[\/\\<>*:"?|]/g;
 
 ff_rename_input.addEventListener("input", function () {
-    this.value = this.value.replace(safeRegex, '');
+    this.value = this.value.replace(bannedRegex, '');
 });
 
 ff_rename_modal.addEventListener('shown.bs.modal', function () {
