@@ -39,10 +39,30 @@
                 <!-- Files and Folders Here -->
             </div>
             <div hidden id="ff_options" class="ff-options">
-                <div id="ff_option_copy" class="copy_btn ff-option-disabled"><span class="fa fa-copy"></span> Copy</div>
-                <div id="ff_option_move" class="copy_btn ff-option-disabled"><span class="fa fa-scissors"></span> Move</div>
-                <div id="ff_option_rename" class="copy_btn ff-option-disabled"><span class="fa fa-i-cursor"></span> Rename</div>
-                <div id="ff_option_delete" class="copy_btn ff-option-disabled"><span class="fa fa-trash"></span> Delete</div>
+                <div id="ff_option_copy" class="ff-option-disabled"><span class="fa fa-copy"></span> Copy</div>
+                <div id="ff_option_move" class=" ff-option-disabled"><span class="fa fa-scissors"></span> Move</div>
+                <div id="ff_option_rename" class="ff-option-disabled"><span class="fa fa-i-cursor"></span> Rename</div>
+                <div id="ff_option_delete" class="ff-option-disabled"><span class="fa fa-trash"></span> Delete</div>
+                <div id="ff_option_download" class="ff-option-disabled">
+                    <span id="ff_option_download_download" class="fa fa-download"></span>
+                    <h6 hidden id="ff_option_download_spinner" class="wd-15 ht-15 me-1 mt-0 mb-0 spinner-border text-secondary" role="status">
+                    </h6> Download</div>
+            </div>
+            <div hidden id="ff_options_copy" class="ff-options-copy">
+                <div id="ff_option_copy_cancel" class=""><span class="fa fa-remove"></span> Cancel</div>
+                <div id="ff_option_copy_paste" class="">
+                    <span id="ff_option_copy_paste_clipboard" class="fa fa-clipboard"></span>
+                    <h6 hidden id="ff_option_copy_paste_spinner" class="wd-15 ht-15 me-1 mt-0 mb-0 spinner-border text-secondary" role="status">
+                    </h6> Copy Here
+                </div>
+            </div>
+            <div hidden id="ff_options_move" class="ff-options-move">
+                <div id="ff_option_move_cancel" class=""><span class="fa fa-remove"></span> Cancel</div>
+                <div id="ff_option_move_paste" class="">
+                    <span id="ff_option_move_paste_clipboard" class="fa fa-clipboard"></span>
+                    <h6 hidden id="ff_option_move_paste_spinner" class="wd-15 ht-15 me-1 mt-0 mb-0 spinner-border text-secondary" role="status">
+                    </h6> Move Here
+                </div>
             </div>
         </div>
         <h6 class="copyright f-10 text-secondary"></h6>

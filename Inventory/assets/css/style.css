@@ -869,7 +869,7 @@ input::placeholder, textarea::placeholder{
     user-select: none;         /* Standard */
 }
 
-.ff-options{
+.ff-options, .ff-options-copy, .ff-options-move{
     position: fixed;
     bottom: 0;
     left: 50%;
@@ -886,7 +886,7 @@ input::placeholder, textarea::placeholder{
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
 }
-.ff-options div{
+.ff-options div, .ff-options-copy div, .ff-options-move div{
     background-color: #6c757d;
     flex: 1;              /* 🔑 makes all buttons equal width */
     text-align: center;
@@ -898,16 +898,16 @@ input::placeholder, textarea::placeholder{
     cursor: pointer;
     font-size: 14px;
 }
-.ff-option-disabled{
+.ff-option-disabled, .selected-disabled{
     background-color: #cccccc !important;
     color: gray !important;
     pointer-events: none;
 }
-.ff-options div:hover{
+.ff-options div:hover, .ff-options-copy div:hover, .ff-options-move div:hover{
     background-color: #cccccc;
     color: #000000;
     transition: 0.3s;
 }
-.ff-options div span{
+.ff-options div span, .ff-options-copy div span, .ff-options-move div span{
     font-weight: bold;
 }

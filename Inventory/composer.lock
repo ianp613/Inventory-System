@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "10ef46876eb3a4f1c325e988d3d3fc57",
+    "content-hash": "fdd3c05408cee959cf1d1cefd8e7da13",
     "packages": [
         {
             "name": "amirezaeb/heroqr",
