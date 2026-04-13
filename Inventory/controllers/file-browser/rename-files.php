@@ -1,11 +1,12 @@
 <?php
+    $conf = json_decode(file_get_contents("../../file-browser.conf"));
     $data = json_decode(file_get_contents('php://input'), true);
 
     // sanitize new name (VERY important for Windows)
     $data["new"] = rtrim($data["new"], ". ");
 
     // resolve base directory safely
-    $baseDir = realpath("E:" . $data["folder"]);
+    $baseDir = realpath($conf->location . $data["folder"]);
 
     $type = $data["type"] == "dir" ? "Folder" : "File";
 
@@ -27,6 +28,8 @@
 
     $old = $baseDir . "\\" . $data["old"];
     $new = $baseDir . "\\" . $data["new"];
+
+
 
     if (!file_exists($old)) {
         $response["status"] = false;
