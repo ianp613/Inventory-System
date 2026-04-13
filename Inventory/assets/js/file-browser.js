@@ -1,3 +1,4 @@
+var browser_name                        = document.getElementById("browser_name");
 var file_folder_container               = document.getElementById("file_folder_container");
 var navigation_container                = document.getElementById("navigation_container");
 var root_folder                         = document.getElementById("root_folder");
@@ -64,7 +65,6 @@ const ff_delete                         = new bootstrap.Modal(document.getElemen
 const ff_rename_modal                   = document.getElementById('ff_rename');
 const ff_new_folder_modal               = document.getElementById('ff_new_folder');
 
-
 scanFolder()
 function scanFolder(){
     selections_ = false
@@ -74,6 +74,8 @@ function scanFolder(){
     sole.post("../../controllers/file-browser/get-files.php",{
         folder : localStorage.getItem("folder")
     }).then(res => {
+        browser_name.innerText = res[1]["browser_name"]
+        root_folder.innerText = res[1]["root_name"].split(" ").join("_")
         file_folder_container.innerHTML = ""
         navigation_container.innerHTML  = ""
 
@@ -91,7 +93,7 @@ function scanFolder(){
         
         ff_options.hidden = true
 
-        if(res.length){
+        if(res[0].length){
             ff_select_btn.hidden = false
             if(!copy && !move){
                 cancelSelection()
@@ -103,7 +105,7 @@ function scanFolder(){
         ellipsis_btn.hidden = false
         ff_select_cancel.hidden = true
 
-        res.forEach(ff => {
+        res[0].forEach(ff => {
             if(ff[1] == "dir"){
                 file_folder_container.insertAdjacentHTML("beforeend",
                     `<div fname="${ff[0]}" class="${selections.includes(ff[0]) && localStorage.getItem("folder") == source ? "selected-disabled" : ""} folder folder-parent ff-content d-flex justify-content-between alert-dark pt-2 pb-1 mb-1">`+

@@ -1,11 +1,12 @@
 <?php
+    $conf = json_decode(file_get_contents("../../file-browser.conf"));
     $data = json_decode(file_get_contents('php://input'), true);
 
     // sanitize folder name (Windows-safe)
     $data["name"] = rtrim($data["name"], ". ");
 
     // resolve base directory
-    $baseDir = realpath("E:" . $data["folder"]);
+    $baseDir = realpath($conf->location . $data["folder"]);
 
     $response = [
         "status" => true,

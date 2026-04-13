@@ -1,68 +1,70 @@
 <?php
-$data = json_decode(file_get_contents('php://input'), true);
-$baseDir = realpath("E:" . $data["folder"]);
-$response = [];
+    $conf = json_decode(file_get_contents("../../file-browser.conf"));
+    $data = json_decode(file_get_contents('php://input'), true);
+    $baseDir = realpath($conf->location . $data["folder"]);
 
-// Check base directory
-if (!$baseDir || !is_dir($baseDir)) {
-    // Just return empty array if folder is invalid
-    echo json_encode($response);
-    return;
-}
+    $response = [];
 
-$scanned = @scandir($baseDir);
-if ($scanned === false) $scanned = [];
-
-// Remove . and ..
-$scanned = array_diff($scanned, ['.', '..']);
-
-function formatSize($bytes) {
-    if ($bytes >= 1024 * 1024) {
-        return number_format($bytes / (1024 * 1024), 2) . " MB";
-    } elseif ($bytes >= 1024) {
-        return number_format($bytes / 1024, 2) . " KB";
-    } else {
-        return number_format($bytes) . " B";
+    // Check base directory
+    if (!$baseDir || !is_dir($baseDir)) {
+        // Just return empty array if folder is invalid
+        echo json_encode($response);
+        return;
     }
-}
 
-function getFolderSize($dir) {
-    $size = 0;
+    $scanned = @scandir($baseDir);
+    if ($scanned === false) $scanned = [];
 
-    $files = @scandir($dir);
-    if ($files === false) return 0; // Skip unreadable directories
+    // Remove . and ..
+    $scanned = array_diff($scanned, ['.', '..']);
 
-    foreach ($files as $file) {
-        if ($file === '.' || $file === '..') continue;
-
-        $path = $dir . DIRECTORY_SEPARATOR . $file;
-
-        // Skip anything unreadable
-        if (!is_readable($path)) continue;
-
-        if (is_dir($path)) {
-            $size += getFolderSize($path);
-        } elseif (is_file($path)) {
-            $size += @filesize($path) ?: 0;
+    function formatSize($bytes) {
+        if ($bytes >= 1024 * 1024) {
+            return number_format($bytes / (1024 * 1024), 2) . " MB";
+        } elseif ($bytes >= 1024) {
+            return number_format($bytes / 1024, 2) . " KB";
+        } else {
+            return number_format($bytes) . " B";
         }
     }
 
-    return $size;
-}
+    function getFolderSize($dir) {
+        $size = 0;
 
-foreach ($scanned as $scan) {
-    $fullPath = $baseDir . DIRECTORY_SEPARATOR . $scan;
+        $files = @scandir($dir);
+        if ($files === false) return 0; // Skip unreadable directories
 
-    if (!is_readable($fullPath)) continue; // Skip inaccessible items
+        foreach ($files as $file) {
+            if ($file === '.' || $file === '..') continue;
 
-    if (is_dir($fullPath)) {
-        $size = formatSize(getFolderSize($fullPath));
-        $response[] = [$scan, "dir", $size];
-    } elseif (is_file($fullPath)) {
-        $size = formatSize(@filesize($fullPath) ?: 0);
-        $response[] = [$scan, "file", $size];
+            $path = $dir . DIRECTORY_SEPARATOR . $file;
+
+            // Skip anything unreadable
+            if (!is_readable($path)) continue;
+
+            if (is_dir($path)) {
+                $size += getFolderSize($path);
+            } elseif (is_file($path)) {
+                $size += @filesize($path) ?: 0;
+            }
+        }
+
+        return $size;
     }
-}
 
-echo json_encode($response);
+    foreach ($scanned as $scan) {
+        $fullPath = $baseDir . DIRECTORY_SEPARATOR . $scan;
+
+        if (!is_readable($fullPath)) continue; // Skip inaccessible items
+
+        if (is_dir($fullPath)) {
+            $size = formatSize(getFolderSize($fullPath));
+            $response[] = [$scan, "dir", $size];
+        } elseif (is_file($fullPath)) {
+            $size = formatSize(@filesize($fullPath) ?: 0);
+            $response[] = [$scan, "file", $size];
+        }
+    }
+
+    echo json_encode([$response,$conf]);
 ?>

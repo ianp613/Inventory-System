@@ -1,8 +1,9 @@
 <?php
-    $data = json_decode(file_get_contents('php://input'), true);
+    $conf = json_decode(file_get_contents("../../file-browser.conf"));
+    $data = json_decode(file_get_contents('php://input'), true);    
 
-    $sourceBase = realpath("E:" . $data["source"]);
-    $destBase   = realpath("E:" . $data["destination"]);
+    $sourceBase = realpath($conf->location . $data["source"]);
+    $destBase   = realpath($conf->location . $data["destination"]);
 
     // --- Helper: Rename if exists ---
     function getUniqueName($path) {

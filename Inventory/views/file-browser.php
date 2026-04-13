@@ -19,7 +19,12 @@
         <div class="w-100 p-3">
             <div class="d-flex w-100 mt-4">
                 <img id="browser_icon" class="wd-60 ht-60 me-2" style="margin-top: -23px;" src="../../assets/img/labubu/labubu-folder-icons/labubu-folder-icon-6.ico" alt="browser-icon" srcset="">
-                <h5 class="text-secondary mb-3 ms-2 d-flex"><div></div><span class="fa fa-folder mt-1"></span> <span class="ms-2">WIFI TEAM | FILE BROWSER</span></h5>
+                <h5 class="text-secondary mb-3 ms-2 d-flex"><div></div>
+                    <span class="" style="margin-top: -10px;">
+                        <h5 class="m-0 p-0 fw-bold"><span class="fa fa-group wd-20"></span> <span id="browser_name"></span></h5>
+                        <h5 class="f-i m-0 p-0 f-15"><span class="fa fa-cubes wd-20"></span> File Browser</h5>
+                    </span>
+                </h5>
             </div>
             <hr class="mb-1">
             <div class="d-flex w-100">

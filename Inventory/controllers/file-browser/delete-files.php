@@ -1,7 +1,7 @@
 <?php
+    $conf = json_decode(file_get_contents("../../file-browser.conf"));
     $data = json_decode(file_get_contents('php://input'), true);
-
-    $baseDir = realpath("E:" . $data["folder"]);
+    $baseDir = realpath($conf->location . $data["folder"]);
 
     $response = [
         "status" => true,
