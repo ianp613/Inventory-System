@@ -1,0 +1,104 @@
+<?php
+    header('Content-Type: application/json');
+    session_start();
+    include("../../includes.php");
+    // Get the POST data
+    $data = json_decode(file_get_contents('php://input'), true);
+
+    if($data) {
+        $userid = $data['userid'];
+        $password = $data['password'];
+        $user = new User;
+        // $auth = DB::auth($user,$userid,$password);
+        $auth = false;
+
+        $users = DB::where($user,"username","=",$userid);
+
+        if(count($users) == 1){
+            $hash = $users[0]["password"];
+            if(Data::decrypt($password,$hash)){
+                $auth = true;
+            }
+        }
+        
+        if($auth){
+            $user = DB::where($user,"username","=",$userid);
+            $_SESSION["ff_auth"] = true;
+            $_SESSION["ff_userid"] = $user[0]["id"];
+            $_SESSION["ff_name"] = $user[0]["name"];
+
+
+            // Check if user is part of a group
+
+            $group = new User_Group;
+            $group = DB::all($group);
+            if($user[0]["privileges"] != "Administrator"){
+                foreach ($group as $g) {
+                    $id_temp = explode("|",$g["supervisors"]);
+                    if(in_array($user[0]["id"],$id_temp)){
+                        $_SESSION["ff_g_member"] = true;
+                        $_SESSION["ff_g_id"] = $g["id"];
+                    }
+                }
+                foreach ($group as $g) {
+                    $id_temp = explode("|",$g["users"]);
+                    if(in_array($user[0]["id"],$id_temp)){
+                        $_SESSION["ff_g_member"] = true;
+                        $_SESSION["ff_g_id"] = $g["id"];
+                    }
+                }
+            }else{
+                $_SESSION["ff_g_member"] = true;
+            }
+            
+            $log = new Logs;
+            $log->gid = $_SESSION["ff_g_id"] ? $_SESSION["ff_g_id"] : "_*";
+            $log->uid = $user[0]["id"];
+            $log->log = $user[0]["name"]." has logged into the file browser.";
+            DB::save($log);
+
+            if($user[0]["privileges"] != "Administrator"){
+                if($_SESSION["ff_g_member"]){
+                    $response = [
+                        "status" => true,
+                        "type" => "success",
+                        "size" => null,
+                        "message" => "Welcome",
+                        "g_member" => true,
+                        "user" => $user
+                    ];
+                }else{
+                    $response = [
+                        "status" => true,
+                        "type" => "info",
+                        "size" => "lg",
+                        "message" => "Your account is currently inactive, and is not assigned to any group yet. Please ask your supervisor for additional info.",
+                        "g_member" => false,
+                        "user" => $user
+                        
+                    ];
+                    $_SESSION["ff_auth"] = false;
+                }
+            }else{
+                $response = [
+                    "status" => true,
+                    "type" => "success",
+                    "size" => null,
+                    "message" => "Welcome",
+                    "g_member" => true,
+                    "user" => $user
+                ];
+            }
+             
+        }else{
+            $response = [
+                "status" => false,
+                "type" => "error",
+                "size" => null,
+                "g_member" => false,
+                "message" => "Invalid User ID and Password"
+            ];    
+        }
+    }
+    echo json_encode($response);
+?>

@@ -5,7 +5,8 @@
             <div class="modal-body">
                 <button hidden id="ff_select_btn" class="btn btn-light mb-2 w-100 text-start"><span class="fa fa-check"></span> Select</button>
                 <button id="ff_new_folder_btn" class="btn btn-light mb-2 w-100 text-start"><span class="fa fa-plus"></span> New Folder</button>
-                <button id="ff_delete_btn" class="btn btn-light w-100 text-start"><span class="fa fa-upload"></span> Upload</button>
+                <button id="ff_delete_btn" class="btn btn-light mb-2 w-100 text-start"><span class="fa fa-upload"></span> Upload</button>
+                <button id="ff_logout_btn" class="btn btn-danger w-100 text-start"><span class="fa fa-sign-out"></span> Logout</button>
             </div>
         </div>
     </div>

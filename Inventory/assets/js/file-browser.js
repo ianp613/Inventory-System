@@ -6,6 +6,7 @@ var browser_icon                        = document.getElementById("browser_icon"
 var ellipsis_btn                        = document.getElementById("ellipsis_btn");
 var ff_select_btn                       = document.getElementById("ff_select_btn");
 var ff_new_folder_btn                   = document.getElementById("ff_new_folder_btn");
+var ff_logout_btn                       = document.getElementById("ff_logout_btn");
 var ff_select_cancel                    = document.getElementById("ff_select_cancel");
 var menu_ribbon                         = document.getElementById("menu_ribbon");
 
@@ -44,6 +45,12 @@ var ff_delete_cancel                    = document.getElementById("ff_delete_can
 var ff_delete_proceed                   = document.getElementById("ff_delete_proceed")
 var item_count                          = document.getElementById("item_count")
 
+var ff_login                            = document.getElementById("ff_login")
+var ff_login_card                       = document.getElementById("ff_login_card")
+var ff_login_userid                     = document.getElementById("ff_login_userid")
+var ff_login_password                   = document.getElementById("ff_login_password")
+var ff_login_btn                        = document.getElementById("ff_login_btn")
+
 var selections                          = [];
 var ext                                 = "";
 var selections_                         = false;
@@ -65,7 +72,6 @@ const ff_delete                         = new bootstrap.Modal(document.getElemen
 const ff_rename_modal                   = document.getElementById('ff_rename');
 const ff_new_folder_modal               = document.getElementById('ff_new_folder');
 
-scanFolder()
 function scanFolder(){
     selections_ = false
     if(localStorage.getItem("folder") == null){
@@ -486,9 +492,66 @@ function cancelSelection(){
     ff_option_download.classList.add("ff-option-disabled")
 }
 
-document.addEventListener('contextmenu', event => {
+function ellipsisPreventDefaultContextMenu(event){
     event.preventDefault();
     if(!selections_){
         ellipsis_btn.click();
     }
-});
+}
+
+function loginContextMenu(){
+    document.addEventListener('contextmenu', ellipsisPreventDefaultContextMenu)
+}
+
+function logoutContextMenu(){
+    document.removeEventListener('contextmenu', ellipsisPreventDefaultContextMenu);
+}
+
+ff_login_btn.addEventListener("click", e => {
+    if(!ff_login_userid.value || !ff_login_password.value){
+        bs5.toast("warning","Please input User ID and Password.")
+        ff_login_userid.focus()
+        return
+    }
+
+    sole.post("../../controllers/file-browser/login.php", {
+        userid : ff_login_userid.value,
+        password : ff_login_password.value
+    }).then(res => {
+        if(res.status){
+            bs5.toast(res.type,res.message + " " + res.user[0]["name"])
+            ff_login_userid.value = ""
+            ff_login_password.value = ""
+            ff_login_card.hidden = true
+            ff_login.classList.remove("ff-login")
+            checkAuthentication()
+        }else{
+            bs5.toast(res.type,res.message)
+        }
+    })
+})
+
+ff_logout_btn.addEventListener("click", e => {
+    ff_select_cancel.click()
+    file_folder_container.innerHTML = ""
+    navigation_container.innerHTML  = ""
+    ellipsis_menu.hide()
+    sole.get("../../controllers/file-browser/logout.php").then(res => {
+        checkAuthentication()
+    })
+})
+
+function checkAuthentication(){
+    sole.get("../../controllers/file-browser/authenticate.php").then(res => {
+        if(res){
+            scanFolder()
+            loginContextMenu()
+        }else{
+            ff_login_card.hidden = false
+            ff_login.classList.add("ff-login")
+            logoutContextMenu()
+        }
+    })
+}
+
+checkAuthentication()
