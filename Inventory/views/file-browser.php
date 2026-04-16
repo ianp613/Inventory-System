@@ -17,14 +17,16 @@
     </head>
     <body class="light">
         <div id="ff_login" class="w-100 p-3">
-            <div class="d-flex w-100 mt-4">
-                <img id="browser_icon" class="wd-60 ht-60 me-2" style="margin-top: -23px;" src="../../assets/img/labubu/labubu-folder-icons/labubu-folder-icon-6.ico" alt="browser-icon" srcset="">
-                <h5 class="text-secondary mb-3 ms-2 d-flex"><div></div>
-                    <span class="" style="margin-top: -10px;">
-                        <h5 class="m-0 p-0 fw-bold"><span class="fa fa-group wd-20"></span> <span id="browser_name"></span></h5>
-                        <h5 class="f-i m-0 p-0 f-15"><span class="fa fa-cubes wd-20"></span> File Browser</h5>
-                    </span>
-                </h5>
+            <div class="d-flex justify-content-between w-100 mt-4">
+                <div class="d-flex">
+                    <img id="browser_icon" class="wd-60 ht-60 me-2" style="margin-top: -23px;" src="../../assets/img/labubu/labubu-folder-icons/labubu-folder-icon-6.ico" alt="browser-icon" srcset="">
+                    <h5 class="text-secondary mb-3 ms-2 d-flex"><div></div>
+                        <span class="" style="margin-top: -10px;">
+                            <h5 class="m-0 p-0 fw-bold"><span class="fa fa-group wd-20"></span> <span id="browser_name"></span></h5>
+                            <h5 class="f-i m-0 p-0 f-15"><span class="fa fa-cubes wd-20"></span> File Browser</h5>
+                        </span>
+                    </h5>    
+                </div>
             </div>
             <hr class="mb-1">
             <div class="d-flex w-100">
@@ -83,6 +85,9 @@
             <div class="modal-footer">
                 <button id="ff_login_btn" class="btn btn-secondary w-100"><span class="fa fa-sign-in"></span> LOGIN</button>
             </div>
+        </div>
+        <div hidden  id="ff_user_container" class="position-fixed bottom-0 ms-1 bg-dark text-light pt-2 ps-3 pe-3" style="border-top-left-radius: 10px; border-top-right-radius: 10px;">
+            <h6 class="fw-bolder" id="ff_user">User: -------------------------</h6>
         </div>
         <h6 class="copyright f-10 text-secondary"></h6>
         <script src="../assets/js/jquery/jquery-3.7.1.js"></script>

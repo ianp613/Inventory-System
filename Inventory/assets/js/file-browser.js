@@ -51,6 +51,9 @@ var ff_login_userid                     = document.getElementById("ff_login_user
 var ff_login_password                   = document.getElementById("ff_login_password")
 var ff_login_btn                        = document.getElementById("ff_login_btn")
 
+var ff_user                             = document.getElementById("ff_user")
+var ff_user_container                   = document.getElementById("ff_user_container")
+
 var selections                          = [];
 var ext                                 = "";
 var selections_                         = false;
@@ -101,9 +104,7 @@ function scanFolder(){
 
         if(res[0].length){
             ff_select_btn.hidden = false
-            if(!copy && !move){
-                cancelSelection()
-            }
+            cancelSelection()
         }else{
             ff_select_btn.hidden = true
         }
@@ -126,7 +127,7 @@ function scanFolder(){
             }
             if(ff[1] == "file"){
                 file_folder_container.insertAdjacentHTML("beforeend",
-                    `<div class="${selections.includes(ff[0])  && localStorage.getItem("folder") == source ? "selected-disabled" : ""} ff-content d-flex justify-content-between alert-dark pt-2 pb-1 mb-1">`+
+                    `<div class="${selections.includes(ff[0]) && localStorage.getItem("folder") == source ? "selected-disabled" : ""} ff-content d-flex justify-content-between alert-dark pt-2 pb-1 mb-1">`+
                         `<div class="d-flex text-left mt-2">`+
                             `<input hidden ff-type="${ff[1]}" ff-name="${ff[0]}" type="checkbox" class="wd-15 me-2 mb-2 ff-select"></input>`+
                             // `<span class="fa fa-file f-20 me-2"></span>`+
@@ -301,7 +302,7 @@ ff_option_download.addEventListener("click", e => {
 ff_option_copy.addEventListener("click", e => {
     source = localStorage.getItem("folder")
     scanFolder()
-    move = true
+    copy = true
     ff_options_copy.hidden = false
     ff_options.hidden = true
 })
@@ -309,7 +310,7 @@ ff_option_copy.addEventListener("click", e => {
 ff_option_move.addEventListener("click", e => {
     source = localStorage.getItem("folder")
     scanFolder()
-    copy = true
+    move = true
     ff_options_move.hidden = false
     ff_options.hidden = true
 })
@@ -480,7 +481,9 @@ ff_delete_proceed.addEventListener("click", e => {
 })
 
 function cancelSelection(){
-    selections = []
+    if(!copy && !move){
+        selections = []
+    }
     var ff_content = document.getElementsByClassName("ff-select");
     for (let i = 0; i < ff_content.length; i++) {
         ff_content[i].checked = false
@@ -518,6 +521,7 @@ ff_login_btn.addEventListener("click", e => {
         userid : ff_login_userid.value,
         password : ff_login_password.value
     }).then(res => {
+        localStorage.setItem("ff_user",res.user[0]["name"])
         if(res.status){
             bs5.toast(res.type,res.message + " " + res.user[0]["name"])
             ff_login_userid.value = ""
@@ -542,20 +546,33 @@ ff_logout_btn.addEventListener("click", e => {
 })
 
 function checkAuthentication(){
+    if(localStorage.getItem("ff_user") !== null){
+        ff_user.innerText = "User: " + localStorage.getItem("ff_user")
+    }
     sole.get("../../controllers/file-browser/authenticate.php").then(res => {
         if(res){
+            ff_user_container.hidden = false
             scanFolder()
             loginContextMenu()
         }else{
             ff_login_card.hidden = false
             ff_login.classList.add("ff-login")
+            ff_user_container.hidden = true
             logoutContextMenu()
         }
     })
 }
 
-document.addEventListener("keypress", e => {
-    console.log(e)
-})
+document.addEventListener('keydown', function(event) {
+    if (event.key === "Escape") {
+        ff_select_cancel.click()
+        ff_rename_cancel.click()
+        ellipsis_menu.hide()
+    }
+});
+
+setTimeout(() => {
+    ff_login_userid.focus()
+}, 50);
 
 checkAuthentication()
