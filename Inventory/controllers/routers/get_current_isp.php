@@ -7,6 +7,7 @@
     $wan2 = [];
 
     $isp = new ISP;
+    $conf = new ISP_Configuration;
 
     if($data["wan1"] && $data["wan1"] != "-"){
         $wan1 = DB::find($isp,$data["wan1"]);
@@ -16,7 +17,8 @@
     }
     $response = [
         "wan1" => $wan1,
-        "wan2" => $wan2
+        "wan2" => $wan2,
+        "configuration" => DB::all($conf)
     ];
     echo json_encode($response);
 ?>

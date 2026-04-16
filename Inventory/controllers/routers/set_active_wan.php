@@ -69,6 +69,7 @@
             $wan2 = [];
 
             $isp = new ISP;
+            $conf = new ISP_Configuration;
 
             if($router["wan1"] != "-"){
                 $wan1 = DB::find($isp,$router["wan1"]);
@@ -80,7 +81,8 @@
                 "status" => true,
                 "router" => $router,
                 "wan1" => $wan1,
-                "wan2" => $wan2
+                "wan2" => $wan2,
+                "configuration" => DB::all($conf)
             ];
         }
     }else{

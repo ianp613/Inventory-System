@@ -12,10 +12,10 @@
         $isp->isp_name = $data["isp_name"] ? $data["isp_name"] : "-";
         $isp->wan_ip = $data["wan_ip"] ? $data["wan_ip"] : "-";
         $isp->configuration = $data["configuration"] ? $data["configuration"] : "-";
-        $isp->subnet = $data["subnet"] ? $data["subnet"] : "-";
-        $isp->gateway = $data["gateway"] ? $data["gateway"] : "-";
-        $isp->dns1 = $data["dns1"] ? $data["dns1"] : "-";
-        $isp->dns2 = $data["dns2"] ? $data["dns2"] : "-";
+        // $isp->subnet = $data["subnet"] ? $data["subnet"] : "-";
+        // $isp->gateway = $data["gateway"] ? $data["gateway"] : "-";
+        // $isp->dns1 = $data["dns1"] ? $data["dns1"] : "-";
+        // $isp->dns2 = $data["dns2"] ? $data["dns2"] : "-";
         $isp->webmgmtpt = $data["webmgmtpt"] ? $data["webmgmtpt"] : "-";
         DB::update($isp);
 
@@ -30,6 +30,7 @@
 
         if($isp_name_temp != $data["name"]){
             $log = new Logs;
+            $log->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
             $log->uid = $_SESSION["userid"];
             $log->log = $_SESSION["name"]." has updated an ISP name from \"".$isp_name_temp."\" to \"".$data["name"].".\"";
             if($_SESSION["log2"] != $log->log){

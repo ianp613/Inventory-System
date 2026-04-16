@@ -365,7 +365,7 @@ if(document.getElementById("isp")){
         edit_configuration.value = res.isp[0]["configuration"] != "-" ? res.isp[0]["configuration"] : ""
 
         res.configuration.forEach(conf => {
-            if(conf.id == res.isp[0]["configuration"]){
+            if(conf.id == parseInt(res.isp[0]["configuration"])){
                 edit_subnet.value = conf.subnet != "-" ? conf.subnet : ""
                 edit_gateway.value = conf.gateway != "-" ? conf.gateway : ""
                 edit_dns1.value = conf.dns1 != "-" ? conf.dns1 : ""

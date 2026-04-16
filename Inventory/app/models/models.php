@@ -317,10 +317,10 @@
             "isp_name",
             "name",
             "wan_ip",
-            "subnet",
-            "gateway",
-            "dns1",
-            "dns2",
+            // "subnet",
+            // "gateway",
+            // "dns1",
+            // "dns2",
             "webmgmtpt",
             "configuration"
         ];
@@ -330,10 +330,10 @@
         public string $isp_name;
         public string $name;
         public string $wan_ip;
-        public string $subnet;
-        public string $gateway;
-        public string $dns1;
-        public string $dns2;
+        // public string $subnet;
+        // public string $gateway;
+        // public string $dns1;
+        // public string $dns2;
         public string $webmgmtpt;
         public string $configuration;
 

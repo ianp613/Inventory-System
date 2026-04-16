@@ -376,6 +376,7 @@ if(document.getElementById("routers")){
     function setWanCurrent(res){
         edit_router_wan1.innerHTML = ""
         edit_router_wan2.innerHTML = ""
+        console.log(res)
         if(res.wan1.length){
             if(res.wan1[0]["isp_name"] == "PLDT Inc."){
                 edit_router_wan1_icon.setAttribute("src","../../assets/img/pldt.png")
@@ -393,23 +394,37 @@ if(document.getElementById("routers")){
                 edit_router_wan1_icon.removeAttribute("hidden")
             }
 
+            var subnet_ = ""
+            var gateway_ = ""
+            var dns1_ = ""
+            var dns2_ = ""
+
+            res.configuration.forEach(conf => {
+                if(conf.id == parseInt(res.wan1[0]["configuration"])){
+                    subnet_ = conf.subnet
+                    gateway_ = conf.gateway
+                    dns1_ = conf.dns1
+                    dns2_ = conf.dns2
+                }
+            })
+
             edit_wan1_info.innerHTML = "ISP: " + res.wan1[0]["isp_name"] + "<br>" +
             "Name: " + res.wan1[0]["name"] + "<br>" +
             "WAN IP: " + res.wan1[0]["wan_ip"] + "<br>" +
             "<div class=\"row mt-2\">" + 
                 "<div class=\"col-md-6\">" +
-                    "Subnet: " + (res.wan1[0]["subnet"] == "-" ? "" : res.wan1[0]["subnet"]) + "<br>" +
+                    "Subnet: " + (subnet_ == "-" ? "" : subnet_) + "<br>" +
                 "</div>" +
                 "<div class=\"col-md-6\">" +
-                    "Gateway: " + (res.wan1[0]["gateway"] == "-" ? "" : res.wan1[0]["gateway"]) + "<br>" +
+                    "Gateway: " + (gateway_ == "-" ? "" :gateway_) + "<br>" +
                 "</div>" +
             "</div>" +
             "<div class=\"row\">" + 
                 "<div class=\"col-md-6\">" +
-                    "DNS 1: " + (res.wan1[0]["dns1"] == "-" ? "" : res.wan1[0]["dns1"]) + "<br>" +
+                    "DNS 1: " + (dns1_ == "-" ? "" : dns1_) + "<br>" +
                 "</div>" +
                 "<div class=\"col-md-6\">" +
-                    "DNS 2: " + (res.wan1[0]["dns2"] == "-" ? "" : res.wan1[0]["dns2"]) + "<br>"
+                    "DNS 2: " + (dns2_ == "-" ? "" : dns2_) + "<br>"
                 "</div>" +
             "</div>"
 
@@ -441,23 +456,37 @@ if(document.getElementById("routers")){
                 edit_router_wan2_icon.removeAttribute("hidden")
             }
 
+            var subnet__ = ""
+            var gateway__ = ""
+            var dns1__ = ""
+            var dns2__ = ""
+
+            res.configuration.forEach(conf => {
+                if(conf.id == parseInt(res.wan2[0]["configuration"])){
+                    subnet__ = conf.subnet
+                    gateway__ = conf.gateway
+                    dns1__ = conf.dns1
+                    dns2__ = conf.dns2
+                }
+            })
+
             edit_wan2_info.innerHTML = "ISP: " + res.wan2[0]["isp_name"] + "<br>" +
             "Name: " + res.wan2[0]["name"] + "<br>" +
             "WAN IP: " + res.wan2[0]["wan_ip"] + "<br>" +
             "<div class=\"row mt-2\">" + 
                 "<div class=\"col-md-6\">" +
-                    "Subnet: " + (res.wan2[0]["subnet"] == "-" ? "" : res.wan2[0]["subnet"]) + "<br>" +
+                    "Subnet: " + (subnet__ == "-" ? "" : subnet__) + "<br>" +
                 "</div>" +
                 "<div class=\"col-md-6\">" +
-                    "Gateway: " + (res.wan2[0]["gateway"] == "-" ? "" : res.wan2[0]["gateway"]) + "<br>" +
+                    "Gateway: " + (gateway__ == "-" ? "" :gateway__) + "<br>" +
                 "</div>" +
             "</div>" +
             "<div class=\"row\">" + 
                 "<div class=\"col-md-6\">" +
-                    "DNS 1: " + (res.wan2[0]["dns1"] == "-" ? "" : res.wan2[0]["dns1"]) + "<br>" +
+                    "DNS 1: " + (dns1__ == "-" ? "" : dns1__) + "<br>" +
                 "</div>" +
                 "<div class=\"col-md-6\">" +
-                    "DNS 2: " + (res.wan2[0]["dns2"] == "-" ? "" : res.wan2[0]["dns2"]) + "<br>"
+                    "DNS 2: " + (dns2__ == "-" ? "" : dns2__) + "<br>"
                 "</div>" +
             "</div>"
             var edit_op2 = document.createElement("option")
@@ -474,83 +503,110 @@ if(document.getElementById("routers")){
     }
 
     function setWanAdd(res,func){
-        if(res.length){
+        if(res.isp.length){
             if(func == "wan1"){
-                if(res[0]["isp_name"] == "PLDT Inc."){
+                if(res.isp[0]["isp_name"] == "PLDT Inc."){
                     router_wan1_icon.setAttribute("src","../../assets/img/pldt.png")
                     router_wan1_icon.setAttribute("class","ht-20")
                     router_wan1_icon.removeAttribute("hidden")
-                }else if(res[0]["isp_name"] == "Globe Telecom, Inc."){
+                }else if(res.isp[0]["isp_name"] == "Globe Telecom, Inc."){
                     router_wan1_icon.setAttribute("src","../../assets/img/globe.png")
                     router_wan1_icon.setAttribute("class","ht-30")
                     router_wan1_icon.removeAttribute("hidden")
-                }else if(res[0]["isp_name"] == "Converge ICT Solutions Inc."){
+                }else if(res.isp[0]["isp_name"] == "Converge ICT Solutions Inc."){
                     router_wan1_icon.setAttribute("src","../../assets/img/converge.png")
                     router_wan1_icon.setAttribute("class","ht-30")
                     router_wan1_icon.removeAttribute("hidden")
-                }else if(res[0]["isp_name"] == "Others"){
+                }else if(res.isp[0]["isp_name"] == "Others"){
                     router_wan1_icon.setAttribute("src","../../assets/img/hero.png")
                     router_wan1_icon.setAttribute("class","ht-30")
                     router_wan1_icon.removeAttribute("hidden")
                 }
+ 
+                var subnet_ = ""
+                var gateway_ = ""
+                var dns1_ = ""
+                var dns2_ = ""
 
-                wan1_info.innerHTML = "ISP: " + res[0]["isp_name"] + "<br>" +
-                "Name: " + res[0]["name"] + "<br>" +
-                "WAN IP: " + res[0]["wan_ip"] + "<br>" +
+                res.configuration.forEach(conf => {
+                    if(conf.id == parseInt(res.isp[0]["configuration"])){
+                        subnet_ = conf.subnet
+                        gateway_ = conf.gateway
+                        dns1_ = conf.dns1
+                        dns2_ = conf.dns2
+                    }
+                })
+
+                wan1_info.innerHTML = "ISP: " + res.isp[0]["isp_name"] + "<br>" +
+                "Name: " + res.isp[0]["name"] + "<br>" +
+                "WAN IP: " + res.isp[0]["wan_ip"] + "<br>" +
                 "<div class=\"row mt-2\">" + 
                     "<div class=\"col-md-6\">" +
-                        "Subnet: " + (res[0]["subnet"] == "-" ? "" : res[0]["subnet"]) + "<br>" +
+                        "Subnet: " + (subnet_ == "-" ? "" : subnet_) + "<br>" +
                     "</div>" +
                     "<div class=\"col-md-6\">" +
-                        "Gateway: " + (res[0]["gateway"] == "-" ? "" : res[0]["gateway"]) + "<br>" +
+                        "Gateway: " + (gateway_ == "-" ? "" :gateway_) + "<br>" +
                     "</div>" +
                 "</div>" +
                 "<div class=\"row\">" + 
                     "<div class=\"col-md-6\">" +
-                        "DNS 1: " + (res[0]["dns1"] == "-" ? "" : res[0]["dns1"]) + "<br>" +
+                        "DNS 1: " + (dns1_ == "-" ? "" : dns1_) + "<br>" +
                     "</div>" +
                     "<div class=\"col-md-6\">" +
-                        "DNS 2: " + (res[0]["dns2"] == "-" ? "" : res[0]["dns2"]) + "<br>"
+                        "DNS 2: " + (dns2_ == "-" ? "" : dns2_) + "<br>"
                     "</div>" +
-                "</div>"      
+                "</div>"
             }
             if(func == "wan2"){
-                if(res[0]["isp_name"] == "PLDT Inc."){
+                if(res.isp[0]["isp_name"] == "PLDT Inc."){
                     router_wan2_icon.setAttribute("src","../../assets/img/pldt.png")
                     router_wan2_icon.setAttribute("class","ht-20")
                     router_wan2_icon.removeAttribute("hidden")
-                }else if(res[0]["isp_name"] == "Globe Telecom, Inc."){
+                }else if(res.isp[0]["isp_name"] == "Globe Telecom, Inc."){
                     router_wan2_icon.setAttribute("src","../../assets/img/globe.png")
                     router_wan2_icon.setAttribute("class","ht-30")
                     router_wan2_icon.removeAttribute("hidden")
-                }else if(res[0]["isp_name"] == "Converge ICT Solutions Inc."){
+                }else if(res.isp[0]["isp_name"] == "Converge ICT Solutions Inc."){
                     router_wan2_icon.setAttribute("src","../../assets/img/converge.png")
                     router_wan2_icon.setAttribute("class","ht-30")
                     router_wan2_icon.removeAttribute("hidden")
-                }else if(res[0]["isp_name"] == "Others"){
+                }else if(res.isp[0]["isp_name"] == "Others"){
                     router_wan2_icon.setAttribute("src","../../assets/img/hero.png")
                     router_wan2_icon.setAttribute("class","ht-30")
                     router_wan2_icon.removeAttribute("hidden")
                 }
 
+                var subnet__ = ""
+                var gateway__ = ""
+                var dns1__ = ""
+                var dns2__ = ""
 
-                wan2_info.innerHTML = "ISP: " + res[0]["isp_name"] + "<br>" +
-                "Name: " + res[0]["name"] + "<br>" +
-                "WAN IP: " + res[0]["wan_ip"] + "<br>" +
+                res.configuration.forEach(conf => {
+                    if(conf.id == parseInt(res.isp[0]["configuration"])){
+                        subnet__ = conf.subnet
+                        gateway__ = conf.gateway
+                        dns1__ = conf.dns1
+                        dns2__ = conf.dns2
+                    }
+                })
+
+                wan2_info.innerHTML = "ISP: " + res.isp[0]["isp_name"] + "<br>" +
+                "Name: " + res.isp[0]["name"] + "<br>" +
+                "WAN IP: " + res.isp[0]["wan_ip"] + "<br>" +
                 "<div class=\"row mt-2\">" + 
                     "<div class=\"col-md-6\">" +
-                        "Subnet: " + (res[0]["subnet"] == "-" ? "" : res[0]["subnet"]) + "<br>" +
+                        "Subnet: " + (subnet__ == "-" ? "" : subnet__) + "<br>" +
                     "</div>" +
                     "<div class=\"col-md-6\">" +
-                        "Gateway: " + (res[0]["gateway"] == "-" ? "" : res[0]["gateway"]) + "<br>" +
+                        "Gateway: " + (gateway__ == "-" ? "" :gateway__) + "<br>" +
                     "</div>" +
                 "</div>" +
                 "<div class=\"row\">" + 
                     "<div class=\"col-md-6\">" +
-                        "DNS 1: " + (res[0]["dns1"] == "-" ? "" : res[0]["dns1"]) + "<br>" +
+                        "DNS 1: " + (dns1__ == "-" ? "" : dns1__) + "<br>" +
                     "</div>" +
                     "<div class=\"col-md-6\">" +
-                        "DNS 2: " + (res[0]["dns2"] == "-" ? "" : res[0]["dns2"]) + "<br>"
+                        "DNS 2: " + (dns2__ == "-" ? "" : dns2__) + "<br>"
                     "</div>" +
                 "</div>"  
             }    
@@ -567,84 +623,112 @@ if(document.getElementById("routers")){
     }
 
     function setWanEdit(res,func){
-        if(res.length){
+        if(res.isp.length){
             if(func == "wan1"){
-                if(res[0]["isp_name"] == "PLDT Inc."){
+                if(res.isp[0]["isp_name"] == "PLDT Inc."){
                     edit_router_wan1_icon.setAttribute("src","../../assets/img/pldt.png")
                     edit_router_wan1_icon.setAttribute("class","ht-20")
                     edit_router_wan1_icon.removeAttribute("hidden")
-                }else if(res[0]["isp_name"] == "Globe Telecom, Inc."){
+                }else if(res.isp[0]["isp_name"] == "Globe Telecom, Inc."){
                     edit_router_wan1_icon.setAttribute("src","../../assets/img/globe.png")
                     edit_router_wan1_icon.setAttribute("class","ht-30")
                     edit_router_wan1_icon.removeAttribute("hidden")
-                }else if(res[0]["isp_name"] == "Converge ICT Solutions Inc."){
+                }else if(res.isp[0]["isp_name"] == "Converge ICT Solutions Inc."){
                     edit_router_wan1_icon.setAttribute("src","../../assets/img/converge.png")
                     edit_router_wan1_icon.setAttribute("class","ht-30")
                     edit_router_wan1_icon.removeAttribute("hidden")
-                }else if(res[0]["isp_name"] == "Others"){
+                }else if(res.isp[0]["isp_name"] == "Others"){
                     edit_router_wan1_icon.setAttribute("src","../../assets/img/hero.png")
                     edit_router_wan1_icon.setAttribute("class","ht-30")
                     edit_router_wan1_icon.removeAttribute("hidden")
                 }
+                
+                var subnet_ = ""
+                var gateway_ = ""
+                var dns1_ = ""
+                var dns2_ = ""
 
-                edit_wan1_info.innerHTML = "ISP: " + res[0]["isp_name"] + "<br>" +
-                "Name: " + res[0]["name"] + "<br>" +
-                "WAN IP: " + res[0]["wan_ip"] + "<br>" +
+                res.configuration.forEach(conf => {
+                    if(conf.id == parseInt(res.isp[0]["configuration"])){
+                        subnet_ = conf.subnet
+                        gateway_ = conf.gateway
+                        dns1_ = conf.dns1
+                        dns2_ = conf.dns2
+                    }
+                })
+
+                edit_wan1_info.innerHTML = "ISP: " + res.isp[0]["isp_name"] + "<br>" +
+                "Name: " + res.isp[0]["name"] + "<br>" +
+                "WAN IP: " + res.isp[0]["wan_ip"] + "<br>" +
                 "<div class=\"row mt-2\">" + 
                     "<div class=\"col-md-6\">" +
-                        "Subnet: " + (res[0]["subnet"] == "-" ? "" : res[0]["subnet"]) + "<br>" +
+                        "Subnet: " + (subnet_ == "-" ? "" : subnet_) + "<br>" +
                     "</div>" +
                     "<div class=\"col-md-6\">" +
-                        "Gateway: " + (res[0]["gateway"] == "-" ? "" : res[0]["gateway"]) + "<br>" +
+                        "Gateway: " + (gateway_ == "-" ? "" :gateway_) + "<br>" +
                     "</div>" +
                 "</div>" +
                 "<div class=\"row\">" + 
                     "<div class=\"col-md-6\">" +
-                        "DNS 1: " + (res[0]["dns1"] == "-" ? "" : res[0]["dns1"]) + "<br>" +
+                        "DNS 1: " + (dns1_ == "-" ? "" : dns1_) + "<br>" +
                     "</div>" +
                     "<div class=\"col-md-6\">" +
-                        "DNS 2: " + (res[0]["dns2"] == "-" ? "" : res[0]["dns2"]) + "<br>"
+                        "DNS 2: " + (dns2_ == "-" ? "" : dns2_) + "<br>"
                     "</div>" +
-                "</div>"      
+                "</div>"    
             }
             if(func == "wan2"){
-                if(res[0]["isp_name"] == "PLDT Inc."){
+                if(res.isp[0]["isp_name"] == "PLDT Inc."){
                     edit_router_wan2_icon.setAttribute("src","../../assets/img/pldt.png")
                     edit_router_wan2_icon.setAttribute("class","ht-20")
                     edit_router_wan2_icon.removeAttribute("hidden")
-                }else if(res[0]["isp_name"] == "Globe Telecom, Inc."){
+                }else if(res.isp[0]["isp_name"] == "Globe Telecom, Inc."){
                     edit_router_wan2_icon.setAttribute("src","../../assets/img/globe.png")
                     edit_router_wan2_icon.setAttribute("class","ht-30")
                     edit_router_wan2_icon.removeAttribute("hidden")
-                }else if(res[0]["isp_name"] == "Converge ICT Solutions Inc."){
+                }else if(res.isp[0]["isp_name"] == "Converge ICT Solutions Inc."){
                     edit_router_wan2_icon.setAttribute("src","../../assets/img/converge.png")
                     edit_router_wan2_icon.setAttribute("class","ht-30")
                     edit_router_wan2_icon.removeAttribute("hidden")
-                }else if(res[0]["isp_name"] == "Others"){
+                }else if(res.isp[0]["isp_name"] == "Others"){
                     edit_router_wan2_icon.setAttribute("src","../../assets/img/hero.png")
                     edit_router_wan2_icon.setAttribute("class","ht-30")
                     edit_router_wan2_icon.removeAttribute("hidden")
                 }
 
-                edit_wan2_info.innerHTML = "ISP: " + res[0]["isp_name"] + "<br>" +
-                "Name: " + res[0]["name"] + "<br>" +
-                "WAN IP: " + res[0]["wan_ip"] + "<br>" +
+                var subnet__ = ""
+                var gateway__ = ""
+                var dns1__ = ""
+                var dns2__ = ""
+
+                res.configuration.forEach(conf => {
+                    if(conf.id == parseInt(res.isp[0]["configuration"])){
+                        subnet__ = conf.subnet
+                        gateway__ = conf.gateway
+                        dns1__ = conf.dns1
+                        dns2__ = conf.dns2
+                    }
+                })
+
+                edit_wan2_info.innerHTML = "ISP: " + res.isp[0]["isp_name"] + "<br>" +
+                "Name: " + res.isp[0]["name"] + "<br>" +
+                "WAN IP: " + res.isp[0]["wan_ip"] + "<br>" +
                 "<div class=\"row mt-2\">" + 
                     "<div class=\"col-md-6\">" +
-                        "Subnet: " + (res[0]["subnet"] == "-" ? "" : res[0]["subnet"]) + "<br>" +
+                        "Subnet: " + (subnet__ == "-" ? "" : subnet__) + "<br>" +
                     "</div>" +
                     "<div class=\"col-md-6\">" +
-                        "Gateway: " + (res[0]["gateway"] == "-" ? "" : res[0]["gateway"]) + "<br>" +
+                        "Gateway: " + (gateway__ == "-" ? "" :gateway__) + "<br>" +
                     "</div>" +
                 "</div>" +
                 "<div class=\"row\">" + 
                     "<div class=\"col-md-6\">" +
-                        "DNS 1: " + (res[0]["dns1"] == "-" ? "" : res[0]["dns1"]) + "<br>" +
+                        "DNS 1: " + (dns1__ == "-" ? "" : dns1__) + "<br>" +
                     "</div>" +
                     "<div class=\"col-md-6\">" +
-                        "DNS 2: " + (res[0]["dns2"] == "-" ? "" : res[0]["dns2"]) + "<br>"
+                        "DNS 2: " + (dns2__ == "-" ? "" : dns2__) + "<br>"
                     "</div>" +
-                "</div>"  
+                "</div>"    
             }    
         }else{
             if(func == "wan1"){
@@ -803,26 +887,29 @@ if(document.getElementById("routers")){
             icon = "<img class=\"ht-25 mb-2\" src=\"../../assets/img/hero.png\"><br>"
         }
 
-
-        data = icon + head + "<br>" +
-        "Name: " + wan[0]["name"] + "<br>" +
-        "WAN IP: " + wan[0]["wan_ip"] + "<br>" +
-        "<div class=\"row mt-2\">" + 
-            "<div class=\"col-md-6\">" +
-                "Subnet: " + (wan[0]["subnet"] == "-" ? "" : wan[0]["subnet"]) + "<br>" +
-            "</div>" +
-            "<div class=\"col-md-6\">" +
-                "Gateway: " + (wan[0]["gateway"] == "-" ? "" : wan[0]["gateway"]) + "<br>" +
-            "</div>" +
-        "</div>" +
-        "<div class=\"row\">" + 
-            "<div class=\"col-md-6\">" +
-                "DNS 1: " + (wan[0]["dns1"] == "-" ? "" : wan[0]["dns1"]) + "<br>" +
-            "</div>" +
-            "<div class=\"col-md-6\">" +
-                "DNS 2: " + (wan[0]["dns2"] == "-" ? "" : wan[0]["dns2"]) + "<br>"
-            "</div>" +
-        "</div>"  
+        res.configuration.forEach(conf => {
+            if(conf.id == parseInt(wan[0]["configuration"])){
+                data = icon + head + "<br>" +
+                "Name: " + wan[0]["name"] + "<br>" +
+                "WAN IP: " + wan[0]["wan_ip"] + "<br>" +
+                "<div class=\"row mt-2\">" + 
+                    "<div class=\"col-md-6\">" +
+                        "Subnet: " + (conf.subnet == "-" ? "" : conf.subnet) + "<br>" +
+                    "</div>" +
+                    "<div class=\"col-md-6\">" +
+                        "Gateway: " + (conf.gateway == "-" ? "" : conf.gateway) + "<br>" +
+                    "</div>" +
+                "</div>" +
+                "<div class=\"row\">" + 
+                    "<div class=\"col-md-6\">" +
+                        "DNS 1: " + (conf.dns1 == "-" ? "" : conf.dns1) + "<br>" +
+                    "</div>" +
+                    "<div class=\"col-md-6\">" +
+                        "DNS 2: " + (conf.dns2 == "-" ? "" : conf.dns2) + "<br>"
+                    "</div>" +
+                "</div>" 
+            }
+        })
         return data
     }
 
