@@ -287,6 +287,28 @@
         public $main = "name";
     }
 
+    class ISP_Configuration{
+        public $table = "isp_configuration";
+        public $fillable = [
+            "gid",
+            "uid",
+            "name",
+            "subnet",
+            "gateway",
+            "dns1",
+            "dns2",
+        ];
+
+        public string $gid;
+        public string $uid;
+        public string $name;
+        public string $subnet;
+        public string $gateway;
+        public string $dns1;
+        public string $dns2;
+
+    }
+
     class ISP{
         public $table = "isp";
         public $fillable = [
@@ -299,7 +321,8 @@
             "gateway",
             "dns1",
             "dns2",
-            "webmgmtpt"
+            "webmgmtpt",
+            "configuration"
         ];
 
         public string $gid;
@@ -312,6 +335,7 @@
         public string $dns1;
         public string $dns2;
         public string $webmgmtpt;
+        public string $configuration;
 
         public $label = [
             "gid:" => "GID:",
@@ -324,6 +348,7 @@
             "dns1:" => "DNS 1:",
             "dns2:" => "DNS 2:",
             "webmgmtpt:" => "Web Mgmt Port:",
+            "configuration:" => "Configuration:",
         ];
         public $ignore = [
             "id",

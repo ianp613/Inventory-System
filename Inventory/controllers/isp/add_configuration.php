@@ -6,25 +6,20 @@
 
     if($_SESSION["g_member"]){
         if($data) {
-            $isp = new ISP;
-            $isp->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
-            $isp->uid = $data["uid"];
-            $isp->name = $data["name"] ? $data["name"] : "-";
-            $isp->isp_name = $data["isp_name"] ? $data["isp_name"] : "-";
-            $isp->wan_ip = $data["wan_ip"] ? $data["wan_ip"] : "-";
-            $isp->configuration = $data["configuration"];
-            $isp->subnet = $data["subnet"] ? $data["subnet"] : "-";
-            $isp->gateway = $data["gateway"] ? $data["gateway"] : "-";
-            $isp->dns1 = $data["dns1"] ? $data["dns1"] : "-";
-            $isp->dns2 = $data["dns2"] ? $data["dns2"] : "-";
-            $isp->webmgmtpt = $data["webmgmtpt"] ? $data["webmgmtpt"] : "-";
-
-            DB::save($isp);
+            $conf = new ISP_Configuration;
+            $conf->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+            $conf->uid = $data["uid"];
+            $conf->name = $data["name"] ? $data["name"] : "-";
+            $conf->subnet = $data["subnet"] ? $data["subnet"] : "-";
+            $conf->gateway = $data["gateway"] ? $data["gateway"] : "-";
+            $conf->dns1 = $data["dns1"] ? $data["dns1"] : "-";
+            $conf->dns2 = $data["dns2"] ? $data["dns2"] : "-";
+            DB::save($conf);
 
             $log = new Logs;
             $log->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
             $log->uid = $_SESSION["userid"];
-            $log->log = $_SESSION["name"]." has added an ISP \"".$data["name"]."\".";
+            $log->log = $_SESSION["name"]." has added an ISP configuration \"".$data["name"]."\".";
             if($_SESSION["log"] != $log->log){
                 $_SESSION["log"] = $log->log;
                 DB::save($log);
@@ -34,7 +29,7 @@
                 "status" => true,
                 "type" => "success",
                 "size" => null,
-                "message" => "ISP has been saved."
+                "message" => "ISP configuration has been saved."
             ];
         }else{
             $response = [

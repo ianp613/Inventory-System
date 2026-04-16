@@ -9,6 +9,7 @@
         "ip_addressMigration",
         "RoutersMigration",
         "ISPMigration",
+        "ISP_ConfigurationMigration",
         "cctvLocationMigration",
         "cctvCamera",
         "SettingsMigration",
@@ -159,6 +160,22 @@
             Migrate::string("dns1");
             Migrate::string("dns2");
             Migrate::string("webmgmtpt");
+            Migrate::string("configuration");            
+        }
+    }
+
+    class ISP_ConfigurationMigration
+    {
+        public static function index(){
+            Migrate::attrib_table("isp_configuration");
+            Migrate::attrib_string(255);
+            Migrate::string("gid");
+            Migrate::string("uid");
+            Migrate::string("name");
+            Migrate::string("subnet");
+            Migrate::string("gateway");
+            Migrate::string("dns1");
+            Migrate::string("dns2");        
         }
     }
 

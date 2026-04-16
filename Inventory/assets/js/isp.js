@@ -25,6 +25,17 @@ if(document.getElementById("isp")){
     const add_isp_modal = new bootstrap.Modal(document.getElementById('add_isp'),unclose)
     const edit_isp_modal = new bootstrap.Modal(document.getElementById('edit_isp'),unclose)
     const delete_isp_modal = new bootstrap.Modal(document.getElementById('delete_isp'),unclose)
+    const add_isp_configuration_modal = new bootstrap.Modal(document.getElementById('add_isp_configuration'),unclose)
+
+    var add_isp_configuration_btn = document.getElementById("add_isp_configuration_btn")
+
+    var configuration_name = document.getElementById("configuration_name")
+    var configuration_subnet = document.getElementById("configuration_subnet")
+    var configuration_gateway = document.getElementById("configuration_gateway")
+    var configuration_dns1 = document.getElementById("configuration_dns1")
+    var configuration_dns2 = document.getElementById("configuration_dns2")
+    var configuration_save = document.getElementById("configuration_save")
+    var configuration_list = document.getElementById("configuration_list")
 
     var add_isp = document.getElementById("add_isp")
     var isp_icon = document.getElementById("isp_icon")
@@ -32,6 +43,7 @@ if(document.getElementById("isp")){
     
     var label_name = document.getElementById("name")
     var isp_name = document.getElementById("isp_name")
+    var configuration = document.getElementById("configuration")
     var wan_ip = document.getElementById("wan_ip")
     var subnet = document.getElementById("subnet")
     var gateway = document.getElementById("gateway")
@@ -42,6 +54,7 @@ if(document.getElementById("isp")){
     var edit_isp_icon = document.getElementById("edit_isp_icon")
     var edit_label_name = document.getElementById("edit_name")
     var edit_isp_name = document.getElementById("edit_isp_name")
+    var edit_configuration = document.getElementById("edit_configuration")
     var edit_wan_ip = document.getElementById("edit_wan_ip")
     var edit_subnet = document.getElementById("edit_subnet")
     var edit_gateway = document.getElementById("edit_gateway")
@@ -57,9 +70,52 @@ if(document.getElementById("isp")){
     var delete_isp_message = document.getElementById("delete_isp_message")
 
     loadPage();
+    loadConfiguration();
     // LOAD PAGE DATA
     function loadPage(){
         sole.get("../../controllers/isp/get_isp.php").then(res => loadISP(res))
+    }
+
+    function loadConfiguration(){
+        sole.get("../../controllers/isp/get_configuration.php").then(res => {
+            configuration_list.innerHTML = ""
+            configuration.innerHTML = ""
+
+            var opt = document.createElement("option")
+            opt.innerText = "-- Select Configuration --"
+            opt.disabled = true
+            opt.selected = true
+            configuration.appendChild(opt)
+
+            var edit_opt = document.createElement("option")
+            edit_opt.innerText = "-- Select Configuration --"
+            edit_opt.disabled = true
+            edit_opt.selected = true
+            edit_configuration.appendChild(edit_opt)
+
+            res.isp_configuration.forEach(conf => {
+                var opt = document.createElement("option")
+                opt.innerText = conf.name
+                opt.value = conf.id
+                configuration.appendChild(opt)
+
+                var edit_opt = document.createElement("option")
+                edit_opt.innerText = conf.name
+                edit_opt.value = conf.id
+                edit_configuration.appendChild(edit_opt)
+
+                configuration_list.insertAdjacentHTML("beforeend",
+                    `<div class="p-3 bg-light mt-3">` +
+                        `<h6 class="fw-bolder">${conf.name}</h6>` +
+                        `<hr>` +
+                        `<h6>Subnet: ${conf.subnet == "-" ? "" : conf.subnet}</h6>` +
+                        `<h6>Gateway: ${conf.gateway == "-" ? "" : conf.gateway}</h6>` +
+                        `<h6>DNS1: ${conf.dns1 == "-" ? "" : conf.dns1}</h6>` +
+                        `<h6>DNS2: ${conf.dns2 == "-" ? "" : conf.dns2}</h6>` +
+                    `</div>` 
+                )
+            })
+        })
     }
 
     function getIcon(isp_name){
@@ -77,15 +133,18 @@ if(document.getElementById("isp")){
     function loadISP(res){
         ispTable.clear().draw();
         res.isp.forEach(e => {
+            var router_name = ""
+            res.router.forEach(router => {
+                if(router.id == e.id){
+                    router_name = router.name
+                }      
+            });
             ispTable.row.add([
                 e["id"],
                 getIcon(e["isp_name"]),
                 e["name"] != "-" ? e["name"] : "",
                 e["wan_ip"] != "-" ? e["wan_ip"] : "",
-                e["subnet"] != "-" ? e["subnet"] : "",
-                e["gateway"] != "-" ? e["gateway"] : "",
-                e["dns1"] != "-" ? e["dns1"] : "",
-                e["dns2"] != "-" ? e["dns2"] : "",
+                router_name,
                 "<button id=\"edit_isp_"+ e["id"] +"\" i-id=\""+ e["id"] +"\" class=\"edit_isp_row btn btn-sm btn-secondary\"><i i-id=\""+ e["id"] +"\" class=\"edit_isp_row fa fa-edit\"></i></button>" +
                 "<button id=\"delete_isp_"+ e["id"] +"\" i-id=\""+ e["id"] +"\" class=\"delete_isp_row btn btn-sm btn-danger ms-1\"><i i-id=\""+ e["id"] +"\" class=\"delete_isp_row fa fa-trash\"></i></button>" 
             ]).draw(false)   
@@ -117,6 +176,11 @@ if(document.getElementById("isp")){
         }
     })
 
+    // ADD ISP CONFIGURATION
+    add_isp_configuration_btn.addEventListener("click", function () {
+        add_isp_configuration_modal.show()
+    })
+
     // ADD ISP FOCUS
     add_isp.addEventListener('shown.bs.modal', function () {
         isp_name.value = ""
@@ -128,6 +192,57 @@ if(document.getElementById("isp")){
         edit_label_name.focus()
     })
 
+    configuration_save.addEventListener("click", function () {
+        if(!configuration_name.value){
+            bs5.toast("warning","Please provide name.")
+            return
+        }
+        sole.post("../../controllers/isp/add_configuration.php", {
+            uid: localStorage.getItem("userid"),
+            name : configuration_name.value,
+            subnet : configuration_subnet.value,
+            gateway : configuration_gateway.value,
+            dns1 : configuration_dns1.value,
+            dns2 : configuration_dns2.value
+        }).then(res => {
+            if(res.status){
+                configuration_name.value = ""
+                configuration_subnet.value = ""
+                configuration_gateway.value = ""
+                configuration_dns1.value = ""
+                configuration_dns2.value = ""
+            }
+            bs5.toast(res.type,res.message)
+            loadConfiguration()
+        })
+    })
+
+    configuration.addEventListener("change", function () {
+        sole.post("../../controllers/isp/find_configuration.php",{
+            id : configuration.value
+        }).then(res => {
+            if(res.status){
+                subnet.value = res.configuration[0]["subnet"] == "-" ? "" : res.configuration[0]["subnet"]
+                gateway.value = res.configuration[0]["gateway"] == "-" ? "" : res.configuration[0]["gateway"]
+                dns1.value = res.configuration[0]["dns1"] == "-" ? "" : res.configuration[0]["dns1"]
+                dns2.value = res.configuration[0]["dns2"] == "-" ? "" : res.configuration[0]["dns2"]
+            }
+        })
+    })
+
+    edit_configuration.addEventListener("change", function () {
+        sole.post("../../controllers/isp/find_configuration.php",{
+            id : edit_configuration.value
+        }).then(res => {
+            if(res.status){
+                edit_subnet.value = res.configuration[0]["subnet"] == "-" ? "" : res.configuration[0]["subnet"]
+                edit_gateway.value = res.configuration[0]["gateway"] == "-" ? "" : res.configuration[0]["gateway"]
+                edit_dns1.value = res.configuration[0]["dns1"] == "-" ? "" : res.configuration[0]["dns1"]
+                edit_dns2.value = res.configuration[0]["dns2"] == "-" ? "" : res.configuration[0]["dns2"]
+            }
+        })
+    })
+
     add_isp_btn.addEventListener("click",function(){
         if(!isp_name.value){ isp_name.value = "Others" }
         if(label_name.value){
@@ -137,6 +252,7 @@ if(document.getElementById("isp")){
                     name: label_name.value,
                     isp_name: isp_name.value,
                     wan_ip: wan_ip.value,
+                    configuration: configuration.value,
                     subnet: subnet.value,
                     gateway: gateway.value,
                     dns1: dns1.value,
@@ -258,6 +374,7 @@ if(document.getElementById("isp")){
                 label_name.value = ""
                 isp_name.value = ""
                 wan_ip.value = ""
+                configuration.value = ""
                 subnet.value = ""
                 gateway.value = ""
                 dns1.value = ""
