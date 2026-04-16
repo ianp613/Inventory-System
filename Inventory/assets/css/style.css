@@ -937,6 +937,6 @@ input::placeholder, textarea::placeholder{
     color: #e7e7e7;
 }
 
-.ff-login-card button, input{
+.ff-login-card button, .ff-login-card input{
     border-radius: 20px !important;
 }
