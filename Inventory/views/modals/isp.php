@@ -37,7 +37,7 @@
                         <input readonly required type="text" name="subnet" id="subnet" class="form-control">
                     </div>
                     <div class="col-md-6">
-                        <label for="gateway" class="mb-2">Gateway</label>
+                        <label for="gateway" class="mb-2">Client IP</label>
                         <input readonly required type="text" name="gateway" id="gateway" class="form-control">
                     </div>
                 </div>
@@ -61,7 +61,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- EDIT ISP MODAL -->
 <div class="modal fade" id="edit_isp" tabindex="-1">
@@ -102,7 +101,7 @@
                         <input readonly required type="text" name="edit_subnet" id="edit_subnet" class="form-control">
                     </div>
                     <div class="col-md-6">
-                        <label for="edit_gateway" class="mb-2">Gateway</label>
+                        <label for="edit_gateway" class="mb-2">Client IP</label>
                         <input readonly required type="text" name="edit_gateway" id="edit_gateway" class="form-control">
                     </div>
                 </div>
@@ -167,7 +166,7 @@
                         <input required type="text" name="configuration_subnet" id="configuration_subnet" class="form-control">
                     </div>
                     <div class="col-md-6">
-                        <label for="configuration_gateway" class="mb-2">Gateway</label>
+                        <label for="configuration_gateway" class="mb-2">Client IP</label>
                         <input required type="text" name="configuration_gateway" id="configuration_gateway" class="form-control">
                     </div>
                 </div>

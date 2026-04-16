@@ -11,13 +11,15 @@
 
     if($data["id"]) {
         $isp = new ISP;
+        $conf = new ISP_Configuration;
         if(count(DB::find($isp,$data["id"]))){
             $response = [
                 "status" => true,
                 "type" => "info",
                 "size" => null,
                 "message" => "Edit ISP with ID ".$data["id"],
-                "isp" => DB::find($isp,$data["id"])
+                "isp" => DB::find($isp,$data["id"]),
+                "configuration" => DB::all($conf)
             ];
         }
     }

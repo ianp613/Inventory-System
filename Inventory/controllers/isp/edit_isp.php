@@ -11,6 +11,7 @@
         $isp->name = $data["name"] ? $data["name"] : "-";
         $isp->isp_name = $data["isp_name"] ? $data["isp_name"] : "-";
         $isp->wan_ip = $data["wan_ip"] ? $data["wan_ip"] : "-";
+        $isp->configuration = $data["configuration"] ? $data["configuration"] : "-";
         $isp->subnet = $data["subnet"] ? $data["subnet"] : "-";
         $isp->gateway = $data["gateway"] ? $data["gateway"] : "-";
         $isp->dns1 = $data["dns1"] ? $data["dns1"] : "-";

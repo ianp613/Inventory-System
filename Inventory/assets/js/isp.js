@@ -80,6 +80,7 @@ if(document.getElementById("isp")){
         sole.get("../../controllers/isp/get_configuration.php").then(res => {
             configuration_list.innerHTML = ""
             configuration.innerHTML = ""
+            edit_configuration.innerHTML = ""
 
             var opt = document.createElement("option")
             opt.innerText = "-- Select Configuration --"
@@ -109,7 +110,7 @@ if(document.getElementById("isp")){
                         `<h6 class="fw-bolder">${conf.name}</h6>` +
                         `<hr>` +
                         `<h6>Subnet: ${conf.subnet == "-" ? "" : conf.subnet}</h6>` +
-                        `<h6>Gateway: ${conf.gateway == "-" ? "" : conf.gateway}</h6>` +
+                        `<h6>Client IP: ${conf.gateway == "-" ? "" : conf.gateway}</h6>` +
                         `<h6>DNS1: ${conf.dns1 == "-" ? "" : conf.dns1}</h6>` +
                         `<h6>DNS2: ${conf.dns2 == "-" ? "" : conf.dns2}</h6>` +
                     `</div>` 
@@ -277,6 +278,7 @@ if(document.getElementById("isp")){
                     name: edit_label_name.value,
                     isp_name: edit_isp_name.value,
                     wan_ip: edit_wan_ip.value,
+                    configuration: edit_configuration.value,
                     subnet: edit_subnet.value,
                     gateway: edit_gateway.value,
                     dns1: edit_dns1.value,
@@ -360,10 +362,16 @@ if(document.getElementById("isp")){
         edit_label_name.value = res.isp[0]["name"] != "-" ? res.isp[0]["name"] : ""
         edit_isp_name.value = res.isp[0]["isp_name"] != "-" ? res.isp[0]["isp_name"] : ""
         edit_wan_ip.value = res.isp[0]["wan_ip"] != "-" ? res.isp[0]["wan_ip"] : ""
-        edit_subnet.value = res.isp[0]["subnet"] != "-" ? res.isp[0]["subnet"] : ""
-        edit_gateway.value = res.isp[0]["gateway"] != "-" ? res.isp[0]["gateway"] : ""
-        edit_dns1.value = res.isp[0]["dns1"] != "-" ? res.isp[0]["dns1"] : ""
-        edit_dns2.value = res.isp[0]["dns2"] != "-" ? res.isp[0]["dns2"] : ""
+        edit_configuration.value = res.isp[0]["configuration"] != "-" ? res.isp[0]["configuration"] : ""
+
+        res.configuration.forEach(conf => {
+            if(conf.id == res.isp[0]["configuration"]){
+                edit_subnet.value = conf.subnet != "-" ? conf.subnet : ""
+                edit_gateway.value = conf.gateway != "-" ? conf.gateway : ""
+                edit_dns1.value = conf.dns1 != "-" ? conf.dns1 : ""
+                edit_dns2.value = conf.dns1 != "-" ?conf.dns2 : ""
+            }
+        })
         edit_isp_webmgmtpt.value = res.isp[0]["webmgmtpt"] != "-" ? res.isp[0]["webmgmtpt"] : ""
         edit_isp_modal.show();
     }
