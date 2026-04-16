@@ -10,7 +10,7 @@
         <button id="show_logs" class="btn btn-dark wd-120 alert-dark fw-bold"><span class="fa fa-edit"></span><div>LOGS</div></button>
         <button id="add_log" class="btn btn-dark wd-150 alert-dark fw-bold"><span class="fa fa-file-text"></span><div>REQUEST FORM</div></button>
         <button id="consumable_request" class="btn btn-dark wd-150 alert-dark fw-bold"><span class="fa fa-info"></span><div>REQUESTS</div></button>
-        <a href="https://idcsi-officesuites.com/aims2/login.php" class="btn btn-dark wd-150 alert-dark fw-bold"><span class="fa fa-external-link"></span><div>AIMS</div></a>
+        <a target="_blank" href="https://idcsi-officesuites.com/aims2/login.php" class="btn btn-dark wd-150 alert-dark fw-bold"><span class="fa fa-external-link"></span><div>AIMS</div></a>
         <div class="mt-4"></div>
         <table id="consumables_table" class="table table-hover border">
             <thead>
