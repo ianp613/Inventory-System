@@ -37,49 +37,6 @@
                     }    
                 }
 
-                if($data["gateway"] != "-"){
-                    if($network_rid_temp != "-"){
-                        $router = new Routers;
-                        $router_temp1 = DB::find($router,$network_rid_temp);
-                        $router_temp2 = DB::find($router,$data["gateway"]);
-
-                        $log = new Logs;
-                        $log->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
-                        $log->uid = $_SESSION["userid"];
-                        $log->log = $_SESSION["name"]." has removed the connection of the network \"".$data["name"]."\" from router \"".$router_temp1[0]["name"]."\" and connected it to router \"".$router_temp2[0]["name"]."\".";
-                        if($_SESSION["log2"] != $log->log){
-                            $_SESSION["log2"] = $log->log;
-                            DB::save($log);
-                        }     
-                    }else{
-                        $router = new Routers;
-                        $router_temp = DB::find($router,$data["gateway"]);
-
-                        $log = new Logs;
-                        $log->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
-                        $log->uid = $_SESSION["userid"];
-                        $log->log = $_SESSION["name"]." has connected network \"".$data["name"]."\" to router \"".$router_temp[0]["name"]."\".";
-                        if($_SESSION["log2"] != $log->log){
-                            $_SESSION["log2"] = $log->log;
-                            DB::save($log);
-                        } 
-                    }  
-                }else{
-                    if($network_rid_temp != "-"){
-                        $router = new Routers;
-                        $router_temp = DB::find($router,$network_rid_temp);
-
-                        $log = new Logs;
-                        $log->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
-                        $log->uid = $_SESSION["userid"];
-                        $log->log = $_SESSION["name"]." has removed the connection of the network \"".$data["name"]."\" from router \"".$router_temp[0]["name"]."\"";
-                        if($_SESSION["log2"] != $log->log){
-                            $_SESSION["log2"] = $log->log;
-                            DB::save($log);
-                        }     
-                    }
-                }
-
                 if(count($net) > 1){
                     $response = [
                         "status" => true,

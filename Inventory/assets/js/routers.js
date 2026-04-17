@@ -238,6 +238,8 @@ if(document.getElementById("routers")){
         !edit_router_ip.value ? message = "Please provide router ip." : null
         !edit_router_name.value ? message = "Please provide router name." : null
 
+        if (!isValidIP(edit_router_ip.value)) message = "Please provide a valid router IP.";
+
         if(!message){
             if(edit_router_wan1.value && edit_router_wan2.value && edit_router_wan1.value != "-" && edit_router_wan2.value != "-"){
                 if(edit_router_wan1.value != edit_router_wan2.value){
@@ -281,11 +283,27 @@ if(document.getElementById("routers")){
         }).then(res => setWanEdit(res,"wan2"))
     })
 
+    function isValidIP(ip) {
+        const parts = ip.split('.');
+
+        if (parts.length !== 4) return false;
+
+        return parts.every(part => {
+            if (part === '' || isNaN(part)) return false;
+
+            const num = Number(part);
+
+            return num >= 0 && num <= 255 && String(num) === part;
+        });
+    }
+
     save_router_btn.addEventListener("click",function(){
         var message = ""
         !router_subnet.value ? message = "Please provide router subnet." : null
-        !router_ip.value ? message = "Please provide router ip." : null
+        !router_ip.value ? message = "Please provide router IP." : null
         !router_name.value ? message = "Please provide router name." : null
+
+        if (!isValidIP(router_ip.value)) message = "Please provide a valid router IP.";
 
         if(!message){
             if(router_wan1.value && router_wan2.value && router_wan1.value != "-" && router_wan2.value != "-"){

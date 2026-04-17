@@ -15,7 +15,21 @@
                     </div>
                     <div class="col-md-6">
                         <label for="router_subnet" class="mb-2">Subnet Mask</label>
-                        <input required type="text" name="router_subnet" id="router_subnet" class="form-control">
+                        <select name="" id="router_subnet" class="form-control">
+                            <option value="-">-- Select Subnet Mask --</option>
+                            <option value="255.255.240.0 /20">255.255.240.0 /20</option>
+                            <option value="255.255.248.0 /21">255.255.248.0 /21</option>
+                            <option value="255.255.252.0 /22">255.255.252.0 /22</option>
+                            <option value="255.255.254.0 /23">255.255.254.0 /23</option>
+                            <option selected value="255.255.255.0 /24">255.255.255.0 /24</option>
+
+                            <option value="255.255.255.128 /25">255.255.255.128 /25</option>
+                            <option value="255.255.255.192 /26">255.255.255.192 /26</option>
+                            <option value="255.255.255.224 /27">255.255.255.224 /27</option>
+                            <option value="255.255.255.240 /28">255.255.255.240 /28</option>
+                            <option value="255.255.255.248 /29">255.255.255.248 /29</option>
+                            <option value="255.255.255.252 /30">255.255.255.252 /30</option>
+                        </select>
                     </div>
                 </div>
                 <label for="router_webmgmtpt" class="mb-2">Web Management Port</i></label>
@@ -110,13 +124,27 @@
                     </div>
                     <div class="col-md-6">
                         <label for="edit_router_subnet" class="mb-2">Subnet Mask</label>
-                        <input required type="text" name="edit_router_subnet" id="edit_router_subnet" class="form-control">
+                        <select name="" id="edit_router_subnet" class="form-control">
+                            <option value="-">-- Select Subnet Mask --</option>
+                            <option value="255.255.240.0 /20">255.255.240.0 /20</option>
+                            <option value="255.255.248.0 /21">255.255.248.0 /21</option>
+                            <option value="255.255.252.0 /22">255.255.252.0 /22</option>
+                            <option value="255.255.254.0 /23">255.255.254.0 /23</option>
+                            <option selected value="255.255.255.0 /24">255.255.255.0 /24</option>
+
+                            <option value="255.255.255.128 /25">255.255.255.128 /25</option>
+                            <option value="255.255.255.192 /26">255.255.255.192 /26</option>
+                            <option value="255.255.255.224 /27">255.255.255.224 /27</option>
+                            <option value="255.255.255.240 /28">255.255.255.240 /28</option>
+                            <option value="255.255.255.248 /29">255.255.255.248 /29</option>
+                            <option value="255.255.255.252 /30">255.255.255.252 /30</option>
+                        </select>
                     </div>
                 </div>
 
                 <label for="edit_router_webmgmtpt" class="mb-2">Web Management Port</i></label>
                 <input required type="text" name="edit_router_webmgmtpt" id="edit_router_webmgmtpt" class="form-control mb-2">
-                
+
                 <h6 class="mt-3 fw-bold">WAN Settings</h6>
                 <hr>
 

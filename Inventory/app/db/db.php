@@ -466,6 +466,29 @@
                 return false;
             }
         }
+        /**
+         * --------------------------------------------------------------------------------
+         * EXECUTE SQL (Note: table name should be `sql_table` because it will be replace by the true table name.)
+         * --------------------------------------------------------------------------------
+         */
+
+        public static function sql($data,$sql){
+            try{
+                try{
+                    $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }catch(PDOException $e){
+                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
+                }
+                $table = $data->table;
+                $sql = str_replace("sql_table",$table,$sql);
+                $DB_CONN->exec($sql);
+            }catch(Exception $e){
+                echo "Save error: ".$e->getMessage().DB::$br;
+                $_SESSION["soleexceptionerror"] = $e;
+                exception_handler(0,$e->getMessage(),$e->getFile(),$e->getLine());
+            }
+        }
         public static $br = "";
     }
 ?>

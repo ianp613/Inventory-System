@@ -119,11 +119,6 @@ if(document.getElementById("ipaddress")){
 
         edit_ready_state.style = "display: none;"
         edit_saving_state.style = "display: flex;"
-        edit_network_name.setAttribute("readonly","true")
-        edit_ip_range_from.setAttribute("readonly","true")
-        edit_ip_range_to.setAttribute("readonly","true")
-        edit_ip_subnet.setAttribute("readonly","true")
-        edit_ip_gateway_select.setAttribute("readonly","true")
 
         sole.post("../../controllers/ipaddress/edit_network.php",{
             id: edit_network_btn.getAttribute("nid"),
@@ -133,22 +128,72 @@ if(document.getElementById("ipaddress")){
         }).then(res => validateResponse(res,"edit_network"))  
     })
 
+    function ipToLong(ip) {
+        return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0) >>> 0;
+    }
+
+    function longToIp(long) {
+        return [
+            (long >>> 24) & 0xFF,
+            (long >>> 16) & 0xFF,
+            (long >>> 8) & 0xFF,
+            long & 0xFF
+        ].join('.');
+    }
+
+    function cidrToRange(ip, prefix) {
+        const ipLong = ipToLong(ip);
+        const mask = prefix === 0 ? 0 : (0xFFFFFFFF << (32 - prefix)) >>> 0;
+
+        const network = ipLong & mask;
+        const broadcast = network | (~mask >>> 0);
+
+        if (prefix === 31 || prefix === 32) {
+            return [null, null]; // no usable hosts
+        }
+
+        return [network + 1, broadcast - 1];
+    }
+
+    function listUsableIPsFromCIDR(ip, subnet, nid) {
+        // subnet format: "255.255.255.252 / 30"
+        const [maskStr, prefixStr] = subnet.split("/");
+        const prefix = parseInt(prefixStr.trim(), 10);
+
+        const [start, end] = cidrToRange(ip, prefix);
+
+        if (start === null || end === null) {
+            return "";
+        }
+
+        let output = "(";
+
+        for (let i = start; i <= end; i++) {
+            output += `'${nid}', '${longToIp(i)}', '${subnet}', '-', '-', '-', 'DOWN', 'UNASSIGNED', '-', '-', '-', '-'`;
+
+            if (i < end) {
+            output += " ),\n( ";
+            }
+        }
+
+        return output;
+    }
+
     // POST ADD NETWORK
     add_network_btn.addEventListener("click", function () {
+        if(!ip_gateway_select.value || ip_gateway_select.value == "-"){
+            bs5.toast("warning","Please select router.")
+            return
+        }
         ready_state.style = "display: none;"
         saving_state.style = "display: flex;"
-        network_name.setAttribute("readonly","true")
-        ip_range_from.setAttribute("readonly","true")
-        ip_range_to.setAttribute("readonly","true")
-        ip_subnet.setAttribute("readonly","true")
-        ip_gateway_select.setAttribute("readonly","true")
         sole.post("../../controllers/ipaddress/add_network.php", {
             uid: localStorage.getItem("userid"),
             name: network_name.value,
             from: ip_range_from.value,
             to: ip_range_to.value,
             subnet: ip_subnet.value,
-            gateway: ip_gateway_select.value.split("|")[0]
+            gateway: ip_gateway_select.value.split("|")
         }).then(res => validateResponse(res,"add_network"))
     })
 
@@ -211,8 +256,16 @@ if(document.getElementById("ipaddress")){
     // SET GATEWAY
     ip_gateway_select.addEventListener("change",function(){
         if(this.value != "-"){
-            ip_gateway.value = this.value.split("|")[1]    
+            let val = this.value.split("|")
+            let range_ = getUsableRange(val[1],parseInt(val[2].split("/")[1]))
+            ip_gateway.value = val[1]
+            ip_subnet.value = val[2]
+            ip_range_from.value = range_.firstUsable
+            ip_range_to.value = range_.lastUsable
         }else{
+            ip_range_from.value = ""
+            ip_range_to.value = ""
+            ip_subnet.value = ""
             ip_gateway.value = ""
         }
     })
@@ -220,8 +273,16 @@ if(document.getElementById("ipaddress")){
     // SET GATEWAY
     edit_ip_gateway_select.addEventListener("change",function(){
         if(this.value != "-"){
-            edit_ip_gateway.value = this.value.split("|")[1]    
+            let val = this.value.split("|")
+            let range_ = getUsableRange(val[1],parseInt(val[2].split("/")[1]))
+            edit_ip_gateway.value = val[1]
+            edit_ip_subnet.value = val[2]
+            edit_ip_range_from.value = range_.firstUsable
+            edit_ip_range_to.value = range_.lastUsable
         }else{
+            edit_ip_range_from.value = ""
+            edit_ip_range_to.value = ""
+            edit_ip_subnet.value = ""
             edit_ip_gateway.value = ""
         }
     })
@@ -237,17 +298,10 @@ if(document.getElementById("ipaddress")){
 
         res.forEach(r => {
             var op = document.createElement("option")
-            op.value = r["id"] +  "|" + r["ip"]
+            op.value = r["id"] +  "|" + r["ip"] + "|" + r["subnet"]
             op.innerText = r["name"]
             ip_gateway_select.appendChild(op)
         });
-
-        if(res.length){
-            var op = document.createElement("option")
-            op.value = "-"
-            op.innerText = "N/A"
-            ip_gateway_select.appendChild(op)    
-        }
     }
 
     function dropRouters_Edit(res){
@@ -263,7 +317,7 @@ if(document.getElementById("ipaddress")){
         var gateway_ip = false
         res.router.forEach(r => {
             var op = document.createElement("option")
-            op.value = r["id"] +  "|" + r["ip"]
+            op.value = r["id"] +  "|" + r["ip"] + "|" + r["subnet"]
             if(res.network[0]["rid"] == r["id"]){
                 op.setAttribute("selected","true")
                 edit_ip_gateway.value = r["ip"]
@@ -273,13 +327,6 @@ if(document.getElementById("ipaddress")){
             op.innerText = r["name"]
             edit_ip_gateway_select.appendChild(op)
         });
-
-        if(res.router.length){
-            var op = document.createElement("option")
-            op.value = "-"
-            op.innerText = "N/A"
-            edit_ip_gateway_select.appendChild(op)    
-        }
     }
 
     function editNetworkForm(res){
@@ -395,11 +442,6 @@ if(document.getElementById("ipaddress")){
             sole.get("../../controllers/ipaddress/get_network.php").then(res => loadNetwork(res))
             ready_state.style = ""
             saving_state.style = "display: none;"
-            network_name.removeAttribute("readonly")
-            ip_range_from.removeAttribute("readonly")
-            ip_range_to.removeAttribute("readonly")
-            ip_subnet.removeAttribute("readonly")
-            ip_gateway_select.removeAttribute("readonly")
             ip_gateway.value = ""
             ip_gateway_select.innerHTML = ""
             var op = document.createElement("option")
@@ -413,11 +455,6 @@ if(document.getElementById("ipaddress")){
         if(func == "edit_network"){
             edit_ready_state.style = ""
             edit_saving_state.style = "display: none;"
-            edit_network_name.removeAttribute("readonly")
-            edit_ip_range_from.removeAttribute("readonly")
-            edit_ip_range_to.removeAttribute("readonly")
-            edit_ip_subnet.removeAttribute("readonly")
-            edit_ip_gateway_select.removeAttribute("readonly")
             edit_ip_gateway.value = ""
             var op = document.createElement("option")
             op.setAttribute("disabled","true")
@@ -585,5 +622,50 @@ if(document.getElementById("ipaddress")){
         setTimeout(() => {
             sole.post("../../controllers/clear_temp.php").then(res => console.log(res));
         }, 5000);
+    }
+        function ipToInt(ip) {
+        return ip.split('.').reduce((acc, octet) => {
+            return (acc << 8) + parseInt(octet, 10);
+        }, 0) >>> 0;
+    }
+
+    function intToIp(int) {
+        return [
+            (int >>> 24) & 255,
+            (int >>> 16) & 255,
+            (int >>> 8) & 255,
+            int & 255
+        ].join('.');
+    }
+
+    function getUsableRange(ip, prefix) {
+        const ipInt = ipToInt(ip);
+
+        const mask = prefix === 0 
+            ? 0 
+            : (~0 << (32 - prefix)) >>> 0;
+
+        const network = ipInt & mask;
+        const broadcast = network | (~mask >>> 0);
+
+        let firstUsable = network + 1;
+        let lastUsable = broadcast - 1;
+
+        // Handle /31 and /32
+        if (prefix >= 31) {
+            firstUsable = false;
+            lastUsable = false;
+        } else {
+            firstUsable = intToIp(firstUsable);
+            lastUsable = intToIp(lastUsable);
+        }
+
+        return {
+            subnetMask: intToIp(mask),
+            network: intToIp(network),
+            broadcast: intToIp(broadcast),
+            firstUsable,
+            lastUsable
+        };
     }
 }

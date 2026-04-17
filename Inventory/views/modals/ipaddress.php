@@ -8,26 +8,29 @@
             <div class="modal-body">
                 <label for="network_name" class="mb-2">Network Name</label>
                 <input required type="text" name="network_name" id="network_name" class="form-control mb-2">
+                <label for="ip_gateway_select" class="mb-2">Router</i></label>
+                <select name="ip_gateway_select" id="ip_gateway_select" class="form-control mb-2">
+                    <option disabled selected value="-">-- Select Router --</option>
+                </select>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="ip_subnet" class="mb-2">Subnet Mask</label>
+                        <input readonly required type="text" name="ip_subnet" id="ip_subnet" class="form-control mb-2">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="ip_subnet" class="mb-2">Gateway</label>
+                        <input readonly required type="text" name="ip_gateway" id="ip_gateway" class="form-control mb-2">
+                    </div>
+                </div>
+
                 <label for="ip_range_from" class="mb-2">IP Range <i class="f-13 text-danger">(Can't be edited after saving.)</i></label>
                 <div class="row mb-2">
                     <div class="col-md-6">
-                        <input required type="text" name="ip_range_from" id="ip_range_from" class="form-control" placeholder="FROM">
+                        <input readonly required type="text" name="ip_range_from" id="ip_range_from" class="form-control" placeholder="FROM">
                     </div>
                     <div class="col-md-6">
-                        <input required type="text" name="ip_range_to" id="ip_range_to" class="form-control" placeholder="TO">
-                    </div>
-                </div>
-                <label for="ip_subnet" class="mb-2">Subnet Mask</label>
-                <input required type="text" name="ip_subnet" id="ip_subnet" class="form-control mb-2">
-                <label for="ip_gateway_select" class="mb-2">Default Gateway <i class="f-13">(Router)</i></label>
-                <div class="row mb-2">
-                    <div class="col-md-6">
-                        <select name="ip_gateway_select" id="ip_gateway_select" class="form-control">
-                            <option disabled selected value="-">-- Select Router --</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <input disabled required type="text" name="ip_gateway" id="ip_gateway" class="form-control mb-2">
+                        <input readonly required type="text" name="ip_range_to" id="ip_range_to" class="form-control" placeholder="TO">
                     </div>
                 </div>
             </div>
@@ -58,26 +61,29 @@
             <div class="modal-body">
                 <label for="edit_network_name" class="mb-2">Network Name</label>
                 <input required type="text" name="edit_network_name" id="edit_network_name" class="form-control mb-2">
-                <label for="ip_range_from" class="mb-2">IP Range <i class="f-13 text-danger">(Can't be edited.)</i></label>
-                <div class="row mb-2">
+                <label for="edit_ip_gateway_select" class="mb-2">Router</i></label>
+                <select disabled name="edit_ip_gateway_select" id="edit_ip_gateway_select" class="form-control mb-2">
+                    <option disabled selected value="-">-- Select Router --</option>
+                </select>
+
+                <div class="row">
                     <div class="col-md-6">
-                        <input required disabled type="text" name="edit_ip_range_from" id="edit_ip_range_from" class="form-control" placeholder="FROM">
+                        <label for="edit_ip_subnet" class="mb-2">Subnet Mask</label>
+                        <input readonly required type="text" name="edit_ip_subnet" id="edit_ip_subnet" class="form-control mb-2">
                     </div>
                     <div class="col-md-6">
-                        <input required disabled type="text" name="edit_ip_range_to" id="edit_ip_range_to" class="form-control" placeholder="TO">
+                        <label for="edit_ip_gateway" class="mb-2">Gateway</label>
+                        <input readonly required type="text" name="edit_ip_gateway" id="edit_ip_gateway" class="form-control mb-2">
                     </div>
                 </div>
-                <label for="edit_ip_subnet" class="mb-2">Subnet Mask</label>
-                <input required type="text" name="edit_ip_subnet" id="edit_ip_subnet" class="form-control mb-2">
-                <label for="edit_ip_gateway_select" class="mb-2">Default Gateway <i class="f-13">(Router)</i></label>
+
+                <label for="edit_ip_range_from" class="mb-2">IP Range <i class="f-13 text-danger">(Can't be edited after saving.)</i></label>
                 <div class="row mb-2">
                     <div class="col-md-6">
-                        <select name="edit_ip_gateway_select" id="edit_ip_gateway_select" class="form-control">
-                            <option value="-">-- Select Router --</option>
-                        </select>
+                        <input readonly required type="text" name="edit_ip_range_from" id="edit_ip_range_from" class="form-control" placeholder="FROM">
                     </div>
                     <div class="col-md-6">
-                        <input disabled required type="text" name="edit_ip_gateway" id="edit_ip_gateway" class="form-control mb-2">
+                        <input readonly required type="text" name="edit_ip_range_to" id="edit_ip_range_to" class="form-control" placeholder="TO">
                     </div>
                 </div>
             </div>

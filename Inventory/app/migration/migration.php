@@ -105,7 +105,6 @@
             Migrate::string("from");
             Migrate::string("to");
             Migrate::string("subnet");
-            Migrate::string("router");
         }
     }
 
