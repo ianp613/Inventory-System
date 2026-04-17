@@ -49,7 +49,6 @@ if(document.getElementById("isp")){
     var gateway = document.getElementById("gateway")
     var dns1 = document.getElementById("dns1")
     var dns2 = document.getElementById("dns2")
-    var isp_webmgmtpt = document.getElementById("isp_webmgmtpt")
 
     var edit_isp_icon = document.getElementById("edit_isp_icon")
     var edit_label_name = document.getElementById("edit_name")
@@ -60,7 +59,6 @@ if(document.getElementById("isp")){
     var edit_gateway = document.getElementById("edit_gateway")
     var edit_dns1 = document.getElementById("edit_dns1")
     var edit_dns2 = document.getElementById("edit_dns2")
-    var edit_isp_webmgmtpt = document.getElementById("edit_isp_webmgmtpt")
 
     var edit_isp_title = document.getElementById("edit_isp_title")
     var edit_isp_btn = document.getElementById("edit_isp_btn")
@@ -257,8 +255,7 @@ if(document.getElementById("isp")){
                     subnet: subnet.value,
                     gateway: gateway.value,
                     dns1: dns1.value,
-                    dns2: dns2.value,
-                    webmgmtpt: isp_webmgmtpt.value
+                    dns2: dns2.value
                 }).then(res => validateResponse(res,"add_isp"))   
             }else{
                 bs5.toast("warning","Please input WAN IP.")
@@ -282,8 +279,7 @@ if(document.getElementById("isp")){
                     subnet: edit_subnet.value,
                     gateway: edit_gateway.value,
                     dns1: edit_dns1.value,
-                    dns2: edit_dns2.value,
-                    webmgmtpt: edit_isp_webmgmtpt.value
+                    dns2: edit_dns2.value
                 }).then(res => validateResponse(res,"edit_isp"))   
             }else{
                 bs5.toast("warning","Please input WAN IP.")
@@ -372,7 +368,6 @@ if(document.getElementById("isp")){
                 edit_dns2.value = conf.dns1 != "-" ?conf.dns2 : ""
             }
         })
-        edit_isp_webmgmtpt.value = res.isp[0]["webmgmtpt"] != "-" ? res.isp[0]["webmgmtpt"] : ""
         edit_isp_modal.show();
     }
 
@@ -387,7 +382,6 @@ if(document.getElementById("isp")){
                 gateway.value = ""
                 dns1.value = ""
                 dns2.value = ""
-                isp_webmgmtpt.value = ""
                 add_isp_modal.hide();
                 sole.get("../../controllers/isp/get_isp.php").then(res => loadISP(res))
             }

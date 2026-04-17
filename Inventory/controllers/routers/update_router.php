@@ -21,6 +21,7 @@
             }
             
             $router->subnet = $data["router_subnet"];
+            $router->webmgmtpt = $data["router_webmgmtpt"] ? $data["router_webmgmtpt"] : "-";
 
             $router_wan1_temp = $router->wan1;
             $router->wan1 = $data["router_wan1"];

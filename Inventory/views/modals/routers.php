@@ -18,6 +18,9 @@
                         <input required type="text" name="router_subnet" id="router_subnet" class="form-control">
                     </div>
                 </div>
+                <label for="router_webmgmtpt" class="mb-2">Web Management Port</i></label>
+                <input required type="text" name="router_webmgmtpt" id="router_webmgmtpt" class="form-control mb-2">
+
                 <h6 class="mt-3 fw-bold">WAN Settings</h6>
                 <hr>
 
@@ -110,6 +113,10 @@
                         <input required type="text" name="edit_router_subnet" id="edit_router_subnet" class="form-control">
                     </div>
                 </div>
+
+                <label for="edit_router_webmgmtpt" class="mb-2">Web Management Port</i></label>
+                <input required type="text" name="edit_router_webmgmtpt" id="edit_router_webmgmtpt" class="form-control mb-2">
+                
                 <h6 class="mt-3 fw-bold">WAN Settings</h6>
                 <hr>
 

@@ -51,8 +51,6 @@
                         <input readonly required type="text" name="dns2" id="dns2" class="form-control">
                     </div>
                 </div>
-                <label for="isp_webmgmtpt" class="mb-2">Web Management Port</i></label>
-                <input required type="text" name="isp_webmgmtpt" id="isp_webmgmtpt" class="form-control mb-2">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><span class="fa fa-remove"></span> Cancel</button>
@@ -115,8 +113,6 @@
                         <input readonly required type="text" name="edit_dns2" id="edit_dns2" class="form-control">
                     </div>
                 </div>
-                <label for="edit_isp_webmgmtpt" class="mb-2">Web Management Port</i></label>
-                <input required type="text" name="edit_isp_webmgmtpt" id="edit_isp_webmgmtpt" class="form-control mb-2">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><span class="fa fa-remove"></span> Cancel</button>

@@ -139,6 +139,7 @@
             Migrate::string("name");
             Migrate::string("ip");
             Migrate::string("subnet");
+            Migrate::string("webmgmtpt");
             Migrate::string("wan1");
             Migrate::string("wan2");
             Migrate::string("active");
@@ -155,11 +156,6 @@
             Migrate::string("isp_name");
             Migrate::string("name");
             Migrate::string("wan_ip");
-            // Migrate::string("subnet");
-            // Migrate::string("gateway");
-            // Migrate::string("dns1");
-            // Migrate::string("dns2");
-            Migrate::string("webmgmtpt");
             Migrate::string("configuration");            
         }
     }

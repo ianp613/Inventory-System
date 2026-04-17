@@ -76,6 +76,7 @@ if(document.getElementById("routers")){
     var router_name = document.getElementById("router_name")
     var router_ip = document.getElementById("router_ip")
     var router_subnet = document.getElementById("router_subnet")
+    var router_webmgmtpt = document.getElementById("router_webmgmtpt")
     var router_wan1 = document.getElementById("router_wan1")
     var router_wan2 = document.getElementById("router_wan2")
     var router_wan1_icon = document.getElementById("router_wan1_icon")
@@ -90,6 +91,7 @@ if(document.getElementById("routers")){
     var edit_router_name = document.getElementById("edit_router_name")
     var edit_router_ip = document.getElementById("edit_router_ip")
     var edit_router_subnet = document.getElementById("edit_router_subnet")
+    var edit_router_webmgmtpt = document.getElementById("edit_router_webmgmtpt")
     var edit_router_wan1 = document.getElementById("edit_router_wan1")
     var edit_router_wan2 = document.getElementById("edit_router_wan2")
     var edit_router_wan1_icon = document.getElementById("edit_router_wan1_icon")
@@ -310,6 +312,7 @@ if(document.getElementById("routers")){
             router_name: router_name.value,
             router_ip: router_ip.value,
             router_subnet: router_subnet.value,
+            router_webmgmtpt: router_webmgmtpt.value,
             router_wan1: router_wan1.value,
             router_wan2: router_wan2.value
         }).then(res => validateResponse(res,"add_router"))
@@ -321,6 +324,7 @@ if(document.getElementById("routers")){
             router_name: edit_router_name.value,
             router_ip: edit_router_ip.value,
             router_subnet: edit_router_subnet.value,
+            router_webmgmtpt: edit_router_webmgmtpt.value,
             router_wan1: edit_router_wan1.value,
             router_wan2: edit_router_wan2.value
         }).then(res => validateResponse(res,"edit_router"))
@@ -330,6 +334,7 @@ if(document.getElementById("routers")){
         edit_router_name.value = res.router[0]["name"]
         edit_router_ip.value = res.router[0]["ip"]
         edit_router_subnet.value = res.router[0]["subnet"]
+        edit_router_webmgmtpt.value = res.router[0]["webmgmtpt"] == "-" ? "" : res.router[0]["webmgmtpt"]
 
         edit_wan1_info.innerText = "NOT SET"
         edit_wan2_info.innerText = "NOT SET"
@@ -966,6 +971,7 @@ if(document.getElementById("routers")){
                 router_name.value = ""
                 router_ip.value = ""
                 router_subnet.value = ""
+                router_webmgmtpt.value = ""
                 add_router_modal.hide()
                 loadPage()
             }
@@ -973,6 +979,7 @@ if(document.getElementById("routers")){
                 edit_router_name.value = ""
                 edit_router_ip.value = ""
                 edit_router_subnet.value = ""
+                edit_router_webmgmtpt.value = ""
                 edit_router_modal.hide()
                 edit_router_wan1.innerHTML = ""
                 edit_router_wan2.innerHTML = ""

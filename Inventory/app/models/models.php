@@ -251,6 +251,7 @@
             "name",
             "ip",
             "subnet",
+            "webmgmtpt",
             "wan1",
             "wan2",
             "active"
@@ -261,6 +262,7 @@
         public string $name;
         public string $ip;
         public string $subnet;
+        public string $webmgmtpt;
         public string $wan1;
         public string $wan2;
         public string $active;
@@ -271,6 +273,7 @@
             "name:" => "Name:",
             "ip:" => "IP:",
             "subnet:" => "Subnet:",
+            "webmgmtpt:" => "Web Management Port:",
             "wan1:" => "WAN 1:",
             "wan2:" => "WAN 2:",
             "active:" => "Active WAN:",
@@ -317,11 +320,6 @@
             "isp_name",
             "name",
             "wan_ip",
-            // "subnet",
-            // "gateway",
-            // "dns1",
-            // "dns2",
-            "webmgmtpt",
             "configuration"
         ];
 
@@ -330,10 +328,6 @@
         public string $isp_name;
         public string $name;
         public string $wan_ip;
-        // public string $subnet;
-        // public string $gateway;
-        // public string $dns1;
-        // public string $dns2;
         public string $webmgmtpt;
         public string $configuration;
 
