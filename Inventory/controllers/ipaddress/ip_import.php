@@ -31,88 +31,121 @@
 
             // Check Network
             $network_name = $sheet->getCell('B3')->getValue();
+
+            $bol_router = true;
+            !$sheet->getCell('B5')->getValue() ? $bol_router = false : null;
+            !$sheet->getCell('B6')->getValue() ? $bol_router = false : null;
+            !$sheet->getCell('B7')->getValue() ? $bol_router = false : null;
+
+            if(!$bol_router){
+                $response = [
+                    "status" => false,
+                    "type" => "warning",
+                    "size" => null,
+                    "message" => "Router details is incomplete."
+                ];  
+                echo json_encode($response);
+                exit;
+            }
+
             if($network_name){
-                $network_name = $network_name." - IMPORT: ".date('m-d-Y_His');
+                $date = date('mdy-His');
+                $network_name = "IMPORT: ".$date." | ".$network_name;
+                $router_name = "IMPORT: ".$date." | ".$sheet->getCell('B5')->getValue();
+
+                $router = new Routers;
+                $router->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+                $router->uid = $_SESSION["userid"];
+                $router->name = $router_name;
+                $router->ip = $sheet->getCell('B6')->getValue();
+                $router->subnet = $sheet->getCell('B7')->getValue();
+                $router->webmgmtpt = '-';
+                $router->wan1 = '-';
+                $router->wan2 = '-';
+                $router->active = '-';
+                DB::save($router);
+
+                $router_temp = DB::where($router,"name","=",$router_name)[0];
+
                 $bol = true;
-                !$sheet->getCell('A11')->getValue() ? $bol = false : null;
-                !$sheet->getCell('B11')->getValue() ? $bol = false : null;
-                !$sheet->getCell('C11')->getValue() ? $bol = false : null;
-                !$sheet->getCell('D11')->getValue() ? $bol = false : null;
-                !$sheet->getCell('E11')->getValue() ? $bol = false : null;
-                !$sheet->getCell('F11')->getValue() ? $bol = false : null;
-                !$sheet->getCell('G11')->getValue() ? $bol = false : null;
-                !$sheet->getCell('H11')->getValue() ? $bol = false : null;
-                !$sheet->getCell('I11')->getValue() ? $bol = false : null;
-                !$sheet->getCell('J11')->getValue() ? $bol = false : null;
-                !$sheet->getCell('K11')->getValue() ? $bol = false : null;
+                $title_row = 15;
+                !$sheet->getCell('A'.$title_row)->getValue() ? $bol = false : null;
+                !$sheet->getCell('B'.$title_row)->getValue() ? $bol = false : null;
+                !$sheet->getCell('C'.$title_row)->getValue() ? $bol = false : null;
+                !$sheet->getCell('D'.$title_row)->getValue() ? $bol = false : null;
+                !$sheet->getCell('E'.$title_row)->getValue() ? $bol = false : null;
+                !$sheet->getCell('F'.$title_row)->getValue() ? $bol = false : null;
+                !$sheet->getCell('G'.$title_row)->getValue() ? $bol = false : null;
+                !$sheet->getCell('H'.$title_row)->getValue() ? $bol = false : null;
+                !$sheet->getCell('I'.$title_row)->getValue() ? $bol = false : null;
+                !$sheet->getCell('J'.$title_row)->getValue() ? $bol = false : null;
+                !$sheet->getCell('K'.$title_row)->getValue() ? $bol = false : null;
                 
                 if($bol){
-                    $count = 12;
+                    $count = 16;
                     $ip_count = 0;
                     $ip_from = null;
                     $ip_to = null;
                     $ip_subnet = null;
                     while ($sheet->getCell('A'.$count)->getValue()) {
-                        $count == 12 ? $ip_from = $sheet->getCell('A'.$count)->getValue() : null;
+                        $count == 16 ? $ip_from = $sheet->getCell('A'.$count)->getValue() : null;
                         $ip_to = $sheet->getCell('A'.$count)->getValue();
                         $ip_subnet = $sheet->getCell('B'.$count)->getValue();
                         $count++;
                         $ip_count++;
                     }
 
-                    if($ip_count <= 1000){
-                        $network = new IP_Network;
-                        $network->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
-                        $network->uid = $_SESSION["userid"];
-                        $network->rid = "-";
-                        $network->name = $network_name;
-                        $network->from = $ip_from;
-                        $network->to = $ip_to;
-                        $network->subnet = $ip_subnet;
-                        DB::save($network);
+                    $network = new IP_Network;
+                    $network->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+                    $network->uid = $_SESSION["userid"];
+                    $network->rid = $router_temp["id"];
+                    $network->name = $network_name;
+                    $network->from = $ip_from;
+                    $network->to = $ip_to;
+                    $network->subnet = $ip_subnet;
+                    DB::save($network);
 
-                        $nid = DB::where($network,"name","=",$network_name)[0]["id"];
-                        $count = 12;
-                        $ip = new IP_Address;
-                        while ($sheet->getCell('A'.$count)->getValue()) {
-                            $ip->nid = $nid;
-                            $ip->ip = $sheet->getCell('A'.$count)->getValue();
-                            $ip->subnet = $sheet->getCell('B'.$count)->getValue();
-                            $ip->hostname = $sheet->getCell('C'.$count)->getValue();
-                            $ip->site = $sheet->getCell('D'.$count)->getValue();
-                            $ip->server = $sheet->getCell('E'.$count)->getValue();
-                            $ip->state = $sheet->getCell('F'.$count)->getValue();
-                            $ip->status = $sheet->getCell('G'.$count)->getValue();
-                            $ip->webmgmtpt = $sheet->getCell('H'.$count)->getValue();
-                            $ip->username = $sheet->getCell('I'.$count)->getValue();
-                            $ip->password = $sheet->getCell('J'.$count)->getValue();
-                            $ip->remarks = $sheet->getCell('K'.$count)->getValue();
-                            DB::save($ip);
-                            $count++;
+                    $nid = DB::where($network,"name","=",$network_name)[0]["id"];
+                    $sql = "INSERT INTO `sql_table` (`nid`, `ip`, `subnet`, `hostname`, `site`, `server`, `state`, `status`, `webmgmtpt`, `username`, `password`, `remarks`) VALUES ";
+                    $count = 16;
+                    $count_ = 0;
+                    while ($sheet->getCell('A'.$count)->getValue()) {
+                        $sql .= "('".$nid;
+                        $sql .= "', '".$sheet->getCell('A'.$count)->getValue();
+                        $sql .= "', '".$sheet->getCell('B'.$count)->getValue();
+                        $sql .= "', '".$sheet->getCell('C'.$count)->getValue();
+                        $sql .="', '".$sheet->getCell('D'.$count)->getValue();
+                        $sql .= "', '".$sheet->getCell('E'.$count)->getValue();
+                        $sql .= "', '".$sheet->getCell('F'.$count)->getValue();
+                        $sql .= "', '".$sheet->getCell('G'.$count)->getValue();
+                        $sql .= "', '".$sheet->getCell('H'.$count)->getValue();
+                        $sql .= "', '".$sheet->getCell('I'.$count)->getValue();
+                        $sql .= "', '".$sheet->getCell('J'.$count)->getValue();
+                        $sql .= "', '".$sheet->getCell('K'.$count)->getValue()."')";
+                        $count++;
+                        $count_++;
+                        if($count_ < $ip_count){
+                            $sql .= ",";
                         }
-                        $log = new Logs;
-                        $log->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
-                        $log->uid = $_SESSION["userid"];
-                        $log->log = $_SESSION["name"]." has imported data of network \"".$network_name."\".";
-                        if($_SESSION["log"] != $log->log){
-                            $_SESSION["log"] = $log->log;
-                            DB::save($log);
-                        }  
-                        $response = [
-                            "status" => true,
-                            "type" => "success",
-                            "size" => null,
-                            "message" => "Import completed."
-                        ]; 
-                    }else{
-                       $response = [
-                            "status" => false,
-                            "type" => "warning",
-                            "size" => null,
-                            "message" => "The IP Address exceeds the limits of 1000 IP per network only. You can use network name like \"Network [1] 1-1000\", \"Network [2] 1001-2000\" and so on."
-
-                        ];  
                     }
+
+                    $ip_address = new IP_Address;
+                    DB::sql($ip_address,$sql);
+
+                    $log = new Logs;
+                    $log->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+                    $log->uid = $_SESSION["userid"];
+                    $log->log = $_SESSION["name"]." has imported data of network \"".$network_name."\".";
+                    if($_SESSION["log"] != $log->log){
+                        $_SESSION["log"] = $log->log;
+                        DB::save($log);
+                    }  
+                    $response = [
+                        "status" => true,
+                        "type" => "success",
+                        "size" => null,
+                        "message" => "Import completed."
+                    ]; 
                 }else{
                     $response = [
                         "status" => false,
@@ -144,9 +177,10 @@
         $response = [
             "status" => false,
             "type" => "error",
-            "size" => null,
-            "message" => "Import error."
-        ];     
+            "size" => 'lg',
+            "message" => "Import error.".$th
+        ];
+        echo json_encode($response);     
     }
     
 
