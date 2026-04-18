@@ -12,6 +12,7 @@
                     <div class="col-md-6">
                         <label for="router_ip" class="mb-2">IP Address</label>
                         <input required type="text" name="router_ip" id="router_ip" class="form-control">
+                        <p class="f-i f-12 text-danger mt-1 mb-0">*Note: Can't be edited after saving.</p>
                     </div>
                     <div class="col-md-6">
                         <label for="router_subnet" class="mb-2">Subnet Mask</label>
@@ -30,6 +31,7 @@
                             <option value="255.255.255.248 /29">255.255.255.248 /29</option>
                             <option value="255.255.255.252 /30">255.255.255.252 /30</option>
                         </select>
+                        <p class="f-i f-12 text-danger mt-1 mb-0">*Note: Can't be edited after saving.</p>
                     </div>
                 </div>
                 <label for="router_webmgmtpt" class="mb-2">Web Management Port</i></label>
@@ -120,11 +122,12 @@
                 <div class="row mb-2 mt-2">
                     <div class="col-md-6">
                         <label for="edit_router_ip" class="mb-2">IP Address</label>
-                        <input required type="text" name="edit_router_ip" id="edit_router_ip" class="form-control">
+                        <input readonly required type="text" name="edit_router_ip" id="edit_router_ip" class="form-control">
+                        <p class="f-i f-12 text-danger mt-1 mb-0">*Note: Can't be edited.</p>
                     </div>
                     <div class="col-md-6">
                         <label for="edit_router_subnet" class="mb-2">Subnet Mask</label>
-                        <select name="" id="edit_router_subnet" class="form-control">
+                        <select disabled name="" id="edit_router_subnet" class="form-control">
                             <option value="-">-- Select Subnet Mask --</option>
                             <option value="255.255.240.0 /20">255.255.240.0 /20</option>
                             <option value="255.255.248.0 /21">255.255.248.0 /21</option>
@@ -139,6 +142,7 @@
                             <option value="255.255.255.248 /29">255.255.255.248 /29</option>
                             <option value="255.255.255.252 /30">255.255.255.252 /30</option>
                         </select>
+                        <p class="f-i f-12 text-danger mt-1 mb-0">*Note: Can't be edited.</p>
                     </div>
                 </div>
 

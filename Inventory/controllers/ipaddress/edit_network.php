@@ -7,20 +7,15 @@
     if($_SESSION["g_member"]){
         if($data["name"]) {
             $network = new IP_Network;
-            
                 $network = DB::prepare($network,$data["id"]);
                 $network_name_temp = $network->name;
                 $network->name = $data["name"];
-                $network->subnet = $data["subnet"];
-                $network_rid_temp = $network->rid;
-                $network->rid = $data["gateway"];
                 DB::update($network);
 
                 $ip = new IP_Address;
                 $ip_temp = DB::where($ip,"nid","=",$data["id"]);
                 foreach ($ip_temp as $ip_t) {
                     $ip = DB::prepare($ip,$ip_t["id"]);
-                    $ip->subnet = $data["subnet"];
                     $ip->status = $ip_t["status"];
                     DB::update($ip);
                 }
@@ -41,8 +36,8 @@
                     $response = [
                         "status" => true,
                         "type" => "warning",
-                        "size" => null,
-                        "message" => "Data has been updated. Please note that the ".$data["name"]." network already exists, which may lead to potential conflicts or data integrity issues."
+                        "size" => "lg",
+                        "message" => "Data has been updated. Please note that the <b>".$data["name"]."</b> network already exists, which may lead to potential conflicts or data integrity issues."
                     ]; 
                 }else{
                     $response = [

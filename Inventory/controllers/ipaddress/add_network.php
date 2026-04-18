@@ -4,6 +4,7 @@
     include("../../includes.php");
     $data = json_decode(file_get_contents('php://input'), true);
     $sql = "";
+    $nid = null;
 
     function cidrToRange($ip, $prefix) {
         $ipLong = ip2long($ip);
@@ -37,47 +38,51 @@
     if($_SESSION["g_member"]){
         if($data["name"]) {
             $ip_network = new IP_Network;
-            $bol = DB::validate($ip_network,"name",$data["name"]);
-            if($bol){
-                $ip_network->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
-                $ip_network->uid = $data["uid"];
-                $ip_network->name = $data["name"];
-                $ip_network->from = $data["from"];
-                $ip_network->to = $data["to"];
-                $ip_network->subnet = $data["subnet"];
-                $ip_network->rid = $data["gateway"][0];
-                DB::save($ip_network);
+            $ip_network->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+            $ip_network->uid = $data["uid"];
+            $ip_network->name = $data["name"];
+            $ip_network->from = $data["from"];
+            $ip_network->to = $data["to"];
+            $ip_network->subnet = $data["subnet"];
+            $ip_network->rid = $data["gateway"][0];
+            DB::save($ip_network);
 
-                $nid = DB::where($ip_network,"name","=",$data["name"])[0]["id"];
-
+            $nid = DB::where($ip_network,"name","=",$data["name"])[0]["id"];
+            $network_temp = DB::where($ip_network,"name","=",$data["name"]);
+            if(count($network_temp)){
+                if(count($network_temp) > 1){
+                    $nid = end($network_temp)["id"];
+                }else{
+                    $nid = $network_temp[0]["id"];
+                }
                 $sql = "INSERT INTO `sql_table` (`nid`, `ip`, `subnet`, `hostname`, `site`, `server`, `state`, `status`, `remarks`, `webmgmtpt`, `username`, `password`) VALUES ";
                 $sql .= listUsableIPsFromCIDR($data["gateway"][1],$data["subnet"],$nid);
 
                 $ip_address = new IP_Address;
                 DB::sql($ip_address,$sql);
-                
+            }else{
                 $response = [
                     "status" => true,
                     "type" => "success",
                     "size" => null,
-                    "message" => "Network has been saved."
+                    "message" => "Error creating IP addresses."
                 ]; 
-            }else{
-                $response = [
-                    "status" => false,
-                    "type" => "warning",
-                    "size" => null,
-                    "message" => "Network already exist."
-                ];    
-            }  
-        }else{
+            }
+            
             $response = [
-                "status" => false,
-                "type" => "warning",
+                "status" => true,
+                "type" => "success",
                 "size" => null,
-                "message" => "Please provide network name."
-            ];
-        }
+                "message" => "Network has been saved."
+            ]; 
+    }else{
+        $response = [
+            "status" => false,
+            "type" => "warning",
+            "size" => null,
+            "message" => "Please provide network name."
+        ];
+    }
     }else{
         $response = [
             "status" => false,

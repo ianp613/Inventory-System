@@ -44,10 +44,18 @@
         $sheet->setCellValue('B2', $currentTime);
         $sheet->setCellValue('B3', $network['name']);
 
+        $router = new Routers;
+        $router = DB::find($router,$network["rid"])[0];
+
+        $sheet->setCellValue('B5', $router['name']);
+        $sheet->setCellValue('B6', $router['ip']);
+        $sheet->setCellValue('B7', $router['subnet']);
+
+
         $ip = new IP_Address;
         $ip = DB::where($ip,"nid","=",$data["id"]);
 
-        $row = 12;
+        $row = 16;
         $used = 0;
         $available = 0;
 
@@ -72,11 +80,11 @@
             $row++;
         }
 
-        $sheet->setCellValue('B5',$used);
-        $sheet->setCellValue('B6',$available);
+        $sheet->setCellValue('B9',$used);
+        $sheet->setCellValue('B10',$available);
 
-        $sheet->setCellValue('B8',$up);
-        $sheet->setCellValue('B9',$down);
+        $sheet->setCellValue('B12',$up);
+        $sheet->setCellValue('B13',$down);
 
         $uid = uniqid();
 

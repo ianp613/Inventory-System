@@ -115,7 +115,6 @@ if(document.getElementById("ipaddress")){
     // POST EDIT NETWORK
     edit_network_btn.addEventListener("click", function(){
         !edit_network_name.value ? bs5.toast("warning","Please provide network name.") : null
-        !edit_ip_subnet.value ? bs5.toast("warning","Please provide subnet mask.") : null
 
         edit_ready_state.style = "display: none;"
         edit_saving_state.style = "display: flex;"
@@ -123,8 +122,6 @@ if(document.getElementById("ipaddress")){
         sole.post("../../controllers/ipaddress/edit_network.php",{
             id: edit_network_btn.getAttribute("nid"),
             name: edit_network_name.value,
-            subnet: edit_ip_subnet.value,
-            gateway: edit_ip_gateway_select.value.split("|")[0]
         }).then(res => validateResponse(res,"edit_network"))  
     })
 

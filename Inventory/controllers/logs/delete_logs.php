@@ -7,6 +7,9 @@
     $log = new Logs;
     $user = new User;
 
+    $ids_all = "";
+    $ids_user = "";
+
     if($data["uid"] == "All"){
         if($_SESSION["g_member"]){
             $users = [];
@@ -29,8 +32,16 @@
 
             foreach ($users as $user) {
                 $temp = DB::where($log,"uid","=",$user["id"]);
+                $count_ = 1;
                 foreach ($temp as $t) {
-                    DB::delete($log,$t["id"]);
+                    $ids_all .= $t["id"];
+                    if($count_ != count($temp)) $ids_all .= ",";
+                    $count_++;
+                }
+
+                if($ids_all){
+                    $sql = "DELETE FROM `sql_table` WHERE `id` IN (".$ids_all.")";
+                    DB::sql($log,$sql);
                 }
             }
         }else{
@@ -38,8 +49,15 @@
         }
     }else{
         $temp = DB::where($log,"uid","=",$data["uid"]);
+        $count_ = 1;
         foreach ($temp as $t) {
-            DB::delete($log,$t["id"]);
+            $ids_user .= $t["id"];
+            if($count_ != count($temp)) $ids_user .= ",";
+            $count_++;
+        }
+        if($ids_user){
+            $sql = "DELETE FROM `sql_table` WHERE `id` IN (".$ids_user.")";
+            DB::sql($log,$sql);
         }
     }
     $response = [

@@ -340,8 +340,6 @@ if(document.getElementById("routers")){
         sole.post("../../controllers/routers/update_router.php",{
             id: id,
             router_name: edit_router_name.value,
-            router_ip: edit_router_ip.value,
-            router_subnet: edit_router_subnet.value,
             router_webmgmtpt: edit_router_webmgmtpt.value,
             router_wan1: edit_router_wan1.value,
             router_wan2: edit_router_wan2.value

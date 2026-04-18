@@ -10,7 +10,6 @@
             $router = DB::prepare($router,$data["id"]);
             $router_name_temp = $router->name;
             $router->name = $data["router_name"];
-            $router->ip = $data["router_ip"];
             if($router->active != "-"){
                 if($router->wan1 == $router->active && $router->wan1 != $data["router_wan1"]){
                     $router->active = "-";
@@ -20,7 +19,6 @@
                 }    
             }
             
-            $router->subnet = $data["router_subnet"];
             $router->webmgmtpt = $data["router_webmgmtpt"] ? $data["router_webmgmtpt"] : "-";
 
             $router_wan1_temp = $router->wan1;

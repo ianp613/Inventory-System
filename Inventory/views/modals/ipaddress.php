@@ -9,10 +9,10 @@
                 <label for="network_name" class="mb-2">Network Name</label>
                 <input required type="text" name="network_name" id="network_name" class="form-control mb-2">
                 <label for="ip_gateway_select" class="mb-2">Router</i></label>
-                <select name="ip_gateway_select" id="ip_gateway_select" class="form-control mb-2">
+                <select name="ip_gateway_select" id="ip_gateway_select" class="form-control">
                     <option disabled selected value="-">-- Select Router --</option>
                 </select>
-
+                <p class="f-i f-12 text-danger mt-1 mb-1">*Note: Can't be edited after saving.</p>
                 <div class="row">
                     <div class="col-md-6">
                         <label for="ip_subnet" class="mb-2">Subnet Mask</label>
@@ -24,7 +24,7 @@
                     </div>
                 </div>
 
-                <label for="ip_range_from" class="mb-2">IP Range <i class="f-13 text-danger">(Can't be edited after saving.)</i></label>
+                <label for="ip_range_from" class="mb-2">IP Range</label>
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <input readonly required type="text" name="ip_range_from" id="ip_range_from" class="form-control" placeholder="FROM">
@@ -65,7 +65,7 @@
                 <select disabled name="edit_ip_gateway_select" id="edit_ip_gateway_select" class="form-control mb-2">
                     <option disabled selected value="-">-- Select Router --</option>
                 </select>
-
+                <p class="f-i f-12 text-danger mt-1 mb-1">*Note: Can't be edited</p>
                 <div class="row">
                     <div class="col-md-6">
                         <label for="edit_ip_subnet" class="mb-2">Subnet Mask</label>
@@ -77,7 +77,7 @@
                     </div>
                 </div>
 
-                <label for="edit_ip_range_from" class="mb-2">IP Range <i class="f-13 text-danger">(Can't be edited after saving.)</i></label>
+                <label for="edit_ip_range_from" class="mb-2">IP Range</i></label>
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <input readonly required type="text" name="edit_ip_range_from" id="edit_ip_range_from" class="form-control" placeholder="FROM">
