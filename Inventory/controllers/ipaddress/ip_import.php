@@ -11,7 +11,17 @@
     use PhpOffice\PhpSpreadsheet\Style\Color;
 
     /**------------------------ */
-
+    
+    if(!$_SESSION["g_member"]){
+        $response = [
+            "status" => false,
+            "type" => "info",
+            "size" => null,
+            "message" => "Please operate as group member."
+        ];
+        echo json_encode($response);
+        exit;
+    }
     try {
         date_default_timezone_set('Asia/Manila');
 
@@ -171,7 +181,7 @@
                 "message" => "Something went wrong, please try again."
             ];
         }
-
+        unlink($filePath);
         echo json_encode($response);
     } catch (\Throwable $th) {
         $response = [

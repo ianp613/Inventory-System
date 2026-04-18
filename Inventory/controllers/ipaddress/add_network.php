@@ -75,14 +75,14 @@
                 "size" => null,
                 "message" => "Network has been saved."
             ]; 
-    }else{
-        $response = [
-            "status" => false,
-            "type" => "warning",
-            "size" => null,
-            "message" => "Please provide network name."
-        ];
-    }
+        }else{
+            $response = [
+                "status" => false,
+                "type" => "warning",
+                "size" => null,
+                "message" => "Please provide network name."
+            ];
+        }
     }else{
         $response = [
             "status" => false,
