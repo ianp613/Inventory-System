@@ -1,4 +1,4 @@
-<div id="artisan">
+<div id="artisan" class="theme-card theme-card-dark">
     <div class="row m-100">
         <div class="col-md-3">
             <div id="qr_generator" class="text-center artisanry-menu">

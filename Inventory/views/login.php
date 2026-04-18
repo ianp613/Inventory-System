@@ -11,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../assets/css/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/theme.css">
     <link rel="stylesheet" href="../assets/fontawesome/css/font-awesome.min.css">
     <title>Inventory System</title>
     <link rel="shortcut icon" href="../assets/img/logo-ico.png" type="image/x-icon">
@@ -20,10 +21,10 @@
     <div class="container">
       <div class="row justify-content-center align-items-center vh-100">
         <div class="col-md-4">
-          <div class="card">
-            <div class="shape"></div>
-            <div class="shape"></div>
-            <div class="shape"></div>
+          <div class="card theme-login theme-login-dark">
+            <div class="shape theme-shape theme-shape-dark"></div>
+            <div class="shape theme-shape theme-shape-dark"></div>
+            <div class="shape theme-shape theme-shape-dark"></div>
             <div class="card-body">
               <div class="row justify-content-center align-items-center">
                 <img src="../assets/img/fposi-logo.png" style="width: 250px;" alt="fposi-logo.png">
@@ -51,7 +52,7 @@
           <div hidden id="remembered_user_container" class="remembered_user_container">
             <!-- USERS HERE -->
           </div>
-          <div class="bg-dark text-light mt-3 p-3 rounded-3">
+          <div class="bg-dark text-light mt-3 p-3 rounded-3 theme-login theme-login-dark theme-links theme-links-dark">
             <div class="ms-3">
               <h6 class="m-0"><span class="fa fa-folder"></span> DDC LEYTE E-KATALOG</h6>
               <a class="text-success" target="_blank" href="https://e-katalog.ddns.net:58787/TECH"><span class="fa fa-external-link"></span> https://e-katalog.ddns.net:58787/TECH</a>
@@ -94,4 +95,5 @@
   <script src="../assets/js/modal_alert.js"></script>
   <script src="../assets/js/login.js"></script>
   <script src="../assets/js/script.js"></script>
+  <script src="../assets/js/theme.js"></script>
 </html>

@@ -1,4 +1,4 @@
-<div id="consumables">
+<div id="consumables" class="theme-card theme-card-dark">
     <div hidden class="btn-group mb-2" id="request_menu_btn">
         <button id="other_request" class="btn btn-dark alert-dark fw-bold">Other Request</button>    
         <button id="your_request" class="btn btn-dark fw-bold">Your Request</button>

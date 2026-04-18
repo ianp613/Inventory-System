@@ -20,7 +20,7 @@ class BS5_Toaster {
         this.close_button.setAttribute("data-bs-dismiss","modal")
 
         this.wrap_1.setAttribute("class","w-100")
-        this.wrap_2.setAttribute("class","modal-header text-center")
+        this.wrap_2.setAttribute("class","mb-3 text-center")
         this.wrap_3.setAttribute("class","modal-content")
         this.wrap_5.setAttribute("class","modal")
         this.wrap_5.setAttribute("id","alert_modal")

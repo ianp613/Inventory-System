@@ -1,4 +1,4 @@
-<div id="equipments">
+<div id="equipments" class="theme-card theme-card-dark">
     <div class="d-flex mb-3">
         <div class="col-md-6">
             <button id="add_entry_modal_btn" class="btn btn-sm btn-dark" style="margin-bottom: -5px;"><span class="fa fa-plus"></span> Add Entry</button>

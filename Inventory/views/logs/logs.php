@@ -1,4 +1,4 @@
-<div id="logs">
+<div id="logs" class="theme-card theme-card-dark">
     <?php //if($_SESSION["privileges"] == "Administrator" || $_SESSION["privileges"] == "Supervisor"){  ?>
         <div id="select_log_container" style="margin-bottom: -10px !important;" class="w-100 d-flex">
             <select id="select_log" style="width: 238px; height: 30px; position: absolute;" class="select_log f-13 pt-0 pb-0 form-control">

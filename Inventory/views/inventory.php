@@ -28,15 +28,16 @@
         <link rel="stylesheet" href="../assets/css/sole.splash/splash.css">
         <link rel="stylesheet" href="../assets/css/colorpicker.css">
         <link rel="stylesheet" href="../assets/css/style.css">
+        <link rel="stylesheet" href="../assets/css/theme.css">
     </head>
-    <body>
-        <div class="d-flex sticky-top">
-            <nav class="text-white sidebar p-3" id="sidebar">
-                <div class="d-flex justify-content-center align-items-center bg-light p-2 rounded">
+    <body class="theme-body theme-body-dark">
+        <div class="d-flex sticky-top theme">
+            <nav class="text-white sidebar p-3 theme-sidebar theme-sidebar-dark" id="sidebar">
+                <div class="d-flex justify-content-center align-items-center bg-light p-2 rounded theme-sidebar-img theme-sidebar-img-dark">
                     <img id="sidebar_logo" src="../../assets/img/fposi-logo.png" style="width: 150px;">
                 </div>
                 
-                <ul class="nav flex-column">
+                <ul class="nav theme-nav-item theme-nav-item-dark flex-column">
                     <li class="nav-item mt-3">
                         <a href="?loc=dashboard" class="nav-link f-15 text-light">
                             <i class="fa fa-tachometer red-1 <?php $dashboard ?  printf("text-light rounded") :  null;?>" style="width: 13px;"></i> <span>Dashboard</span>
@@ -114,7 +115,7 @@
                 </ul>
             </nav>
             <div class="main-content">
-                <div class="d-flex justify-content-between align-items-center shadow-sm p-3 pb-0 pt-0 ">
+                <div class="d-flex justify-content-between align-items-center shadow-sm p-3 pb-0 pt-0 theme-nav-top theme-nav-top-dark">
                     <h5 class="mt-1 text-secondary">
                         <?php 
                             if(isset($_GET["loc"])){
@@ -252,6 +253,7 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="../assets/js/sole.js"></script>
         <script src="../assets/js/script.js"></script>
+        <script src="../assets/js/theme.js"></script>
         <script src="../assets/js/dates.js"></script>
         <script src="../assets/js/dashboard.js"></script>
         <script src="../assets/js/equipments.js"></script>

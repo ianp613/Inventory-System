@@ -1,4 +1,4 @@
-<div id="mac">
+<div id="mac" class="theme-card theme-card-dark">
     <div class="d-flex mb-3">
         <div class="col-md-6">
             <div class="d-flex">

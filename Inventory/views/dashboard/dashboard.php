@@ -1,8 +1,8 @@
-<div id="dashboard">
+<div id="dashboard" class="theme-card theme-card-dark">
     <h6>Equipments</h6>
     <div class="row">
         <div class="col-md-3 p-2">
-            <div class="border border-1 rounded">
+            <div class="p-2 border border-1 rounded bg-light dashboard-count theme-dashboard theme-dashboard-dark">
                 <div class="w-100 ht-60 p-2 d-flex flex-row justify-content-between">
                     <div class="ps-2 overflow-hidden">
                         <h5 id="inuse" class="text-success p-0 m-0">0 unit</h5>
@@ -16,7 +16,7 @@
             </div>
         </div>
         <div class="col-md-3 p-2">
-            <div class="border border-1 rounded">
+            <div class="p-2 border border-1 rounded bg-light dashboard-count theme-dashboard theme-dashboard-dark">
                 <div class="w-100 ht-60 p-2 d-flex flex-row justify-content-between">
                     <div class="ps-2 overflow-hidden">
                         <h5 id="standby" class="text-primary p-0 m-0">0 unit</h5>
@@ -30,7 +30,7 @@
             </div>
         </div>
         <div class="col-md-3 p-2">
-            <div class="border border-1 rounded">
+            <div class="p-2 border border-1 rounded bg-light dashboard-count theme-dashboard theme-dashboard-dark">
                 <div class="w-100 ht-60 p-2 d-flex flex-row justify-content-between">
                     <div class="ps-2 overflow-hidden">
                         <h5 id="forstatus" class="text-danger p-0 m-0">0 unit</h5>
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="col-md-3 p-2">
-            <div class="border border-1 rounded">
+            <div class="p-2 border border-1 rounded bg-light dashboard-count theme-dashboard theme-dashboard-dark">
                 <div class="w-100 ht-60 p-2 d-flex flex-row justify-content-between">
                     <div class="ps-2 overflow-hidden">
                         <h5 id="pending" class="text-warning p-0 m-0">0 unit</h5>

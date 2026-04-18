@@ -940,3 +940,9 @@ input::placeholder, textarea::placeholder{
 .ff-login-card button, .ff-login-card input{
     border-radius: 20px !important;
 }
+.isp-config{
+    border-radius: 15px;
+}
+.dashboard-count{
+    border-radius: 20px !important;
+}

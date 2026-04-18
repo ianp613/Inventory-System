@@ -1,4 +1,4 @@
-<div id="accounts">
+<div id="accounts" class="theme-card theme-card-dark">
     <?php if($_SESSION["privileges"] == "Administrator"){ ?>
     <div class="d-flex mb-3">
         <div class="col-md-6">

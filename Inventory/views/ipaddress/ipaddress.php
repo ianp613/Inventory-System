@@ -1,4 +1,4 @@
-<div id="ipaddress">
+<div id="ipaddress" class="theme-card theme-card-dark">
     <div class="d-flex mb-3">
         <div class="col-md-6">
             <div class="d-flex">

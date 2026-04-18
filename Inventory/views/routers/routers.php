@@ -1,4 +1,4 @@
-<div id="routers">
+<div id="routers" class="theme-card theme-card-dark">
     <div class="row">
         <table title="Click row to set active WAN" id="router_table" class="table border table-hover">
             <thead class="fwt-5">

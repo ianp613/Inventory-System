@@ -104,7 +104,7 @@ if(document.getElementById("isp")){
                 edit_configuration.appendChild(edit_opt)
 
                 configuration_list.insertAdjacentHTML("beforeend",
-                    `<div class="p-3 bg-light mt-3">` +
+                    `<div class="p-3 bg-light mt-3 isp-config theme-isp-config theme-isp-config-dark">` +
                         `<h6 class="fw-bolder">${conf.name}</h6>` +
                         `<hr>` +
                         `<h6>Subnet: ${conf.subnet == "-" ? "" : conf.subnet}</h6>` +

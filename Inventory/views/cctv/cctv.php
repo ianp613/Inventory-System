@@ -1,4 +1,4 @@
-<div id="cctv">
+<div id="cctv" class="theme-card theme-card-dark">
     <div class="w-100 d-flex justify-content-between">
         <div>
             <button data-bs-toggle="modal" data-bs-target="#add_cctv_map" class="btn btn-sm btn-dark"><span class="fa fa-plus"></span> Add Map</button>
