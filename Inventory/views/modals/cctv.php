@@ -99,7 +99,7 @@
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group btn-sm m-0">
-                        <button class="btn btn-sm text-end" style="width: 120px;">Set Camera Size: </button>
+                        <button class="btn btn-sm text-end" style="width: 130px;">Set Camera Size: </button>
                         <select name="" id="camera_size" class="form-control pt-0 pb-0" style="width: 40px; height: 31px !important;">
                             <option value="25">1</option>
                             <option value="30">2</option>

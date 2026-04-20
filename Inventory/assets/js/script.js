@@ -6,6 +6,7 @@ var switch_sound_check = document.getElementById("switch_sound_check")
 var theme_id = null;
 var sound = null;
 var theme = null;
+var theme_ = document.getElementById("theme_")
 
 if(document.getElementById("sidebar")){
     let inactivityTime = 60000 * 30; // 30 minutes
@@ -208,14 +209,9 @@ if(document.getElementById("sidebar")){
             window.location.replace("../index.php");
         }
     }
-    
 
     document.getElementById("settings").addEventListener("click",function(){
         settings_modal.show()
-    })
-
-    document.getElementById("switch").addEventListener("click",function(){
-        console.log("switch")
     })
 
     document.getElementById("logout").addEventListener("click",function(){
@@ -515,13 +511,17 @@ if(document.getElementById("sidebar")){
     function settings(res){
         theme_id = res["id"]
         sound = res["sound"] == "1" ? true : false
-        theme = res["theme"] == "1" ? true : false
+        theme = res["theme"]
+        theme_.value = res["theme"]
 
         if(sound){
             switch_sound_check.setAttribute("checked","true")
         }else{
             switch_sound_check.getAttribute("checked") ? switch_sound_check.removeAttribute("checked") : null
         }
+
+
+        document.getElementById("css_theme").href = "../assets/css/theme/"+theme+".css"
     }
     let isRunning = false;
     switch_sound.addEventListener("click",function (e){
@@ -533,6 +533,16 @@ if(document.getElementById("sidebar")){
         }).then(res => {
             settings(res);
             isRunning = false;
+        });
+    })
+
+    theme_.addEventListener("change", function () {
+        sole.post("../../controllers/settings_set.php", {
+            id: theme_id,
+            type: "theme",
+            theme: this.value
+        }).then(res => {
+            settings(res);
         });
     })
 }

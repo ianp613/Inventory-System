@@ -14,12 +14,19 @@
                         <span class="slider round"></span>
                     </label>
                 </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <h6>Dark Theme</h6>
-                    <label id="switch" class="switch">
-                        <input type="checkbox">
-                        <span class="slider round"></span>
-                    </label>
+                <div class="mb-2">
+                    <label for="theme_"><h6>Theme</h6></label>
+                    <select name="" id="theme_" class="form-control">
+                        <option value="Default">Default</option>
+                        <option value="Space">Space</option>
+                        <option disabled value="Dark">Dark</option>
+                        <option disabled value="Autumn">Autumn</option>
+                        <option disabled value="Fall">Fall</option>
+                        <option disabled value="Spring">Spring</option>
+                        <option disabled value="Winter">Winter</option>
+                        <option disabled value="Christmas">Christmas</option>
+                        <option disabled value="Valentines">Valentines</option>
+                    </select>
                 </div>
             </div>
             

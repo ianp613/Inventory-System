@@ -28,7 +28,7 @@
         <link rel="stylesheet" href="../assets/css/sole.splash/splash.css">
         <link rel="stylesheet" href="../assets/css/colorpicker.css">
         <link rel="stylesheet" href="../assets/css/style.css">
-        <link rel="stylesheet" href="../assets/css/theme.css">
+        <link id="css_theme" rel="stylesheet" href="../assets/css/theme/Light.css">
     </head>
     <body class="theme-body theme-body-dark">
         <div class="d-flex sticky-top theme">

@@ -262,3 +262,6 @@ UPS (Case / Battery) w/ barcode
 FR3156069
 SERVR PORT 28279
 HTTP PORT 15690
+
+Pallete
+Space

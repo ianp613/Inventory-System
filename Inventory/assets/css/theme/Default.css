@@ -1,0 +1,64 @@
+.theme-login, .theme-login input, .theme-login input{
+    border-radius: 15px !important;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.theme-sidebar{
+    background-color: #168897;
+    margin: 10px;
+    border-radius: 15px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.theme-sidebar-img{
+    border: 1px solid #c3f8ff;
+    background-color: #02535e !important;
+    border-radius: 15px !important;
+}
+
+.theme-nav-item li a, .theme-nav-item li a i, .theme-nav-item div h5{
+    color: #c3f8ff;
+}
+
+.theme-nav-item li a{
+    border-radius: 15px !important;
+}
+
+.theme-card, .theme-nav-top{
+    background-color: #f0f0f0 !important;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: #c3f8ff 0px 1px 4px !important;
+}
+
+.theme-dashboard, .theme-isp-config{
+    box-shadow: #c3f8ff 0px 1px 4px !important;
+}
+
+.theme-nav-top{
+    margin: 20px;
+    margin-top: 15px;
+    margin-bottom: -10px;
+}
+
+.modal-content{
+    border-radius: 15px !important;
+    padding: 5px;
+    padding-top: 15px;
+    background-color: #ffffffd7 !important;
+}
+
+.modal-content input, .modal-content select, .modal-content textarea, .modal-content button{
+    border-radius: 20px;
+}
+
+.modal-content button{
+    padding-left: 10px;
+    padding-right: 10px;
+    box-shadow: #c3f8ff 0px 1px 4px !important;
+}
+
+.btn{
+    border-radius: 20px;
+    box-shadow: #c3f8ff 0px 1px 4px !important;
+}

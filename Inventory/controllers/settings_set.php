@@ -13,7 +13,7 @@
 
     if($data["type"] == "theme"){
         $theme = DB::prepare($setting,$data["id"]);
-        $theme->theme = $theme->theme == 1 ? 0 : 1;
+        $theme->theme = $data["theme"];
         DB::update($theme);
     }
     
