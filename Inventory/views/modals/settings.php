@@ -19,11 +19,12 @@
                     <select name="" id="theme_" class="form-control">
                         <option value="Default">Default</option>
                         <option value="Space">Space</option>
-                        <option disabled value="Dark">Dark</option>
-                        <option disabled value="Autumn">Autumn</option>
-                        <option disabled value="Fall">Fall</option>
-                        <option disabled value="Spring">Spring</option>
-                        <option disabled value="Winter">Winter</option>
+                        <option value="Dark">Dark</option>
+                        <option value="Cerulean">Cerulean</option>
+                        <option value="Autumn">Autumn</option>
+                        <option value="Fall">Fall</option>
+                        <option value="Spring">Spring</option>
+                        <option value="Winter">Winter</option>
                         <option disabled value="Christmas">Christmas</option>
                         <option disabled value="Valentines">Valentines</option>
                     </select>

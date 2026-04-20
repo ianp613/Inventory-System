@@ -4,20 +4,20 @@
 }
 
 .theme-sidebar{
-    background-color: #168897;
+    background-color: #9b1d0d;
     margin: 10px;
     border-radius: 15px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .theme-sidebar-img{
-    border: 1px solid #c3f8ff;
-    background-color: #02535e !important;
+    border: 1px solid #ffaba0;
+    background-color: #5f0c01 !important;
     border-radius: 15px !important;
 }
 
 .theme-nav-item li a, .theme-nav-item li a i, .theme-nav-item div h5{
-    color: #c3f8ff;
+    color: #fab5a0;
 }
 
 .theme-nav-item li a{
@@ -28,11 +28,11 @@
     background-color: #f0f0f0 !important;
     padding: 20px;
     border-radius: 15px;
-    box-shadow: #e6fcff 0px 1px 4px !important;
+    box-shadow: #fab5a0 0px 1px 4px !important;
 }
 
 .theme-dashboard, .theme-isp-config{
-    box-shadow: #c3f8ff 0px 1px 4px !important;
+    box-shadow: #fab5a0 0px 1px 4px !important;
 }
 
 .theme-nav-top{
@@ -55,10 +55,10 @@
 .modal-content button{
     padding-left: 10px;
     padding-right: 10px;
-    box-shadow: #c3f8ff 0px 1px 4px !important;
+    box-shadow: #fab5a0 0px 1px 4px !important;
 }
 
 .btn{
     border-radius: 20px;
-    box-shadow: #c3f8ff 0px 1px 4px !important;
+    box-shadow: #fab5a0 0px 1px 4px !important;
 }
