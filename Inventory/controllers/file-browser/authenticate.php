@@ -1,4 +1,5 @@
 <?php
     session_start();
-    echo json_encode(isset($_SESSION["ff_auth"]));
+    $auth = isset($_SESSION["ff_auth"]) ? $_SESSION["ff_auth"] == true ? true : false : false;
+    echo json_encode($auth);
 ?>

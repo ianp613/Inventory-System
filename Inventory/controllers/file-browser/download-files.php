@@ -1,5 +1,30 @@
 <?php
-    $conf = json_decode(file_get_contents("../../file-browser.conf"));
+    session_start();
+    $data = json_decode(file_get_contents('php://input'), true);
+    $conf = null;
+    if($_SESSION["ff_privileges"] != false){
+        if($_SESSION["ff_privileges"] == "Administrator"){
+            $conf = json_decode(file_get_contents("../../file-browser.conf"));
+        }else{
+            $conf_temp = json_decode(file_get_contents("../../file-browser.conf"));
+            if($_SESSION["ff_g_member"]){
+                $conf = json_decode('{
+                    "browser_name" : "'.$_SESSION["ff_g_name"].'",
+                    "root_name" : "'.$_SESSION["ff_g_name"].'",
+                    "location" : "'.$conf_temp->location.'/'.$_SESSION["ff_g_name"].'"
+                }');
+            }else{
+                return;
+            }
+        }
+    }else{
+        return;
+    }
+
+    if(!is_dir($conf->location . $data["folder"])){
+        mkdir($conf->location . $data["folder"]);
+    }
+
     ini_set('display_errors', 0);
     ini_set('log_errors', 1);
     ini_set('error_log', __DIR__ . '/error.log');
@@ -13,10 +38,6 @@
     use ZipStream\ZipStream;
 
     set_time_limit(0);
-
-    // Get JSON POST
-    $input = file_get_contents('php://input');
-    $data = json_decode($input, true);
 
     if (!$data || !isset($data['folder'], $data['targets'])) {
         http_response_code(400);

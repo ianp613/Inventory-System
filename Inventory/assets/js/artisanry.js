@@ -367,4 +367,9 @@ if(document.getElementById("artisan")){
             }).then(res => console.log(res));
         }, 5000);
     }
+
+    var file_browser = document.getElementById("file_browser")
+    file_browser.addEventListener("click", e => {
+        window.open('file-browser.php', '_blank');
+    })
 }

@@ -85,10 +85,29 @@
             <div class="modal-footer">
                 <button id="ff_login_btn" class="btn btn-secondary w-100"><span class="fa fa-sign-in"></span> LOGIN</button>
             </div>
+            <h6 class="text-center mb-0 mt-2 f-12 f-i fw-bold">Intergrated with Inventory System Credentials</h6>
+            <p class="text-center mt-0 f-12 f-i">File Browser v.1</p>
         </div>
         <div hidden  id="ff_user_container" class="position-fixed bottom-0 ms-1 bg-dark text-light pt-2 ps-3 pe-3" style="border-top-left-radius: 10px; border-top-right-radius: 10px;">
             <h6 class="fw-bolder" id="ff_user">User: -------------------------</h6>
         </div>
+
+        <style>
+            .modal-content{
+                border-radius: 15px !important;
+                padding: 5px;
+                padding-top: 15px;
+                background-color: #ffffffd7 !important;
+            }
+            .modal-content input, .modal-content select, .modal-content textarea, .modal-content button{
+                border-radius: 20px;
+            }
+
+            .modal-content button{
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+        </style>
         <h6 class="copyright f-10 text-secondary"></h6>
         <script src="../assets/js/jquery/jquery-3.7.1.js"></script>
         <script src="../assets/js/bootstrap/bootstrap.min.js"></script>

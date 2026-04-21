@@ -521,8 +521,8 @@ ff_login_btn.addEventListener("click", e => {
         userid : ff_login_userid.value,
         password : ff_login_password.value
     }).then(res => {
-        localStorage.setItem("ff_user",res.user[0]["name"])
         if(res.status){
+            localStorage.setItem("ff_user",res.user[0]["name"])
             bs5.toast(res.type,res.message + " " + res.user[0]["name"])
             ff_login_userid.value = ""
             ff_login_password.value = ""
@@ -530,7 +530,7 @@ ff_login_btn.addEventListener("click", e => {
             ff_login.classList.remove("ff-login")
             checkAuthentication()
         }else{
-            bs5.toast(res.type,res.message)
+            bs5.toast(res.type,res.message,res.size)
         }
     })
 })

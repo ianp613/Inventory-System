@@ -932,7 +932,7 @@ input::placeholder, textarea::placeholder{
     left: 50%;
     transform: translate(-50%,-50%);
     background-color: #000000a9;
-    height: 245px;
+    height: 300px;
     width: 350px;
     border-radius: 20px;
     color: #e7e7e7;
