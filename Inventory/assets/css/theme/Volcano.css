@@ -4,20 +4,20 @@
 }
 
 .theme-sidebar{
-    background: linear-gradient(to bottom, #08181d, #113640);
+    background: linear-gradient(to bottom, #1b0303, #a70000);
     margin: 10px;
     border-radius: 15px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .theme-sidebar-img{
-    border: 1px solid #9de8fd;
-    background-color: #113640 !important;
+    border: 1px solid #ffa0a0;
+    background-color: #a70000 !important;
     border-radius: 15px !important;
 }
 
 .theme-nav-item li a, .theme-nav-item li a i, .theme-nav-item div h5{
-    color: #9de8fd;
+    color: #ffa0a0;
 }
 
 .theme-nav-item li a{
@@ -28,11 +28,11 @@
     background-color: #f0f0f0 !important;
     padding: 20px;
     border-radius: 15px;
-    box-shadow: #9de8fd 0px 1px 4px !important;
+    box-shadow: #ffa0a0 0px 1px 4px !important;
 }
 
 .theme-dashboard, .theme-isp-config{
-    box-shadow: #9de8fd 0px 1px 4px !important;
+    box-shadow: #ffa0a0 0px 1px 4px !important;
 }
 
 .theme-nav-top{
@@ -55,10 +55,10 @@
 .modal-content button{
     padding-left: 10px;
     padding-right: 10px;
-    box-shadow: #9de8fd 0px 1px 4px !important;
+    box-shadow: #ffa0a0 0px 1px 4px !important;
 }
 
 .btn{
     border-radius: 20px;
-    box-shadow: #9de8fd 0px 1px 4px !important;
+    box-shadow: #ffa0a0 0px 1px 4px !important;
 }

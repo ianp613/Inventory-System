@@ -4,15 +4,15 @@
 }
 
 .theme-sidebar{
-    background-color: #9b1d0d;
+    background: linear-gradient(to bottom, #30130a, #772f1a);
     margin: 10px;
     border-radius: 15px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .theme-sidebar-img{
-    border: 1px solid #ffaba0;
-    background-color: #5f0c01 !important;
+    border: 1px solid #fab5a0;
+    background-color: #772f1a !important;
     border-radius: 15px !important;
 }
 

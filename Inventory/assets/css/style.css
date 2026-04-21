@@ -116,6 +116,7 @@ input[readonly] {
     word-break: break-word;
     display: flex;
     flex-direction: column;
+    z-index: 100;
 }
 
 .sidebar.collapsed {

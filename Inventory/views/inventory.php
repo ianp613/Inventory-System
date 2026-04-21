@@ -32,11 +32,13 @@
     </head>
     <body class="theme-body theme-body-dark">
         <div class="d-flex sticky-top theme">
+            <canvas hidden class="theme_background" id="theme_background">
+                
+            </canvas>
             <nav class="text-white sidebar p-3 theme-sidebar theme-sidebar-dark" id="sidebar">
                 <div class="d-flex justify-content-center align-items-center bg-light p-2 rounded theme-sidebar-img theme-sidebar-img-dark">
                     <img id="sidebar_logo" src="../../assets/img/fposi-logo.png" style="width: 150px;">
                 </div>
-                
                 <ul class="nav theme-nav-item theme-nav-item-dark flex-column">
                     <li class="nav-item mt-3">
                         <a href="?loc=dashboard" class="nav-link f-15 text-light">

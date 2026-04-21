@@ -17,15 +17,20 @@
                 <div class="mb-2">
                     <label for="theme_"><h6>Theme</h6></label>
                     <select name="" id="theme_" class="form-control">
+                        <option value="Legacy">Legacy</option>
                         <option value="Default">Default</option>
                         <option value="Space">Space</option>
                         <option value="Dark">Dark</option>
                         <option value="Cerulean">Cerulean</option>
-                        <option value="Autumn">Autumn</option>
-                        <option value="Fall">Fall</option>
+                        <option value="Volcano">Volcano</option>
+                        <option value="Bumblebee">Bumblebee</option>
                         <option value="Spring">Spring</option>
+                        <option value="Summer">Summer</option>
+                        <option value="Autumn 1">Autumn 1</option>
+                        <option value="Autumn 2">Autumn 2</option>
                         <option value="Winter">Winter</option>
                         <option disabled value="Christmas">Christmas</option>
+                        <option disabled value="Christmas">New Year</option>
                         <option disabled value="Valentines">Valentines</option>
                     </select>
                 </div>

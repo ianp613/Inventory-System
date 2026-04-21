@@ -4,7 +4,7 @@
 }
 
 .theme-sidebar{
-    background-color: #0f0027;
+    background: linear-gradient(to bottom, #090116, #250061);
     margin: 10px;
     border-radius: 15px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -62,3 +62,17 @@
     border-radius: 20px;
     box-shadow: #bdafd3 0px 1px 4px !important;
 }
+/* .theme_background{
+    width: 200px;
+    min-height: 100vh;
+    transition: width 0.3s;
+    word-break: break-word;
+    display: flex !important;
+    flex-direction: column;
+    position: absolute;
+    z-index: 0 !important;
+
+    margin: 10px;
+    border-radius: 15px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+} */

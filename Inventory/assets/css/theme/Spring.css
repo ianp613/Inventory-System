@@ -4,7 +4,7 @@
 }
 
 .theme-sidebar{
-    background-color: #7da100;
+    background: linear-gradient(to bottom, #242e00, #566e00);
     margin: 10px;
     border-radius: 15px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -12,7 +12,7 @@
 
 .theme-sidebar-img{
     border: 1px solid #e6fa9d;
-    background-color: #455801 !important;
+    background-color: #566e00 !important;
     border-radius: 15px !important;
 }
 
