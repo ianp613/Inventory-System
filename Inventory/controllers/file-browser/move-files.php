@@ -11,7 +11,7 @@
                 $conf = json_decode('{
                     "browser_name" : "'.$_SESSION["ff_g_name"].'",
                     "root_name" : "'.$_SESSION["ff_g_name"].'",
-                    "location" : "'.$conf_temp->location.'/'.$_SESSION["ff_g_name"].'"
+                    "location" : "'.$conf_temp->location.'/InvSys_'.$_SESSION["ff_g_name"].'"
                 }');
             }else{
                 return;
