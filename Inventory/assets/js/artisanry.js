@@ -370,6 +370,7 @@ if(document.getElementById("artisan")){
 
     var file_browser = document.getElementById("file_browser")
     file_browser.addEventListener("click", e => {
-        window.open('file-browser.php', '_blank');
+        bs5.toast("info","<code>Work in progress...</code>")
+        // window.open('file-browser.php', '_blank');
     })
 }

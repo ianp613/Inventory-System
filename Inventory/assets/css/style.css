@@ -971,3 +971,7 @@ input::placeholder, textarea::placeholder{
     top: -15px;
     right: 10px;
 }
+
+.modal-content{
+    padding-top: 10px;
+}

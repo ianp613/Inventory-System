@@ -91,7 +91,7 @@
                 </div>
                 <label for="edit_configuration">Configuration</label>
                 <select name="" id="edit_configuration" class="form-control mt-2">
-                    <option value="" disabled selected>-- Select Configuration --</option>
+                    <option value="-" disabled selected>-- Select Configuration --</option>
                 </select>
                 <div class="row mb-2 mt-2">
                     <div class="col-md-6">
@@ -180,6 +180,69 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><span class="fa fa-remove"></span> Cancel</button>
                 <button id="configuration_save" type="button" class="btn btn-primary btn-sm"><span class="fa fa-save"></span> Save</button>   
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT ISP CONFIGURATION -->
+<div class="modal fade" id="edit_isp_configuration" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6>Edit ISP Configuration</h6>
+            </div>
+            <div class="modal-body">
+                <label for="edit_configuration_name" class="mb-2">Name</label>
+                <input required type="text" name="edit_configuration_name" id="edit_configuration_name" class="form-control">
+                <div class="row mb-2 mt-2">
+                    <div class="col-md-6">
+                        <label for="edit_configuration_subnet" class="mb-2">Subnet Mask</label>
+                        <input required type="text" name="edit_configuration_subnet" id="edit_configuration_subnet" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="edit_configuration_gateway" class="mb-2">Client IP</label>
+                        <input required type="text" name="edit_configuration_gateway" id="edit_configuration_gateway" class="form-control">
+                    </div>
+                </div>
+                <div class="row mb-2 mt-2">
+                    <div class="col-md-6">
+                        <label for="edit_configuration_dns1" class="mb-2">DNS 1</label>
+                        <input required type="text" name="edit_configuration_dns1" id="edit_configuration_dns1" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="edit_configuration_dns2" class="mb-2">DNS 2</label>
+                        <input required type="text" name="edit_configuration_dns2" id="edit_configuration_dns2" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><span class="fa fa-remove"></span> Cancel</button>
+                <button id="edit_configuration_save" type="button" class="btn btn-primary btn-sm"><span class="fa fa-save"></span> Save</button>   
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE ISP CCONFIGURATION MODAL -->
+<div class="modal fade" id="delete_isp_configuration" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered ">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <div class="w-100">
+                    <span class="fa fa-exclamation-triangle text-danger h2"></span>
+                    <h5 id="delete_isp_title" class="modal-title fw-bolder">Delete ISP Configuration</h5>    
+                </div>
+            </div>
+            <div class="modal-header text-center">
+                <div class="w-100">
+                    <div>You're going to delete <b>"<span id="delete_isp_configuration_name">ISP Configuration</span>"</b>.</div>
+                    <div>This action cannot be undone.</span> Do you wish to proceed?</div>    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><span class="fa fa-remove"></span> No</button>
+                <button id="delete_isp_configuration_btn" type="button" data-bs-dismiss="" class="btn btn-danger btn-sm"><span class="fa fa-trash-o"></span> Yes</button>
             </div>
         </div>
     </div>

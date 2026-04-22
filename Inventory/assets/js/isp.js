@@ -26,8 +26,12 @@ if(document.getElementById("isp")){
     const edit_isp_modal = new bootstrap.Modal(document.getElementById('edit_isp'),unclose)
     const delete_isp_modal = new bootstrap.Modal(document.getElementById('delete_isp'),unclose)
     const add_isp_configuration_modal = new bootstrap.Modal(document.getElementById('add_isp_configuration'),unclose)
+    const edit_isp_configuration_modal = new bootstrap.Modal(document.getElementById('edit_isp_configuration'),unclose)
+    const delete_isp_configuration_modal = new bootstrap.Modal(document.getElementById('delete_isp_configuration'),unclose)
 
     var add_isp_configuration_btn = document.getElementById("add_isp_configuration_btn")
+
+    var configuration_list = document.getElementById("configuration_list")
 
     var configuration_name = document.getElementById("configuration_name")
     var configuration_subnet = document.getElementById("configuration_subnet")
@@ -35,7 +39,13 @@ if(document.getElementById("isp")){
     var configuration_dns1 = document.getElementById("configuration_dns1")
     var configuration_dns2 = document.getElementById("configuration_dns2")
     var configuration_save = document.getElementById("configuration_save")
-    var configuration_list = document.getElementById("configuration_list")
+
+    var edit_configuration_name = document.getElementById("edit_configuration_name")
+    var edit_configuration_subnet = document.getElementById("edit_configuration_subnet")
+    var edit_configuration_gateway = document.getElementById("edit_configuration_gateway")
+    var edit_configuration_dns1 = document.getElementById("edit_configuration_dns1")
+    var edit_configuration_dns2 = document.getElementById("edit_configuration_dns2")
+    var edit_configuration_save = document.getElementById("edit_configuration_save")
 
     var add_isp = document.getElementById("add_isp")
     var isp_icon = document.getElementById("isp_icon")
@@ -67,6 +77,9 @@ if(document.getElementById("isp")){
     var delete_isp_btn = document.getElementById("delete_isp_btn")
     var delete_isp_message = document.getElementById("delete_isp_message")
 
+    var delete_isp_configuration_name = document.getElementById("delete_isp_configuration_name")
+    var delete_isp_configuration_btn = document.getElementById("delete_isp_configuration_btn")
+
     loadPage();
     loadConfiguration();
     // LOAD PAGE DATA
@@ -84,12 +97,14 @@ if(document.getElementById("isp")){
             opt.innerText = "-- Select Configuration --"
             opt.disabled = true
             opt.selected = true
+            opt.value = "-"
             configuration.appendChild(opt)
 
             var edit_opt = document.createElement("option")
             edit_opt.innerText = "-- Select Configuration --"
             edit_opt.disabled = true
             edit_opt.selected = true
+            edit_opt.value = "-"
             edit_configuration.appendChild(edit_opt)
 
             res.isp_configuration.forEach(conf => {
@@ -111,6 +126,8 @@ if(document.getElementById("isp")){
                         `<h6>Client IP: ${conf.gateway == "-" ? "" : conf.gateway}</h6>` +
                         `<h6>DNS1: ${conf.dns1 == "-" ? "" : conf.dns1}</h6>` +
                         `<h6>DNS2: ${conf.dns2 == "-" ? "" : conf.dns2}</h6>` +
+                        `<button c-id="${conf.id}" class="btn btn-secondary btn-sm me-1 edit_isp_list"><span c-id="${conf.id}" class="fa fa-edit edit_isp_list"></span></button>` +
+                        `<button c-id="${conf.id}" c-name="${conf.name}" class="btn btn-danger btn-sm delete_isp_list"><span c-name="${conf.name}" c-id="${conf.id}" class="fa fa-trash delete_isp_list"></span></button>` +
                     `</div>` 
                 )
             })
@@ -149,6 +166,62 @@ if(document.getElementById("isp")){
             ]).draw(false)   
         });
     }
+
+    configuration_list.addEventListener("click", function (e) {
+        if(e.target.classList.contains("edit_isp_list")){
+            sole.post("../../controllers/isp/find_configuration.php",{
+                id : e.target.getAttribute("c-id")
+            }).then(res => {
+                if(res.status){
+                    edit_configuration_name.value = res.configuration[0].name
+                    edit_configuration_subnet.value = res.configuration[0].subnet != "-" ? res.configuration[0].subnet : ""
+                    edit_configuration_gateway.value = res.configuration[0].gateway != "-" ? res.configuration[0].gateway : ""
+                    edit_configuration_dns1.value = res.configuration[0].dns1 != "-" ? res.configuration[0].dns1 : ""
+                    edit_configuration_dns2.value = res.configuration[0].dns2 != "-" ? res.configuration[0].dns2 : ""
+                    edit_configuration_save.setAttribute("c-id",res.configuration[0].id)
+                    edit_isp_configuration_modal.show()
+                }else{
+                    bs5.toast(res.type,res.message)
+                }
+            })
+        }
+        if(e.target.classList.contains("delete_isp_list")){
+            delete_isp_configuration_name.innerText = e.target.getAttribute("c-name")
+            delete_isp_configuration_btn.setAttribute("c-id",e.target.getAttribute("c-id"))
+            delete_isp_configuration_modal.show()
+        }
+    })
+
+    delete_isp_configuration_btn.addEventListener("click", function () {
+        sole.post("../../controllers/isp/delete_configuration.php", {
+            id : delete_isp_configuration_btn.getAttribute("c-id")
+        }).then(res => {
+            if(res.status){
+                loadConfiguration()
+            }
+            bs5.toast(res.type,res.message)
+        })
+    })
+
+    edit_configuration_save.addEventListener("click", function () {
+        if(!edit_configuration_name.value){
+            bs5.toast("warning","Please provide name.")
+            return
+        }
+        sole.post("../../controllers/isp/edit_configuration.php",{
+            id : edit_configuration_save.getAttribute("c-id"),
+            name : edit_configuration_name.value,
+            subnet : edit_configuration_subnet.value,
+            gateway : edit_configuration_gateway.value,
+            dns1 : edit_configuration_dns1.value,
+            dns2 : edit_configuration_dns2.value
+        }).then(res => {
+            if(res.status){
+                loadConfiguration()
+            }
+            bs5.toast(res.type,res.message)
+        })
+    })
 
     document.querySelector('#isp_table').addEventListener("click", e=>{
         let tr = "";
@@ -358,16 +431,26 @@ if(document.getElementById("isp")){
         edit_label_name.value = res.isp[0]["name"] != "-" ? res.isp[0]["name"] : ""
         edit_isp_name.value = res.isp[0]["isp_name"] != "-" ? res.isp[0]["isp_name"] : ""
         edit_wan_ip.value = res.isp[0]["wan_ip"] != "-" ? res.isp[0]["wan_ip"] : ""
-        edit_configuration.value = res.isp[0]["configuration"] != "-" ? res.isp[0]["configuration"] : ""
+        edit_configuration.value = res.isp[0]["configuration"]
 
+        var has_config = false
         res.configuration.forEach(conf => {
             if(conf.id == parseInt(res.isp[0]["configuration"])){
+                has_config = true
                 edit_subnet.value = conf.subnet != "-" ? conf.subnet : ""
                 edit_gateway.value = conf.gateway != "-" ? conf.gateway : ""
                 edit_dns1.value = conf.dns1 != "-" ? conf.dns1 : ""
                 edit_dns2.value = conf.dns1 != "-" ?conf.dns2 : ""
             }
         })
+
+        if(!has_config){
+            edit_configuration.value = "-"
+            edit_subnet.value = ""
+            edit_gateway.value = ""
+            edit_dns1.value = ""
+            edit_dns2.value = ""
+        }
         edit_isp_modal.show();
     }
 
