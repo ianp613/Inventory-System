@@ -17,7 +17,7 @@
                 <div class="mb-2">
                     <label for="theme_"><h6>Theme</h6></label>
                     <select name="" id="theme_" class="form-control">
-                        <option value="Legacy">Legacy</option>
+                        <option disabled value="Legacy">Legacy</option>
                         <option value="Default">Default</option>
                         <option value="Space">Space</option>
                         <option value="Dark">Dark</option>

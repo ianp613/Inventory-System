@@ -167,19 +167,28 @@
                             }
                         ?>
                     </h5>
-                    <div class="dropdown text-dark f-14 fwt-5">
-                        <div type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <!-- User Name -->
+                    <div>
+                        <div hidden id="inform" class="alert-info">
+                            <span></span>
+                            <h6 class="f-12 mb-0 pb-0">Theme changer in settings is now</h6>
+                            <h6 class="f-12 mt-0 pt-0">available, try it now.</h6>
+                            <button class="f-12 btn btn-sm alert-success btn-success" id="got_it">Got it, don't show again.</button>
                         </div>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li id="account"><button class="dropdown-item f-13" ><span class="fa fa-user me-2 text-secondary" style="width: 12px;"></span> Account</button></li>
-                            <li id="settings"><button class="dropdown-item f-13"><span class="fa fa-gears me-2 text-secondary" style="width: 12px;"></span> Settings</button></li>
-                            <li id="activity_log"><button class="dropdown-item f-13"><span class="fa fa-list me-2 text-secondary" style="width: 12px;"></span> Activity Logs</button></li>
-                            <li id="artisanry"><button class="dropdown-item f-13"><span class="fa fa-wrench me-2 text-secondary" style="width: 12px;"></span> Artisanry</button></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li title="Long press L key" id="logout"><button class="dropdown-item f-13"><span class="fa fa-sign-out me-2 text-secondary" style="width: 12px;"></span> Log Out</button></li>
-                        </ul>
+                        <div id="option_drop" class="dropdown text-dark f-14 fwt-5">
+                            <div type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <!-- User Name -->
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li id="account"><button class="dropdown-item f-13" ><span class="fa fa-user me-2 text-secondary" style="width: 12px;"></span> Account</button></li>
+                                <li id="settings"><button class="dropdown-item f-13"><span class="fa fa-gears me-2 text-secondary" style="width: 12px;"></span> Settings</button></li>
+                                <li id="activity_log"><button class="dropdown-item f-13"><span class="fa fa-list me-2 text-secondary" style="width: 12px;"></span> Activity Logs</button></li>
+                                <li id="artisanry"><button class="dropdown-item f-13"><span class="fa fa-wrench me-2 text-secondary" style="width: 12px;"></span> Artisanry</button></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li title="Long press L key" id="logout"><button class="dropdown-item f-13"><span class="fa fa-sign-out me-2 text-secondary" style="width: 12px;"></span> Log Out</button></li>
+                            </ul>
+                        </div>    
                     </div>
+                    
                 </div>
                 <div class="main-content m-3 p-2">
                     <?php 

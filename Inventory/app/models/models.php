@@ -371,6 +371,7 @@
             "uid",
             "sound",
             "theme",
+            "inform",
         ];
 
         public string $gid;

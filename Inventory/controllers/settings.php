@@ -10,6 +10,7 @@
         $setting->uid = $_SESSION["userid"];
         $setting->sound = "1";
         $setting->theme = "Legacy";
+        $setting->inform = "Yes";
         DB::save($setting);
     }
     echo json_encode(DB::where($setting,"uid","=",$_SESSION["userid"])[0]);

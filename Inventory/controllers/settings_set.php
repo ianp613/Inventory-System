@@ -16,7 +16,12 @@
         $theme->theme = $data["theme"];
         DB::update($theme);
     }
-    
 
+    if($data["type"] == "inform"){
+        $inform = DB::prepare($setting,$data["id"]);
+        $inform->inform ="No";
+        DB::update($inform);
+    }
+    
     echo json_encode(DB::where($setting,"uid","=",$_SESSION["userid"])[0]);
 ?>

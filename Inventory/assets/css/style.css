@@ -947,3 +947,27 @@ input::placeholder, textarea::placeholder{
 .dashboard-count{
     border-radius: 20px !important;
 }
+
+#inform{
+    position: absolute;
+    margin-left: -90px;
+    margin-top: 60px;
+    text-align: center;
+    padding: 15px;
+    border-radius: 10px;
+    z-index: 3000;
+}
+#inform button{
+    border-radius: 20px;
+}
+
+#inform span{
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 30px solid #cff4fc;
+    top: -15px;
+    right: 10px;
+}

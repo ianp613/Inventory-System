@@ -514,6 +514,14 @@ if(document.getElementById("sidebar")){
         theme = res["theme"]
         theme_.value = res["theme"]
 
+        if(res["inform"] == "Yes" && document.getElementById("dashboard") && res["theme"] == "Legacy"){
+            setTimeout(() => {
+                document.getElementById("inform").hidden = false
+            }, 4000);
+        }else{
+            document.getElementById("inform").hidden = true
+        }
+
         if(sound){
             switch_sound_check.setAttribute("checked","true")
         }else{
@@ -523,6 +531,15 @@ if(document.getElementById("sidebar")){
 
         document.getElementById("css_theme").href = "../assets/css/theme/"+theme+".css"
     }
+
+    document.getElementById("got_it").addEventListener("click", function (){
+       sole.post("../../controllers/settings_set.php", {
+            id: theme_id,
+            type: "inform"
+        }).then(res => {
+            settings(res);
+        })
+    })
     let isRunning = false;
     switch_sound.addEventListener("click",function (e){
         if (isRunning) return;

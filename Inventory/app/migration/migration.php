@@ -224,6 +224,7 @@
             Migrate::string("uid");
             Migrate::string("sound");
             Migrate::string("theme");
+            Migrate::string("inform");
         }
     }
     class LogMigration
