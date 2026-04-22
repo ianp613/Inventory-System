@@ -373,7 +373,6 @@ if(document.getElementById("routers")){
         sole.post("../../controllers/routers/delete_router.php",{
             id: this.getAttribute("r-id")
         }).then(res => validateResponse(res,"delete_router"))
-        console.log(this.getAttribute("r-id"))
     })
 
     function deleteForm(res){
@@ -397,7 +396,6 @@ if(document.getElementById("routers")){
     function setWanCurrent(res){
         edit_router_wan1.innerHTML = ""
         edit_router_wan2.innerHTML = ""
-        console.log(res)
         if(res.wan1.length){
             if(res.wan1[0]["isp_name"] == "PLDT Inc."){
                 edit_router_wan1_icon.setAttribute("src","../../assets/img/pldt.png")
@@ -908,12 +906,15 @@ if(document.getElementById("routers")){
             icon = "<img class=\"ht-25 mb-2\" src=\"../../assets/img/hero.png\"><br>"
         }
 
+        data = icon + head + "<br>" +
+        "Name: " + wan[0]["name"] + "<br>" +
+        "WAN IP: " + wan[0]["wan_ip"] + "<br>"
+
+        var conf_match = false
         res.configuration.forEach(conf => {
             if(conf.id == parseInt(wan[0]["configuration"])){
-                data = icon + head + "<br>" +
-                "Name: " + wan[0]["name"] + "<br>" +
-                "WAN IP: " + wan[0]["wan_ip"] + "<br>" +
-                "<div class=\"row mt-2\">" + 
+                conf_match = true
+                data += "<div class=\"row mt-2\">" + 
                     "<div class=\"col-md-6\">" +
                         "Subnet: " + (conf.subnet == "-" ? "" : conf.subnet) + "<br>" +
                     "</div>" +
@@ -931,6 +932,24 @@ if(document.getElementById("routers")){
                 "</div>" 
             }
         })
+        if(!conf_match){
+            data += "<div class=\"row mt-2\">" + 
+                "<div class=\"col-md-6\">" +
+                    "Subnet: <br>" +
+                "</div>" +
+                "<div class=\"col-md-6\">" +
+                    "Gateway: <br>" +
+                "</div>" +
+            "</div>" +
+            "<div class=\"row\">" + 
+                "<div class=\"col-md-6\">" +
+                    "DNS 1: <br>" +
+                "</div>" +
+                "<div class=\"col-md-6\">" +
+                    "DNS 2: <br>"
+                "</div>" +
+            "</div>"
+        }
         return data
     }
 
@@ -1028,7 +1047,6 @@ if(document.getElementById("routers")){
             wan_settings_modal.hide()
 
             if(saved_wan){
-                console.log("OK")
                 loadPage()
                 saved_wan = false
             }
