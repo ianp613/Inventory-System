@@ -9,6 +9,7 @@
     $routers = $_GET["loc"] == "routers" ? true : false;
     $ipaddress = $_GET["loc"] == "ipaddress" ? true : false;
     $mac = $_GET["loc"] == "mac" ? true : false;
+    $terminals = $_GET["loc"] == "terminals" ? true : false;
     $cctv = $_GET["loc"] == "cctv" ? true : false;
     $logs = $_GET["loc"] == "logs" ? true : false;
     $accounts = $_GET["loc"] == "accounts" ? true : false;
@@ -77,6 +78,11 @@
                     <li hidden class="g_menu nav-item mb-2">
                         <a href="?loc=mac" class="nav-link f-15 text-light <?php $mac ?  printf("bg-light text-dark rounded") :  null;?>">
                             <i class="fa fa-map-marker red-1 <?php $mac ?  printf("text-dark rounded") :  null;?>" style="width: 13px;"></i> <span>MAC Address</span>
+                        </a>
+                    </li>
+                    <li hidden class="g_menu nav-item mb-2">
+                        <a href="?loc=terminals" class="nav-link f-15 text-light <?php $terminals ?  printf("bg-light text-dark rounded") :  null;?>">
+                            <i class="fa fa-desktop red-1 <?php $terminals ?  printf("text-dark rounded") :  null;?>" style="width: 13px;"></i> <span>Terminals</span>
                         </a>
                     </li>
                     <li hidden class="g_menu nav-item mb-2">
@@ -151,6 +157,8 @@
                                     $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-map-marker\"></span> IP Address") : printf("404");
                                 }elseif($_GET["loc"] == "mac"){
                                     $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-map-marker\"></span> MAC Address") : printf("404");
+                                }elseif($_GET["loc"] == "terminals"){
+                                    $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-desktop\"></span> Terminals") : printf("404");
                                 }elseif($_GET["loc"] == "logs"){
                                     echo "<span class=\"fa fa-list\"></span> Activity Logs";
                                 }elseif($_GET["loc"] == "artisanry"){
@@ -207,6 +215,12 @@
                         }elseif($_GET["loc"] == "mac"){
                             if($_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"){
                                 include("mac/mac.php");
+                            }else{
+                                include "404.php";
+                            }
+                        }elseif($_GET["loc"] == "terminals"){
+                            if($_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"){
+                                include("terminals/terminals.php");
                             }else{
                                 include "404.php";
                             }
