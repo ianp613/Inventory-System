@@ -926,7 +926,13 @@ input::placeholder, textarea::placeholder{
     pointer-events: none;
 }
 
-.ff-login-card{
+.um-login{
+    filter: blur(20px);
+    /* pointer-events: none; */
+}
+
+
+.ff-login-card, .um-login-card{
     position: fixed;
     top: 50%;
     left: 50%;
@@ -938,7 +944,7 @@ input::placeholder, textarea::placeholder{
     color: #e7e7e7;
 }
 
-.ff-login-card button, .ff-login-card input{
+.ff-login-card button, .ff-login-card input, .um-login-card button, .um-login-card input{
     border-radius: 20px !important;
 }
 .isp-config{

@@ -31,9 +31,16 @@ var password_mac_ssid     = document.getElementById("password_mac_ssid")
 var password_mac          = document.getElementById("password_mac")
 var password_loading_mac  = document.getElementById("password_loading_mac")
 
+var um_login              = document.getElementById("um_login")
+var um_login_card         = document.getElementById("um_login_card")
+var um_login_userid       = document.getElementById("um_login_userid")
+var um_login_password     = document.getElementById("um_login_password")
+var um_login_btn          = document.getElementById("um_login_btn")
+
 
 var theme               = document.getElementById("theme")
 var Building            = []
+var default_theme       = "dark"
 
 async function GetWifi(params) {
   await sole.get("../controllers/unifi-mac/get-wifi.php").then(res => {
@@ -238,6 +245,24 @@ password_mac.addEventListener("click", e => {
   })
 })
 
+um_login_btn.addEventListener("click", e => {
+  if(!um_login_userid.value || !um_login_password.value){
+    bs5.toast("warning","<span class=\"text-dark\">Please input User ID and Password.<span>")
+    return
+  }
+  sole.post("../controllers/unifi-mac/login.php", {
+    userid : um_login_userid.value,
+    password : um_login_password.value
+  }).then(res => {
+    if(res.status){
+      um_login_card.hidden = true
+      um_login.classList.remove("um-login")
+      mac_register_by.value = res.user[0]["name"]
+    }
+    bs5.toast(res.type,res.message + res.user[0]["name"])
+  })
+})
+
 setTheme()
 loadTheme()
 
@@ -266,8 +291,8 @@ function displayMessage(res){
 
 function setTheme(){
   if(localStorage.getItem("unifi_mac_theme") === null){
-    localStorage.setItem("unifi_mac_theme","light")
-    theme.value = "light"
+    localStorage.setItem("unifi_mac_theme",default_theme)
+    theme.value = default_theme
   }else{
     theme.value = localStorage.getItem("unifi_mac_theme")
     if(localStorage.getItem("unifi_mac_theme") == "dark"){
@@ -345,14 +370,14 @@ GetUsers()
 function GetUsers(){
   sole.get("../controllers/unifi-mac/get-users.php").then(res => {
     res.forEach(user => {
-      if(user["name"].toLowerCase() != "administrator"){
-        if(user["username"].toLowerCase() != "703f_administrator"){
+      // if(user["name"].toLowerCase() != "administrator"){
+        // if(user["username"].toLowerCase() != "703f_administrator"){
           var opt                 = document.createElement("option")
           opt.value               = user["name"]
           opt.innerText           = user["name"]
           mac_register_by.appendChild(opt)
-        }
-      }
+        // }
+      // }
     })
   })
 }
@@ -432,4 +457,10 @@ function splash(message, seconds) {
     }, 500); // Matches fade transition duration
   }, seconds);
 }
+
+document.addEventListener("contextmenu", e => {
+  e.preventDefault()
+})
+
+
 splash(null, 200)

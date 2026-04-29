@@ -15,9 +15,9 @@
         <link rel="stylesheet" href="../assets/css/colorpicker.css">
         <link rel="stylesheet" href="../assets/css/style.css">
     </head>
-    <body class="light">
+    <body class="dark">
         
-        <div class="w-100 d-flex justify-content-center">
+        <div id="um_login" class="w-100 d-flex justify-content-center um-login">
             <div class="wd-580 p-4">
                 <div class="d-flex w-100 mt-4">
                     <img class="wd-60 ht-60 me-2 rounded-circle" style="margin-top: -23px;" src="../../assets/img/unifi.jpg" alt="" srcset="">
@@ -83,8 +83,8 @@
                                 </select>
                             </div>
                         </div>
-                        <label for="mac_register_by" class="mb-2 mt-2">Who registers this MAC Address?</label>
-                        <select name="" id="mac_register_by" class="form-control">
+                        <label hidden for="mac_register_by" class="mb-2 mt-2">Who registers this MAC Address?</label>
+                        <select hidden name="" id="mac_register_by" class="form-control">
                             <option selected disabled value="">-- Registered By  --</option>
                         </select>
                         <label for="mac_remarks" class="mb-2 mt-2">Remarks</label>
@@ -94,8 +94,8 @@
                         <div class=" input-group">
                             <span class="input-group-text">Theme</span>
                             <select name="" id="theme">
-                                <option selected value="light">Light</option>
-                                <option value="dark">Dark</option>
+                                <option value="light">Light</option>
+                                <option selected value="dark">Dark</option>
                             </select>    
                         </div>
                         <div class="d-flex wd-500 justify-content-end">
@@ -191,6 +191,36 @@
                 </div>
             </div>
         </div>
+        <div id="um_login_card" class="um-login-card">
+            <div class="modal-header pt-3 pb-2">
+                <h6>LOGIN TO YOUR ACCOUNT</h6>
+            </div>
+            <div class="modal-body">
+                <input id="um_login_userid" type="text" name="" id="" class="form-control mb-2" placeholder="User ID">
+                <input id="um_login_password" type="password" name="" id="" class="form-control" placeholder="Password">
+            </div>
+            <div class="modal-footer">
+                <button id="um_login_btn" class="btn btn-secondary w-100"><span class="fa fa-sign-in"></span> LOGIN</button>
+            </div>
+            <h6 class="text-center mb-0 mt-2 f-12 f-i fw-bold">Intergrated with Inventory System Credentials</h6>
+            <p class="text-center mt-0 f-12 f-i">Unifi MAC v.1.1</p>
+        </div>
+        <style>
+            .modal-content{
+                border-radius: 15px !important;
+                padding: 5px;
+                padding-top: 15px;
+                background-color: #ffffffd7 !important;
+            }
+            .modal-content input, .modal-content select, .modal-content textarea, .modal-content button{
+                border-radius: 20px;
+            }
+
+            .modal-content button{
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+        </style>
         <h6 class="copyright f-10 text-secondary"></h6>
         <script src="../assets/js/jquery/jquery-3.7.1.js"></script>
         <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
