@@ -220,6 +220,9 @@
                 padding-left: 10px;
                 padding-right: 10px;
             }
+            .modal-body{
+                color: #000000;
+            }
         </style>
         <h6 class="copyright f-10 text-secondary"></h6>
         <script src="../assets/js/jquery/jquery-3.7.1.js"></script>
