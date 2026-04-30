@@ -55,7 +55,7 @@
           <div class="bg-dark text-light mt-3 p-3 rounded-3 theme-login theme-login-dark theme-links theme-links-dark">
             <div class="ms-3">
               <h6 class="m-0"><span class="fa fa-folder"></span> DDC LEYTE E-KATALOG</h6>
-              <a class="text-success" target="_blank" href="https://e-katalog.ddns.net:58787/TECH"><span class="fa fa-external-link"></span> https://e-katalog.ddns.net:58787/TECH</a>
+              <a class="text-success" target="_blank" href="https://203.177.127.155:58787/FPO/"><span class="fa fa-external-link"></span> https://203.177.127.155:58787/FPO/</a>
               <h6 class="m-0 mt-3"><span class="fa fa-wifi"></span> WIFI TEAM UNIFI MAC</h6>
               <a class="text-success" target="_blank" href="https://ddc-artisan.ddns.net:9552/views/unifi-mac.php"><span class="fa fa-external-link"></span> https://ddc-artisan.ddns.net:9552/views/unifi-mac.php</a>
             </div>  

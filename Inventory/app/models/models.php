@@ -9,7 +9,6 @@
             "privileges",
             "c_authority",
             "passkey",
-            "last_login_ip",
             "username",
             "password"
         ];
@@ -18,7 +17,6 @@
         public string $email;
         public string $privileges;
         public string $passkey;
-        public string $last_login_ip;
         public string $username;
         public string $password;
     }

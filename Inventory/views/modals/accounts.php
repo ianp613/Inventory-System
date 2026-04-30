@@ -187,7 +187,7 @@
     </div>
  </div>
 
- <!-- ADD GROUP -->
+ <!-- EDIT GROUP -->
  <div class="modal fade" tabindex="-1" id="edit_group">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
