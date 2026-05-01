@@ -8,15 +8,15 @@
         $update_privileges = $_SESSION["privileges"] == "Administrator" ? true : false;    
     }
 
-    $response = [
-        "status" => false,
-        "type" => "info",
-        "size" => "lg",
-        "message" => "Updating an account is not available at this moment."
-    ];
+    // $response = [
+    //     "status" => false,
+    //     "type" => "info",
+    //     "size" => "lg",
+    //     "message" => "Updating an account is not available at this moment."
+    // ];
 
-    echo json_encode($response);
-    exit;
+    // echo json_encode($response);
+    // exit;
     
 
 
@@ -27,6 +27,7 @@
         $user2 = DB::prepare($user,$data["id"]);
 
         if(count($user1)){
+            // Check if ID is same with the ID of the Username
             if($user1[0]["id"] == $user2->id){
                 $user2->name = $data["name"];
                 $user2->email = $data["email"] ? $data["email"] : "-";
@@ -45,7 +46,7 @@
                             $id_temp2 = [];
                             if(in_array($data["id"],$id_temp)){
                                 foreach ($id_temp as $idt) {
-                                    $idt != $data["id"] ? array_push($id_temp2,$idt) : null;
+                                    if($idt != $data["id"]) array_push($id_temp2,$idt);
                                 }
                                 $gd_prep = DB::prepare($group,$gd["id"]);
                                 $gd_prep->supervisors = implode("|",$id_temp2) ? implode("|",$id_temp2) : "|";
@@ -59,7 +60,7 @@
                             $id_temp2 = [];
                             if(in_array($data["id"],$id_temp)){
                                 foreach ($id_temp as $idt) {
-                                    $idt != $data["id"] ? array_push($id_temp2,$idt) : null;
+                                    if($idt != $data["id"]) array_push($id_temp2,$idt);
                                 }
                                 $gd_prep = DB::prepare($group,$gd["id"]);
                                 $gd_prep->users = implode("|",$id_temp2) ? implode("|",$id_temp2) : "|";
@@ -89,18 +90,20 @@
                         if(in_array($data["id"],$id_users)){
                             $transfer = true;
                             foreach ($id_users as $idu) {
-                                $idu != $data["id"] ? array_push($id_temp,$idu) : null;
+                                if($idu != $data["id"]) array_push($id_temp,$idu);
                             }
                         }
 
                         if(!in_array($data["id"],$id_supervisors) && $transfer){
                             array_push($id_supervisors,$data["id"]);
+                            $gd_prep = DB::prepare($group,$gd["id"]);
+                            
+                            $gd_prep->users = implode("|",$id_temp) ? implode("|",$id_temp) : "|";
+                            $gd_prep->supervisors = implode("|",$id_supervisors) ? implode("|",$id_supervisors) : "|";
+                            DB::update($gd_prep);
                         }
 
-                        $gd_prep = DB::prepare($group,$gd["id"]);
-                        $gd_prep->users = implode("|",$id_temp) ? implode("|",$id_temp) : "|";
-                        $gd_prep->supervisors = implode("|",$id_supervisors) ? implode("|",$id_supervisors) : "|";
-                        DB::update($gd_prep);
+
                     }
                 }
 
@@ -123,18 +126,19 @@
                         if(in_array($data["id"],$id_supervisors)){
                             $transfer = true;
                             foreach ($id_supervisors as $ids) {
-                                $ids != $data["id"] ? array_push($id_temp,$ids) : null;
+                                if($ids != $data["id"]) array_push($id_temp,$ids);
                             }
                         }
 
                         if(!in_array($data["id"],$id_users) && $transfer){
                             array_push($id_users,$data["id"]);
+                            $gd_prep = DB::prepare($group,$gd["id"]);
+                            $gd_prep->users = implode("|",$id_users) ? implode("|",$id_users) : "|";
+                            $gd_prep->supervisors = implode("|",$id_temp) ? implode("|",$id_temp) : "|";
+                            DB::update($gd_prep);
                         }
                         
-                        $gd_prep = DB::prepare($group,$gd["id"]);
-                        $gd_prep->users = implode("|",$id_users) ? implode("|",$id_users) : "|";
-                        $gd_prep->supervisors = implode("|",$id_temp) ? implode("|",$id_temp) : "|";
-                        DB::update($gd_prep);
+
                     }
                 }
                 $user2->privileges = $data["privilege"];

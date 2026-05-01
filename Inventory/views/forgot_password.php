@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../assets/css/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/theme/Default.css">
         <link rel="stylesheet" href="../assets/fontawesome/css/font-awesome.min.css">
     <title>Inventory System - Account Recovery</title>
     <link rel="shortcut icon" href="../assets/img/logo-ico.png" type="image/x-icon">
@@ -14,7 +15,7 @@
     <div class="container">
       <div class="row justify-content-center align-items-center vh-100">
         <div class="col-md-4">
-          <div class="card mt-3 mb-3">
+          <div class="card mt-3 mb-3 theme-login theme-login-dark">
             <div class="shape"></div>
             <div class="shape"></div>
             <div class="shape"></div>

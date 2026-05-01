@@ -302,8 +302,6 @@ if(document.getElementById("accounts")){
     })
 
     edit_group_btn.addEventListener("click",function(){
-        console.log(edit_supervisor_container_temp)
-        console.log(edit_user_container_temp)
         if(edit_group_name.value){
             sole.post("../../controllers/administrator/edit_group.php",{
                 id : this.getAttribute("g-id"),
@@ -311,7 +309,6 @@ if(document.getElementById("accounts")){
                 type : edit_group_type.value,
                 supervisor : edit_supervisor_container_temp,
                 user : edit_user_container_temp
-            // }).then(res => console.log(res))
             }).then(res => validateResponse(res,"edit_group"))
         }else{
             bs5.toast("warning","Please input group name.")
@@ -488,8 +485,6 @@ if(document.getElementById("accounts")){
                         }
                         this.parentNode.remove()
                         edit_group_user.value = ""
-                    console.log(edit_user_container_temp)
-
                     })
 
                     name.innerText = user["username"] + " - " + user["name"]

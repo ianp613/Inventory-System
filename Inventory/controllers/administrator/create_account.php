@@ -15,7 +15,7 @@
             $user->name = $data["name"];
             $user->email = $data["email"] ? $data["email"] : "-";
             $user->username = $data["username"];
-            $user->password = $data["password"];
+            $user->password = Data::encrypt($data["password"]);
             $user->privileges = $data["privilege"];
             $user->last_login_ip = "-";
             $user->c_authority = $data["privilege"] != "User" ? "true" : "false";

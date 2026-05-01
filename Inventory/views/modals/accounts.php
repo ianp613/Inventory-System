@@ -37,7 +37,7 @@
     </div>
 </div>
 
-<!-- EDIT ACCOUNT -->
+<!-- EDIT ACCOUNT ADMINISTRATOR -->
 <div class="modal fade" id="edit_account" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -155,7 +155,7 @@
                 <label for="group_name" class="mb-2">Group Name / Office / Project</label>
                 <input type="text" name="group_name" id="group_name" class="form-control mb-2">
                 <label for="group_type" class="mb-2">Type</label>
-                <select name="group_type" id="group_type" class="form-control">
+                <select name="group_type" id="group_type" class="form-control mb-2">
                     <option value="NON-IT" selected>NON-IT</option>
                     <option value="IT">IT</option>
                 </select>
@@ -169,7 +169,7 @@
                     <!-- SUPERVISORS HERE -->
                 </div>
                 
-                <label for="group_user" class="mb-2 mt-2">Users</label>
+                <label for="group_user" class="mb-2">Users</label>
                 <div class="btn-group d-flex mb-2">
                     <select name="group_user" id="group_user" class="form-control">
                         <option value="" selected disabled>Select User</option>
@@ -198,7 +198,7 @@
                 <label for="edit_group_name" class="mb-2">Group Name / Office / Project</label>
                 <input type="text" name="edit_group_name" id="edit_group_name" class="form-control mb-2">
                 <label for="edit_group_type" class="mb-2">Type</label>
-                <select name="edit_group_type" id="edit_group_type" class="form-control">
+                <select name="edit_group_type" id="edit_group_type" class="form-control mb-2">
                     <option value="NON-IT" selected>NON-IT</option>
                     <option value="IT">IT</option>
                 </select>
@@ -212,7 +212,7 @@
                     <!-- SUPERVISORS HERE -->
                 </div>
                 
-                <label for="edit_group_user" class="mb-2 mt-2">Users</label>
+                <label for="edit_group_user" class="mb-2">Users</label>
                 <div class="btn-group d-flex mb-2">
                     <select name="edit_group_user" id="edit_group_user" class="form-control">
                         <option value="" selected disabled>Select User</option>
@@ -230,6 +230,7 @@
     </div>
  </div>
 
+ <!-- OPERATE AS GROUP MEMBER -->
  <div class="modal fade" tabindex="-1" id="operate_as">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">

@@ -57,8 +57,8 @@
 
             $group->group_name = $data["group_name"];
             $group->type = $data["type"];
-            // $group->supervisors = implode("|",$supervisors) ? implode("|",$supervisors) : "|";
-            // $group->users = implode("|",$users) ? implode("|",$users) : "|";
+            $group->supervisors = implode("|",$supervisors) ? implode("|",$supervisors) : "|";
+            $group->users = implode("|",$users) ? implode("|",$users) : "|";
             DB::update($group);
 
             $response = [
