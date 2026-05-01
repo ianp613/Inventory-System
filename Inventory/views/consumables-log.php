@@ -28,7 +28,10 @@
                     
                 </div>
                 <div class="w-100 btn-group">
-                    <input type="text" name="" id="g_search" class="form-control" placeholder="Search code or description">
+                    <input type="text" name="" id="g_search" class="form-control" placeholder="Search code or description" list="consumables_">
+                    <datalist id="consumables_">
+                        <!-- Data List here -->
+                    </datalist>
                     <button class="btn btn-sm alert-dark btn-dark wd-40"><span class="fa fa-search"></span></button>
                 </div>
                 <div id="search_results" class="mt-2"></div>

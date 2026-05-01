@@ -24,6 +24,8 @@ var log_consumable_badge_danger = document.getElementById("log_consumable_badge_
 var log_consumable_badge_warning = document.getElementById("log_consumable_badge_warning")
 var log_consumable_badge_success = document.getElementById("log_consumable_badge_success")
 
+var consumables_ = document.getElementById("consumables_")
+
 loadPage()
 setdatetime()
 
@@ -48,7 +50,7 @@ function loadPage() {
     }
 }
 
-g_search.addEventListener("input", e => {
+g_search.addEventListener("keypress", e => {
     search()
 })
 
@@ -117,6 +119,17 @@ function search(){
         g_id: g_id,
         link: link[1]
     }).then(res => {
+        consumables_.innerHTML = ""
+        if(g_search.value != ""){
+            
+            res.data.forEach(cons_ => {
+                var el = document.createElement("option")
+                el.value = cons_["description"]
+                el.label = cons_["code"]
+                consumables_.appendChild(el)
+            });    
+        }
+        
         if(res.status){
             if(res.data.length && g_search.value){
                 log_consumables_code.innerText = res.data[0].code
