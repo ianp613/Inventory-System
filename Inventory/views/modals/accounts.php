@@ -126,13 +126,14 @@
                 </div>
                 <div hidden id="passkey_field" class="row mt-2">
                     <div class="col">
-                        <label for="passkey" class="mb-2">Passkey</label>
+                        <label for="passkey" class="mb-2">Passkey </label>
                         <div class="d-flex">
                             <div class="col-5">
                                 <input readonly required type="text" name="" id="passkey" class="form-control">
                             </div>
                             <button id="btn_generate_passkey" class="btn btn-success ms-1"><span class="fa fa-refresh"></span></button>     
                         </div>
+                        <p class="f-i f-12 text-danger mt-1 mb-0">*Note: Doesn't need to click save.</p>
                     </div>
                     
                 </div>

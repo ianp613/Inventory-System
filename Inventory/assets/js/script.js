@@ -514,7 +514,7 @@ if(document.getElementById("sidebar")){
         theme = res["theme"]
         theme_.value = res["theme"]
 
-        if(res["inform"] == "Yes" && document.getElementById("dashboard") && res["theme"] == "Legacy"){
+        if(res["inform"] == "Yes" && document.getElementById("dashboard") && res["theme"] == "Default"){
             setTimeout(() => {
                 document.getElementById("inform").hidden = false
             }, 4000);

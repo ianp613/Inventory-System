@@ -9,7 +9,7 @@
         $setting->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
         $setting->uid = $_SESSION["userid"];
         $setting->sound = "1";
-        $setting->theme = "Legacy";
+        $setting->theme = "Default";
         $setting->inform = "Yes";
         DB::save($setting);
     }

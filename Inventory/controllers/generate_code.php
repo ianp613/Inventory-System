@@ -48,18 +48,19 @@
                     $mail->Port = 587;
 
                     // Email details
-                    $mail->setFrom('wifiteaminventory@gmail.com', 'Wifi Team Inventory');
+                    $mail->setFrom('wifiteaminventory@gmail.com', 'Inventory System');
                     $mail->Subject = 'Account Recovery';
                     $mail->isHTML(true); 
                     $mail->Body = '<div style="width: 100%; color: #332D2D;">'.
                     '<div style="position: absolute; left: 50%; transform: translateX(-50%); width: 500px;">'.
-                    '<div style="display: flex; padding-top: 5px; padding-bottom: 5px; padding-left: 20px; background-color: #168897; color: white;">'.
+                    '<div style="border-radius: 10px; display: flex; padding-top: 5px; padding-bottom: 5px; padding-left: 20px; background-color: #168897; color: white;">'.
                     '<img src="cid:logoimg" style="max-width: 80px; margin-bottom:10px; margin-right: 20px;">'.
                     '<h2 style="margin-top: 25px;">ACCOUNT RECOVERY CODE</h2>'.
                     '</div>'.
                     '<h3>This code was sent to your email for help getting back into your Account:</h3>'.
                     '<h1 style="font-size: 50px; color: #168897;">'.$code.'</h1>'.
-                    '<h4><i>Note: Do not share this code to anyone.</i></h4>'.
+                    '<h3><i>Note: Do not share this code to anyone.</i></h3>'.
+                    '<h5 style="width: 100%; text-align: center;">*** This is an automatically generated email, please do not reply to this message ***</h5>'.
                     '</div>'.
                     '</div>';
                     if($temp[0]["email"] != "-"){
@@ -72,7 +73,16 @@
                             "size" => null,
                             "message" => "We sent your code to: ". $temp[0]["email"],
                             "user" => $temp,
-                        ];    
+                        ];
+                        
+                        $log = new Logs;
+                        $log->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+                        $log->uid = $temp[0]["id"];
+                        $log->log = $temp[0]["name"]." has attempt account recovery.";
+                        if($_SESSION["log"] != $log->log){
+                            $_SESSION["log"] = $log->log;
+                            DB::save($log);
+                        }
                     }else{
                         $response = [
                             "status" => false,
@@ -109,18 +119,19 @@
                     $mail->Port = 587;
 
                     // Email details
-                    $mail->setFrom('wifiteaminventory@gmail.com', 'Wifi Team Inventory');
+                    $mail->setFrom('wifiteaminventory@gmail.com', 'Inventory System');
                     $mail->Subject = 'Account Recovery';
                     $mail->isHTML(true); 
                     $mail->Body = '<div style="width: 100%; color: #332D2D;">'.
                     '<div style="position: absolute; left: 50%; transform: translateX(-50%); width: 500px;">'.
-                    '<div style="display: flex; padding-top: 5px; padding-bottom: 5px; padding-left: 20px; background-color: #168897; color: white;">'.
+                    '<div style="border-radius: 10px; display: flex; padding-top: 5px; padding-bottom: 5px; padding-left: 20px; background-color: #168897; color: white;">'.
                     '<img src="cid:logoimg" style="max-width: 80px; margin-bottom:10px; margin-right: 20px;">'.
                     '<h2 style="margin-top: 25px;">ACCOUNT RECOVERY CODE</h2>'.
                     '</div>'.
                     '<h3>This code was sent to your email for help getting back into your Account:</h3>'.
                     '<h1 style="font-size: 50px; color: #168897;">'.$code.'</h1>'.
-                    '<h4><i>Note: Do not share this code to anyone.</i></h4>'.
+                    '<h3><i>Note: Do not share this code to anyone.</i></h3>'.
+                    '<h5 style="width: 100%; text-align: center;">*** This is an automatically generated email, please do not reply to this message ***</h5>'.
                     '</div>'.
                     '</div>';
                     if($temp[0]["email"] != "-"){
@@ -133,7 +144,16 @@
                             "size" => null,
                             "message" => "We sent your code to: ". $temp[0]["email"],
                             "user" => $temp,
-                        ];    
+                        ];
+                        
+                        $log = new Logs;
+                        $log->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+                        $log->uid = $temp[0]["id"];
+                        $log->log = $temp[0]["name"]." has attempt account recovery.";
+                        if($_SESSION["log"] != $log->log){
+                            $_SESSION["log"] = $log->log;
+                            DB::save($log);
+                        }
                     }else{
                         $response = [
                             "status" => false,

@@ -28,6 +28,15 @@
                 "size" => "lg",
                 "message" => "You've successfully change your password. <br>Redirecting to Login ...",
             ];
+
+            $log = new Logs;
+            $log->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+            $log->uid = $user->id;
+            $log->log = $user->name." has successful account recovery.";
+            if($_SESSION["log"] != $log->log){
+                $_SESSION["log"] = $log->log;
+                DB::save($log);
+            }
         }    
     }
     echo json_encode($response);

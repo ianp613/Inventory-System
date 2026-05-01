@@ -130,7 +130,6 @@ if(document.getElementById("accounts")){
         .then(res => {
             edit_group_supervisor.innerHTML = "<option value=\"\" selected disabled>Select User</option>"
 
-            console.log(res["supervisor"])
             res["supervisor"].forEach(su => {
                 var op = document.createElement("option")
                 op.value = su["username"] + " - " + su["name"]
