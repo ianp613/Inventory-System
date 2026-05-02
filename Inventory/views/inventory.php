@@ -150,25 +150,25 @@
                                 }elseif($_GET["loc"] == "consumables"){
                                     echo "<span class=\"fa fa-cubes\"></span> Consumables";
                                 }elseif($_GET["loc"] == "isp"){
-                                    $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-wifi\"></span> Internet Service Provider") : printf("404");
+                                    $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-wifi\"></span> Internet Service Provider") : printf("PAGE HAS BEEN TAKEN");
                                 }elseif($_GET["loc"] == "routers"){
-                                    $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-gears\"></span> Routers") : printf("404");
+                                    $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-gears\"></span> Routers") : printf("PAGE HAS BEEN TAKEN");
                                 }elseif($_GET["loc"] == "ipaddress"){
-                                    $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-map-marker\"></span> IP Address") : printf("404");
+                                    $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-map-marker\"></span> IP Address") : printf("PAGE HAS BEEN TAKEN");
                                 }elseif($_GET["loc"] == "mac"){
-                                    $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-map-marker\"></span> MAC Address") : printf("404");
+                                    $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-map-marker\"></span> MAC Address") : printf("PAGE HAS BEEN TAKEN");
                                 }elseif($_GET["loc"] == "terminals"){
-                                    $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-desktop\"></span> Terminals") : printf("404");
+                                    $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-desktop\"></span> Terminals") : printf("PAGE HAS BEEN TAKEN");
                                 }elseif($_GET["loc"] == "logs"){
                                     echo "<span class=\"fa fa-list\"></span> Activity Logs";
                                 }elseif($_GET["loc"] == "artisanry"){
                                     echo "<span class=\"fa fa-wrench\"></span> Artisanry";
                                 }elseif($_GET["loc"] == "cctv"){
-                                    $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-video-camera\"></span> CCTV") : printf("404");
+                                    $_SESSION["privileges"] == "Administrator" || $_SESSION["g_type"] == "IT"? printf("<span class=\"fa fa-video-camera\"></span> CCTV") : printf("PAGE HAS BEEN TAKEN");
                                 }elseif($_GET["loc"] == "accounts"){
                                     echo "<span class=\"fa fa-id-card\"></span> Accounts";
                                 }else{
-                                    echo "404";
+                                    echo "PAGE HAS BEEN TAKEN";
                                 }
                             }else{
                                 header("location: ../index.php");
