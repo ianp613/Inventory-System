@@ -14,10 +14,11 @@
         <link rel="stylesheet" href="../assets/css/sole.splash/splash.css">
         <link rel="stylesheet" href="../assets/css/colorpicker.css">
         <link rel="stylesheet" href="../assets/css/style.css">
+        <link rel="stylesheet" href="../assets/css/theme/Default.css">
     </head>
     <body>
         <div class="w-100 d-flex justify-content-center">
-            <div class="wd-550 p-4">
+            <div class="theme-card theme-card-dark wd-550 p-4 mt-4">
                 <div class="d-flex w-100 mt-4">
                     <img class="wd-90 ht-80 me-3" style="margin-top: -25px;" src="../../assets/img/fposi-logo.png" alt="" srcset="">
 
@@ -32,7 +33,6 @@
                     <datalist id="consumables_">
                         <!-- Data List here -->
                     </datalist>
-                    <button class="btn btn-sm alert-dark btn-dark wd-40"><span class="fa fa-search"></span></button>
                 </div>
                 <div id="search_results" class="mt-2"></div>
                 <div id="log_consumable_info">
