@@ -51,7 +51,6 @@
             "type" => "info",
             "size" => null,
             "message" => "User account has been deleted.",
-            "entry" => DB::all($user)
         ];
     }else{
         $response = [

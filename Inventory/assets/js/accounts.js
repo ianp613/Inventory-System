@@ -45,6 +45,7 @@ if(document.getElementById("accounts")){
 
     const edit_account_modal = new bootstrap.Modal(document.getElementById('edit_account'),unclose);
     const delete_account_modal = new bootstrap.Modal(document.getElementById('delete_account'),unclose);
+    const reset_password_modal = new bootstrap.Modal(document.getElementById('reset_password'),unclose);
     const add_group_modal = new bootstrap.Modal(document.getElementById('add_group'),unclose);
     const edit_group_modal = new bootstrap.Modal(document.getElementById('edit_group'),unclose);
 
@@ -99,6 +100,11 @@ if(document.getElementById("accounts")){
     var delete_account_btn = document.getElementById("delete_account_btn")
     var delete_account_name = document.getElementById("delete_account_name")
 
+    var reset_password = document.getElementById("reset_password")
+    var reset_password_btn = document.getElementById("reset_password_btn")
+    var reset_password_name = document.getElementById("reset_password_name")
+    var reset_password_input = document.getElementById("reset_password_input")
+
     var generate_passkey_btn = document.getElementById("generate_passkey_btn")
 
     add_group.addEventListener('shown.bs.modal', function () {
@@ -123,6 +129,10 @@ if(document.getElementById("accounts")){
             });
         })
         group_name.focus()
+    })
+
+    reset_password.addEventListener('shown.bs.modal',function () {
+        reset_password_input.focus()
     })
 
     edit_group.addEventListener('shown.bs.modal', function () {
@@ -391,6 +401,17 @@ if(document.getElementById("accounts")){
         }).then(res => validateResponse(res,"delete_account"))
     })
 
+    reset_password_btn.addEventListener("click",function(){
+        if(!reset_password_input.value){
+            bs5.toast("warning","Password field cannot be empty.")
+            return
+        }
+        sole.post("../../controllers/administrator/reset_password.php",{
+            id: this.getAttribute("u-id"),
+            password: reset_password_input.value
+        }).then(res => validateResponse(res,"reset_password"))
+    })
+
     function loadGroup(res){
         if(document.getElementById("group_dropdown")){
             group_dropdown.innerHTML = ""
@@ -508,7 +529,8 @@ if(document.getElementById("accounts")){
                 e["email"] != "-" ? e["email"] : "",
                 e["username"],
                 e["privileges"] == "Administrator" ? "<div class=\"text-primary\">"+e["privileges"]+"</div>" : e["privileges"] == "Supervisor" ? "<div class=\"text-success\">"+e["privileges"]+"</div>" : e["privileges"],
-                e["id"] != localStorage.getItem("userid") && e["username"] != "703F_administrator" && e["privileges"] != "Administrator"? "<button id=\"edit_account_"+ e["id"] +"\" u-id=\""+ e["id"] +"\" class=\"edit_account_row btn btn-sm btn-secondary\"><i u-id=\""+ e["id"] +"\" class=\"edit_account_row fa fa-edit\"></i></button>" +
+                e["id"] != localStorage.getItem("userid") && e["username"] != "703F_administrator" && e["privileges"] != "Administrator"? "<button title=\"Reset account password of "+e["name"]+"\" id=\"reset_password_"+ e["id"] +"\" u-id=\""+ e["id"] +"\" class=\"reset_password_row btn btn-sm alert-primary btn-primary ms-1\"><i u-id=\""+ e["id"] +"\" class=\"reset_password_row fa fa-key\"></i></button>" +
+                "<button id=\"edit_account_"+ e["id"] +"\" u-id=\""+ e["id"] +"\" class=\"edit_account_row btn btn-sm btn-secondary ms-1\"><i u-id=\""+ e["id"] +"\" class=\"edit_account_row fa fa-edit\"></i></button>" +
                 "<button id=\"delete_account_"+ e["id"] +"\" u-id=\""+ e["id"] +"\" class=\"delete_account_row btn btn-sm btn-danger ms-1\"><i u-id=\""+ e["id"] +"\" class=\"delete_account_row fa fa-trash\"></i></button>" : ""
             ]).draw(false)   
         });
@@ -542,6 +564,11 @@ if(document.getElementById("accounts")){
             delete_account_btn.setAttribute("u-id",e.target.getAttribute("u-id"))
             delete_account_modal.show()
         }
+        if(e.target.classList.contains('reset_password_row')) {
+            reset_password_name.innerText = tr[0].innerText
+            reset_password_btn.setAttribute("u-id",e.target.getAttribute("u-id"))
+            reset_password_modal.show()
+        }
     })
 
     function validateResponse(res,func){
@@ -559,6 +586,11 @@ if(document.getElementById("accounts")){
             }
             if(func == "delete_account"){
                 delete_account_modal.hide()
+                sole.get("../../controllers/administrator/get_accounts.php").then(res => loadAccounts(res))
+            }
+            if(func == "reset_password"){
+                reset_password_input.value = ""
+                reset_password_modal.hide()
                 sole.get("../../controllers/administrator/get_accounts.php").then(res => loadAccounts(res))
             }
             if(func == "add_group"){

@@ -25,7 +25,7 @@
                 <td class="text-start">email</td>
                 <td class="text-start">User ID</td>
                 <td class="text-start">Privilege</td>
-                <td style="width: 100px; !important">Action</td>
+                <td style="width: 150px; !important">Action</td>
             </tr>
         </thead>
         <tbody>

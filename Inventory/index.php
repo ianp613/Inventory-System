@@ -53,13 +53,15 @@
                 Data::pp("User not found.");
             }
         }else{
-            $users = DB::all($user);
-            foreach ($users as $use) {
-                $temp = DB::prepare($user,$use["id"]);
-                $temp->password = Data::encrypt("12345");
-                $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : DB::update($temp);
-                $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : Data::pp("User account of <b>".$temp->username."</b> has been reset.");
-            }
+            Data::pp("PLEASE PROVIDE USER ID");
+            // RESET ALL LOGIN PASSWORD FOR ALL ACCOUNT
+            // $users = DB::all($user);
+            // foreach ($users as $use) {
+            //     $temp = DB::prepare($user,$use["id"]);
+            //     $temp->password = Data::encrypt("12345");
+            //     $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : DB::update($temp);
+            //     $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : Data::pp("User account of <b>".$temp->username."</b> has been reset.");
+            // }
         }
     }elseif(isset($_GET["renew-passkey"])){
         $user = new User;
@@ -78,29 +80,21 @@
                 Data::pp("User not found.");
             }
         }else{
-            $users = DB::all($user);
-            foreach ($users as $use) {
-                while(!DB::validate($user,"passkey",$passkey)){
-                    $passkey = Data::generate(4,"numeric");
-                }
-                $temp = DB::prepare($user,$use["id"]);
-                $temp->passkey = $passkey;
-                $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : DB::update($temp);
-                $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : Data::pp("Passkey for account <b>".$temp->username."</b> has been set to <b>".$passkey."</b>.");
-            }
+            Data::pp("PLEASE PROVIDE USER ID");
+            // RENEW ALL PASSKEY FOR ALL ACCOUNT
+            // $users = DB::all($user);
+            // foreach ($users as $use) {
+            //     while(!DB::validate($user,"passkey",$passkey)){
+            //         $passkey = Data::generate(4,"numeric");
+            //     }
+            //     $temp = DB::prepare($user,$use["id"]);
+            //     $temp->passkey = $passkey;
+            //     $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : DB::update($temp);
+            //     $temp->username == "administrator" || $temp->username == "703F_administrator" ? null : Data::pp("Passkey for account <b>".$temp->username."</b> has been set to <b>".$passkey."</b>.");
+            // }
         }
     }elseif(isset($_GET["update"])){
-        $entry = new Equipment_Entry;
-        $entry_ = DB::all($entry);
-
-        foreach($entry_ as $e){
-            $ent = DB::prepare($entry,$e["id"]);
-            $ent->building = "-";
-            $ent->room = "-";
-            $ent->project = "-";
-            $ent->cabinet = "-";
-            DB::update($ent);
-        }
+        Data::pp("NOTHING IN HERE");
     }else{
         header("location: views/login.php");
     }

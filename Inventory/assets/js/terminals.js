@@ -10,9 +10,9 @@ if(document.getElementById("terminals")){
                 visible: false,
                 searchable: false
             },
-            { 
-                className: 'dt-left', 
-                targets: '_all' 
+            {
+                className: 'dt-left',
+                targets: '_all'
             }
         ],
         autoWidth: false,

@@ -55,6 +55,6 @@
 </div>
 <div class="bg-light p-3 text-center text-secondary position-absolute" style="border-radius: 20px; top: 50%; left: 50%; transform: translate(-25%,-50%);">
     <img class="wd-500" src="../../assets/img/work-in-progress.png" style="border-radius: 20px;" alt="" srcset="">
-    <h3 class="mt-3 mb-0 fw-bolder text-danger">UNDER CONSTRUCTION</h3>
+    <h3 class="mt-3 mb-0 fw-bolder text-danger">SITE UNDER CONSTRUCTION</h3>
     <h6>*Attention: Please wear your Personal Protective Equipment.</h6>
 </div>

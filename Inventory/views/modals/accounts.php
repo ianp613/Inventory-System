@@ -103,6 +103,31 @@
     </div>
 </div>
 
+<!-- RESET PASSWORD MODAL -->
+<div class="modal fade" id="reset_password" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered ">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <div class="w-100">
+                    <span class="fa fa-exclamation-triangle text-warning h2"></span>
+                    <h5 id="delete_entry_title" class="modal-title fw-bolder">Reset Account Password</h5>    
+                </div>
+            </div>
+            <div class="modal-body text-center">
+                <div class="w-100">
+                    <div>You're going to reset login password for the account of <b>"<span id="reset_password_name">Name</span>"</b>, please input your password to proceed.</div>    
+                </div>
+                
+                <input type="password" name="" id="reset_password_input" class="form-control mt-3" placeholder="Input your password.">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><span class="fa fa-remove"></span> Cancel</button>
+                <button id="reset_password_btn" e-id="" type="button" data-bs-dismiss="" class="btn alert-primary btn-primary btn-sm"><span class="fa fa-key"></span> Proceed</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- EDIT ACCOUNT -->
 <div class="modal fade" id="account_edit" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
