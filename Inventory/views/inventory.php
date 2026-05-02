@@ -82,7 +82,7 @@
                     </li>
                     <li hidden class="g_menu nav-item mb-2">
                         <a href="?loc=terminals" class="nav-link f-15 text-light <?php $terminals ?  printf("bg-light text-dark rounded") :  null;?>">
-                            <i class="fa fa-desktop red-1 <?php $terminals ?  printf("text-dark rounded") :  null;?>" style="width: 13px;"></i> <span>Terminals</span>
+                            <i class="fa fa-desktop red-1 <?php $terminals ?  printf("text-dark rounded") :  null;?>" style="width: 13px;"></i> <span>Terminals <span class="fa fa-warning"></span></span>
                         </a>
                     </li>
                     <li hidden class="g_menu nav-item mb-2">
@@ -285,6 +285,7 @@
         <script src="../assets/js/consumables.js"></script>
         <script src="../assets/js/ipaddress.js"></script>
         <script src="../assets/js/mac.js"></script>
+        <script src="../assets/js/terminals.js"></script>
         <script src="../assets/js/cctv.js"></script>
         <script src="../assets/js/routers.js"></script>
         <script src="../assets/js/isp.js"></script>
