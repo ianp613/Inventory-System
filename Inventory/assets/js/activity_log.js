@@ -82,15 +82,16 @@ if(document.getElementById("logs")){
         sole.post("../../controllers/logs/get_log.php",{
             logs: logs
         }).then(res => {
-            logTable.clear().draw();
+            logTable.clear();
             res.logs.forEach(e => {
                 logTable.row.add([
                     e["id"],
                     replaceName(e["uid"],e["log"]),
                     e["created_at"],
                     "<button id=\"delete_log_"+ e["id"] +"\" l-id=\""+ e["id"] +"\" class=\"delete_log_row btn btn-sm btn-danger ms-1\"><i l-id=\""+ e["id"] +"\" class=\"delete_log_row fa fa-trash\"></i></button>"
-                ]).draw(false)   
+                ])  
             });
+            logTable.draw()
         })
         localStorage.getItem("privileges") != "User" ? logTable.column(3).visible(true) : logTable.column(3).visible(false)
     }
