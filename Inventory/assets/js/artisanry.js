@@ -387,6 +387,7 @@ if(document.getElementById("artisan")){
     function artisanry_onScanSuccess(decodedText) {
         // add_entry_barcode_input.value = decodedText;
         // console.log(decodedText)
+        alert(decodedText)
         console.log("Scanned:", decodedText);
 
         // artisanry_stopScanner();
