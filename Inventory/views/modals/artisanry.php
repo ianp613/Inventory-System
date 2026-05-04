@@ -224,15 +224,16 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">BARCODE SCANNER</div>
+                <button id="close_qrbar_scanner" class="btn btn-sm btn-danger"><span class="fa fa-remove"></span> Close</button>
             </div>
             <div class="modal-body">
                 <div class="w-100 bg-primary">
                     <div id="artisanry_scanner" style="position: absolute; left: 50%; transform: translateX(-50%);"></div>
                 </div>
-                
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-dark form-control" id="cancel_barcode_scanner_btn"> <span class="fa fa-remove"></span> Cancel</button>
+                <div id="scanned_container" class="p-3">
+                    <h6 class="fw-bolder">Scan Result:</h6>
+                    <h6 id="qrbar_scanner_result">-- Focus scanner to any QR Code or Bar Code --</h6>
+                </div>
             </div>
         </div>
     </div>

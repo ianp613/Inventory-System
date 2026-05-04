@@ -336,7 +336,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-dark form-control" id="cancel_barcode_scanner_btn"> <span class="fa fa-remove"></span> Cancel</button>
+                <button class="btn btn-dark form-control" id="cancel_barcode_scanner_btn"><span class="fa fa-remove"></span> Cancel</button>
             </div>
         </div>
     </div>

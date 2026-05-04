@@ -374,10 +374,19 @@ if(document.getElementById("artisan")){
     // QR CODE & BAR CODE SCANNER
     // ------------------------------------------------------------------------------------------------------------------------------------
     var qrbar_scanner = document.getElementById("qrbar_scanner");
+    var close_qrbar_scanner = document.getElementById("close_qrbar_scanner")
+    var qrbar_scanner_result = document.getElementById("qrbar_scanner_result")
     const qrbar_modal = new bootstrap.Modal(document.getElementById('qrbar_modal'),unclose);
+
     qrbar_scanner.addEventListener("click", function () {
+        qrbar_scanner_result.innerText = "-- Focus scanner to any QR Code or Bar Code --"
         artisanry_startScanner()
         qrbar_modal.show()
+    })
+
+    close_qrbar_scanner.addEventListener("click", function () {
+        artisanry_stopScanner()
+        qrbar_modal.hide()
     })
 
     let  artisanry_scanner = null;
@@ -385,12 +394,8 @@ if(document.getElementById("artisan")){
     let  artisanry_firstScan = true; // flag for first detection
 
     function artisanry_onScanSuccess(decodedText) {
-        // add_entry_barcode_input.value = decodedText;
-        // console.log(decodedText)
-        alert(decodedText)
+        qrbar_scanner_result.innerHTML = decodedText
         console.log("Scanned:", decodedText);
-
-        // artisanry_stopScanner();
 
         // Shrink scan frame after first detection
         if (artisanry_firstScan && artisanry_scanner) {
