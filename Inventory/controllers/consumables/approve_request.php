@@ -24,7 +24,9 @@
             $group_request = DB::where2($consumable_request,"gid","=",$request[0]["gid"],"status","=","Approved");
 
             foreach ($group_request as $gr) {
-                $total_amount_requested += (int) $gr["requested_quantity"];
+                if($gr["cid"] == $request[0]["cid"]){
+                    $total_amount_requested += (int) $gr["requested_quantity"];
+                }
             }
             $total_amount_requested += (int) $request[0]["requested_quantity"];
 

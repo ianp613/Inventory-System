@@ -559,7 +559,7 @@ if(document.getElementById("consumables")){
         }else if(data[5] == "Declined"){
             return "<button r-id=\""+data[0]+"\" class=\"declined_request_row btn btn-sm btn-danger alert-danger fw-bolder\"><i r-id=\""+data[0]+"\" class=\"declined_request_row fa fa-question-circle-o\"></i> Details</button>";
         }else if(data[5] == "Approved"){
-            return "<button r-id=\""+data[0]+"\" class=\"claimed_request_row btn btn-sm btn-success\"><i r-id=\""+data[0]+"\" class=\"claimed_request_row fa fa-check\"></i> Claimed</button>";
+            return "<button r-id=\""+data[0]+"\" class=\"claimed_request_row btn btn-sm btn-success\"><i r-id=\""+data[0]+"\" class=\"claimed_request_row fa fa-check\"></i> Mark as Claimed</button>";
         }else{
             return ""
         }
