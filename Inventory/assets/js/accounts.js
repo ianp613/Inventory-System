@@ -521,7 +521,7 @@ if(document.getElementById("accounts")){
     }
 
     function loadAccounts(res){
-        accounts_table.clear().draw();
+        accounts_table.clear();
         res.user.forEach(e => {
             accounts_table.row.add([
                 e["id"],
@@ -532,8 +532,9 @@ if(document.getElementById("accounts")){
                 e["id"] != localStorage.getItem("userid") && e["username"] != "703F_administrator" && e["privileges"] != "Administrator"? "<button title=\"Reset account password of "+e["name"]+"\" id=\"reset_password_"+ e["id"] +"\" u-id=\""+ e["id"] +"\" class=\"reset_password_row btn btn-sm alert-primary btn-primary ms-1\"><i u-id=\""+ e["id"] +"\" class=\"reset_password_row fa fa-key\"></i></button>" +
                 "<button id=\"edit_account_"+ e["id"] +"\" u-id=\""+ e["id"] +"\" class=\"edit_account_row btn btn-sm btn-secondary ms-1\"><i u-id=\""+ e["id"] +"\" class=\"edit_account_row fa fa-edit\"></i></button>" +
                 "<button id=\"delete_account_"+ e["id"] +"\" u-id=\""+ e["id"] +"\" class=\"delete_account_row btn btn-sm btn-danger ms-1\"><i u-id=\""+ e["id"] +"\" class=\"delete_account_row fa fa-trash\"></i></button>" : ""
-            ]).draw(false)   
+            ])
         });
+        accounts_table.draw()
     }
 
     document.querySelector('#accounts_table').addEventListener("click", e=>{

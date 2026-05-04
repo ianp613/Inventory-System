@@ -253,7 +253,7 @@ if(document.getElementById("cctv")){
             lid : res.cctv[0]["id"]
         }).then(res => {
             cameraList = res
-            cameraTable.clear().draw();
+            cameraTable.clear();
             res.camera.forEach(e => {
                 cameraTable.row.add([
                     e["id"],
@@ -262,9 +262,11 @@ if(document.getElementById("cctv")){
                     e["camera_subtype"] != "-" ? e["camera_subtype"] : "",
                     "<button id=\"edit_camera"+ e["id"] +"\" c-id=\""+ e["id"] +"\" class=\"edit_camera_row btn btn-sm btn-secondary\"><i c-id=\""+ e["id"] +"\" class=\"edit_camera_row fa fa-edit\"></i></button>" +
                     "<button id=\"delete_camera_"+ e["id"] +"\" c-id=\""+ e["id"] +"\" class=\"delete_camera_row btn btn-sm btn-danger ms-1\"><i c-id=\""+ e["id"] +"\" class=\"delete_camera_row fa fa-trash\"></i></button>" 
-                ]).draw(false)   
+                ])  
             });
-            cameraListTable.clear().draw();
+            cameraTable.draw()
+            
+            cameraListTable.clear()
             res.camera.forEach(e => {
                 // if(e.cx == "-" && e.cy == "-"){
                     cameraListTable.row.add([
@@ -273,9 +275,10 @@ if(document.getElementById("cctv")){
                         e["camera_type"] != "-" ? e["camera_type"] : "",
                         e["camera_subtype"] != "-" ? e["camera_subtype"] : "",
                         e.cx == "-" && e.cy == "-" ? "<button id=\"select_camera_"+ e["id"] +"\" c-id=\""+ e["id"] +"\" class=\"select_camera_row btn btn-sm btn-primary mr-3 \"><i c-id=\""+ e["id"] +"\" class=\"select_camera_row fa fa-check\"></i></button>" : "<button id=\"remove_camera_"+ e["id"] +"\" c-id=\""+ e["id"] +"\" class=\"remove_camera_row btn btn-sm btn-danger mr-3 \"><i c-id=\""+ e["id"] +"\" class=\"remove_camera_row fa fa-ban\"></i></button>",
-                    ]).draw(false)  
+                    ])
                 // }
             });
+            cameraListTable.draw()
         })
     }
 

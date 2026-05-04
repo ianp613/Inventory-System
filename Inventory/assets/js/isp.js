@@ -147,7 +147,7 @@ if(document.getElementById("isp")){
     }
 
     function loadISP(res){
-        ispTable.clear().draw();
+        ispTable.clear();
         res.isp.forEach(e => {
             var router_name = ""
             res.router.forEach(router => {
@@ -163,8 +163,9 @@ if(document.getElementById("isp")){
                 router_name,
                 "<button id=\"edit_isp_"+ e["id"] +"\" i-id=\""+ e["id"] +"\" class=\"edit_isp_row btn btn-sm btn-secondary\"><i i-id=\""+ e["id"] +"\" class=\"edit_isp_row fa fa-edit\"></i></button>" +
                 "<button id=\"delete_isp_"+ e["id"] +"\" i-id=\""+ e["id"] +"\" class=\"delete_isp_row btn btn-sm btn-danger ms-1\"><i i-id=\""+ e["id"] +"\" class=\"delete_isp_row fa fa-trash\"></i></button>" 
-            ]).draw(false)   
+            ])
         });
+        ispTable.draw()
     }
 
     configuration_list.addEventListener("click", function (e) {

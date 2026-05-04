@@ -563,7 +563,6 @@ if(document.getElementById("equipments")){
             if(func == "delete_equipment"){
                 if(delete_equipment_name.innerText == localStorage.getItem("selected_equipment")){
                     equipment_dropdown_toggle.innerText = "-- Select Equipment --"
-                    entryTable.clear().draw();
                     localStorage.removeItem("selected_equipment");
                     localStorage.removeItem("selected_equipment_id");
                 }
@@ -578,7 +577,7 @@ if(document.getElementById("equipments")){
 
     function loadEntry(res){
         var for_status_count = 0;
-        entryTable.clear().draw();
+        entryTable.clear();
         res.entry.forEach(e => {
             e["status"] == "For Status" ? for_status_count++ : null
             entryTable.row.add([
@@ -590,8 +589,9 @@ if(document.getElementById("equipments")){
                 e["status"] != "-" ? e["status"] : "",
                 " <button id=\"edit_entry_"+ e["id"] +"\" e-id=\""+ e["id"] +"\" class=\"edit_entry_row btn btn-sm btn-secondary mb-1\"><i e-id=\""+ e["id"] +"\" class=\"edit_entry_row fa fa-edit\"></i></button>"+
                 " <button id=\"delete_entry_"+ e["id"] +"\" e-id=\""+ e["id"] +"\" class=\"delete_entry_row btn btn-sm btn-danger mb-1\"><i e-id=\""+ e["id"] +"\" class=\"delete_entry_row fa fa-trash-o\"></i></button>"
-            ]).draw(false)   
+            ])
         });
+        entryTable.draw()
         for_status_count ? document.getElementById("for_status_count").innerText = for_status_count : document.getElementById("for_status_count").innerText = ""
         
         // let tr = document.getElementsByClassName("trow");

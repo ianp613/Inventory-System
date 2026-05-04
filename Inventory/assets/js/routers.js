@@ -130,7 +130,7 @@ if(document.getElementById("routers")){
     }
 
     function loadRouter(res){
-        routerTable.clear().draw();
+        routerTable.clear()
         res.router.forEach(e => {
             routerTable.row.add([
                 e["id"],
@@ -141,8 +141,9 @@ if(document.getElementById("routers")){
                 getWANIP(e["wan2"],res.isp,e["active"]),
                 "<button id=\"edit_router_"+ e["id"] +"\" r-id=\""+ e["id"] +"\" class=\"edit_router_row btn btn-sm btn-secondary\"><i r-id=\""+ e["id"] +"\" class=\"edit_router_row fa fa-edit\"></i></button>" +
                 "<button id=\"delete_router_"+ e["id"] +"\" r-id=\""+ e["id"] +"\" class=\"delete_router_row btn btn-sm btn-danger ms-1\"><i r-id=\""+ e["id"] +"\" class=\"delete_router_row fa fa-trash\"></i></button>" 
-            ]).draw(false)   
+            ])
         });
+        routerTable.draw()
     }
 
     function getWANIP(id,isp,active){
@@ -379,14 +380,15 @@ if(document.getElementById("routers")){
         delete_router_modal.show()
         delete_router_name.innerText = res.router[0]["name"]
         if(res.network.length){
-            routerDeleteTable.clear().draw();
+            routerDeleteTable.clear();
             res.network.forEach(e => {
                 routerDeleteTable.row.add([
                     e["name"],
                     e["from"],
                     e["to"],
-                ]).draw(false)   
+                ])
             });
+            routerDeleteTable.draw()
             delete_router_table_container.removeAttribute("hidden")
         }else{
             delete_router_table_container.setAttribute("hidden","true")

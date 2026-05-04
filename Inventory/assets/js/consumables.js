@@ -347,7 +347,7 @@ if(document.getElementById("consumables")){
     function get_consumables_logs() {
         sole.get("../../controllers/consumables/get_consumables_logs.php")
         .then(res => {
-            consumables_logsTable.clear().draw();
+            consumables_logsTable.clear();
             var datas = []
             var ids = []
             res.logs.forEach(log => {
@@ -381,15 +381,16 @@ if(document.getElementById("consumables")){
                     data[3],
                     data[4] == "-" ? "" : data[4],
                     data[5]
-                ]).draw(false)
+                ])
             })
+            consumables_logsTable.draw()
         })    
     }
     function get_consumables_requests_others(){
         sole.post("../../controllers/consumables/get_consumables_requests.php",{
             type : "group"
         }).then(res => {
-            consumables_RequestsOthersTable.clear().draw()
+            consumables_RequestsOthersTable.clear();
             var datas = []
             var ids = []
 
@@ -420,9 +421,10 @@ if(document.getElementById("consumables")){
                             data[5] == "For Approval" ? "<h6 class=\"text-primary\">"+data[5]+"</h6>" : data[5] == "Approved" ? "<h6 class=\"text-success\">"+data[5]+"</h6>" : "<h6 class=\"text-danger\">"+data[5]+"</h6>",
                             data[6],
                             get_UserRequestOthersBotton(data)
-                        ]).draw(false)
+                        ])
                     }
                 })
+                consumables_RequestsOthersTable.draw()
             })
         })
     }
@@ -476,7 +478,7 @@ if(document.getElementById("consumables")){
         sole.post("../../controllers/consumables/get_consumables_requests.php",{
             type : "user"
         }).then(res => {
-            consumables_RequestsTable.clear().draw()
+            consumables_RequestsTable.clear();
             var datas = []
             var ids = []
 
@@ -507,9 +509,10 @@ if(document.getElementById("consumables")){
                             data[5] == "For Approval" ? "<h6 class=\"text-primary\">"+data[5]+"</h6>" : data[5] == "Approved" ? "<h6 class=\"text-success\">"+data[5]+"</h6>" : "<h6 class=\"text-danger\">"+data[5]+"</h6>",
                             data[6],
                             get_UserRequestBotton(data)
-                        ]).draw(false)
+                        ])
                     }
                 })
+                consumables_RequestsTable.draw()
             })
         })
     }
@@ -974,7 +977,7 @@ if(document.getElementById("consumables")){
     })
 
     function loadConsumables(res){
-        consumablesTable.clear().draw();
+        consumablesTable.clear();
         res.consumables.forEach(e => {
             consumablesTable.row.add([
                 e["id"],
@@ -987,8 +990,9 @@ if(document.getElementById("consumables")){
                 e["last_restock"] != "-" ? e["last_restock"] : e["created_at"],
                 " <button id=\"edit_consumables_"+ e["id"] +"\" c-id=\""+ e["id"] +"\" class=\"edit_consumables_row btn btn-sm btn-secondary mb-1\"><i c-id=\""+ e["id"] +"\" class=\"edit_consumables_row fa fa-edit\"></i></button>"+
                 " <button id=\"delete_consumables_"+ e["id"] +"\" c-id=\""+ e["id"] +"\" class=\"delete_consumables_row btn btn-sm btn-danger mb-1\"><i c-id=\""+ e["id"] +"\" class=\"delete_consumables_row fa fa-trash-o\"></i></button>"
-            ]).draw(false) 
+            ])
         });
+        consumablesTable.draw()
 
         localStorage.getItem("privileges") != "User" ? consumablesTable.column(8).visible(true) : consumablesTable.column(8).visible(false)
     }

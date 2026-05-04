@@ -242,7 +242,6 @@ if(document.getElementById("ipaddress")){
             network_dropdown_toggle.innerText = e.target.innerText
             localStorage.setItem("selected_network", e.target.innerText);
             localStorage.setItem("selected_network_id", e.target.getAttribute("id"));
-            ipTable.clear().draw();
             sole.post("../../controllers/ipaddress/get_ip.php", {
                 nid: localStorage.getItem("selected_network_id")
             }).then(res => loadIP(res))
@@ -364,7 +363,7 @@ if(document.getElementById("ipaddress")){
         }
     }
     function loadIP(res){
-        ipTable.clear().draw();
+        ipTable.clear();
         var ip_count = [0,0];
         var used_ip = document.getElementById("used_ip");
         var available_ip = document.getElementById("available_ip");
@@ -383,8 +382,9 @@ if(document.getElementById("ipaddress")){
                 e["username"] != "-" || e["password"] != "-" ? "<div class=\"f-10\"><b>Username: </b>" + usernameSupport(e["username"]) + " <br> " + "<b>Password: </b>" + passwordSupport(e["password"]) + "</div>": "",
                 " <button id=\"edit_ip_"+ e["id"] +"\" i-id=\""+ e["id"] +"\" class=\"edit_ip_row btn btn-sm btn-secondary\"><i i-id=\""+ e["id"] +"\" class=\"edit_ip_row fa fa-edit\"></i></button>"
                 + setUnassignBtn(e)
-            ]).draw(false)   
+            ])
         });
+        ipTable.draw();
         used_ip.innerText = "Used IP: " + ip_count[0]
         available_ip.innerText = "Available IP: " + ip_count[1]
     }
@@ -489,7 +489,6 @@ if(document.getElementById("ipaddress")){
             if(func == "delete_network"){
                 if(delete_network_name.innerText == localStorage.getItem("selected_network")){
                     network_dropdown_toggle.innerText = "-- Select Network --"
-                    ipTable.clear().draw();
                     localStorage.removeItem("selected_network");
                     localStorage.removeItem("selected_network_id");
                 }
