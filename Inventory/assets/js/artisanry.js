@@ -5,7 +5,9 @@ artisanry.addEventListener("click",function(){
 })
 
 if(document.getElementById("artisan")){
-    // QR GENERATOR SECTION
+    // ------------------------------------------------------------------------------------------------------------------------------------
+    // QR CODE GENERATION
+    // ------------------------------------------------------------------------------------------------------------------------------------
     const qr_generator_modal = new bootstrap.Modal(document.getElementById('qr_generator_modal'),unclose);
     const qrcanvas = document.getElementById("qrPreviewCanvas");
     const qrctx = qrcanvas.getContext("2d");
@@ -367,6 +369,160 @@ if(document.getElementById("artisan")){
             }).then(res => console.log(res));
         }, 5000);
     }
+
+    // ------------------------------------------------------------------------------------------------------------------------------------
+    // QR CODE & BAR CODE SCANNER
+    // ------------------------------------------------------------------------------------------------------------------------------------
+    var qrbar_scanner = document.getElementById("qrbar_scanner");
+    const qrbar_modal = new bootstrap.Modal(document.getElementById('qrbar_modal'),unclose);
+    qrbar_scanner.addEventListener("click", function () {
+        artisanry_startScanner()
+        qrbar_modal.show()
+    })
+
+    let  artisanry_scanner = null;
+    let  artisanry_running = false;
+    let  artisanry_firstScan = true; // flag for first detection
+
+    function artisanry_onScanSuccess(decodedText) {
+        // add_entry_barcode_input.value = decodedText;
+        // console.log(decodedText)
+        console.log("Scanned:", decodedText);
+
+        // artisanry_stopScanner();
+
+        // Shrink scan frame after first detection
+        if (artisanry_firstScan && artisanry_scanner) {
+            artisanry_scanner.setQrBox({ width: 250, height: 100 }); // smaller frame
+            artisanry_firstScan = false;
+        }
+    }
+
+    function artisanry_enableAutoFocus() {
+        try {
+            const track = artisanry_scanner.getRunningTrack();
+            const capabilities = track.getCapabilities();
+
+            if (capabilities.focusMode) {
+                track.applyConstraints({
+                    advanced: [{ focusMode: "continuous" }]
+                });
+                console.log("Auto focus enabled");
+            }
+        } catch (e) {
+            console.log("Focus not supported");
+        }
+    }
+
+    async function artisanry_startScanner() {
+        if (artisanry_running) return;
+
+        // check camera support
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            console.log("Camera API not available. Use HTTPS or localhost.");
+            return;
+        }
+
+        try {
+            await navigator.mediaDevices.getUserMedia({ video: true });
+        } catch (err) {
+            console.error("Camera permission denied:", err);
+            alert("Camera permission is required.");
+            return;
+        }
+
+        artisanry_running = true;
+        document.getElementById("artisanry_scanner").disabled = true;
+
+        // remove old video
+        document.getElementById("artisanry_scanner").innerHTML = "";
+
+        artisanry_firstScan = true; // reset flag
+
+        artisanry_scanner = new Html5Qrcode("artisanry_scanner");
+
+        const formatsToSupport = [
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.CODE_39,
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.EAN_8,
+            Html5QrcodeSupportedFormats.UPC_A,
+            Html5QrcodeSupportedFormats.UPC_E,
+            Html5QrcodeSupportedFormats.ITF
+        ];
+
+        artisanry_scanner.start(
+            { facingMode: "environment" },
+            {
+                fps: 12,
+                qrbox: (videoWidth, videoHeight) => {
+                    // Make the frame 80% of the video width and 80% of the height
+                    const width = videoWidth * 0.8;
+                    const height = videoHeight * 0.8;
+                    return { width, height };
+                }, // wide initial scan line
+                formatsToSupport: formatsToSupport
+            },
+            artisanry_onScanSuccess
+        ).then(() => {
+            artisanry_enableAutoFocus();
+        }).catch(err => {
+            console.error(err);
+            artisanry_running = false;
+        });
+    }
+
+    function artisanry_stopScanner() {
+        if (artisanry_scanner && artisanry_running) {
+            artisanry_scanner.stop().then(() => {
+                artisanry_scanner.clear();
+                artisanry_running = false;
+                console.log("Scanner stopped");
+            });
+        }
+    }
+
+    // tap to refocus
+    document.getElementById("artisanry_scanner").addEventListener("click", () => {
+        try {
+            if (!artisanry_scanner) return;
+            const track = artisanry_scanner.getRunningTrack();
+            const capabilities = track.getCapabilities();
+
+            if (capabilities.focusMode) {
+                track.applyConstraints({
+                    advanced: [{ focusMode: "single-shot" }]
+                });
+                console.log("Tap focus");
+            }
+        } catch (e) {
+            console.log("Tap focus not supported");
+        }
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     var file_browser = document.getElementById("file_browser")
     file_browser.addEventListener("click", e => {

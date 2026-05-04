@@ -323,6 +323,7 @@
     </div>
 </div>
 
+<!-- BARCODE SCANNER -->
 <div class="modal fade" id="barcode_camera"  tabindex="-1">
     <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-centered">
         <div class="modal-content">
@@ -333,7 +334,6 @@
                 <div class="w-100 bg-primary">
                     <div id="scanner" style="position: absolute; left: 50%; transform: translateX(-50%);"></div>
                 </div>
-                
             </div>
             <div class="modal-footer">
                 <button class="btn btn-dark form-control" id="cancel_barcode_scanner_btn"> <span class="fa fa-remove"></span> Cancel</button>

@@ -7,7 +7,7 @@
             </div>
         </div>
         <div class="col-md-2">
-            <div id="qr_scanner" class="text-center artisanry-menu">
+            <div id="qrbar_scanner" class="text-center artisanry-menu">
                 <img class="wd-100" src="../../assets/img/artisanry/qr-scanner.png" alt="">
                 <h6 class="mt-2">QR Code Scanner</h4>    
             </div>
