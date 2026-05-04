@@ -224,7 +224,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">BARCODE SCANNER</div>
-                <button id="close_qrbar_scanner" class="btn btn-sm btn-danger"><span class="fa fa-remove"></span> Close</button>
+                <button id="close_qrbar_scanner" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="w-100 bg-primary">
@@ -235,7 +235,7 @@
                     <h6 id="qrbar_scanner_result">-- Focus scanner to any QR Code or Bar Code --</h6>
                 </div>
                 <div class="text-center">
-                    <div hidden id="qrbar_copy_result" class="btn btn-sm btn-light w-50"><span class="fa fa-copy"></span> Copy</div>
+                    <div hidden id="qrbar_copy_result" class="btn alert-success btn-success w-50"><span class="fa fa-copy"></span> Copy</div>
                 </div>
             </div>
         </div>
