@@ -234,6 +234,9 @@
                     <h6 class="fw-bolder">Scan Result:</h6>
                     <h6 id="qrbar_scanner_result">-- Focus scanner to any QR Code or Bar Code --</h6>
                 </div>
+                <div class="text-center">
+                    <div hidden id="qrbar_copy_result" class="btn btn-sm btn-light w-50"><span class="fa fa-copy"></span> Copy</div>
+                </div>
             </div>
         </div>
     </div>

@@ -376,10 +376,12 @@ if(document.getElementById("artisan")){
     var qrbar_scanner = document.getElementById("qrbar_scanner");
     var close_qrbar_scanner = document.getElementById("close_qrbar_scanner")
     var qrbar_scanner_result = document.getElementById("qrbar_scanner_result")
+    var qrbar_copy_result = document.getElementById("qrbar_copy_result")
     const qrbar_modal = new bootstrap.Modal(document.getElementById('qrbar_modal'),unclose);
 
     qrbar_scanner.addEventListener("click", function () {
         qrbar_scanner_result.innerText = "-- Focus scanner to any QR Code or Bar Code --"
+        qrbar_copy_result.hidden = true
         artisanry_startScanner()
         qrbar_modal.show()
     })
@@ -389,12 +391,23 @@ if(document.getElementById("artisan")){
         qrbar_modal.hide()
     })
 
+    qrbar_copy_result.addEventListener("click", function () {
+        navigator.clipboard.writeText(qrbar_scanner_result.innerText)
+        .then(() => {
+          alert("Text copied to clipboard!");
+        })
+        .catch(err => {
+          console.error("Failed to copy text: ", err);
+        });
+    })
+
     let  artisanry_scanner = null;
     let  artisanry_running = false;
     let  artisanry_firstScan = true; // flag for first detection
 
     function artisanry_onScanSuccess(decodedText) {
-        qrbar_scanner_result.innerHTML = decodedText
+        qrbar_scanner_result.innerText = decodedText
+        qrbar_copy_result.hidden = false
         console.log("Scanned:", decodedText);
 
         // Shrink scan frame after first detection
