@@ -50,9 +50,9 @@ function loadPage() {
     }
 }
 
-g_search.addEventListener("keypress", e => {
+g_search.addEventListener("input", function (e) {
     search()
-})
+});
 
 submit_btn.addEventListener("click", e => {
     if(!cid){
