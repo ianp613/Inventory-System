@@ -223,7 +223,7 @@
     <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">BARCODE SCANNER</div>
+                <div class="modal-title">QR CODE & BAR CODE SCANNER</div>
                 <button id="close_qrbar_scanner" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
