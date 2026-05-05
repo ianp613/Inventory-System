@@ -381,7 +381,7 @@ if(document.getElementById("artisan")){
 
     qrbar_scanner.addEventListener("click", function () {
         qrbar_scanner_result.innerText = "-- Focus scanner to any QR Code or Bar Code --"
-        qrbar_copy_result.hidden = false
+        qrbar_copy_result.hidden = true
         artisanry_startScanner()
         qrbar_modal.show()
     })
