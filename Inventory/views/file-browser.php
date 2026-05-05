@@ -13,6 +13,7 @@
         <link rel="stylesheet" href="../assets/css/bootstrap/bootstrap.min.css">
         <link rel="stylesheet" href="../assets/css/sole.splash/splash.css">
         <link rel="stylesheet" href="../assets/css/colorpicker.css">
+        <link rel="stylesheet" href="../assets/css/file-browser.css">
         <link rel="stylesheet" href="../assets/css/style.css">
     </head>
     <body class="light">

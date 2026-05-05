@@ -178,8 +178,8 @@
                     <div>
                         <div hidden id="inform" class="alert-info">
                             <span></span>
-                            <h6 class="f-12 mb-0 pb-0">Theme changer in settings is now</h6>
-                            <h6 class="f-12 mt-0 pt-0">available, try it now.</h6>
+                            <h6 class="f-12 mb-0 pb-0">Theme Changer in settings and Artisanry</h6>
+                            <h6 class="f-12 mt-0 pt-0">is now available, try it now.</h6>
                             <button class="f-12 btn btn-sm alert-success btn-success" id="got_it">Got it, don't show again.</button>
                         </div>
                         <div id="option_drop" class="dropdown text-dark f-14 fwt-5">

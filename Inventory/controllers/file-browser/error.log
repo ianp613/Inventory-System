@@ -6,3 +6,13 @@ Stack trace:
 Stack trace:
 #0 {main}
   thrown in E:\Systems\Inventory-System\Inventory\controllers\file-browser\download-files.php on line 33
+[05-May-2026 04:21:14 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined method ZipStream\ZipStream::addEmptyDir() in E:\Systems\Inventory-System\Inventory\controllers\file-browser\download-files.php:81
+Stack trace:
+#0 E:\Systems\Inventory-System\Inventory\controllers\file-browser\download-files.php(105): addToZip(Object(ZipStream\ZipStream), 'E:\\Personal\\lab...', 'E:\\Personal\\lab...')
+#1 {main}
+  thrown in E:\Systems\Inventory-System\Inventory\controllers\file-browser\download-files.php on line 81
+[05-May-2026 04:24:10 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined method ZipStream\ZipStream::addEmptyDir() in E:\Systems\Inventory-System\Inventory\controllers\file-browser\download-files.php:75
+Stack trace:
+#0 E:\Systems\Inventory-System\Inventory\controllers\file-browser\download-files.php(105): addToZip(Object(ZipStream\ZipStream), 'E:\\Personal\\lab...', 'E:\\Personal\\lab...')
+#1 {main}
+  thrown in E:\Systems\Inventory-System\Inventory\controllers\file-browser\download-files.php on line 75

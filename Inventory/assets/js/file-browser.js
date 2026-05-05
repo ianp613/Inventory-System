@@ -8,6 +8,7 @@ var ff_select_btn                       = document.getElementById("ff_select_btn
 var ff_new_folder_btn                   = document.getElementById("ff_new_folder_btn");
 var ff_logout_btn                       = document.getElementById("ff_logout_btn");
 var ff_select_cancel                    = document.getElementById("ff_select_cancel");
+var ff_upload_btn                       = document.getElementById("ff_upload_btn")
 var menu_ribbon                         = document.getElementById("menu_ribbon");
 
 var ff_options                          = document.getElementById("ff_options");
@@ -55,12 +56,14 @@ var ff_user                             = document.getElementById("ff_user")
 var ff_user_container                   = document.getElementById("ff_user_container")
 
 var selections                          = [];
-var ext                                 = "";
+var ext_                                 = "";
 var selections_                         = false;
 
 var source                              = "";
 var copy                                = false;
 var move                                = false;
+
+var preventMenu                         = false;
 
 const randomNumber                      = Math.floor(Math.random() * 6) + 1;
 const favicon                           = document.querySelector("link[rel='shortcut icon']");
@@ -71,6 +74,7 @@ const ellipsis_menu                     = new bootstrap.Modal(document.getElemen
 const ff_rename                         = new bootstrap.Modal(document.getElementById('ff_rename'),unclose);
 const ff_new_folder                     = new bootstrap.Modal(document.getElementById('ff_new_folder'));
 const ff_delete                         = new bootstrap.Modal(document.getElementById('ff_delete'),unclose);
+const ff_upload                         = new bootstrap.Modal(document.getElementById('ff_upload'),unclose);
 
 const ff_rename_modal                   = document.getElementById('ff_rename');
 const ff_new_folder_modal               = document.getElementById('ff_new_folder');
@@ -118,7 +122,7 @@ function scanFolder(){
                     `<div fname="${ff[0]}" class="${selections.includes(ff[0]) && localStorage.getItem("folder") == source ? "selected-disabled" : ""} folder folder-parent ff-content d-flex justify-content-between alert-dark pt-2 pb-1 mb-1">`+
                         `<div class="folder folder-subparent d-flex text-left mt-2">`+
                             `<input hidden ff-type="${ff[1]}" ff-name="${ff[0]}"type="checkbox" class="wd-15 me-2 mb-2 ff-select"></input>`+
-                            `<span class="folder folder-child fa fa-folder f-20 me-2"></span>`+
+                            `<span class="folder folder-child q-icon f-20 me-2 ht-30" style="margin-top: -7px;">&#128193</span>`+
                             `<h6 class="folder folder-child">${ff[0]}</h6>`+
                         `</div>`+
                         `<p class="folder folder-subparent btn btn-sm btn-secondary border-light mt-1 mb-1">${ff[2]}</p>`+
@@ -216,7 +220,9 @@ navigation_container.addEventListener("click", e => {
 })
 
 ellipsis_btn.addEventListener("click", e => {
-    ellipsis_menu.show()
+    if(!preventMenu){
+        ellipsis_menu.show()
+    }
 })
 
 ff_select_btn.addEventListener("click", e => {
@@ -235,6 +241,7 @@ ff_new_folder_btn.addEventListener("click", e => {
     ellipsis_menu.hide()
     ff_new_folder.show()
     ff_new_folder_input.value = ""
+    preventMenu = true
 })
 
 ff_select_cancel.addEventListener("click", e => {
@@ -253,13 +260,14 @@ ff_option_rename.addEventListener("click", e => {
     if(selections.length == 1){
         var selection_temp = selections[0].split(".")
         if(selection_temp.length > 1){
-            ext = selection_temp.pop()
+            ext_ = selection_temp.pop()
         }else{
-            ext = ""
+            ext_ = ""
         }
         
         ff_rename_input.value = selection_temp.join(".")
         ff_rename.show()
+        preventMenu = true
     }else{
         bs5.toast("error","Something went wrong, please try again.","lg",false)
     }
@@ -269,6 +277,7 @@ ff_option_delete.addEventListener("click", e => {
     item_count.innerText = selections.length > 1 ? "items" : "item";
     ellipsis_menu.hide()
     ff_delete.show()
+    preventMenu = true
 })
 
 ff_option_download.addEventListener("click", e => {
@@ -292,7 +301,7 @@ ff_option_download.addEventListener("click", e => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "Wifi Files.zip";
+        a.download = localStorage.getItem("folder") == "/" ? root_folder.innerText : localStorage.getItem("folder").split("/").filter(Boolean).pop() + ".zip";
         a.click();
 
         URL.revokeObjectURL(url);
@@ -401,17 +410,20 @@ ff_rename_cancel.addEventListener("click", e => {
     cancelSelection()
     ff_rename_input.value = ""
     ff_rename.hide()
+    preventMenu = false
 })
 
 ff_new_folder_cancel.addEventListener("click", e => {
     ff_new_folder_input.value = ""
     ff_new_folder.hide()
+    preventMenu = false
 })
 
 ff_delete_cancel.addEventListener("click", e => {
     ff_select_cancel.click()
     cancelSelection()
     ff_delete.hide()
+    preventMenu = false
 })
 
 ff_rename_save.addEventListener("click", e => {
@@ -425,7 +437,7 @@ ff_rename_save.addEventListener("click", e => {
     
     ff_rename_input.value = ff_rename_input.value.replace(/\.+$/, "");
 
-    if(selections[0] == ff_rename_input.value + (ff_type == "dir" ? "" : ".") + ext){
+    if(selections[0] == ff_rename_input.value + (ff_type == "dir" ? "" : ".") + ext_){
         ff_rename.hide()
         scanFolder()
         return
@@ -435,7 +447,7 @@ ff_rename_save.addEventListener("click", e => {
         folder : localStorage.getItem("folder"),
         type : ff_type,
         old : selections[0],
-        new : ff_rename_input.value + (ff_type == "dir" ? "" : ".") + ext
+        new : ff_rename_input.value + (ff_type == "dir" ? "" : ".") + ext_
     }).then(res => {
         if(res.status){
             ff_rename.hide()
@@ -444,6 +456,7 @@ ff_rename_save.addEventListener("click", e => {
             bs5.toast(res.type,res.message)
         }
     })
+    preventMenu = false
 })
 
 ff_new_folder_create.addEventListener("click", e => {
@@ -464,6 +477,7 @@ ff_new_folder_create.addEventListener("click", e => {
             bs5.toast(res.type,res.message)
         }
     })
+    preventMenu = false
 })
 
 ff_delete_proceed.addEventListener("click", e => {
@@ -478,6 +492,13 @@ ff_delete_proceed.addEventListener("click", e => {
             bs5.toast(res.type,res.message)
         }
     })
+    preventMenu = false
+})
+
+ff_upload_btn.addEventListener("click", e => {
+    ellipsis_menu.hide()
+    ff_upload.show()
+    preventMenu = true
 })
 
 function cancelSelection(){
@@ -576,3 +597,199 @@ setTimeout(() => {
 }, 50);
 
 checkAuthentication()
+
+
+
+
+// UPLOAD FILE
+const UPLOAD_URL = '../../controllers/file-browser/upload-files.php';
+
+  const queue = [];
+  const queueEl  = document.getElementById('queue');
+  const uploadBtn = document.getElementById('uploadBtn');
+  const summaryEl = document.getElementById('summary');
+  const logEl     = document.getElementById('log');
+
+  /* ── Helpers ────────────────────────────── */
+  function fmtSize(b) {
+    if (b < 1024)    return b + ' B';
+    if (b < 1048576) return Math.round(b / 1024) + ' KB';
+    return (b / 1048576).toFixed(1) + ' MB';
+  }
+  function ext(name) { return name.split('.').pop().toUpperCase(); }
+  function isFolder(f) { return f.webkitRelativePath && f.webkitRelativePath.includes('/'); }
+
+  /* ── Queue management ───────────────────── */
+  function addFiles(files) {
+    Array.from(files).forEach(f => {
+      const dup = queue.find(q => q.file.name === f.name && q.file.size === f.size
+                                  && q.file.webkitRelativePath === f.webkitRelativePath);
+      if (!dup) queue.push({ file: f, status: 'pending' });
+    });
+    render();
+  }
+
+  function render() {
+    queueEl.innerHTML = '';
+    queue.forEach((item, i) => {
+      const folder = isFolder(item.file);
+      const name   = item.file.webkitRelativePath || item.file.name;
+      const meta   = fmtSize(item.file.size) + (folder ? ' · folder' : ' · ' + ext(item.file.name));
+
+      const div = document.createElement('div');
+      div.className = 'queue-item';
+      div.innerHTML = `
+        <div class="q-icon ${folder ? 'folder' : 'file'}">${folder ? '&#128193;' : '&#128196;'}</div>
+        <div class="q-info">
+          <div class="q-name" title="${name}">${name}</div>
+          <div class="q-meta">${meta}</div>
+          <div class="q-progress"><div class="q-bar" id="bar-${i}"></div></div>
+        </div>
+        <span class="badge ${item.status}" id="badge-${i}">${item.status}</span>
+        <button class="q-remove" data-i="${i}" title="Remove">&#215;</button>
+      `;
+      queueEl.appendChild(div);
+    });
+
+    queueEl.querySelectorAll('.q-remove').forEach(btn => {
+      btn.onclick = () => { queue.splice(+btn.dataset.i, 1); render(); };
+    });
+
+    const total = queue.length;
+    uploadBtn.disabled = total === 0;
+    const folderCount = queue.filter(q => isFolder(q.file)).length;
+    summaryEl.textContent = total > 0
+      ? `${total} file${total > 1 ? 's' : ''} queued${folderCount ? ' (' + folderCount + ' from folders)' : ''}`
+      : '';
+  }
+
+  /* ── Upload ─────────────────────────────── */
+  function log(msg, type = '') {
+    logEl.classList.add('visible');
+    const p = document.createElement('p');
+    p.className = 'log-line ' + type;
+    p.textContent = msg;
+    logEl.appendChild(p);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function setItemStatus(i, status, pct) {
+    const badge = document.getElementById('badge-' + i);
+    const bar   = document.getElementById('bar-' + i);
+    if (badge) { badge.className = 'badge ' + status; badge.textContent = status; }
+    if (bar)   { bar.style.width = pct + '%'; bar.className = 'q-bar ' + (status === 'done' ? 'done' : status === 'error' ? 'error' : ''); }
+    scanFolder();
+  }
+
+  function uploadFile(item, i) {
+    return new Promise(resolve => {
+      const fd = new FormData();
+      const path = item.file.webkitRelativePath || item.file.name;
+      fd.append('file', item.file);
+      fd.append('path', path);
+      fd.append('path', path);
+      fd.append('folder', localStorage.getItem('folder') || '/');  // ← add this line
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', UPLOAD_URL);
+
+      xhr.upload.onprogress = e => {
+        if (e.lengthComputable) {
+          const pct = Math.round((e.loaded / e.total) * 100);
+          setItemStatus(i, 'uploading', pct);
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          try {
+            const res = JSON.parse(xhr.responseText);
+            if (res.success) {
+              item.status = 'done';
+              setItemStatus(i, 'done', 100);
+              log('✓ ' + path, 'ok');
+            } else {
+              item.status = 'error';
+              setItemStatus(i, 'error', 100);
+              log('✗ ' + path + ': ' + res.error, 'err');
+            }
+          } catch {
+            item.status = 'error';
+            setItemStatus(i, 'error', 100);
+            log('✗ ' + path + ': invalid server response', 'err');
+          }
+        } else {
+          item.status = 'error';
+          setItemStatus(i, 'error', 100);
+          log('✗ ' + path + ' (HTTP ' + xhr.status + ')', 'err');
+        }
+        resolve();
+      };
+
+      xhr.onerror = () => {
+        item.status = 'error';
+        setItemStatus(i, 'error', 100);
+        log('✗ ' + path + ': network error', 'err');
+        resolve();
+      };
+
+      item.status = 'uploading';
+      setItemStatus(i, 'uploading', 0);
+      xhr.send(fd);
+    });
+  }
+
+  async function uploadAll() {
+    uploadBtn.disabled = true;
+    log('Starting upload of ' + queue.length + ' file(s)…');
+
+    // Upload 3 at a time
+    const CONCURRENT = 3;
+    let idx = 0;
+
+    async function worker() {
+      while (idx < queue.length) {
+        const i = idx++;
+        if (queue[i].status !== 'done') await uploadFile(queue[i], i);
+      }
+    }
+
+    const workers = Array.from({ length: CONCURRENT }, worker);
+    await Promise.all(workers);
+
+    const done  = queue.filter(q => q.status === 'done').length;
+    const error = queue.filter(q => q.status === 'error').length;
+    log(`Done — ${done} succeeded, ${error} failed.`, error ? 'err' : 'ok');
+    uploadBtn.disabled = queue.length === 0;
+  }
+
+  /* ── Event wiring ───────────────────────── */
+  document.getElementById('fileInput').addEventListener('change', e => addFiles(e.target.files));
+  document.getElementById('folderInput').addEventListener('change', e => addFiles(e.target.files));
+
+  const dz = document.getElementById('dropZone');
+  dz.addEventListener('click', () => document.getElementById('fileInput').click());
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault();
+    dz.classList.remove('dragover');
+    addFiles(e.dataTransfer.files);
+  });
+
+    function clearUploadQueue() {
+        queue.length = 0;                        // empty the array in place
+        queueEl.innerHTML = '';
+        logEl.innerHTML   = '';
+        logEl.classList.remove('visible');
+        summaryEl.textContent  = '';
+        // reset file inputs so the same files can be re-added
+        document.getElementById('fileInput').value   = '';
+        document.getElementById('folderInput').value = '';
+    }
+
+    document.getElementById('ff_upload').addEventListener('hidden.bs.modal', () => {
+        preventMenu = false
+        clearUploadQueue();
+        scanFolder();   // refresh the file list in case uploads completed
+    });
