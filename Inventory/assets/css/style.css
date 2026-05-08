@@ -556,14 +556,28 @@ input:checked + .slider:before {
 
 @keyframes blinkMe {
     0% { opacity: 1; }
-    50% { opacity: 0; }
+    50% { opacity: 0.1; }
     100% { opacity: 1; }
 }
 
 .blink {
     animation: blinkMe 1s linear infinite;
 }
-
+.blink-1 {
+    animation: blinkMe 2s linear infinite;
+}
+.blink-2 {
+    animation: blinkMe 3s linear infinite;
+}
+.blink-3 {
+    animation: blinkMe 4s linear infinite;
+}
+.blink-4 {
+    animation: blinkMe 5s linear infinite;
+}
+.blink-5 {
+    animation: blinkMe 6s linear infinite;
+}
 .artisanry-menu{
     cursor: pointer;
     padding: 10px;
