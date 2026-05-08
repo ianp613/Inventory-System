@@ -68,7 +68,7 @@
         </table>
     </div>
     <div hidden id="cons_request">
-        <h6 class="f-i text-danger alert-danger p-3 rounded-3 mb-4 blink-1">*Note: If your request is not approved after an hour, please send a message to wherever you sent your request.</h6>
+        <h6 class="f-i text-danger alert-danger p-3 rounded-3 mb-3 mt-2 blink-1">*Note: If your request is not approved after an hour, please send a message to wherever you sent your request.</h6>
         <table id="consumables_requests_table" class="table table-hover border">
             <thead>
                 <tr>
