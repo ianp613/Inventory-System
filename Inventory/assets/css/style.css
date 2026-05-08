@@ -944,7 +944,7 @@ input::placeholder, textarea::placeholder{
     color: #e7e7e7;
 }
 
-.ff-login-card button, .ff-login-card input, .um-login-card button, .um-login-card input, input, textarea{
+.ff-login-card button, .ff-login-card input, .um-login-card button, .um-login-card input, input, textarea, select{
     border-radius: 20px !important;
 }
 .isp-config{

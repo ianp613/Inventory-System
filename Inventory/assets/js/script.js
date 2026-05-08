@@ -514,10 +514,10 @@ if(document.getElementById("sidebar")){
         theme = res["theme"]
         theme_.value = res["theme"]
 
-        if(res["inform"] == "Yes" && document.getElementById("dashboard") && res["theme"] == "Default"){
+        if(res["inform"] == "Yes" && document.getElementById("dashboard") && res["theme"] == "Dark"){
             setTimeout(() => {
                 document.getElementById("inform").hidden = false
-            }, 4000);
+            }, 2000);
         }else{
             document.getElementById("inform").hidden = true
         }
