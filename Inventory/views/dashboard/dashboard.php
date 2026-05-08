@@ -132,6 +132,11 @@
             </div>
         </div>    
     </div>
+    <style>
+        select{
+            border-radius: 3px !important;
+        }
+    </style>
     <!-- POST IT -->
     <!-- <div class="d-flex w-100 justify-content-between">
         <h6 <?php //$_SESSION["g_type"] == "IT" ? "" : print("hidden");?> class="mt-3" style="margin-bottom: -2px;"><span class="fa fa-th-large"></span> Post It</h6>
