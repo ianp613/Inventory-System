@@ -1,4 +1,6 @@
 if(document.getElementById("terminals")){
+    const add_terminal                         = new bootstrap.Modal(document.getElementById('add_terminal'),unclose);
+    add_terminal.show()
     let terminalTable = new DataTable('#tb_terminals',{
         rowCallback: function(row) {
             $(row).addClass("trow");

@@ -264,6 +264,7 @@
         <?php include("modals/isp.php"); ?>
         <?php include("modals/routers.php"); ?>
         <?php include("modals/mac.php"); ?>
+        <?php include("modals/terminals.php"); ?>
         <?php include("modals/logout.php"); ?>
         <?php include("modals/settings.php"); ?>
         <?php include("modals/accounts.php"); ?>
