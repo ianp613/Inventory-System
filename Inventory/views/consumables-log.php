@@ -75,6 +75,7 @@
                     <button id="cancel_btn" class="btn btn-secondary mt-3"><span class="fa fa-remove"></span> CANCEL</button>
                     <button id="submit_btn" class="btn btn-primary mt-3 ms-1"><span class="fa fa-save"></span> SUBMIT</button>    
                 </div>
+                <h6 class="f-i text-danger alert-danger p-3 rounded-3 mb-0 mt-4">*Note: If your request is not approved after an hour, please send a message to wherever you sent your request.</h6>
             </div>
         </div>
         <h6 class="copyright f-10 text-secondary"></h6>

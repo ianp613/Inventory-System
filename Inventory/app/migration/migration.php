@@ -18,7 +18,8 @@
         "wifiMigration",
         "ConsumablesMigration",
         "Consumable_LogMigration",
-        "Consumable_RequestMigration"
+        "Consumable_RequestMigration",
+        "Post_ItMigration"
     ];
 
     class UserMigration
@@ -312,6 +313,17 @@
             Migrate::string("remarks");
             Migrate::string("status");
             Migrate::string("declined_remarks");
+        }
+    }
+
+    class Post_ItMigration
+    {
+        public static function index(){
+            Migrate::attrib_table("post_it");
+            Migrate::attrib_string(1000);
+            Migrate::string("name");
+            Migrate::string("recipient");
+            Migrate::string("message");
         }
     }
 ?>

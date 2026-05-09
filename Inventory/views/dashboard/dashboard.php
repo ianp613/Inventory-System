@@ -115,8 +115,8 @@
             </div>
         </div>
     </div>
-    <h6 <?php $_SESSION["g_type"] == "IT" ? "" : print("hidden");?> class="mt-3" style="margin-bottom: -2px;"><span class="fa fa-info-circle"></span> Your IP</h6>
-    <div <?php $_SESSION["g_type"] == "IT" ? "" : print("hidden");?> class="row p-3">
+    <h6 <?php if($_SESSION["g_type"] != "IT") print("hidden");?> class="mt-3" style="margin-bottom: -2px;"><span class="fa fa-info-circle"></span> Your IP</h6>
+    <div <?php if($_SESSION["g_type"] != "IT") print("hidden");?> class="row p-3">
         <div class="col-md-8">
             <div class="row">
                 <div class="col-md-6">

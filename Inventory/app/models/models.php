@@ -757,4 +757,17 @@
         ];
         public $main = "remarks";
     }
+
+    class Post_It{
+        public $table = "post_it";
+        public $fillable = [
+            "name",
+            "recipient",
+            "message",
+        ];
+
+        public string $name;
+        public string $recipient;
+        public string $message;
+    }
 ?>
