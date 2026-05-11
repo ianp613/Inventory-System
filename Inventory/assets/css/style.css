@@ -942,7 +942,7 @@ input::placeholder, textarea::placeholder{
 
 .um-login{
     filter: blur(20px);
-    /* pointer-events: none; */
+    pointer-events: none;
 }
 
 

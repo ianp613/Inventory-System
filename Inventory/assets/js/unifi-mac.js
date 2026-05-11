@@ -258,8 +258,10 @@ um_login_btn.addEventListener("click", e => {
       um_login_card.hidden = true
       um_login.classList.remove("um-login")
       mac_register_by.value = res.user[0]["name"]
+      bs5.toast(res.type,res.message + res.user[0]["name"])
+    }else{
+      bs5.toast(res.type,res.message)
     }
-    bs5.toast(res.type,res.message + res.user[0]["name"])
   })
 })
 

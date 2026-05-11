@@ -211,6 +211,7 @@
                 padding: 5px;
                 padding-top: 15px;
                 background-color: #ffffffd7 !important;
+                color: #000000;
             }
             .modal-content input, .modal-content select, .modal-content textarea, .modal-content button{
                 border-radius: 20px;
