@@ -58,3 +58,14 @@
     <h3 class="mt-3 mb-0 fw-bolder text-danger">SITE UNDER CONSTRUCTION</h3>
     <h6>*Attention: Please wear your Personal Protective Equipment.</h6>
 </div>
+<style>
+    input, select{
+        font-weight: 500 !important;
+        color: rgb(17, 17, 141) !important;
+        /* text-transform: uppercase; */
+    }
+    textarea{
+        font-weight: 500 !important;
+        color: rgb(17, 17, 141) !important;
+    }
+</style>

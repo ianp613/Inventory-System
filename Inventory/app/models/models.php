@@ -575,6 +575,103 @@
         public $main = "name";
     }
 
+    class Terminals{
+        public $table = "terminals";
+        public $fillable = [
+            "terminal_no",
+            "cabinet_no",
+            "ip_address",
+            "building",
+            "room",
+            "project",
+            "remarks",
+            "tech_recommendation",
+            "unit_type",
+            "motherboard_model",
+            "motherboard_barcode",
+            "cpu_model",
+            "cpu_barcode",
+            "ram_model",
+            "ram_barcode",
+            "storage_model",
+            "storage_barcode",
+            "psu_model",
+            "psu_barcode",
+            "gpu_model",
+            "gpu_barcode",
+            "cs_model",
+            "cs_barcode",
+            "ec_model",
+            "ec_barcode",
+            "id_type",
+            "id_model",
+            "id_barcode",
+            "od_type",
+            "od_model",
+            "od_barcode",
+            "sp_type",
+            "sp_model",
+            "sp_barcode",
+            "ups_brand",
+            "ups_casing_model",
+            "ups_casing_barcode",
+            "ups_battery_model",
+            "ups_battery_barcode",
+            "ups_status",
+            "kasperky",
+            "bitdefender",
+            "windows_update",
+            "operating_system",
+            "windows_license"
+        ];
+
+        public string $terminal_no;
+        public string $cabinet_no;
+        public string $ip_address;
+        public string $building;
+        public string $room;
+        public string $project;
+        public string $remarks;
+        public string $tech_recommendation;
+        public string $unit_type;
+        public string $motherboard_model;
+        public string $motherboard_barcode;
+        public string $cpu_model;
+        public string $cpu_barcode;
+        public string $ram_model;
+        public string $ram_barcode;
+        public string $storage_model;
+        public string $storage_barcode;
+        public string $psu_model;
+        public string $psu_barcode;
+        public string $gpu_model;
+        public string $gpu_barcode;
+        public string $cs_model;
+        public string $cs_barcode;
+        public string $ec_model;
+        public string $ec_barcode;
+        public string $id_type;
+        public string $id_model;
+        public string $id_barcode;
+        public string $od_type;
+        public string $od_model;
+        public string $od_barcode;
+        public string $sp_type;
+        public string $sp_model;
+        public string $sp_barcode;
+        public string $ups_brand;
+        public string $ups_casing_model;
+        public string $ups_casing_barcode;
+        public string $ups_battery_model;
+        public string $ups_battery_barcode;
+        public string $ups_status;
+        public string $kasperky;
+        public string $bitdefender;
+        public string $windows_update;
+        public string $operating_system;
+        public string $windows_license;
+    }
+
     class Wifi{
         public $table = "wifi";
         public $fillable = [

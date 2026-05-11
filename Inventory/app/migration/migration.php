@@ -15,6 +15,7 @@
         "SettingsMigration",
         "LogMigration",
         "mac_addressMigration",
+        "TerminalsMigration",
         "wifiMigration",
         "ConsumablesMigration",
         "Consumable_LogMigration",
@@ -252,6 +253,60 @@
             Migrate::string("project");
             Migrate::string("location");
             Migrate::string("remarks");
+        }
+    }
+
+    class TerminalsMigration
+    {
+        public static function index(){
+            Migrate::attrib_table("terminals");
+            Migrate::attrib_string(255);
+            Migrate::string("gid");
+            Migrate::string("terminal_no");
+            Migrate::string("cabinet_no");
+            Migrate::string("ip_address");
+            Migrate::string("building");
+            Migrate::string("room");
+            Migrate::string("project");
+            Migrate::string("remarks");
+            Migrate::string("tech_recommendation");
+            Migrate::string("unit_type");
+            Migrate::string("motherboard_model");
+            Migrate::string("motherboard_barcode");
+            Migrate::string("cpu_model");
+            Migrate::string("cpu_barcode");
+            Migrate::string("ram_model");
+            Migrate::string("ram_barcode");
+            Migrate::string("storage_model");
+            Migrate::string("storage_barcode");
+            Migrate::string("psu_model");
+            Migrate::string("psu_barcode");
+            Migrate::string("gpu_model");
+            Migrate::string("gpu_barcode");
+            Migrate::string("cs_model");
+            Migrate::string("cs_barcode");
+            Migrate::string("ec_model");
+            Migrate::string("ec_barcode");
+            Migrate::string("id_type");
+            Migrate::string("id_model");
+            Migrate::string("id_barcode");
+            Migrate::string("od_type");
+            Migrate::string("od_model");
+            Migrate::string("od_barcode");
+            Migrate::string("sp_type");
+            Migrate::string("sp_model");
+            Migrate::string("sp_barcode");
+            Migrate::string("ups_brand");
+            Migrate::string("ups_casing_model");
+            Migrate::string("ups_casing_barcode");
+            Migrate::string("ups_battery_model");
+            Migrate::string("ups_battery_barcode");
+            Migrate::string("ups_status");
+            Migrate::string("kasperky");
+            Migrate::string("bitdefender");
+            Migrate::string("windows_update");
+            Migrate::string("operating_system");
+            Migrate::string("windows_license");
         }
     }
 

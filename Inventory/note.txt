@@ -259,6 +259,56 @@ UPS (Case / Battery) w/ barcode
 
 
 
+terminal_no
+cabinet_no
+ip_address
+building
+room
+project
+remarks
+tech_recommendation
+unit_type
+motherboard_model
+motherboard_barcode
+cpu_model
+cpu_barcode
+ram_model
+ram_barcode
+storage_model
+storage_barcode
+psu_model
+psu_barcode
+gpu_model
+gpu_barcode
+cs_model
+cs_barcode
+ec_model
+ec_barcode
+id_type
+id_model
+id_barcode
+od_type
+od_model
+od_barcode
+sp_type
+sp_model
+sp_barcode
+ups_brand
+ups_casing_model
+ups_casing_barcode
+ups_battery_model
+ups_battery_barcode
+ups_status
+kasperky
+bitdefender
+windows_update
+operating_system
+windows_license
+
+
+
+
+
 FR3156069
 SERVR PORT 28279
 HTTP PORT 15690
