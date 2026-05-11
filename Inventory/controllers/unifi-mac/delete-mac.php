@@ -164,7 +164,7 @@
     $log = new Logs;
     $log->gid = $data["g_id"];
     $log->uid = $user["id"];
-    $log->log = $user["name"]." has deleted a MAC \"".$data["delete_mac_address"]."\" to \"".$ssid[0]["name"]."\".";
+    $log->log = $user["name"]." has deleted a MAC \"".$data["delete_mac_address"]."\" from \"".$ssid[0]["name"]."\".";
     DB::save($log);
 
     UNIFI_MAC_DELETE::delete($unifi_config,$ssid[0]["name"],$data["delete_mac_address"]);
