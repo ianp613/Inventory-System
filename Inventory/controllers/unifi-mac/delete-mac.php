@@ -158,5 +158,14 @@
     $wifi = new Wifi;
     $ssid = DB::find($wifi,$data["delete_mac_ssid"]);
 
+    $user = new User;
+    $user = DB::where($user,"name","=",$data["mac_register_by"])[0];
+
+    $log = new Logs;
+    $log->gid = $data["g_id"];
+    $log->uid = $user["id"];
+    $log->log = $user["name"]." has registered a MAC \"".$data["mac_address"]."\" to \"".$ssid[0]["name"]."\".";
+    DB::save($log);
+
     UNIFI_MAC_DELETE::delete($unifi_config,$ssid[0]["name"],$data["delete_mac_address"]);
 ?>

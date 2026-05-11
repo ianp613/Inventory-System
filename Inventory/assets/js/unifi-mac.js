@@ -218,6 +218,7 @@ delete_mac.addEventListener("click", e => {
   sole.post("../controllers/unifi-mac/delete-mac.php",{
     delete_mac_address    : delete_mac_address.value,
     delete_mac_ssid       : delete_mac_ssid.value,
+    mac_register_by      : mac_register_by.value,
     g_id                  : localStorage.getItem("unifi_mac_gid")
   }).then(res => {
     displayMessage(res)
