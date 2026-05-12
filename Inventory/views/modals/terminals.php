@@ -36,7 +36,7 @@
                 </div>
 
                 <label for="" class="mb-2">Remarks</label>
-                <textarea name="" rows="5" id="remarks" class="form-control mb-2" placeholder="Aa"></textarea>
+                <textarea name="" rows="5" id="remarks_" class="form-control mb-2" placeholder="Aa"></textarea>
 
                 <label for="" class="mb-2">Tech Recommendation</label>
                 <textarea name="" rows="5" id="tech_recommendation" class="form-control" placeholder="Aa"></textarea>
@@ -230,12 +230,12 @@
                 <input type="text" name="" id="ups_status" class="form-control mt-2 mb-2" placeholder="">
 
                 <label for="">Kaspersky</label>
-                <input type="text" name="" id="kasperky" class="form-control mt-2 mb-2" placeholder="">
+                <input type="text" name="" id="kaspersky" class="form-control mt-2 mb-2" placeholder="">
 
                 <label for="">Bitdefender</label>
                 <input type="text" name="" id="bitdefender" class="form-control mt-2 mb-2" placeholder="">
 
-                <label for="">Window Update</label>
+                <label for="">Windows Update</label>
                 <input type="text" name="" id="windows_update" class="form-control mt-2 mb-2" placeholder="">
 
                 <label for="">Operation System</label>

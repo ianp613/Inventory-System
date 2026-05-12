@@ -305,6 +305,12 @@ windows_update
 operating_system
 windows_license
 
++++ [Field Separator]
+--- [Data Separator]
+
+Model---Barcode+++Model---Barcode+++
+12314---0001SA102511+++548262---0001SIJ901+++
+
 
 
 

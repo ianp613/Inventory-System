@@ -138,6 +138,357 @@ if(document.getElementById("terminals")){
         )
     })
 
+    var Buildings                               = [];
+    var terminal_add_location_building          = document.getElementById("terminal_add_location_building")
+    var terminal_add_location_building_others   = document.getElementById("terminal_add_location_building_others")
+    var terminal_add_location_room              = document.getElementById("terminal_add_location_room")
+    var terminal_add_location_room_others       = document.getElementById("terminal_add_location_room_others")
+    var terminal_add_location_project           = document.getElementById("terminal_add_location_project")
+    var terminal_add_location_project_others    = document.getElementById("terminal_add_location_project_others")
+
+
+    sole.get("../../controllers/equipments/get_equipment_location_preset.php").then(res => {
+        terminal_add_location_building.innerHTML = ""
+
+        var opt_building = document.createElement("option")
+        opt_building.value = ""
+        opt_building.innerText = "-- Select Building --"
+        opt_building.disabled = true
+        opt_building.selected = true
+        terminal_add_location_building.appendChild(opt_building)
+
+        res.Building.forEach(bldg => {
+            var opt_building = document.createElement("option")
+            opt_building.value = Object.keys(bldg)[0]
+            opt_building.innerText = Object.keys(bldg)[0]
+            terminal_add_location_building.appendChild(opt_building)
+            Buildings.push(bldg)
+        })
+
+        var opt_building = document.createElement("option")
+        opt_building.value = "Others"
+        opt_building.innerText = "Others"
+        terminal_add_location_building.appendChild(opt_building)
+        
+
+        terminal_add_location_building.addEventListener("change",e => {
+            if(terminal_add_location_building.value && terminal_add_location_building.value != "Others"){
+                terminal_add_location_room.disabled = false
+                terminal_add_location_project.disabled = false
+                
+                terminal_add_location_building_others.value = ""
+                terminal_add_location_room.innerHTML = ""
+                terminal_add_location_project.innerHTML = ""
+
+                var opt_room = document.createElement("option")
+                opt_room.value = ""
+                opt_room.innerText = "-- Select Room --"
+                opt_room.disabled = true
+                opt_room.selected = true
+                terminal_add_location_room.appendChild(opt_room)
+
+                var opt_project = document.createElement("option")
+                opt_project.value = ""
+                opt_project.innerText = "-- Select Project / Office --"
+                opt_project.disabled = true
+                opt_project.selected = true
+                terminal_add_location_project.appendChild(opt_project)
+
+                Buildings.forEach(bldgs => {
+                    let key = Object.keys(bldgs)[0]
+                    if(key == terminal_add_location_building.value){
+                        bldgs[key].Room.forEach(room => {
+                            var opt_room = document.createElement("option")
+                            opt_room.value = room
+                            opt_room.innerText = room
+                            terminal_add_location_room.appendChild(opt_room)
+                        });
+
+                        bldgs[key].Project.forEach(project => {
+                            var opt_project = document.createElement("option")
+                            opt_project.value = project
+                            opt_project.innerText = project
+                            terminal_add_location_project.appendChild(opt_project)
+                        });
+                    }
+                });
+
+                var opt_room = document.createElement("option")
+                opt_room.value = "Others"
+                opt_room.innerText = "Others"
+                terminal_add_location_room.appendChild(opt_room)
+
+                var opt_project = document.createElement("option")
+                opt_project.value = "Others"
+                opt_project.innerText = "Others"
+                terminal_add_location_project.appendChild(opt_project)
+            }
+            if(terminal_add_location_building.value == "Others"){
+                terminal_add_location_room.value = "Others"
+                terminal_add_location_room.disabled = true
+                terminal_add_location_project.value = "Others"
+                terminal_add_location_project.disabled = true
+            }
+        })
+    })
+    
+    terminal_add_location_building_others.addEventListener("input", e => {
+        if(terminal_add_location_building_others.value){
+            terminal_add_location_building.value = "Others"
+            terminal_add_location_room.value = "Others"
+            terminal_add_location_room.disabled = true
+            terminal_add_location_project.value = "Others"
+            terminal_add_location_project.disabled = true
+        }else{
+            terminal_add_location_building.value = ""
+            terminal_add_location_room.value = ""
+            terminal_add_location_room.disabled = false
+            terminal_add_location_project.value = ""
+            terminal_add_location_project.disabled = false
+        }
+    })
+
+    terminal_add_location_room.addEventListener("change", e => {
+        if(terminal_add_location_room.value && terminal_add_location_room.value != "Others"){
+            terminal_add_location_room_others.value = ""
+        }
+    })
+
+    terminal_add_location_room_others.addEventListener("input", e => {
+        if(terminal_add_location_room_others.value){
+            terminal_add_location_room.value = "Others"
+        }else{
+            if(terminal_add_location_building.value != "Others"){
+                terminal_add_location_room.value = ""
+            }
+        }
+    })
+
+    terminal_add_location_project.addEventListener("change", e => {
+        if(terminal_add_location_project.value && terminal_add_location_project.value != "Others"){
+            terminal_add_location_project_others.value = ""
+        }
+    })
+
+    terminal_add_location_project_others.addEventListener("input", e => {
+        if(terminal_add_location_project_others.value){
+            terminal_add_location_project.value = "Others"
+        }else{
+            if(terminal_add_location_building.value != "Others"){
+                terminal_add_location_project.value = ""
+            }
+        }
+    })
+
+
+    var save_add_terminal                       = document.getElementById("save_add_terminal");
+    var terminal_no                             = document.getElementById("terminal_no")
+    var cabinet_no                              = document.getElementById("cabinet_no")
+    var ip_address                              = document.getElementById("ip_address")
+    var remarks_                                = document.getElementById("remarks_")
+    var tech_recommendation                     = document.getElementById("tech_recommendation")
+    var unit_type                               = document.getElementById("unit_type")
+    var motherboard_model                       = document.getElementById("motherboard_model")
+    var motherboard_barcode                     = document.getElementById("motherboard_barcode")
+    var ups_brand                               = document.getElementById("ups_brand")
+    var ups_casing_model                        = document.getElementById("ups_casing_model")
+    var ups_casing_barcode                      = document.getElementById("ups_casing_barcode")
+    var ups_status                              = document.getElementById("ups_status")
+    var kaspersky                               = document.getElementById("kaspersky")
+    var bitdefender                             = document.getElementById("bitdefender")
+    var windows_update                          = document.getElementById("windows_update")
+    var operating_system                        = document.getElementById("operating_system")
+    var windows_license                         = document.getElementById("windows_license")
+
+    save_add_terminal.addEventListener("click", e => {
+        if(!terminal_no.value){
+            bs5.toast("warning","Please input terminal no.")
+            return
+        }
+        var cpu_combined            = ""
+        var cpu_model               = document.getElementsByClassName("cpu_model")
+        var cpu_barcode             = document.getElementsByClassName("cpu_barcode")
+        for (let i = 0; i < cpu_model.length; i++) {
+            if(cpu_model[i].value || cpu_barcode[i].value){
+                cpu_combined += (cpu_model[i].value ? cpu_model[i].value : "NA")+"---"+(cpu_barcode[i].value ? cpu_barcode[i].value : "NA")
+            }
+            if(i < cpu_model.length-1 && (cpu_model[i+1].value || cpu_barcode[i+1].value)){
+                cpu_combined += "+++"
+            }
+        }
+
+        var ram_combined            = ""
+        var ram_model               = document.getElementsByClassName("ram_model")
+        var ram_barcode             = document.getElementsByClassName("ram_barcode")
+        for (let i = 0; i < ram_model.length; i++) {
+            if(ram_model[i].value || ram_barcode[i].value){
+                ram_combined += (ram_model[i].value ? ram_model[i].value : "NA")+"---"+(ram_barcode[i].value ? ram_barcode[i].value : "NA")
+            }
+            if(i < ram_model.length-1 && (ram_model[i+1].value || ram_barcode[i+1].value)){
+                ram_combined += "+++"
+            }
+        }
+
+        var storage_combined        = ""
+        var storage_model           = document.getElementsByClassName("storage_model")
+        var storage_barcode         = document.getElementsByClassName("storage_barcode")
+        for (let i = 0; i < storage_model.length; i++) {
+            if(storage_model[i].value || storage_barcode[i].value){
+                storage_combined += (storage_model[i].value ? storage_model[i].value : "NA")+"---"+(storage_barcode[i].value ? storage_barcode[i].value : "NA")
+            }
+            if(i < storage_model.length-1 && (storage_model[i+1].value || storage_barcode[i+1].value)){
+                storage_combined += "+++"
+            }
+        }
+
+        var psu_combined            = ""
+        var psu_model               = document.getElementsByClassName("psu_model")
+        var psu_barcode             = document.getElementsByClassName("psu_barcode")
+        for (let i = 0; i < psu_model.length; i++) {
+            if(psu_model[i].value || psu_barcode[i].value){
+                psu_combined += (psu_model[i].value ? psu_model[i].value : "NA")+"---"+(psu_barcode[i].value ? psu_barcode[i].value : "NA")
+            }
+            if(i < psu_model.length-1 && (psu_model[i+1].value || psu_barcode[i+1].value)){
+                psu_combined += "+++"
+            }
+        }
+
+        var gpu_combined            = ""
+        var gpu_model               = document.getElementsByClassName("gpu_model")
+        var gpu_barcode             = document.getElementsByClassName("gpu_barcode")
+        for (let i = 0; i < gpu_model.length; i++) {
+            if(gpu_model[i].value || gpu_barcode[i].value){
+                gpu_combined += (gpu_model[i].value ? gpu_model[i].value : "NA")+"---"+(gpu_barcode[i].value ? gpu_barcode[i].value : "NA")
+            }
+            if(i < gpu_model.length-1 && (gpu_model[i+1].value || gpu_barcode[i+1].value)){
+                gpu_combined += "+++"
+            }
+        }
+
+        var cs_combined            = ""
+        var cs_model               = document.getElementsByClassName("cs_model")
+        var cs_barcode             = document.getElementsByClassName("cs_barcode")
+        for (let i = 0; i < cs_model.length; i++) {
+            if(cs_model[i].value || cs_barcode[i].value){
+                cs_combined += (cs_model[i].value ? cs_model[i].value : "NA")+"---"+(cs_barcode[i].value ? cs_barcode[i].value : "NA")
+            }
+            if(i < cs_model.length-1 && (cs_model[i+1].value || cs_barcode[i+1].value)){
+                cs_combined += "+++"
+            }
+        }
+
+        var ec_combined            = ""
+        var ec_model               = document.getElementsByClassName("ec_model")
+        var ec_barcode             = document.getElementsByClassName("ec_barcode")
+        for (let i = 0; i < ec_model.length; i++) {
+            if(ec_model[i].value || ec_barcode[i].value){
+                ec_combined += (ec_model[i].value ? ec_model[i].value : "NA")+"---"+(ec_barcode[i].value ? ec_barcode[i].value : "NA")
+            }
+            if(i < ec_model.length-1 && (ec_model[i+1].value || ec_barcode[i+1].value)){
+                ec_combined += "+++"
+            }
+        }
+
+        var id_combined             = ""
+        var id_type                 = document.getElementsByClassName("id_type")
+        var id_model                = document.getElementsByClassName("id_model")
+        var id_barcode              = document.getElementsByClassName("id_barcode")
+        for (let i = 0; i < id_model.length; i++) {
+            if(id_type[i].value || id_model[i].value || id_barcode[i].value){
+                id_combined += (id_type[i].value ? id_type[i].value : "NA")+"---"+(id_model[i].value ? id_model[i].value : "NA")+"---"+(id_barcode[i].value ? id_barcode[i].value : "NA")
+            }
+            if(i < id_model.length-1 && (id_type[i+1].value || id_model[i+1].value || id_barcode[i+1].value)){
+                id_combined += "+++"
+            }
+        }
+
+        var od_combined             = ""
+        var od_type                 = document.getElementsByClassName("od_type")
+        var od_model                = document.getElementsByClassName("od_model")
+        var od_barcode              = document.getElementsByClassName("od_barcode")
+        for (let i = 0; i < od_model.length; i++) {
+            if(od_type[i].value || od_model[i].value || od_barcode[i].value){
+                od_combined += (od_type[i].value ? od_type[i].value : "NA")+"---"+(od_model[i].value ? od_model[i].value : "NA")+"---"+(od_barcode[i].value ? od_barcode[i].value : "NA")
+            }
+            if(i < od_model.length-1 && (od_type[i+1].value || od_model[i+1].value || od_barcode[i+1].value)){
+                od_combined += "+++"
+            }
+        }
+
+        var sp_combined             = ""
+        var sp_type                 = document.getElementsByClassName("sp_type")
+        var sp_model                = document.getElementsByClassName("sp_model")
+        var sp_barcode              = document.getElementsByClassName("sp_barcode")
+        for (let i = 0; i < sp_model.length; i++) {
+            if(sp_type[i].value || sp_model[i].value || sp_barcode[i].value){
+                sp_combined += (sp_type[i].value ? sp_type[i].value : "NA")+"---"+(sp_model[i].value ? sp_model[i].value : "NA")+"---"+(sp_barcode[i].value ? sp_barcode[i].value : "NA")
+            }
+            if(i < sp_model.length-1 && (sp_type[i+1].value || sp_model[i+1].value || sp_barcode[i+1].value)){
+                sp_combined += "+++"
+            }
+        }
+
+        var ups_battery_combined   = ""
+        var ups_battery_model      = document.getElementsByClassName("ups_battery_model")
+        var ups_battery_barcode    = document.getElementsByClassName("ups_battery_barcode")
+        for (let i = 0; i < ups_battery_model.length; i++) {
+            if(ups_battery_model[i].value || ups_battery_barcode[i].value){
+                ups_battery_combined += (ups_battery_model[i].value ? ups_battery_model[i].value : "NA")+"---"+(ups_battery_barcode[i].value ? ups_battery_barcode[i].value : "NA")
+            }
+            if(i < ups_battery_model.length-1 && (ups_battery_model[i+1].value || ups_battery_barcode[i+1].value)){
+                ups_battery_combined += "+++"
+            }
+        }
+
+        var building_               = terminal_add_location_building_others.value ? terminal_add_location_building_others.value : terminal_add_location_building.value
+        var room_                   = terminal_add_location_room_others.value ? terminal_add_location_room_others.value : terminal_add_location_room.value
+        var project_                = terminal_add_location_project_others.value ? terminal_add_location_project_others.value : terminal_add_location_project.value
+
+        if(!building_ || !room_ || !project_){
+            bs5.toast("warning","Please select or input location.")
+            return
+        }
+
+        sole.post("../../controllers/terminals/add_terminal.php", {
+            uid                     : localStorage.getItem("userid"),
+            terminal_no             : terminal_no.value,
+            cabinet_no              : cabinet_no.value,
+            ip_address              : ip_address.value,
+            building                : building_,
+            room                    : room_,
+            project                 : project_,
+            remarks                 : remarks_.value,
+            tech_recommendation     : tech_recommendation.value,
+            unit_type               : unit_type.value,
+            motherboard_model       : motherboard_model.value,
+            motherboard_barcode     : motherboard_barcode.value,
+            cpu                     : cpu_combined,
+            ram                     : ram_combined,
+            storage                 : storage_combined,
+            psu                     : psu_combined,
+            gpu                     : gpu_combined,
+            cs                      : cs_combined,
+            ec                      : ec_combined,
+            id                      : id_combined,
+            od                      : od_combined,
+            sp                      : sp_combined,
+            ups_battery             : ups_battery_combined,
+            ups_brand               : ups_brand.value,
+            ups_casing_model        : ups_casing_model.value,
+            ups_casing_barcode      : ups_casing_barcode.value,
+            ups_status              : ups_status.value,
+            kaspersky               : kaspersky.value,
+            bitdefender             : bitdefender.value,
+            windows_update          : windows_update.value,
+            operating_system        : operating_system.value,
+            windows_license         : windows_license.value
+        }).then(res => {
+            console.log(res)
+        })
+    })
+
+
+
 
 
 
