@@ -305,7 +305,6 @@ function loadLastMAC(){
     mac_address_.innerHTML = ""
     var mac_ = sessionStorage.getItem("last_mac_address").split("+++")
     mac_.forEach(mac => {
-      console.log(mac)
       mac_address_.insertAdjacentHTML("beforeend",
         `<option>${mac}</option>`
       )
