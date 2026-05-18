@@ -43,6 +43,16 @@ var theme               = document.getElementById("theme")
 var Building            = []
 var default_theme       = "dark"
 
+if(sessionStorage.getItem("last_mac_address") !== null){
+  mac_address_.innerHTML = ""
+  var mac_ = sessionStorage.getItem("last_mac_address").split("+++")
+  mac_.forEach(mac => {
+    mac_address_.insertAdjacentHTML("beforeend",
+      `<option>${mac}</option>`
+    )
+  })
+}
+
 async function GetWifi(params) {
   await sole.get("../controllers/unifi-mac/get-wifi.php").then(res => {
     res.wifis.forEach(wifi => {
