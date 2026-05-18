@@ -43,16 +43,6 @@ var theme               = document.getElementById("theme")
 var Building            = []
 var default_theme       = "dark"
 
-if(sessionStorage.getItem("last_mac_address") !== null){
-  mac_address_.innerHTML = ""
-  var mac_ = sessionStorage.getItem("last_mac_address").split("+++")
-  mac_.forEach(mac => {
-    mac_address_.insertAdjacentHTML("beforeend",
-      `<option>${mac}</option>`
-    )
-  })
-}
-
 async function GetWifi(params) {
   await sole.get("../controllers/unifi-mac/get-wifi.php").then(res => {
     res.wifis.forEach(wifi => {
@@ -167,9 +157,9 @@ delete_clear_btn.addEventListener("click", e => {
 register_mac.addEventListener("click", e => {
   if(!mac_address.value){
     if(sessionStorage.getItem("last_mac_address") !== null){
-      sessionStorage.setItem("last_mac_address",mac_address.value)  
-    }else{
       sessionStorage.setItem("last_mac_address",sessionStorage.getItem("last_mac_address") + "+++" + mac_address.value) 
+    }else{
+      sessionStorage.setItem("last_mac_address",mac_address.value)
     }
     
     alert("Please input MAC address.")
@@ -216,17 +206,9 @@ register_mac.addEventListener("click", e => {
     displayMessage(res)
     register_mac.hidden     = false
     loading_mac.hidden      = true
+    loadLastMAC()
     clear_btn.click()
   })
-  if(sessionStorage.getItem("last_mac_address") !== null){
-    mac_address_.innerHTML = ""
-    var mac_ = sessionStorage.getItem("last_mac_address").split("+++")
-    mac_.forEach(mac => {
-      mac_address_.insertAdjacentHTML("beforeend",
-        `<option>${mac}</option>`
-      )
-    })
-  }
 })
 
 delete_mac.addEventListener("click", e => {
@@ -315,6 +297,20 @@ function displayMessage(res){
         )
       }
     }
+}
+loadLastMAC()
+
+function loadLastMAC(){
+  if(sessionStorage.getItem("last_mac_address") !== null){
+    mac_address_.innerHTML = ""
+    var mac_ = sessionStorage.getItem("last_mac_address").split("+++")
+    mac_.forEach(mac => {
+      console.log(mac)
+      mac_address_.insertAdjacentHTML("beforeend",
+        `<option>${mac}</option>`
+      )
+    })
+  }
 }
 
 function setTheme(){
