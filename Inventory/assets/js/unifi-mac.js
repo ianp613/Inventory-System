@@ -8,6 +8,7 @@ var password_form         = document.getElementById("password_form")
 
 var mac_ssid              = document.getElementById("mac_ssid")
 var mac_address           = document.getElementById("mac_address")
+var mac_address_          = document.getElementById("mac_address_")
 var mac_name              = document.getElementById("mac_name")
 var mac_device            = document.getElementById("mac_device")
 var mac_project           = document.getElementById("mac_project")
@@ -139,7 +140,6 @@ clear_btn.addEventListener("click", e => {
   mac_project.value       = ""
   mac_location.value      = ""
   mac_remarks.value       = ""
-  mac_register_by.value   = ""
   mac_project.innerHTML   = ""
   var opt_project         = document.createElement("option")
   opt_project.value       = ""
@@ -156,6 +156,12 @@ delete_clear_btn.addEventListener("click", e => {
 
 register_mac.addEventListener("click", e => {
   if(!mac_address.value){
+    if(sessionStorage.getItem("last_mac_address") !== null){
+      sessionStorage.setItem("last_mac_address",mac_address.value)  
+    }else{
+      sessionStorage.setItem("last_mac_address",sessionStorage.getItem("last_mac_address") + "+++" + mac_address.value) 
+    }
+    
     alert("Please input MAC address.")
     return
   }
@@ -202,6 +208,15 @@ register_mac.addEventListener("click", e => {
     loading_mac.hidden      = true
     clear_btn.click()
   })
+  if(sessionStorage.getItem("last_mac_address") !== null){
+    mac_address_.innerHTML = ""
+    var mac_ = sessionStorage.getItem("last_mac_address").split("+++")
+    mac_.forEach(mac => {
+      mac_address_.insertAdjacentHTML("beforeend",
+        `<option>${mac}</option>`
+      )
+    })
+  }
 })
 
 delete_mac.addEventListener("click", e => {

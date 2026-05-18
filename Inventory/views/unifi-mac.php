@@ -43,7 +43,10 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="mac_address" class="mb-2">MAC Address</label>
-                                <input required type="text" name="" id="mac_address" class="form-control">
+                                <input required type="text" name="" id="mac_address" class="form-control" list="mac_address_">
+                                <datalist id="mac_address_">
+                                    <!-- Data List here -->
+                                </datalist>
                             </div>
                             <div class="col-md-6">
                                 <label for="mac_ssid" class="mb-2">Wifi SSID</label>
