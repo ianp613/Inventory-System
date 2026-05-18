@@ -156,14 +156,14 @@ delete_clear_btn.addEventListener("click", e => {
 
 register_mac.addEventListener("click", e => {
   if(!mac_address.value){
+    alert("Please input MAC address.")
+    return
+  }else{
     if(sessionStorage.getItem("last_mac_address") !== null){
       sessionStorage.setItem("last_mac_address",sessionStorage.getItem("last_mac_address") + "+++" + mac_address.value) 
     }else{
       sessionStorage.setItem("last_mac_address",mac_address.value)
     }
-    
-    alert("Please input MAC address.")
-    return
   }
   if(!mac_ssid.value){
     alert("Please select Wifi SSID.")
