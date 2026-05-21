@@ -6,9 +6,9 @@ if(document.getElementById("terminals")){
         },
         scrollX: true,
         columnDefs: [
-            { targets: '_all', className: 'dt-nowrap' }, // First column
+            { targets: '_all', className: 'dt-nowrap' },
             {
-                target: 0,
+                targets: 0,
                 visible: false,
                 searchable: false
             },
