@@ -1,63 +1,49 @@
-<div id="terminals" class="ff-login theme-card theme-card-dark">
+<div id="terminals" class="ff-logins theme-card theme-card-dark">
     <div class="row">
-        <div class="col-md-6">
+        <!-- <div class="col-md-6"> -->
             <table id="tb_terminals" class="table table-hover">
                 <thead>
                     <tr>
                         <td>ID</td>
-                        <td>Terminal Alias</td>
-                        <td>Terminal No.</td>
-                        <td>System Unit</td>
-                        <td>Peripherals</td>
-                        <td>UPS</td>
+                        <td>Terminal</td>
+                        <td>Location</td>
+                        <td>Unit Type</td>
+                        <td>Motherboard</td>
+                        <td>CPU (Central Processing Unit)</td>
+                        <td>RAM (Random Access Memory)</td>
+                        <td>Storage Drive (HDD & SSD)</td>
+                        <td>PSU (Power Supply Unit)</td>
+                        <td>Cooling System (Fan & Liquid Cooler)</td>
+                        <td>Expansion Cards</td>
+                        <td>Input Devices</td>
+                        <td>Output Devices</td>
+                        <td>Storage Peripherals</td>
+                        <td>UPS Brand</td>
+                        <td>UPS Casing</td>
+                        <td>UPS Battery</td>
+                        <td>UPS Status</td>
+                        <td>Kaspersky</td>
+                        <td>Bitdefender</td>
+                        <td>Windows Update</td>
+                        <td>Operating System</td>
+                        <td>Windows License</td>
+                        <td>Remarks</td>
+                        <td>Tech Recommendation</td>
                         <td>Action</td>
                     </tr>    
                 </thead>
                 <tbody>
                     <!-- Entry Here -->
-                      <tr>
-                        <td>ID</td>
-                        <td>Terminal Alias</td>
-                        <td>Terminal No.</td>
-                        <td>System Unit</td>
-                        <td>Peripherals</td>
-                        <td>UPS</td>
-                        <td>Action</td>
-                    </tr>   <tr>
-                        <td>ID</td>
-                        <td>Terminal Alias</td>
-                        <td>Terminal No.</td>
-                        <td>System Unit</td>
-                        <td>Peripherals</td>
-                        <td>UPS</td>
-                        <td>Action</td>
-                    </tr>   <tr>
-                        <td>ID</td>
-                        <td>Terminal Alias</td>
-                        <td>Terminal No.</td>
-                        <td>System Unit</td>
-                        <td>Peripherals</td>
-                        <td>UPS</td>
-                        <td>Action</td>
-                    </tr>   <tr>
-                        <td>ID</td>
-                        <td>Terminal Alias</td>
-                        <td>Terminal No.</td>
-                        <td>System Unit</td>
-                        <td>Peripherals</td>
-                        <td>UPS</td>
-                        <td>Action</td>
-                    </tr>  
                 </tbody>  
             </table>
-        </div>
+        <!-- </div> -->
     </div>
 </div>
-<div class="bg-light p-3 text-center text-secondary position-absolute" style="border-radius: 20px; top: 50%; left: 50%; transform: translate(-25%,-50%);">
+<!-- <div class="bg-light p-3 text-center text-secondary position-absolute" style="border-radius: 20px; top: 50%; left: 50%; transform: translate(-25%,-50%);">
     <img class="wd-500" src="../../assets/img/work-in-progress.png" style="border-radius: 20px;" alt="" srcset="">
     <h3 class="mt-3 mb-0 fw-bolder text-danger">SITE UNDER CONSTRUCTION</h3>
     <h6>*Attention: Please wear your Personal Protective Equipment.</h6>
-</div>
+</div> -->
 <style>
     input, select{
         font-weight: 500 !important;

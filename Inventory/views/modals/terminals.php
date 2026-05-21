@@ -238,7 +238,7 @@
                 <label for="">Windows Update</label>
                 <input type="text" name="" id="windows_update" class="form-control mt-2 mb-2" placeholder="">
 
-                <label for="">Operation System</label>
+                <label for="">Operating System</label>
                 <input type="text" name="" id="operating_system" class="form-control mt-2 mb-2" placeholder="">
 
                 <label for="">Windows License</label>

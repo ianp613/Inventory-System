@@ -1,12 +1,12 @@
 if(document.getElementById("terminals")){
     const add_terminal                         = new bootstrap.Modal(document.getElementById('add_terminal'),unclose);
-    add_terminal.show()
     let terminalTable = new DataTable('#tb_terminals',{
         rowCallback: function(row) {
             $(row).addClass("trow");
         },
-        scrollX: false,
+        scrollX: true,
         columnDefs: [
+            { targets: '_all', className: 'dt-nowrap' }, // First column
             {
                 target: 0,
                 visible: false,
@@ -17,10 +17,10 @@ if(document.getElementById("terminals")){
                 targets: '_all'
             }
         ],
-        autoWidth: false,
+        autoWidth: true,
         language: {
            sLengthMenu: "Show _MENU_entries",
-           search: "<button id=\"add_router_btn\" data-bs-toggle=\"modal\" data-bs-target=\"#add_terminal\" class=\"btn btn-sm btn-dark me-3\"><span class=\"fa fa-plus\"></span> Add Router</button> Search: "
+           search: "<button id=\"add_router_btn\" data-bs-toggle=\"modal\" data-bs-target=\"#add_terminal\" class=\"btn btn-sm btn-dark me-3\"><span class=\"fa fa-plus\"></span> Add Terminal</button> Search: "
         }
     });
 
@@ -483,11 +483,76 @@ if(document.getElementById("terminals")){
             operating_system        : operating_system.value,
             windows_license         : windows_license.value
         }).then(res => {
-            console.log(res)
+            bs5.toast(res.type,res.message,res.size)
         })
     })
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+    // GET TABLE DATA
+    loadTerminals()
+    function loadTerminals(){
+        sole.get("../../controllers/terminals/get_terminals.php").then(res => {
+                console.log(res)
+            res.forEach(t => {
+                terminalTable.row.add([
+                    t["id"],
+
+                    "<b>Terminal No.: </b>"             + t["terminal_no"]          + "</br>" +
+                    "<b>Cabinet No.: </b>"              + t["cabinet_no"]           + "</br>" +
+                    "<b>IP Address: </b>"               + t["ip_address"],
+
+                    "<b>Project: </b>"                  + t["project"]              + "</br>" +
+                    "<b>Room: </b>"                     + t["room"]                 + "</br>" +
+                    "<b>Building: </b>"                 + t["building"],
+
+                    t["unit_type"],
+
+                    "<b>Model: </b>"                    + t["motherboard_model"]    + "</br>" +
+                    "<b>Barcode: </b>"                  + t["motherboard_barcode"],
+                    
+                    "-",
+                    "-",
+                    "-",
+                    "-",
+                    "-",
+                    "-",
+                    "-",
+                    "-",
+                    "-",
+
+                    t["ups_brand"] != "-"               ? t["ups_brand"]            : "",
+
+                    "<b>Model: </b>"                    + t["ups_casing_model"]     + "</br>" +
+                    "<b>Barcode: </b>"                  + t["ups_casing_barcode"],
+
+                    "-",
+
+                    t["ups_status"] != "-"              ? t["ups_status"]           : "",
+                    t["kaspersky"] != "-"               ? t["kaspersky"]            : "",
+                    t["bitdefender"] != "-"             ? t["bitdefender"]          : "",
+                    t["windows_update"] != "-"          ? t["windows_update"]       : "",
+                    t["operating_system"] != "-"        ? t["operating_system"]     : "",
+                    t["windows_license"] != "-"         ? t["windows_license"]      : "",
+                    t["remarks"] != "-"                 ? t["remarks"]              : "",
+                    t["tech_recommendation"] != "-"     ? t["tech_recommendation"]  : "",
+                    "-s",
+                ])
+            });
+            terminalTable.draw();
+        })
+    }
 
 
 

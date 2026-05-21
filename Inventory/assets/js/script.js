@@ -242,7 +242,7 @@ if(document.getElementById("sidebar")){
             // Perform long press action here
             if(key == "l" || key == "L"){
                 // sound ? audio.play() : null
-                logout_modal.show()
+                // logout_modal.show()
             }
         }, LONG_PRESS_DURATION);
     }
