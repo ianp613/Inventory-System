@@ -1,7 +1,7 @@
 <div id="terminals" class="ff-logins theme-card theme-card-dark">
     <div class="row">
         <!-- <div class="col-md-6"> -->
-            <table id="tb_terminals" class="table table-hover">
+            <table id="tb_terminals" class="table table-secondary table-hover table-striped">
                 <thead>
                     <tr>
                         <td>ID</td>

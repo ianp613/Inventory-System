@@ -1020,14 +1020,14 @@ table.dataTable tbody td:nth-child(1) {
     left: 0;                /* starts at 0 */
     background-color: #f0f0f0 !important;
     z-index: 3;
-    width: 150px;
+    width: 210px !important;
 }
 
 /* ===== SECOND FROZEN COLUMN ===== */
-table.dataTable thead td:nth-child(2),
+/* table.dataTable thead td:nth-child(2),
 table.dataTable tbody td:nth-child(2) {
     position: sticky !important;
-    left: 130px;
+    left: 210px;
     background-color: #f0f0f0 !important;
     z-index: 3;
-}
+} */

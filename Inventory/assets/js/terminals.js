@@ -483,6 +483,7 @@ if(document.getElementById("terminals")){
             operating_system        : operating_system.value,
             windows_license         : windows_license.value
         }).then(res => {
+            loadTerminals()
             bs5.toast(res.type,res.message,res.size)
         })
     })
@@ -504,25 +505,26 @@ if(document.getElementById("terminals")){
     loadTerminals()
     function loadTerminals(){
         sole.get("../../controllers/terminals/get_terminals.php").then(res => {
-                console.log(res)
+            terminalTable.clear().draw();
+            console.log(res)
             res.forEach(t => {
                 terminalTable.row.add([
                     t["id"],
 
-                    "<b>Terminal No.: </b>"             + t["terminal_no"]          + "</br>" +
-                    "<b>Cabinet No.: </b>"              + t["cabinet_no"]           + "</br>" +
-                    "<b>IP Address: </b>"               + t["ip_address"],
+                    "<b>Terminal No.: </b>"             + t["terminal_no"]                                      + "</br>" +
+                    "<b>Cabinet No.: </b>"              + (t["cabinet_no"] != "-" ? t["cabinet_no"] : "")       + "</br>" +
+                    "<b>IP Address: </b>"               + (t["ip_address"] != "-" ? t["ip_address"] : ""),
 
                     "<b>Project: </b>"                  + t["project"]              + "</br>" +
                     "<b>Room: </b>"                     + t["room"]                 + "</br>" +
                     "<b>Building: </b>"                 + t["building"],
 
-                    t["unit_type"],
+                    t["unit_type"] != "-"               ? t["unit_type"]            : "",
 
-                    "<b>Model: </b>"                    + t["motherboard_model"]    + "</br>" +
-                    "<b>Barcode: </b>"                  + t["motherboard_barcode"],
+                    "<b>Model: </b>"                    + (t["motherboard_model"] != "-" ? t["motherboard_model"] : "")    + "</br>" +
+                    "<b>Barcode: </b>"                  + (t["motherboard_barcode"] != "-" ? t["motherboard_barcode"] : ""),
                     
-                    "-",
+                    separatorFormater(t["cpu"],["model","barcode"]),
                     "-",
                     "-",
                     "-",
@@ -552,6 +554,10 @@ if(document.getElementById("terminals")){
             });
             terminalTable.draw();
         })
+    }
+
+    function separatorFormater(data,title){
+        return "-";
     }
 
 
