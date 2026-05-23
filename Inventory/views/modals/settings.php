@@ -16,7 +16,7 @@
                 </div>
                 <div class="mb-2">
                     <label for="theme_"><h6>Theme</h6></label>
-                    <select name="" id="theme_" class="form-control">
+                    <select name="" id="theme_" class="form-control" style="border-radius: 20px !important;">
                         <option value="Default">Default</option>
                         <option value="Space">Space</option>
                         <option value="Dark">Dark</option>

@@ -1022,6 +1022,9 @@ table.dataTable tbody td:nth-child(1) {
     z-index: 3;
     width: 210px !important;
 }
+table.dataTable tbody tr td {
+    transition: background-color 0.2s ease;
+}
 
 /* ===== SECOND FROZEN COLUMN ===== */
 /* table.dataTable thead td:nth-child(2),

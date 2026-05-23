@@ -648,6 +648,20 @@ if(document.getElementById("cctv")){
         
     }
     // document.getElementById("sample_img").src = "../../assets/img/maps_output/" + encodeURIComponent("Sample.png")
+
+
+    document.querySelector('#camera_table tbody').addEventListener('click', function(e) {
+        const row = e.target.closest('tr');
+        if (!row) return;
+
+        // Remove selected from all rows
+        document.querySelectorAll('#camera_table tbody tr').forEach(r => {
+            r.classList.remove('selected');
+        });
+
+        // Add selected to clicked row
+        row.classList.add('selected');
+    });
 }
 
 

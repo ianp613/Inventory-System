@@ -513,4 +513,16 @@ if(document.getElementById("mac")){
             bs5.toast(res.type,res.message,res.size)    
         }
     }
+    document.querySelector('#wifi_table tbody').addEventListener('click', function(e) {
+        const row = e.target.closest('tr');
+        if (!row) return;
+
+        // Remove selected from all rows
+        document.querySelectorAll('#wifi_table tbody tr').forEach(r => {
+            r.classList.remove('selected');
+        });
+
+        // Add selected to clicked row
+        row.classList.add('selected');
+    });
 }

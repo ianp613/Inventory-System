@@ -62,3 +62,19 @@
     border-radius: 20px;
     box-shadow: #fab5a0 0px 1px 4px !important;
 }
+/* ===== SELECTED ROW ===== */
+table.dataTable tbody tr.selected td{
+    background-color: #9b1d0d !important;
+    color: #c2c1c1 !important;
+}
+table.dataTable tbody tr.selected > * {
+    box-shadow: none !important;   /* ✅ removes the blue shadow overlay */
+}
+table.dataTable tbody tr.selected td:first-child{
+    border-top-left-radius: 10px !important;
+    border-bottom-left-radius: 10px !important;
+}
+table.dataTable tbody tr.selected td:last-child{
+    border-top-right-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
+}

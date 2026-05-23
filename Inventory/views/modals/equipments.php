@@ -85,8 +85,8 @@
                     </div>
                     <div class="col-md-6">
                         <label for="add_entry_barcode_input" class="mb-2">Barcode (DDPO)</label>
-                        <div class="btn-group form-control m-0 p-0 form-control-nooutline">
-                            <input required style="text-transform: uppercase" type="text" name="" id="add_entry_barcode_input" class="form-control">
+                        <div class="btn-group form-control m-0 p-0 form-control-nooutline" style="border-radius: 20px !important;">
+                            <input required style="text-transform: uppercase; border-top-right-radius: 0px !important; border-bottom-right-radius: 0px !important;" type="text" name="" id="add_entry_barcode_input" class="form-control">
                             <button class="btn btn-dark" id="barcode_scanner_btn"><span class="fa fa-camera"></span></button>
                         </div>
                         
@@ -167,8 +167,8 @@
                     <div class="col-md-6">
                         <label for="edit_entry_barcode_input" class="mb-2">Barcode (DDPO)</label>
 
-                        <div class="btn-group form-control m-0 p-0 form-control-nooutline">
-                            <input required style="text-transform: uppercase" type="text" name="" id="edit_entry_barcode_input" class="form-control">
+                        <div class="btn-group form-control m-0 p-0 form-control-nooutline" style="border-radius: 20px !important;">
+                            <input required style="text-transform: uppercase; border-top-right-radius: 0px !important; border-bottom-right-radius: 0px !important;" type="text" name="" id="edit_entry_barcode_input" class="form-control">
                             <button class="btn btn-dark" id="barcode_scanner_btn_edit"><span class="fa fa-camera"></span></button>
                         </div>
                         

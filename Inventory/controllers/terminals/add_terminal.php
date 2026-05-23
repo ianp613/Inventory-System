@@ -3,6 +3,7 @@
     header('Content-Type: application/json');
     include("../../includes.php");
     $data = json_decode(file_get_contents('php://input'), true);
+    $modal = file_get_contents("../../views/modals/add_terminal.html");
     
 
     $response = [
@@ -63,10 +64,10 @@
             "size" => null,
             "message" => "Please operate as group member."
         ];
-}
+    }
 
 
 
 
-    echo json_encode($response);
+    echo json_encode([$modal,$response]);
 ?>

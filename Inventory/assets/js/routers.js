@@ -176,27 +176,27 @@ if(document.getElementById("routers")){
             wan_settings_modal.show()
             if(temp_tr_id){
                 if(temp_tr_id != e.target.parentNode.children[5].children[0].getAttribute("r-id")){
-                    temp_btn_edit.classList.remove("bg-light")
-                    temp_btn_edit.classList.remove("text-dark")
-                    temp_btn_edit.classList.add("bg-secondary")
+                    // temp_btn_edit.classList.remove("bg-light")
+                    // temp_btn_edit.classList.remove("text-dark")
+                    // temp_btn_edit.classList.add("bg-secondary")
                     temp_btn_edit = e.target.parentNode.children[5].children[0]
-                    temp_btn_edit.classList.add("bg-light")
-                    temp_btn_edit.classList.add("text-dark")
-                    temp_btn_edit.classList.remove("bg-secondary")
+                    // temp_btn_edit.classList.add("bg-light")
+                    // temp_btn_edit.classList.add("text-dark")
+                    // temp_btn_edit.classList.remove("bg-secondary")
                     temp_tr.removeAttribute("class")
                     temp_tr = e.target.parentNode
                     temp_tr_id = e.target.parentNode.children[5].children[0].getAttribute("r-id")
-                    temp_tr.setAttribute("class","bg-secondary text-light")
+                    // temp_tr.setAttribute("class","bg-secondary text-light")
                     
                 }
             }else{
                 temp_btn_edit = e.target.parentNode.children[5].children[0]
-                temp_btn_edit.classList.add("bg-light")
-                temp_btn_edit.classList.add("text-dark")
-                temp_btn_edit.classList.remove("bg-secondary")
+                // temp_btn_edit.classList.add("bg-light")
+                // temp_btn_edit.classList.add("text-dark")
+                // temp_btn_edit.classList.remove("bg-secondary")
                 temp_tr = e.target.parentNode
                 temp_tr_id = e.target.parentNode.children[5].children[0].getAttribute("r-id")
-                temp_tr.setAttribute("class","bg-secondary text-light")
+                // temp_tr.setAttribute("class","bg-secondary text-light")
             }
             sole.post("../../controllers/routers/get_router_wan.php",{
                 id: temp_tr_id
@@ -1037,9 +1037,9 @@ if(document.getElementById("routers")){
         if(!table.contains(e.target) && e.target.parentNode.tagName != "TR" && temp_tr_id && !e.target.classList.contains("dt-column-order") && !e.target.classList.contains("dt-column-title") && !e.target.classList.contains("edit_router_row") && !e.target.classList.contains("delete_router_row") && !e.target.classList.contains("save_active_wan") && !e.target.classList.contains("drop_active_wan")){
             temp_tr.removeAttribute("class")
             temp_tr = null
-            temp_btn_edit.classList.remove("bg-light")
-            temp_btn_edit.classList.remove("text-dark")
-            temp_btn_edit.classList.add("bg-secondary")
+            // temp_btn_edit.classList.remove("bg-light")
+            // temp_btn_edit.classList.remove("text-dark")
+            // temp_btn_edit.classList.add("bg-secondary")
             temp_btn_edit = null
             temp_tr_id = null
             active_wan_id = null
@@ -1054,4 +1054,17 @@ if(document.getElementById("routers")){
             }
         }
     })
+
+    document.querySelector('#router_table tbody').addEventListener('click', function(e) {
+        const row = e.target.closest('tr');
+        if (!row) return;
+
+        // Remove selected from all rows
+        document.querySelectorAll('#router_table tbody tr').forEach(r => {
+            r.classList.remove('selected');
+        });
+
+        // Add selected to clicked row
+        row.classList.add('selected');
+    });
 }

@@ -1000,6 +1000,19 @@ if(document.getElementById("equipments")){
         }
     });
 
+    document.querySelector('#equipment_table tbody').addEventListener('click', function(e) {
+        const row = e.target.closest('tr');
+        if (!row) return;
+
+        // Remove selected from all rows
+        document.querySelectorAll('#equipment_table tbody tr').forEach(r => {
+            r.classList.remove('selected');
+        });
+
+        // Add selected to clicked row
+        row.classList.add('selected');
+    });
+
 
     // let scannerRunning = false;
 

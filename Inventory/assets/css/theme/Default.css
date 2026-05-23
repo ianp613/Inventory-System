@@ -62,3 +62,18 @@
     border-radius: 20px;
     box-shadow: #c3f8ff 0px 1px 4px !important;
 }
+/* ===== SELECTED ROW ===== */
+table.dataTable tbody tr.selected td{
+    background-color: #168897 !important;
+}
+table.dataTable tbody tr.selected > * {
+    box-shadow: none !important;   /* ✅ removes the blue shadow overlay */
+}
+table.dataTable tbody tr.selected td:first-child{
+    border-top-left-radius: 10px !important;
+    border-bottom-left-radius: 10px !important;
+}
+table.dataTable tbody tr.selected td:last-child{
+    border-top-right-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
+}
