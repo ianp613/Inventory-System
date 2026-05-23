@@ -65,9 +65,5 @@
             "message" => "Please operate as group member."
         ];
     }
-
-
-
-
     echo json_encode([$modal,$response]);
 ?>

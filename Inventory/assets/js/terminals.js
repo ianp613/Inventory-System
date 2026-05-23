@@ -1,5 +1,7 @@
 if(document.getElementById("terminals")){
     const add_terminal                         = new bootstrap.Modal(document.getElementById('add_terminal'),unclose);
+    const edit_terminal                        = new bootstrap.Modal(document.getElementById('edit_terminal'));
+    const delete_terminal                      = new bootstrap.Modal(document.getElementById('delete_terminal'),unclose);
     let terminalTable = new DataTable('#tb_terminals',{
         rowCallback: function(row) {
             $(row).addClass("trow");
@@ -38,8 +40,8 @@ if(document.getElementById("terminals")){
         }
     });
 
-    callAllAddField()
-    function callAllAddField(){
+    callAllAddFieldAdd()
+    function callAllAddFieldAdd(){
         var cpu_add_field                           = document.getElementById("cpu_add_field")
         var cpu_field                               = 1
         cpu_add_field.addEventListener("click", e => {
@@ -153,10 +155,127 @@ if(document.getElementById("terminals")){
             )
         })    
     }
+
+    var edit_cpu_field                               = 1
+    var edit_ram_field                               = 1
+    var edit_storage_field                           = 1
+    var edit_psu_field                               = 1
+    var edit_gpu_field                               = 1
+    var edit_cs_field                                = 1
+    var edit_ec_field                                = 1
+    var edit_id_field                                = 1
+    var edit_od_field                                = 1
+    var edit_sp_field                                = 1
+    var edit_ups_battery_field                       = 1
+
+    callAllAddFieldEdit()
+    function callAllAddFieldEdit(){
+        var edit_cpu_add_field                           = document.getElementById("edit_cpu_add_field")
+        edit_cpu_add_field.addEventListener("click", e => {
+            edit_cpu_field++
+            edit_cpu_add_field.parentElement.insertAdjacentHTML("beforebegin",
+                `<input type="text" name="${edit_cpu_field}" id="" class="form-control mt-4 edit_cpu_model" placeholder="CPU-${edit_cpu_field} Model">`+
+                `<input type="text" name="${edit_cpu_field}" id="" class="form-control mt-2 edit_cpu_barcode" placeholder="CPU-${edit_cpu_field} Barcode"></input>`
+            )
+        })
+
+        var edit_ram_add_field                           = document.getElementById("edit_ram_add_field")
+        edit_ram_add_field.addEventListener("click", e => {
+            edit_ram_field++
+            edit_ram_add_field.parentElement.insertAdjacentHTML("beforebegin",
+                `<input type="text" name="${edit_ram_field}" id="" class="form-control mt-4 edit_ram_model" placeholder="RAM-${edit_ram_field} Model">`+
+                `<input type="text" name="${edit_ram_field}" id="" class="form-control mt-2 edit_ram_barcode" placeholder="RAM-${edit_ram_field} Barcode"></input>`
+            )
+        })
+
+        var edit_storage_add_field                       = document.getElementById("edit_storage_add_field")
+        edit_storage_add_field.addEventListener("click", e => {
+            edit_storage_field++
+            edit_storage_add_field.parentElement.insertAdjacentHTML("beforebegin",
+                `<input type="text" name="${edit_storage_field}" id="" class="form-control mt-4 edit_storage_model" placeholder="Storage-${edit_storage_field} Model">`+
+                `<input type="text" name="${edit_storage_field}" id="" class="form-control mt-2 edit_storage_barcode" placeholder="Storage-${edit_storage_field} Barcode"></input>`
+            )
+        })
+
+        var edit_psu_add_field                           = document.getElementById("edit_psu_add_field")
+        edit_psu_add_field.addEventListener("click", e => {
+            edit_psu_field++
+            edit_psu_add_field.parentElement.insertAdjacentHTML("beforebegin",
+                `<input type="text" name="${edit_psu_field}" id="" class="form-control mt-4 edit_psu_model" placeholder="PSU-${edit_psu_field} Model">`+
+                `<input type="text" name="${edit_psu_field}" id="" class="form-control mt-2 edit_psu_barcode" placeholder="PSU-${edit_psu_field} Barcode"></input>`
+            )
+        })
+
+        var edit_gpu_add_field                           = document.getElementById("edit_gpu_add_field")
+        edit_gpu_add_field.addEventListener("click", e => {
+            edit_gpu_field++
+            edit_gpu_add_field.parentElement.insertAdjacentHTML("beforebegin",
+                `<input type="text" name="${edit_gpu_field}" id="" class="form-control mt-4 edit_gpu_model" placeholder="GPU-${edit_gpu_field} Model">`+
+                `<input type="text" name="${edit_gpu_field}" id="" class="form-control mt-2 edit_gpu_barcode" placeholder="GPU-${edit_gpu_field} Barcode"></input>`
+            )
+        })
+
+        var edit_cs_add_field                            = document.getElementById("edit_cs_add_field")
+        edit_cs_add_field.addEventListener("click", e => {
+            edit_cs_field++
+            edit_cs_add_field.parentElement.insertAdjacentHTML("beforebegin",
+                `<input type="text" name="${edit_cs_field}" id="" class="form-control mt-4 edit_cs_model" placeholder="CS-${edit_cs_field} Model">`+
+                `<input type="text" name="${edit_cs_field}" id="" class="form-control mt-2 edit_cs_barcode" placeholder="CS-${edit_cs_field} Barcode"></input>`
+            )
+        })
+
+        var edit_ec_add_field                            = document.getElementById("edit_ec_add_field")
+        edit_ec_add_field.addEventListener("click", e => {
+            edit_ec_field++
+            edit_ec_add_field.parentElement.insertAdjacentHTML("beforebegin",
+                `<input type="text" name="${edit_ec_field}" id="" class="form-control mt-4 edit_ec_model" placeholder="EC-${edit_ec_field} Model">`+
+                `<input type="text" name="${edit_ec_field}" id="" class="form-control mt-2 edit_ec_barcode" placeholder="EC-${edit_ec_field} Barcode"></input>`
+            )
+        })
+
+        var edit_id_add_field                            = document.getElementById("edit_id_add_field")
+        edit_id_add_field.addEventListener("click", e => {
+            edit_id_field++
+            edit_id_add_field.parentElement.insertAdjacentHTML("beforebegin",
+                `<input type="text" name="${edit_id_field}" id="" class="form-control mt-4 edit_id_type" placeholder="ID-${edit_id_field} Type">`+
+                `<input type="text" name="${edit_id_field}" id="" class="form-control mt-2 edit_id_model" placeholder="ID-${edit_id_field} Model">`+
+                `<input type="text" name="${edit_id_field}" id="" class="form-control mt-2 edit_id_barcode" placeholder="ID-${edit_id_field} Barcode"></input>`
+            )
+        })
+
+        var edit_od_add_field                            = document.getElementById("edit_od_add_field")
+        edit_od_add_field.addEventListener("click", e => {
+            edit_od_field++
+            edit_od_add_field.parentElement.insertAdjacentHTML("beforebegin",
+                `<input type="text" name="${edit_od_field}" id="" class="form-control mt-4 edit_od_type" placeholder="OD-${edit_od_field} Type">`+
+                `<input type="text" name="${edit_od_field}" id="" class="form-control mt-2 edit_od_model" placeholder="OD-${edit_od_field} Model">`+
+                `<input type="text" name="${edit_od_field}" id="" class="form-control mt-2 edit_od_barcode" placeholder="OD-${edit_od_field} Barcode"></input>`
+            )
+        })    
+
+        var edit_sp_add_field                            = document.getElementById("edit_sp_add_field")
+        edit_sp_add_field.addEventListener("click", e => {
+            edit_sp_field++
+            edit_sp_add_field.parentElement.insertAdjacentHTML("beforebegin",
+                `<input type="text" name="${edit_sp_field}" id="" class="form-control mt-4 edit_sp_type" placeholder="SP-${edit_sp_field} Type">`+
+                `<input type="text" name="${edit_sp_field}" id="" class="form-control mt-2 edit_sp_model" placeholder="SP-${edit_sp_field} Model">`+
+                `<input type="text" name="${edit_sp_field}" id="" class="form-control mt-2 edit_sp_barcode" placeholder="SP-${edit_sp_field} Barcode"></input>`
+            )
+        })
+
+        var edit_ups_battery_add_field                   = document.getElementById("edit_ups_battery_add_field")
+        edit_ups_battery_add_field.addEventListener("click", e => {
+            edit_ups_battery_field++
+            edit_ups_battery_add_field.parentElement.insertAdjacentHTML("beforebegin",
+                `<input type="text" name="${edit_ups_battery_field}" id="" class="form-control mt-4 edit_ups_battery_model" placeholder="Batt-${edit_ups_battery_field} Model">`+
+                `<input type="text" name="${edit_ups_battery_field}" id="" class="form-control mt-2 edit_ups_battery_barcode" placeholder="Batt-${edit_ups_battery_field} Barcode"></input>`
+            )
+        })    
+    }
     
 
-    getLocations()
-    function getLocations(){
+    getLocationsAdd()
+    function getLocationsAdd(){
         var Buildings                               = [];
         var terminal_add_location_building          = document.getElementById("terminal_add_location_building")
         var terminal_add_location_building_others   = document.getElementById("terminal_add_location_building_others")
@@ -249,57 +368,203 @@ if(document.getElementById("terminals")){
                     terminal_add_location_project.disabled = true
                 }
             })
-        })    
-    }
-    
-    
-    terminal_add_location_building_others.addEventListener("input", e => {
-        if(terminal_add_location_building_others.value){
-            terminal_add_location_building.value = "Others"
-            terminal_add_location_room.value = "Others"
-            terminal_add_location_room.disabled = true
-            terminal_add_location_project.value = "Others"
-            terminal_add_location_project.disabled = true
-        }else{
-            terminal_add_location_building.value = ""
-            terminal_add_location_room.value = ""
-            terminal_add_location_room.disabled = false
-            terminal_add_location_project.value = ""
-            terminal_add_location_project.disabled = false
-        }
-    })
-
-    terminal_add_location_room.addEventListener("change", e => {
-        if(terminal_add_location_room.value && terminal_add_location_room.value != "Others"){
-            terminal_add_location_room_others.value = ""
-        }
-    })
-
-    terminal_add_location_room_others.addEventListener("input", e => {
-        if(terminal_add_location_room_others.value){
-            terminal_add_location_room.value = "Others"
-        }else{
-            if(terminal_add_location_building.value != "Others"){
+        })
+        
+        terminal_add_location_building_others.addEventListener("input", e => {
+            if(terminal_add_location_building_others.value){
+                terminal_add_location_building.value = "Others"
+                terminal_add_location_room.value = "Others"
+                terminal_add_location_room.disabled = true
+                terminal_add_location_project.value = "Others"
+                terminal_add_location_project.disabled = true
+            }else{
+                terminal_add_location_building.value = ""
                 terminal_add_location_room.value = ""
-            }
-        }
-    })
-
-    terminal_add_location_project.addEventListener("change", e => {
-        if(terminal_add_location_project.value && terminal_add_location_project.value != "Others"){
-            terminal_add_location_project_others.value = ""
-        }
-    })
-
-    terminal_add_location_project_others.addEventListener("input", e => {
-        if(terminal_add_location_project_others.value){
-            terminal_add_location_project.value = "Others"
-        }else{
-            if(terminal_add_location_building.value != "Others"){
+                terminal_add_location_room.disabled = false
                 terminal_add_location_project.value = ""
+                terminal_add_location_project.disabled = false
             }
-        }
-    })
+        })
+
+        terminal_add_location_room.addEventListener("change", e => {
+            if(terminal_add_location_room.value && terminal_add_location_room.value != "Others"){
+                terminal_add_location_room_others.value = ""
+            }
+        })
+
+        terminal_add_location_room_others.addEventListener("input", e => {
+            if(terminal_add_location_room_others.value){
+                terminal_add_location_room.value = "Others"
+            }else{
+                if(terminal_add_location_building.value != "Others"){
+                    terminal_add_location_room.value = ""
+                }
+            }
+        })
+
+        terminal_add_location_project.addEventListener("change", e => {
+            if(terminal_add_location_project.value && terminal_add_location_project.value != "Others"){
+                terminal_add_location_project_others.value = ""
+            }
+        })
+
+        terminal_add_location_project_others.addEventListener("input", e => {
+            if(terminal_add_location_project_others.value){
+                terminal_add_location_project.value = "Others"
+            }else{
+                if(terminal_add_location_building.value != "Others"){
+                    terminal_add_location_project.value = ""
+                }
+            }
+        })
+    }
+
+
+
+    getLocationsEdit()
+    function getLocationsEdit(){
+        var edit_Buildings                               = [];
+        var edit_terminal_add_location_building          = document.getElementById("edit_terminal_add_location_building")
+        var edit_terminal_add_location_building_others   = document.getElementById("edit_terminal_add_location_building_others")
+        var edit_terminal_add_location_room              = document.getElementById("edit_terminal_add_location_room")
+        var edit_terminal_add_location_room_others       = document.getElementById("edit_terminal_add_location_room_others")
+        var edit_terminal_add_location_project           = document.getElementById("edit_terminal_add_location_project")
+        var edit_terminal_add_location_project_others    = document.getElementById("edit_terminal_add_location_project_others")
+
+
+        sole.get("../../controllers/equipments/get_equipment_location_preset.php").then(res => {
+            edit_terminal_add_location_building.innerHTML = ""
+
+            var edit_opt_building = document.createElement("option")
+            edit_opt_building.value = ""
+            edit_opt_building.innerText = "-- Select Building --"
+            edit_opt_building.disabled = true
+            edit_opt_building.selected = true
+            edit_terminal_add_location_building.appendChild(edit_opt_building)
+
+            res.Building.forEach(bldg => {
+                var edit_opt_building = document.createElement("option")
+                edit_opt_building.value = Object.keys(bldg)[0]
+                edit_opt_building.innerText = Object.keys(bldg)[0]
+                edit_terminal_add_location_building.appendChild(edit_opt_building)
+                edit_Buildings.push(bldg)
+            })
+
+            var edit_opt_building = document.createElement("option")
+            edit_opt_building.value = "Others"
+            edit_opt_building.innerText = "Others"
+            edit_terminal_add_location_building.appendChild(edit_opt_building)
+            
+
+            edit_terminal_add_location_building.addEventListener("change", e => {
+                if(edit_terminal_add_location_building.value && edit_terminal_add_location_building.value != "Others"){
+                    edit_terminal_add_location_room.disabled = false
+                    edit_terminal_add_location_project.disabled = false
+                    
+                    edit_terminal_add_location_building_others.value = ""
+                    edit_terminal_add_location_room.innerHTML = ""
+                    edit_terminal_add_location_project.innerHTML = ""
+
+                    var edit_opt_room = document.createElement("option")
+                    edit_opt_room.value = ""
+                    edit_opt_room.innerText = "-- Select Room --"
+                    edit_opt_room.disabled = true
+                    edit_opt_room.selected = true
+                    edit_terminal_add_location_room.appendChild(edit_opt_room)
+
+                    var edit_opt_project = document.createElement("option")
+                    edit_opt_project.value = ""
+                    edit_opt_project.innerText = "-- Select Project / Office --"
+                    edit_opt_project.disabled = true
+                    edit_opt_project.selected = true
+                    edit_terminal_add_location_project.appendChild(edit_opt_project)
+
+                    edit_Buildings.forEach(bldgs => {
+                        let edit_key = Object.keys(bldgs)[0]
+                        if(edit_key == edit_terminal_add_location_building.value){
+                            bldgs[edit_key].Room.forEach(room => {
+                                var edit_opt_room = document.createElement("option")
+                                edit_opt_room.value = room
+                                edit_opt_room.innerText = room
+                                edit_terminal_add_location_room.appendChild(edit_opt_room)
+                            });
+
+                            bldgs[edit_key].Project.forEach(project => {
+                                var edit_opt_project = document.createElement("option")
+                                edit_opt_project.value = project
+                                edit_opt_project.innerText = project
+                                edit_terminal_add_location_project.appendChild(edit_opt_project)
+                            });
+                        }
+                    });
+
+                    var edit_opt_room = document.createElement("option")
+                    edit_opt_room.value = "Others"
+                    edit_opt_room.innerText = "Others"
+                    edit_terminal_add_location_room.appendChild(edit_opt_room)
+
+                    var edit_opt_project = document.createElement("option")
+                    edit_opt_project.value = "Others"
+                    edit_opt_project.innerText = "Others"
+                    edit_terminal_add_location_project.appendChild(edit_opt_project)
+                }
+                if(edit_terminal_add_location_building.value == "Others"){
+                    edit_terminal_add_location_room.value = "Others"
+                    edit_terminal_add_location_room.disabled = true
+                    edit_terminal_add_location_project.value = "Others"
+                    edit_terminal_add_location_project.disabled = true
+                }
+            })
+        })
+        
+        edit_terminal_add_location_building_others.addEventListener("input", e => {
+            if(edit_terminal_add_location_building_others.value){
+                edit_terminal_add_location_building.value = "Others"
+                edit_terminal_add_location_room.value = "Others"
+                edit_terminal_add_location_room.disabled = true
+                edit_terminal_add_location_project.value = "Others"
+                edit_terminal_add_location_project.disabled = true
+            }else{
+                edit_terminal_add_location_building.value = ""
+                edit_terminal_add_location_room.value = ""
+                edit_terminal_add_location_room.disabled = false
+                edit_terminal_add_location_project.value = ""
+                edit_terminal_add_location_project.disabled = false
+            }
+        })
+
+        edit_terminal_add_location_room.addEventListener("change", e => {
+            if(edit_terminal_add_location_room.value && edit_terminal_add_location_room.value != "Others"){
+                edit_terminal_add_location_room_others.value = ""
+            }
+        })
+
+        edit_terminal_add_location_room_others.addEventListener("input", e => {
+            if(edit_terminal_add_location_room_others.value){
+                edit_terminal_add_location_room.value = "Others"
+            }else{
+                if(edit_terminal_add_location_building.value != "Others"){
+                    edit_terminal_add_location_room.value = ""
+                }
+            }
+        })
+
+        edit_terminal_add_location_project.addEventListener("change", e => {
+            if(edit_terminal_add_location_project.value && edit_terminal_add_location_project.value != "Others"){
+                edit_terminal_add_location_project_others.value = ""
+            }
+        })
+
+        edit_terminal_add_location_project_others.addEventListener("input", e => {
+            if(edit_terminal_add_location_project_others.value){
+                edit_terminal_add_location_project.value = "Others"
+            }else{
+                if(edit_terminal_add_location_building.value != "Others"){
+                    edit_terminal_add_location_project.value = ""
+                }
+            }
+        })
+    }
 
 
     var save_add_terminal                       = document.getElementById("save_add_terminal");
@@ -461,9 +726,9 @@ if(document.getElementById("terminals")){
             }
         }
 
-        var building_               = terminal_add_location_building_others.value ? terminal_add_location_building_others.value : terminal_add_location_building.value
-        var room_                   = terminal_add_location_room_others.value ? terminal_add_location_room_others.value : terminal_add_location_room.value
-        var project_                = terminal_add_location_project_others.value ? terminal_add_location_project_others.value : terminal_add_location_project.value
+        var building_               = terminal_add_location_building_others.value ? terminal_add_location_building_others.value : terminal_add_location_building.value && terminal_add_location_building.value != "Others" ? terminal_add_location_building.value : ""
+        var room_                   = terminal_add_location_room_others.value ? terminal_add_location_room_others.value : terminal_add_location_room.value && terminal_add_location_room.value != "Others" ? terminal_add_location_room.value : ""
+        var project_                = terminal_add_location_project_others.value ? terminal_add_location_project_others.value : terminal_add_location_project.value && terminal_add_location_project.value != "Others" ? terminal_add_location_project.value : ""
 
         if(!building_ || !room_ || !project_){
             bs5.toast("warning","Please select or input location.")
@@ -516,20 +781,236 @@ if(document.getElementById("terminals")){
                 od_field            = 1
                 sp_field            = 1
                 ups_battery_field   = 1
-                getLocations()
-                loadTerminals()
-                callAllAddField()
+                getLocationsAdd()
+                callAllAddFieldAdd()
                 add_terminal.hide()
             }
             bs5.toast(res[1].type,res[1].message,res[1].size)
         })
     })
 
+    var save_edit_terminal                           = document.getElementById("save_edit_terminal");
+    var edit_terminal_no                             = document.getElementById("edit_terminal_no")
+    var edit_cabinet_no                              = document.getElementById("edit_cabinet_no")
+    var edit_ip_address                              = document.getElementById("edit_ip_address")
+    var edit_remarks_                                = document.getElementById("edit_remarks_")
+    var edit_tech_recommendation                     = document.getElementById("edit_tech_recommendation")
+    var edit_unit_type                               = document.getElementById("edit_unit_type")
+    var edit_motherboard_model                       = document.getElementById("edit_motherboard_model")
+    var edit_motherboard_barcode                     = document.getElementById("edit_motherboard_barcode")
+    var edit_ups_brand                               = document.getElementById("edit_ups_brand")
+    var edit_ups_casing_model                        = document.getElementById("edit_ups_casing_model")
+    var edit_ups_casing_barcode                      = document.getElementById("edit_ups_casing_barcode")
+    var edit_ups_status                              = document.getElementById("edit_ups_status")
+    var edit_kaspersky                               = document.getElementById("edit_kaspersky")
+    var edit_bitdefender                             = document.getElementById("edit_bitdefender")
+    var edit_windows_update                          = document.getElementById("edit_windows_update")
+    var edit_operating_system                        = document.getElementById("edit_operating_system")
+    var edit_windows_license                         = document.getElementById("edit_windows_license")
 
+    save_edit_terminal.addEventListener("click", e => {
+        if(!edit_terminal_no.value){
+            bs5.toast("warning","Please input terminal no.")
+            return
+        }
+        var edit_cpu_combined            = ""
+        var edit_cpu_model               = document.getElementsByClassName("edit_cpu_model")
+        var edit_cpu_barcode             = document.getElementsByClassName("edit_cpu_barcode")
+        for (let i = 0; i < edit_cpu_model.length; i++) {
+            if(edit_cpu_model[i].value || edit_cpu_barcode[i].value){
+                edit_cpu_combined += (edit_cpu_model[i].value ? edit_cpu_model[i].value : "NA")+"---"+(edit_cpu_barcode[i].value ? edit_cpu_barcode[i].value : "NA")
+            }
+            if(i < edit_cpu_model.length-1 && (edit_cpu_model[i+1].value || edit_cpu_barcode[i+1].value)){
+                edit_cpu_combined += "+++"
+            }
+        }
 
+        var edit_ram_combined            = ""
+        var edit_ram_model               = document.getElementsByClassName("edit_ram_model")
+        var edit_ram_barcode             = document.getElementsByClassName("edit_ram_barcode")
+        for (let i = 0; i < edit_ram_model.length; i++) {
+            if(edit_ram_model[i].value || edit_ram_barcode[i].value){
+                edit_ram_combined += (edit_ram_model[i].value ? edit_ram_model[i].value : "NA")+"---"+(edit_ram_barcode[i].value ? edit_ram_barcode[i].value : "NA")
+            }
+            if(i < edit_ram_model.length-1 && (edit_ram_model[i+1].value || edit_ram_barcode[i+1].value)){
+                edit_ram_combined += "+++"
+            }
+        }
 
+        var edit_storage_combined        = ""
+        var edit_storage_model           = document.getElementsByClassName("edit_storage_model")
+        var edit_storage_barcode         = document.getElementsByClassName("edit_storage_barcode")
+        for (let i = 0; i < edit_storage_model.length; i++) {
+            if(edit_storage_model[i].value || edit_storage_barcode[i].value){
+                edit_storage_combined += (edit_storage_model[i].value ? edit_storage_model[i].value : "NA")+"---"+(edit_storage_barcode[i].value ? edit_storage_barcode[i].value : "NA")
+            }
+            if(i < edit_storage_model.length-1 && (edit_storage_model[i+1].value || edit_storage_barcode[i+1].value)){
+                edit_storage_combined += "+++"
+            }
+        }
 
+        var edit_psu_combined            = ""
+        var edit_psu_model               = document.getElementsByClassName("edit_psu_model")
+        var edit_psu_barcode             = document.getElementsByClassName("edit_psu_barcode")
+        for (let i = 0; i < edit_psu_model.length; i++) {
+            if(edit_psu_model[i].value || edit_psu_barcode[i].value){
+                edit_psu_combined += (edit_psu_model[i].value ? edit_psu_model[i].value : "NA")+"---"+(edit_psu_barcode[i].value ? edit_psu_barcode[i].value : "NA")
+            }
+            if(i < edit_psu_model.length-1 && (edit_psu_model[i+1].value || edit_psu_barcode[i+1].value)){
+                edit_psu_combined += "+++"
+            }
+        }
 
+        var edit_gpu_combined            = ""
+        var edit_gpu_model               = document.getElementsByClassName("edit_gpu_model")
+        var edit_gpu_barcode             = document.getElementsByClassName("edit_gpu_barcode")
+        for (let i = 0; i < edit_gpu_model.length; i++) {
+            if(edit_gpu_model[i].value || edit_gpu_barcode[i].value){
+                edit_gpu_combined += (edit_gpu_model[i].value ? edit_gpu_model[i].value : "NA")+"---"+(edit_gpu_barcode[i].value ? edit_gpu_barcode[i].value : "NA")
+            }
+            if(i < edit_gpu_model.length-1 && (edit_gpu_model[i+1].value || edit_gpu_barcode[i+1].value)){
+                edit_gpu_combined += "+++"
+            }
+        }
+
+        var edit_cs_combined            = ""
+        var edit_cs_model               = document.getElementsByClassName("edit_cs_model")
+        var edit_cs_barcode             = document.getElementsByClassName("edit_cs_barcode")
+        for (let i = 0; i < edit_cs_model.length; i++) {
+            if(edit_cs_model[i].value || edit_cs_barcode[i].value){
+                edit_cs_combined += (edit_cs_model[i].value ? edit_cs_model[i].value : "NA")+"---"+(edit_cs_barcode[i].value ? edit_cs_barcode[i].value : "NA")
+            }
+            if(i < edit_cs_model.length-1 && (edit_cs_model[i+1].value || edit_cs_barcode[i+1].value)){
+                edit_cs_combined += "+++"
+            }
+        }
+
+        var edit_ec_combined            = ""
+        var edit_ec_model               = document.getElementsByClassName("edit_ec_model")
+        var edit_ec_barcode             = document.getElementsByClassName("edit_ec_barcode")
+        for (let i = 0; i < edit_ec_model.length; i++) {
+            if(edit_ec_model[i].value || edit_ec_barcode[i].value){
+                edit_ec_combined += (edit_ec_model[i].value ? edit_ec_model[i].value : "NA")+"---"+(edit_ec_barcode[i].value ? edit_ec_barcode[i].value : "NA")
+            }
+            if(i < edit_ec_model.length-1 && (edit_ec_model[i+1].value || edit_ec_barcode[i+1].value)){
+                edit_ec_combined += "+++"
+            }
+        }
+
+        var edit_id_combined             = ""
+        var edit_id_type                 = document.getElementsByClassName("edit_id_type")
+        var edit_id_model                = document.getElementsByClassName("edit_id_model")
+        var edit_id_barcode              = document.getElementsByClassName("edit_id_barcode")
+        for (let i = 0; i < edit_id_model.length; i++) {
+            if(edit_id_type[i].value || edit_id_model[i].value || edit_id_barcode[i].value){
+                edit_id_combined += (edit_id_type[i].value ? edit_id_type[i].value : "NA")+"---"+(edit_id_model[i].value ? edit_id_model[i].value : "NA")+"---"+(edit_id_barcode[i].value ? edit_id_barcode[i].value : "NA")
+            }
+            if(i < edit_id_model.length-1 && (edit_id_type[i+1].value || edit_id_model[i+1].value || edit_id_barcode[i+1].value)){
+                edit_id_combined += "+++"
+            }
+        }
+
+        var edit_od_combined             = ""
+        var edit_od_type                 = document.getElementsByClassName("edit_od_type")
+        var edit_od_model                = document.getElementsByClassName("edit_od_model")
+        var edit_od_barcode              = document.getElementsByClassName("edit_od_barcode")
+        for (let i = 0; i < edit_od_model.length; i++) {
+            if(edit_od_type[i].value || edit_od_model[i].value || edit_od_barcode[i].value){
+                edit_od_combined += (edit_od_type[i].value ? edit_od_type[i].value : "NA")+"---"+(edit_od_model[i].value ? edit_od_model[i].value : "NA")+"---"+(edit_od_barcode[i].value ? edit_od_barcode[i].value : "NA")
+            }
+            if(i < edit_od_model.length-1 && (edit_od_type[i+1].value || edit_od_model[i+1].value || edit_od_barcode[i+1].value)){
+                edit_od_combined += "+++"
+            }
+        }
+
+        var edit_sp_combined             = ""
+        var edit_sp_type                 = document.getElementsByClassName("edit_sp_type")
+        var edit_sp_model                = document.getElementsByClassName("edit_sp_model")
+        var edit_sp_barcode              = document.getElementsByClassName("edit_sp_barcode")
+        for (let i = 0; i < edit_sp_model.length; i++) {
+            if(edit_sp_type[i].value || edit_sp_model[i].value || edit_sp_barcode[i].value){
+                edit_sp_combined += (edit_sp_type[i].value ? edit_sp_type[i].value : "NA")+"---"+(edit_sp_model[i].value ? edit_sp_model[i].value : "NA")+"---"+(edit_sp_barcode[i].value ? edit_sp_barcode[i].value : "NA")
+            }
+            if(i < edit_sp_model.length-1 && (edit_sp_type[i+1].value || edit_sp_model[i+1].value || edit_sp_barcode[i+1].value)){
+                edit_sp_combined += "+++"
+            }
+        }
+
+        var edit_ups_battery_combined   = ""
+        var edit_ups_battery_model      = document.getElementsByClassName("edit_ups_battery_model")
+        var edit_ups_battery_barcode    = document.getElementsByClassName("edit_ups_battery_barcode")
+        for (let i = 0; i < edit_ups_battery_model.length; i++) {
+            if(edit_ups_battery_model[i].value || edit_ups_battery_barcode[i].value){
+                edit_ups_battery_combined += (edit_ups_battery_model[i].value ? edit_ups_battery_model[i].value : "NA")+"---"+(edit_ups_battery_barcode[i].value ? edit_ups_battery_barcode[i].value : "NA")
+            }
+            if(i < edit_ups_battery_model.length-1 && (edit_ups_battery_model[i+1].value || edit_ups_battery_barcode[i+1].value)){
+                edit_ups_battery_combined += "+++"
+            }
+        }
+
+        var edit_building_          = edit_terminal_add_location_building_others.value ? edit_terminal_add_location_building_others.value : edit_terminal_add_location_building.value && edit_terminal_add_location_building.value != "Others" ? edit_terminal_add_location_building.value : ""
+        var edit_room_              = edit_terminal_add_location_room_others.value ? edit_terminal_add_location_room_others.value : edit_terminal_add_location_room.value && edit_terminal_add_location_room.value != "Others" ? edit_terminal_add_location_room.value : ""
+        var edit_project_           = edit_terminal_add_location_project_others.value ? edit_terminal_add_location_project_others.value : edit_terminal_add_location_project.value && edit_terminal_add_location_project.value != "Others" ? edit_terminal_add_location_project.value : ""
+
+        if(!edit_building_ || !edit_room_ || !edit_project_){
+            bs5.toast("warning","Please select or input location.")
+            return
+        }
+
+        sole.post("../../controllers/terminals/edit_terminal.php", {
+            uid                     : localStorage.getItem("userid"),
+            terminal_no             : edit_terminal_no.value,
+            cabinet_no              : edit_cabinet_no.value,
+            ip_address              : edit_ip_address.value,
+            building                : edit_building_,
+            room                    : edit_room_,
+            project                 : edit_project_,
+            remarks                 : edit_remarks_.value,
+            tech_recommendation     : edit_tech_recommendation.value,
+            unit_type               : edit_unit_type.value,
+            motherboard_model       : edit_motherboard_model.value,
+            motherboard_barcode     : edit_motherboard_barcode.value,
+            cpu                     : edit_cpu_combined,
+            ram                     : edit_ram_combined,
+            storage                 : edit_storage_combined,
+            psu                     : edit_psu_combined,
+            gpu                     : edit_gpu_combined,
+            cs                      : edit_cs_combined,
+            ec                      : edit_ec_combined,
+            id                      : edit_id_combined,
+            od                      : edit_od_combined,
+            sp                      : edit_sp_combined,
+            ups_battery             : edit_ups_battery_combined,
+            ups_brand               : edit_ups_brand.value,
+            ups_casing_model        : edit_ups_casing_model.value,
+            ups_casing_barcode      : edit_ups_casing_barcode.value,
+            ups_status              : edit_ups_status.value,
+            kaspersky               : edit_kaspersky.value,
+            bitdefender             : edit_bitdefender.value,
+            windows_update          : edit_windows_update.value,
+            operating_system        : edit_operating_system.value,
+            windows_license         : edit_windows_license.value
+        }).then(res => {
+            if(res[1].status){
+                document.getElementById("modal_body_edit_terminal").innerHTML = res[0]
+                edit_cpu_field           = 1
+                edit_ram_field           = 1
+                edit_storage_field       = 1
+                edit_psu_field           = 1
+                edit_cs_field            = 1
+                edit_ec_field            = 1
+                edit_id_field            = 1
+                edit_od_field            = 1
+                edit_sp_field            = 1
+                edit_ups_battery_field   = 1
+                getLocationsEdit()
+                loadTerminals()
+                callAllAddFieldEdit()
+                edit_terminal.hide()
+            }
+            bs5.toast(res[1].type,res[1].message,res[1].size)
+        })
+    })
 
 
 
@@ -597,10 +1078,9 @@ if(document.getElementById("terminals")){
         if(data == "-") return "";
 
         let response = ""
-        let separated = data.split("+++")
+        let separated = data.split("+++").filter(Boolean)
         let count = 1;
         separated.forEach(sep => {
-            console.log(separated.length)
             response += `<b>--- ${head + " " + count} ---</b></br>`
             let separated_ = sep.split("---")
             for (let i = 0; i < title.length; i++) {
@@ -620,29 +1100,201 @@ if(document.getElementById("terminals")){
     // });
 
 
-
+    var row         = null;
+    var rowData     = null;
     document.querySelector('#tb_terminals tbody').addEventListener('click', function(e) {
-        const row = e.target.closest('tr');
+        row = e.target.closest('tr');
         if (!row) return;
-
         // Remove selected from all rows
         document.querySelectorAll('#tb_terminals tbody tr').forEach(r => {
             r.classList.remove('selected');
         });
-
         // Add selected to clicked row
         row.classList.add('selected');
-
-        const rowData = terminalTable.row(row).data();
+        rowData = terminalTable.row(row).data();
 
         if (e.target.closest('.btn-edit')){
-            console.log("Edit " + rowData[0])
+            sole.post("../../controllers/terminals/find_terminal.php",{
+                id : rowData[0]
+            }).then(res => {
+                edit_terminal.show()
+                editTerminal(res)
+            })
         }else if(e.target.closest('.btn-danger')){
-            console.log("Delete " + rowData[0])
+            sole.post("../../controllers/terminals/find_terminal.php",{
+                id : rowData[0]
+            }).then(res => {
+                delete_terminal.show()
+                document.querySelector("#delete_terminal_name").innerText = res["terminal_no"]
+            })
         }else{
             return
         }
     });
+
+    document.querySelector("#delete_terminal_btn").addEventListener("click", e => {
+        if (!row) return;
+        sole.post("../../controllers/terminals/delete_terminal.php",{
+            id : rowData[0]
+        }).then(res => {
+            if(res.status){
+                terminalTable.row(row).remove().draw(false);
+                row = null;
+            }
+            bs5.toast(res.type,res.message,res.size)
+        })
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function editTerminal(res){
+        // ✅ Basic fields
+        edit_terminal_no.value          = res.terminal_no
+        edit_cabinet_no.value           = res.cabinet_no
+        edit_ip_address.value           = res.ip_address
+        edit_remarks_.value             = res.remarks
+        edit_tech_recommendation.value  = res.tech_recommendation
+        edit_unit_type.value            = res.unit_type
+        edit_motherboard_model.value    = res.motherboard_model
+        edit_motherboard_barcode.value  = res.motherboard_barcode
+        edit_ups_brand.value            = res.ups_brand
+        edit_ups_casing_model.value     = res.ups_casing_model
+        edit_ups_casing_barcode.value   = res.ups_casing_barcode
+        edit_ups_status.value           = res.ups_status
+        edit_kaspersky.value            = res.kaspersky
+        edit_bitdefender.value          = res.bitdefender
+        edit_windows_update.value       = res.windows_update
+        edit_operating_system.value     = res.operating_system
+        edit_windows_license.value      = res.windows_license
+
+        // ✅ Location fields
+        if(res.building){
+            // Check if building is in the dropdown options
+            let edit_building_option = Array.from(edit_terminal_add_location_building.options).find(opt => opt.value === res.building)
+            if(edit_building_option){
+                edit_terminal_add_location_building.value           = res.building
+                edit_terminal_add_location_building_others.value    = ""
+            }else{
+                edit_terminal_add_location_building.value           = "Others"
+                edit_terminal_add_location_building_others.value    = res.building
+            }
+            // Trigger change to populate room and project dropdowns
+            edit_terminal_add_location_building.dispatchEvent(new Event("change"))
+        }
+
+        if(res.room){
+            let edit_room_option = Array.from(edit_terminal_add_location_room.options).find(opt => opt.value === res.room)
+            if(edit_room_option){
+                edit_terminal_add_location_room.value           = res.room
+                edit_terminal_add_location_room_others.value    = ""
+            }else{
+                edit_terminal_add_location_room.value           = "Others"
+                edit_terminal_add_location_room_others.value    = res.room
+            }
+        }
+
+        if(res.project){
+            let edit_project_option = Array.from(edit_terminal_add_location_project.options).find(opt => opt.value === res.project)
+            if(edit_project_option){
+                edit_terminal_add_location_project.value            = res.project
+                edit_terminal_add_location_project_others.value     = ""
+            }else{
+                edit_terminal_add_location_project.value            = "Others"
+                edit_terminal_add_location_project_others.value     = res.project
+            }
+        }
+
+        // ✅ For model---barcode format (cpu, ram, storage, psu, gpu, cs, ec, ups_battery)
+        function fillCombinedFields(combined, addFieldId, modelClass, barcodeClass, placeholder, counterName){
+            if(combined == "-") return
+
+            const items       = combined.split("+++").filter(Boolean)
+            const addFieldBtn = document.getElementById(addFieldId)
+
+            items.forEach((item, i) => {
+                const parts   = item.split("---")
+                const model   = parts[0] !== "NA" ? parts[0] : ""
+                const barcode = parts[1] !== "NA" ? parts[1] : ""
+
+                if(i === 0){
+                    // ✅ Fill existing first field
+                    const modelFields   = document.getElementsByClassName(modelClass)
+                    const barcodeFields = document.getElementsByClassName(barcodeClass)
+                    if(modelFields[0])   modelFields[0].value   = model
+                    if(barcodeFields[0]) barcodeFields[0].value = barcode
+                } else {
+                    // ✅ Increment the global counter by name
+                    window[counterName]++
+
+                    // ✅ Add new row
+                    addFieldBtn.parentElement.insertAdjacentHTML("beforebegin",
+                        `<input type="text" name="${window[counterName]}" class="form-control mt-4 ${modelClass}" placeholder="${placeholder}-${window[counterName]} Model" value="${model}">` +
+                        `<input type="text" name="${window[counterName]}" class="form-control mt-2 ${barcodeClass}" placeholder="${placeholder}-${window[counterName]} Barcode" value="${barcode}">`
+                    )
+                }
+            })
+        }
+
+        // ✅ For type---model---barcode format (id, od, sp)
+        function fillCombinedFieldsWithType(combined, addFieldId, typeClass, modelClass, barcodeClass, placeholder, counterName){
+            if(combined == "-") return
+
+            const items       = combined.split("+++").filter(Boolean)
+            const addFieldBtn = document.getElementById(addFieldId)
+
+            items.forEach((item, i) => {
+                const parts   = item.split("---")
+                const type    = parts[0] !== "NA" ? parts[0] : ""
+                const model   = parts[1] !== "NA" ? parts[1] : ""
+                const barcode = parts[2] !== "NA" ? parts[2] : ""
+
+                if(i === 0){
+                    const typeFields    = document.getElementsByClassName(typeClass)
+                    const modelFields   = document.getElementsByClassName(modelClass)
+                    const barcodeFields = document.getElementsByClassName(barcodeClass)
+                    if(typeFields[0])    typeFields[0].value    = type
+                    if(modelFields[0])   modelFields[0].value   = model
+                    if(barcodeFields[0]) barcodeFields[0].value = barcode
+                } else {
+                    // ✅ Increment the global counter by name
+                    window[counterName]++
+
+                    addFieldBtn.parentElement.insertAdjacentHTML("beforebegin",
+                        `<input type="text" name="${window[counterName]}" class="form-control mt-4 ${typeClass}" placeholder="${placeholder}-${window[counterName]} Type" value="${type}">` +
+                        `<input type="text" name="${window[counterName]}" class="form-control mt-2 ${modelClass}" placeholder="${placeholder}-${window[counterName]} Model" value="${model}">` +
+                        `<input type="text" name="${window[counterName]}" class="form-control mt-2 ${barcodeClass}" placeholder="${placeholder}-${window[counterName]} Barcode" value="${barcode}">`
+                    )
+                }
+            })
+        }
+
+        fillCombinedFields(res.cpu,         "edit_cpu_add_field",         "edit_cpu_model",         "edit_cpu_barcode",         "CPU",     "edit_cpu_field")
+        fillCombinedFields(res.ram,         "edit_ram_add_field",         "edit_ram_model",         "edit_ram_barcode",         "RAM",     "edit_ram_field")
+        fillCombinedFields(res.storage,     "edit_storage_add_field",     "edit_storage_model",     "edit_storage_barcode",     "Storage", "edit_storage_field")
+        fillCombinedFields(res.psu,         "edit_psu_add_field",         "edit_psu_model",         "edit_psu_barcode",         "PSU",     "edit_psu_field")
+        fillCombinedFields(res.gpu,         "edit_gpu_add_field",         "edit_gpu_model",         "edit_gpu_barcode",         "GPU",     "edit_gpu_field")
+        fillCombinedFields(res.cs,          "edit_cs_add_field",          "edit_cs_model",          "edit_cs_barcode",          "CS",      "edit_cs_field")
+        fillCombinedFields(res.ec,          "edit_ec_add_field",          "edit_ec_model",          "edit_ec_barcode",          "EC",      "edit_ec_field")
+        fillCombinedFields(res.ups_battery, "edit_ups_battery_add_field", "edit_ups_battery_model", "edit_ups_battery_barcode", "Batt",    "edit_ups_battery_field")
+
+        fillCombinedFieldsWithType(res.id_, "edit_id_add_field", "edit_id_type", "edit_id_model", "edit_id_barcode", "ID", "edit_id_field")
+        fillCombinedFieldsWithType(res.od, "edit_od_add_field", "edit_od_type", "edit_od_model", "edit_od_barcode", "OD", "edit_od_field")
+        fillCombinedFieldsWithType(res.sp, "edit_sp_add_field", "edit_sp_type", "edit_sp_model", "edit_sp_barcode", "SP", "edit_sp_field")
+    }
+
+
 
 
 
