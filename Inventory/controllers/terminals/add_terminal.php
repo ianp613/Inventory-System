@@ -4,6 +4,7 @@
     include("../../includes.php");
     $data = json_decode(file_get_contents('php://input'), true);
     $modal = file_get_contents("../../views/modals/add_terminal.html");
+    $terminal = [];
     
 
     $response = [
@@ -15,6 +16,16 @@
     if($_SESSION["g_member"]){
         if($data) {
             $t = new Terminals;
+            if(!DB::validate($t,"terminal_no",$data["terminal_no"])){
+                $response = [
+                    "status" => false,
+                    "type" => "warning",
+                    "size" => null,
+                    "message" => "Terminal no. already exist."
+                ];
+                echo json_encode([$modal,$response]);
+                exit;
+            }
             $t->gid                         = $_SESSION["g_id"]             ? $_SESSION["g_id"] : "_*";
             $t->uid                         = $data["uid"];
             $t->terminal_no                 = $data["terminal_no"];
@@ -49,6 +60,7 @@
             $t->operating_system            = $data["operating_system"]     ? $data["operating_system"] : "-";
             $t->windows_license             = $data["windows_license"]      ? $data["windows_license"] : "-";
             DB::save($t);
+            $terminal = DB::where2($t,"terminal_no","=",$data["terminal_no"],"uid","=",$data["uid"])[0];
         }else{
             $response = [
                 "status" => false,
@@ -65,5 +77,5 @@
             "message" => "Please operate as group member."
         ];
     }
-    echo json_encode([$modal,$response]);
+    echo json_encode([$modal,$response,$terminal]);
 ?>

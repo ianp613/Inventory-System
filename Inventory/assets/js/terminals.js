@@ -422,14 +422,20 @@ if(document.getElementById("terminals")){
 
 
     getLocationsEdit()
+    var edit_terminal_add_location_building          = document.getElementById("edit_terminal_add_location_building")
+    var edit_terminal_add_location_building_others   = document.getElementById("edit_terminal_add_location_building_others")
+    var edit_terminal_add_location_room              = document.getElementById("edit_terminal_add_location_room")
+    var edit_terminal_add_location_room_others       = document.getElementById("edit_terminal_add_location_room_others")
+    var edit_terminal_add_location_project           = document.getElementById("edit_terminal_add_location_project")
+    var edit_terminal_add_location_project_others    = document.getElementById("edit_terminal_add_location_project_others")
     function getLocationsEdit(){
         var edit_Buildings                               = [];
-        var edit_terminal_add_location_building          = document.getElementById("edit_terminal_add_location_building")
-        var edit_terminal_add_location_building_others   = document.getElementById("edit_terminal_add_location_building_others")
-        var edit_terminal_add_location_room              = document.getElementById("edit_terminal_add_location_room")
-        var edit_terminal_add_location_room_others       = document.getElementById("edit_terminal_add_location_room_others")
-        var edit_terminal_add_location_project           = document.getElementById("edit_terminal_add_location_project")
-        var edit_terminal_add_location_project_others    = document.getElementById("edit_terminal_add_location_project_others")
+        edit_terminal_add_location_building          = document.getElementById("edit_terminal_add_location_building")
+        edit_terminal_add_location_building_others   = document.getElementById("edit_terminal_add_location_building_others")
+        edit_terminal_add_location_room              = document.getElementById("edit_terminal_add_location_room")
+        edit_terminal_add_location_room_others       = document.getElementById("edit_terminal_add_location_room_others")
+        edit_terminal_add_location_project           = document.getElementById("edit_terminal_add_location_project")
+        edit_terminal_add_location_project_others    = document.getElementById("edit_terminal_add_location_project_others")
 
 
         sole.get("../../controllers/equipments/get_equipment_location_preset.php").then(res => {
@@ -587,6 +593,24 @@ if(document.getElementById("terminals")){
     var windows_license                         = document.getElementById("windows_license")
 
     save_add_terminal.addEventListener("click", e => {
+        terminal_no                             = document.getElementById("terminal_no")
+        cabinet_no                              = document.getElementById("cabinet_no")
+        ip_address                              = document.getElementById("ip_address")
+        remarks_                                = document.getElementById("remarks_")
+        tech_recommendation                     = document.getElementById("tech_recommendation")
+        unit_type                               = document.getElementById("unit_type")
+        motherboard_model                       = document.getElementById("motherboard_model")
+        motherboard_barcode                     = document.getElementById("motherboard_barcode")
+        ups_brand                               = document.getElementById("ups_brand")
+        ups_casing_model                        = document.getElementById("ups_casing_model")
+        ups_casing_barcode                      = document.getElementById("ups_casing_barcode")
+        ups_status                              = document.getElementById("ups_status")
+        kaspersky                               = document.getElementById("kaspersky")
+        bitdefender                             = document.getElementById("bitdefender")
+        windows_update                          = document.getElementById("windows_update")
+        operating_system                        = document.getElementById("operating_system")
+        windows_license                         = document.getElementById("windows_license")
+
         if(!terminal_no.value){
             bs5.toast("warning","Please input terminal no.")
             return
@@ -782,6 +806,7 @@ if(document.getElementById("terminals")){
                 sp_field            = 1
                 ups_battery_field   = 1
                 getLocationsAdd()
+                loadTerminals(res[2])
                 callAllAddFieldAdd()
                 add_terminal.hide()
             }
@@ -958,7 +983,7 @@ if(document.getElementById("terminals")){
         }
 
         sole.post("../../controllers/terminals/edit_terminal.php", {
-            uid                     : localStorage.getItem("userid"),
+            id                      : rowData[0],
             terminal_no             : edit_terminal_no.value,
             cabinet_no              : edit_cabinet_no.value,
             ip_address              : edit_ip_address.value,
@@ -977,7 +1002,7 @@ if(document.getElementById("terminals")){
             gpu                     : edit_gpu_combined,
             cs                      : edit_cs_combined,
             ec                      : edit_ec_combined,
-            id                      : edit_id_combined,
+            id_                      : edit_id_combined,
             od                      : edit_od_combined,
             sp                      : edit_sp_combined,
             ups_battery             : edit_ups_battery_combined,
@@ -992,20 +1017,7 @@ if(document.getElementById("terminals")){
             windows_license         : edit_windows_license.value
         }).then(res => {
             if(res[1].status){
-                document.getElementById("modal_body_edit_terminal").innerHTML = res[0]
-                edit_cpu_field           = 1
-                edit_ram_field           = 1
-                edit_storage_field       = 1
-                edit_psu_field           = 1
-                edit_cs_field            = 1
-                edit_ec_field            = 1
-                edit_id_field            = 1
-                edit_od_field            = 1
-                edit_sp_field            = 1
-                edit_ups_battery_field   = 1
-                getLocationsEdit()
-                loadTerminals()
-                callAllAddFieldEdit()
+                loadTerminals_EditRow(res[0])
                 edit_terminal.hide()
             }
             bs5.toast(res[1].type,res[1].message,res[1].size)
@@ -1021,57 +1033,103 @@ if(document.getElementById("terminals")){
 
     // GET ALL TABLE DATA
     loadTerminals()
-    function loadTerminals(){
-        sole.get("../../controllers/terminals/get_terminals.php").then(res => {
-            terminalTable.clear().draw();
-            res.forEach(t => {
-                terminalTable.row.add([
-                    t["id"],
+    function loadTerminals(terminal = false){
+        if(!terminal){
+            console.log("load all")
+            sole.get("../../controllers/terminals/get_terminals.php").then(res => {
+                terminalTable.clear().draw();
+                res.forEach(t => {
+                    loadTerminals_AddRow(t)
+                });
+                terminalTable.draw();
+            })    
+        }else{
+            console.log("load one")
+            loadTerminals_AddRow(terminal)
+            terminalTable.draw()
+        }
+    }
 
-                    "<b>Terminal No.: </b>"             + t["terminal_no"]                      + "</br>" +
-                    "<b>Cabinet No.: </b>"              + (t["cabinet_no"] != "-"               ? t["cabinet_no"]           : "")       + "</br>" +
-                    "<b>IP Address: </b>"               + (t["ip_address"] != "-"               ? t["ip_address"]           : ""),
+    function loadTerminals_EditRow(t){
+        rowData[1]  =   "<b>Terminal No.: </b>"             + t["terminal_no"]                      + "</br>" +
+                        "<b>Cabinet No.: </b>"              + (t["cabinet_no"] != "-"               ? t["cabinet_no"]           : "")       + "</br>" +
+                        "<b>IP Address: </b>"               + (t["ip_address"] != "-"               ? t["ip_address"]           : "")
+        rowData[2]  =   "<b>Project: </b>"                  + t["project"]                          + "</br>" +
+                        "<b>Room: </b>"                     + t["room"]                             + "</br>" +
+                        "<b>Building: </b>"                 + t["building"]
+        rowData[3]  =   t["unit_type"] != "-"               ? t["unit_type"]                                                    : ""
+        rowData[4]  =   "<b>Model: </b>"                    + (t["motherboard_model"] != "-"        ? t["motherboard_model"]    : "")       + "</br>" +
+                        "<b>Barcode: </b>"                  + (t["motherboard_barcode"] != "-"      ? t["motherboard_barcode"]  : "")
+        rowData[5]  =   separatorFormater(t["cpu"],         ["Model","Barcode"],                    "CPU")
+        rowData[6]  =   separatorFormater(t["ram"],         ["Model","Barcode"],                    "RAM")
+        rowData[7]  =   separatorFormater(t["storage"],     ["Model","Barcode"],                    "Storage")
+        rowData[8]  =   separatorFormater(t["psu"],         ["Model","Barcode"],                    "PSU")
+        rowData[9]  =   separatorFormater(t["cs"],          ["Model","Barcode"],                    "CS")
+        rowData[10] =   separatorFormater(t["ec"],          ["Model","Barcode"],                    "EC")
+        rowData[11] =   separatorFormater(t["id_"],         ["Type","Model","Barcode"],             "ID")
+        rowData[12] =   separatorFormater(t["od"],          ["Type","Model","Barcode"],             "OD")
+        rowData[13] =   separatorFormater(t["sp"],          ["Type","Model","Barcode"],             "SP")
+        rowData[14] =   t["ups_brand"] != "-"               ? t["ups_brand"]                        : ""
+        rowData[15] =   "<b>Model: </b>"                    + (t["ups_casing_model"] != "-"         ? t["ups_casing_model"]     : "")       + "</br>" +
+                        "<b>Barcode: </b>"                  + (t["ups_casing_barcode"] != "-"       ? t["ups_casing_barcode"]   : "")       + "</br>"
+        rowData[16] =   separatorFormater(t["ups_battery"],["Model","Barcode"],"Battery")
+        rowData[17] =   t["ups_status"] != "-"              ? t["ups_status"]                       : ""
+        rowData[18] =   t["kaspersky"] != "-"               ? t["kaspersky"]                        : ""
+        rowData[19] =   t["bitdefender"] != "-"             ? t["bitdefender"]                      : ""
+        rowData[20] =   t["windows_update"] != "-"          ? t["windows_update"]                   : ""
+        rowData[21] =   t["operating_system"] != "-"        ? t["operating_system"]                 : ""
+        rowData[22] =   t["windows_license"] != "-"         ? t["windows_license"]                  : ""
+        rowData[23] =   t["remarks"] != "-"                 ? t["remarks"]                          : ""
+        rowData[24] =   t["tech_recommendation"] != "-"     ? t["tech_recommendation"]              : ""
+        terminalTable.row(row).data(rowData).draw(false);
+    }
 
-                    "<b>Project: </b>"                  + t["project"]                          + "</br>" +
-                    "<b>Room: </b>"                     + t["room"]                             + "</br>" +
-                    "<b>Building: </b>"                 + t["building"],
 
-                    t["unit_type"] != "-"               ? t["unit_type"]                                                    : "",
+    function loadTerminals_AddRow(t){
+        terminalTable.row.add([
+            t["id"],
 
-                    "<b>Model: </b>"                    + (t["motherboard_model"] != "-"        ? t["motherboard_model"]    : "")       + "</br>" +
-                    "<b>Barcode: </b>"                  + (t["motherboard_barcode"] != "-"      ? t["motherboard_barcode"]  : ""),
-                    
-                    separatorFormater(t["cpu"],         ["Model","Barcode"],                    "CPU"),
-                    separatorFormater(t["ram"],         ["Model","Barcode"],                    "RAM"),
-                    separatorFormater(t["storage"],     ["Model","Barcode"],                    "Storage"),
-                    separatorFormater(t["psu"],         ["Model","Barcode"],                    "PSU"),
-                    separatorFormater(t["cs"],          ["Model","Barcode"],                    "CS"),
-                    separatorFormater(t["ec"],          ["Model","Barcode"],                    "EC"),
-                    separatorFormater(t["id_"],         ["Type","Model","Barcode"],             "ID"),
-                    separatorFormater(t["od"],          ["Type","Model","Barcode"],             "OD"),
-                    separatorFormater(t["sp"],          ["Type","Model","Barcode"],             "SP"),
+            "<b>Terminal No.: </b>"             + t["terminal_no"]                      + "</br>" +
+            "<b>Cabinet No.: </b>"              + (t["cabinet_no"] != "-"               ? t["cabinet_no"]           : "")       + "</br>" +
+            "<b>IP Address: </b>"               + (t["ip_address"] != "-"               ? t["ip_address"]           : ""),
 
-                    t["ups_brand"] != "-"               ? t["ups_brand"]                        : "",
+            "<b>Project: </b>"                  + t["project"]                          + "</br>" +
+            "<b>Room: </b>"                     + t["room"]                             + "</br>" +
+            "<b>Building: </b>"                 + t["building"],
 
-                    "<b>Model: </b>"                    + (t["ups_casing_model"] != "-"         ? t["ups_casing_model"]     : "")       + "</br>" +
-                    "<b>Barcode: </b>"                  + (t["ups_casing_barcode"] != "-"       ? t["ups_casing_barcode"]   : "")       + "</br>",
+            t["unit_type"] != "-"               ? t["unit_type"]                                                    : "",
 
-                    separatorFormater(t["ups_battery"],["Model","Barcode"],"Battery"),
+            "<b>Model: </b>"                    + (t["motherboard_model"] != "-"        ? t["motherboard_model"]    : "")       + "</br>" +
+            "<b>Barcode: </b>"                  + (t["motherboard_barcode"] != "-"      ? t["motherboard_barcode"]  : ""),
+            
+            separatorFormater(t["cpu"],         ["Model","Barcode"],                    "CPU"),
+            separatorFormater(t["ram"],         ["Model","Barcode"],                    "RAM"),
+            separatorFormater(t["storage"],     ["Model","Barcode"],                    "Storage"),
+            separatorFormater(t["psu"],         ["Model","Barcode"],                    "PSU"),
+            separatorFormater(t["cs"],          ["Model","Barcode"],                    "CS"),
+            separatorFormater(t["ec"],          ["Model","Barcode"],                    "EC"),
+            separatorFormater(t["id_"],         ["Type","Model","Barcode"],             "ID"),
+            separatorFormater(t["od"],          ["Type","Model","Barcode"],             "OD"),
+            separatorFormater(t["sp"],          ["Type","Model","Barcode"],             "SP"),
+
+            t["ups_brand"] != "-"               ? t["ups_brand"]                        : "",
+
+            "<b>Model: </b>"                    + (t["ups_casing_model"] != "-"         ? t["ups_casing_model"]     : "")       + "</br>" +
+            "<b>Barcode: </b>"                  + (t["ups_casing_barcode"] != "-"       ? t["ups_casing_barcode"]   : "")       + "</br>",
+
+            separatorFormater(t["ups_battery"],["Model","Barcode"],"Battery"),
 
 
-                    t["ups_status"] != "-"              ? t["ups_status"]                       : "",
-                    t["kaspersky"] != "-"               ? t["kaspersky"]                        : "",
-                    t["bitdefender"] != "-"             ? t["bitdefender"]                      : "",
-                    t["windows_update"] != "-"          ? t["windows_update"]                   : "",
-                    t["operating_system"] != "-"        ? t["operating_system"]                 : "",
-                    t["windows_license"] != "-"         ? t["windows_license"]                  : "",
-                    t["remarks"] != "-"                 ? t["remarks"]                          : "",
-                    t["tech_recommendation"] != "-"     ? t["tech_recommendation"]              : "",
-                    "",
-                ])
-            });
-            terminalTable.draw();
-        })
+            t["ups_status"] != "-"              ? t["ups_status"]                       : "",
+            t["kaspersky"] != "-"               ? t["kaspersky"]                        : "",
+            t["bitdefender"] != "-"             ? t["bitdefender"]                      : "",
+            t["windows_update"] != "-"          ? t["windows_update"]                   : "",
+            t["operating_system"] != "-"        ? t["operating_system"]                 : "",
+            t["windows_license"] != "-"         ? t["windows_license"]                  : "",
+            t["remarks"] != "-"                 ? t["remarks"]                          : "",
+            t["tech_recommendation"] != "-"     ? t["tech_recommendation"]              : "",
+            "",
+        ])
     }
 
     function separatorFormater(data,title,head){
@@ -1118,14 +1176,27 @@ if(document.getElementById("terminals")){
                 id : rowData[0]
             }).then(res => {
                 edit_terminal.show()
-                editTerminal(res)
+                document.getElementById("modal_body_edit_terminal").innerHTML = res[0]
+                edit_cpu_field           = 1
+                edit_ram_field           = 1
+                edit_storage_field       = 1
+                edit_psu_field           = 1
+                edit_cs_field            = 1
+                edit_ec_field            = 1
+                edit_id_field            = 1
+                edit_od_field            = 1
+                edit_sp_field            = 1
+                edit_ups_battery_field   = 1
+                getLocationsEdit()
+                callAllAddFieldEdit()
+                editTerminal(res[1])
             })
         }else if(e.target.closest('.btn-danger')){
             sole.post("../../controllers/terminals/find_terminal.php",{
                 id : rowData[0]
             }).then(res => {
                 delete_terminal.show()
-                document.querySelector("#delete_terminal_name").innerText = res["terminal_no"]
+                document.querySelector("#delete_terminal_name").innerText = res[1]["terminal_no"]
             })
         }else{
             return
@@ -1145,76 +1216,161 @@ if(document.getElementById("terminals")){
         })
     })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     function editTerminal(res){
+        save_edit_terminal                           = document.getElementById("save_edit_terminal");
+        edit_terminal_no                             = document.getElementById("edit_terminal_no")
+        edit_cabinet_no                              = document.getElementById("edit_cabinet_no")
+        edit_ip_address                              = document.getElementById("edit_ip_address")
+        edit_remarks_                                = document.getElementById("edit_remarks_")
+        edit_tech_recommendation                     = document.getElementById("edit_tech_recommendation")
+        edit_unit_type                               = document.getElementById("edit_unit_type")
+        edit_motherboard_model                       = document.getElementById("edit_motherboard_model")
+        edit_motherboard_barcode                     = document.getElementById("edit_motherboard_barcode")
+        edit_ups_brand                               = document.getElementById("edit_ups_brand")
+        edit_ups_casing_model                        = document.getElementById("edit_ups_casing_model")
+        edit_ups_casing_barcode                      = document.getElementById("edit_ups_casing_barcode")
+        edit_ups_status                              = document.getElementById("edit_ups_status")
+        edit_kaspersky                               = document.getElementById("edit_kaspersky")
+        edit_bitdefender                             = document.getElementById("edit_bitdefender")
+        edit_windows_update                          = document.getElementById("edit_windows_update")
+        edit_operating_system                        = document.getElementById("edit_operating_system")
+        edit_windows_license                         = document.getElementById("edit_windows_license")
+
         // ✅ Basic fields
         edit_terminal_no.value          = res.terminal_no
-        edit_cabinet_no.value           = res.cabinet_no
-        edit_ip_address.value           = res.ip_address
-        edit_remarks_.value             = res.remarks
-        edit_tech_recommendation.value  = res.tech_recommendation
-        edit_unit_type.value            = res.unit_type
-        edit_motherboard_model.value    = res.motherboard_model
-        edit_motherboard_barcode.value  = res.motherboard_barcode
-        edit_ups_brand.value            = res.ups_brand
-        edit_ups_casing_model.value     = res.ups_casing_model
-        edit_ups_casing_barcode.value   = res.ups_casing_barcode
-        edit_ups_status.value           = res.ups_status
-        edit_kaspersky.value            = res.kaspersky
-        edit_bitdefender.value          = res.bitdefender
-        edit_windows_update.value       = res.windows_update
-        edit_operating_system.value     = res.operating_system
-        edit_windows_license.value      = res.windows_license
+        edit_cabinet_no.value           = res.cabinet_no                != "-" ? res.cabinet_no : ""
+        edit_ip_address.value           = res.ip_address                != "-" ? res.ip_address : ""
+        edit_remarks_.value             = res.remarks                   != "-" ? res.remarks : ""
+        edit_tech_recommendation.value  = res.tech_recommendation       != "-" ? res.tech_recommendation : ""
+        edit_unit_type.value            = res.unit_type                 != "-" ? res.unit_type : ""
+        edit_motherboard_model.value    = res.motherboard_model         != "-" ? res.motherboard_model : ""
+        edit_motherboard_barcode.value  = res.motherboard_barcode       != "-" ? res.motherboard_barcode : ""
+        edit_ups_brand.value            = res.ups_brand                 != "-" ? res.ups_brand : ""
+        edit_ups_casing_model.value     = res.ups_casing_model          != "-" ? res.ups_casing_model : ""
+        edit_ups_casing_barcode.value   = res.ups_casing_barcode        != "-" ? res.ups_casing_barcode : ""
+        edit_ups_status.value           = res.ups_status                != "-" ? res.ups_status : ""
+        edit_kaspersky.value            = res.kaspersky                 != "-" ? res.kaspersky : ""
+        edit_bitdefender.value          = res.bitdefender               != "-" ? res.bitdefender : ""
+        edit_windows_update.value       = res.windows_update            != "-" ? res.windows_update : ""
+        edit_operating_system.value     = res.operating_system          != "-" ? res.operating_system : ""
+        edit_windows_license.value      = res.windows_license           != "-" ? res.windows_license : ""
 
         // ✅ Location fields
-        if(res.building){
-            // Check if building is in the dropdown options
-            let edit_building_option = Array.from(edit_terminal_add_location_building.options).find(opt => opt.value === res.building)
-            if(edit_building_option){
-                edit_terminal_add_location_building.value           = res.building
-                edit_terminal_add_location_building_others.value    = ""
-            }else{
-                edit_terminal_add_location_building.value           = "Others"
-                edit_terminal_add_location_building_others.value    = res.building
-            }
-            // Trigger change to populate room and project dropdowns
-            edit_terminal_add_location_building.dispatchEvent(new Event("change"))
-        }
+        sole.get("../../controllers/equipments/get_equipment_location_preset.php").then(res_ => {
+            let Building_ = [];
 
-        if(res.room){
-            let edit_room_option = Array.from(edit_terminal_add_location_room.options).find(opt => opt.value === res.room)
-            if(edit_room_option){
-                edit_terminal_add_location_room.value           = res.room
-                edit_terminal_add_location_room_others.value    = ""
-            }else{
-                edit_terminal_add_location_room.value           = "Others"
-                edit_terminal_add_location_room_others.value    = res.room
-            }
-        }
+            res_.Building.forEach(bldg => {
+                if(Object.keys(bldg)[0] == res.building){
+                    Building_.push(bldg)
+                }
+            })
 
-        if(res.project){
-            let edit_project_option = Array.from(edit_terminal_add_location_project.options).find(opt => opt.value === res.project)
-            if(edit_project_option){
-                edit_terminal_add_location_project.value            = res.project
-                edit_terminal_add_location_project_others.value     = ""
+            if(Building_.length){
+                edit_terminal_add_location_building_others.value = ""
+                edit_terminal_add_location_room.disabled = false
+                edit_terminal_add_location_project.disabled = false
+                edit_terminal_add_location_building.value = res.building != "-" ? res.building : ""
+                edit_terminal_add_location_room.innerHTML = ""
+                edit_terminal_add_location_project.innerHTML = ""
+                
+                var opt_room = document.createElement("option")
+                opt_room.value = ""
+                opt_room.innerText = "-- Select Room --"
+                opt_room.disabled = true
+                opt_room.selected = true
+                edit_terminal_add_location_room.appendChild(opt_room)
+
+                var opt_room = document.createElement("option")
+                opt_room.value = ""
+                opt_room.innerText = "-- Select Project / Office --"
+                opt_room.disabled = true
+                opt_room.selected = true
+                edit_terminal_add_location_project.appendChild(opt_room)
+
+
+                var Room_ = "";
+                Building_[0][Object.keys(Building_[0])[0]].Room.forEach(room => {
+                    var opt_room = document.createElement("option")
+                    opt_room.value = room
+                    opt_room.innerText = room
+                    edit_terminal_add_location_room.appendChild(opt_room)
+                    if(room.toLowerCase() == res.room.toLowerCase()){
+                        Room_ = room
+                    }
+                })
+
+                var Project_ = "";
+                Building_[0][Object.keys(Building_[0])[0]].Project.forEach(proj => {
+                    var opt_project = document.createElement("option")
+                    opt_project.value = proj
+                    opt_project.innerText = proj
+                    edit_terminal_add_location_project.appendChild(opt_project)
+                    if(proj.toLowerCase() == res.project.toLowerCase()){
+                        Project_ = proj
+                    }
+                })
+
+                var opt_room = document.createElement("option")
+                opt_room.value = "Others"
+                opt_room.innerText = "Others"
+                edit_terminal_add_location_room.appendChild(opt_room)
+
+                var opt_project = document.createElement("option")
+                opt_project.value = "Others"
+                opt_project.innerText = "Others"
+                edit_terminal_add_location_project.appendChild(opt_project)
+                
+                if(res.room != "-"){
+                    if(Building_[0][Object.keys(Building_[0])[0]].Room.some(v => v.toLowerCase() === res.room.toLowerCase())){
+                        edit_terminal_add_location_room.value = Room_
+                        edit_terminal_add_location_room_others.value = ""
+                    }else{
+                        edit_terminal_add_location_room.value = "Others"
+                        edit_terminal_add_location_room_others.value = res.room
+                    }
+                }else{
+                    edit_terminal_add_location_room.value = ""
+                    edit_terminal_add_location_room_others.value = ""
+                }
+
+                if(res.project != "-"){
+
+                    if(Building_[0][Object.keys(Building_[0])[0]].Project.some(v => v.toLowerCase() === res.project.toLowerCase())){
+                        edit_terminal_add_location_project.value = Project_
+                        edit_terminal_add_location_project_others.value = ""
+                    }else{
+                        edit_terminal_add_location_project.value = "Others"
+                        edit_terminal_add_location_project_others.value = res.project
+                    }
+                }else{
+                    edit_terminal_add_location_project.value = ""
+                    edit_terminal_add_location_project_others.value = ""
+                }
             }else{
-                edit_terminal_add_location_project.value            = "Others"
-                edit_terminal_add_location_project_others.value     = res.project
-            }
-        }
+
+                edit_terminal_add_location_building_others.value = res.building != "-" ? res.building : ""
+
+                if(res.room != "-"){
+                    edit_terminal_add_location_room.value = "Others"
+                    edit_terminal_add_location_room_others.value = res.room
+                }else{
+                    edit_terminal_add_location_room.value = ""
+                    edit_terminal_add_location_room_others.value = ""
+                }
+
+                if(res.project != "-"){
+                    edit_terminal_add_location_project.value = "Others"
+                    edit_terminal_add_location_project_others.value = res.project
+                }else{
+                    edit_terminal_add_location_project.value = ""
+                    edit_terminal_add_location_project_others.value = ""
+                }
+
+                edit_terminal_add_location_building.value = ""
+                edit_terminal_add_location_room.disabled = false
+                edit_terminal_add_location_project.disabled = false
+            }    
+        })
 
         // ✅ For model---barcode format (cpu, ram, storage, psu, gpu, cs, ec, ups_battery)
         function fillCombinedFields(combined, addFieldId, modelClass, barcodeClass, placeholder, counterName){
