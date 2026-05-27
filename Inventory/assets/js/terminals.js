@@ -1035,7 +1035,6 @@ if(document.getElementById("terminals")){
     loadTerminals()
     function loadTerminals(terminal = false){
         if(!terminal){
-            console.log("load all")
             sole.get("../../controllers/terminals/get_terminals.php").then(res => {
                 terminalTable.clear().draw();
                 res.forEach(t => {
@@ -1044,7 +1043,6 @@ if(document.getElementById("terminals")){
                 terminalTable.draw();
             })    
         }else{
-            console.log("load one")
             loadTerminals_AddRow(terminal)
             terminalTable.draw()
         }

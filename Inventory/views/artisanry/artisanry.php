@@ -18,5 +18,11 @@
                 <h6 class="mt-2">File Browser</h4>    
             </div>
         </div>
+        <div class="col-md-2">
+            <div id="youtube_karaoke" class="text-center artisanry-menu">
+                <img class="wd-100" src="../../assets/img/artisanry/youtube-karaoke.png" alt="">
+                <h6 class="mt-2">Youtube Karaoke</h4>    
+            </div>
+        </div>
     </div>
 </div>

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Playlist Player</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0f0f0f;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        .card {
+            background-color: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+        }
+        .playlist-item {
+            background-color: #242424;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .playlist-item:hover {
+            background-color: #2f2f2f;
+            border-color: #ff0000;
+        }
+        .playlist-item.active {
+            background-color: #2a0000;
+            border-color: #ff0000;
+        }
+        .playlist-item.playing {
+            background-color: #1a0000;
+            border-color: #ff0000;
+        }
+        .playlist-item .thumb {
+            width: 80px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        .playlist-item .item-title {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.3;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .playlist-item .item-author {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 2px;
+        }
+        .playlist-item .item-number {
+            font-size: 13px;
+            color: #aaa;
+            min-width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .playlist-item.active .item-number {
+            color: #ff0000;
+        }
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: color 0.2s;
+        }
+        .remove-btn:hover {
+            color: #ff4444;
+        }
+        .url-input {
+            background-color: #242424;
+            border: 1px solid #3a3a3a;
+            color: #fff;
+            border-radius: 8px;
+        }
+        .url-input:focus {
+            background-color: #2a2a2a;
+            border-color: #ff0000;
+            color: #fff;
+            box-shadow: 0 0 0 0.2rem rgba(255,0,0,0.15);
+        }
+        .url-input::placeholder {
+            color: #666;
+        }
+        .btn-add {
+            background-color: #ff0000;
+            border: none;
+            color: #fff;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        .btn-add:hover {
+            background-color: #cc0000;
+            color: #fff;
+        }
+        .player-wrapper {
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+        }
+        .now-playing-title {
+            font-size: 16px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .now-playing-author {
+            font-size: 13px;
+            color: #aaa;
+        }
+        .control-btn {
+            background: #242424;
+            border: 1px solid #3a3a3a;
+            color: #fff;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        .control-btn:hover {
+            background: #2f2f2f;
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+        .control-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .control-btn.active {
+            background: #ff0000;
+            border-color: #ff0000;
+            color: #fff;
+        }
+        .playlist-scroll {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .playlist-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .playlist-scroll::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        .playlist-scroll::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+        .empty-playlist {
+            text-align: center;
+            color: #555;
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+        .badge-count {
+            background: #ff0000;
+            color: #fff;
+            border-radius: 20px;
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            z-index: 10;
+        }
+        .loading-overlay.show {
+            display: flex;
+        }
+        .drag-handle {
+            color: #555;
+            cursor: grab;
+            padding: 0 4px;
+            flex-shrink: 0;
+        }
+        .drag-handle:hover {
+            color: #aaa;
+        }
+        .info-label {
+            font-size: 11px;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .shuffle-indicator {
+            font-size: 11px;
+            color: #ff0000;
+            display: none;
+        }
+        .shuffle-indicator.show {
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4 px-4">
+        <div class="row g-4">
+
+            <!-- LEFT: Player + Controls -->
+            <div class="col-lg-7">
+
+                <!-- Header -->
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fab fa-youtube text-danger me-2 fs-4"></i>
+                    <h5 class="fw-bold mb-0">YouTube Playlist Player</h5>
+                </div>
+
+                <!-- Player -->
+                <div class="position-relative player-wrapper mb-3">
+                    <div class="ratio ratio-16x9">
+                        <iframe
+                            id="yt_player"
+                            src=""
+                            title=""
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="loading-overlay" id="loading_overlay">
+                        <div class="spinner-border text-danger"></div>
+                    </div>
+                </div>
+
+                <!-- Now Playing Info -->
+                <div class="card p-3 mb-3" id="now_playing_card" style="display:none!important">
+                    <div class="info-label mb-1">Now Playing</div>
+                    <div class="now-playing-title" id="now_playing_title">—</div>
+                    <div class="now-playing-author" id="now_playing_author">—</div>
+                </div>
+
+                <!-- Controls -->
+                <div class="card p-3">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <button class="control-btn" id="btn_prev">
+                            <i class="fa fa-backward-step"></i> Prev
+                        </button>
+                        <button class="control-btn" id="btn_next">
+                            Next <i class="fa fa-forward-step"></i>
+                        </button>
+                        <button class="control-btn" id="btn_shuffle">
+                            <i class="fa fa-shuffle"></i> Shuffle
+                        </button>
+                        <button class="control-btn" id="btn_repeat">
+                            <i class="fa fa-repeat"></i> Repeat
+                        </button>
+                        <button class="control-btn" id="btn_clear" style="margin-left:auto">
+                            <i class="fa fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                    <div class="mt-2">
+                        <span class="shuffle-indicator" id="shuffle_indicator">
+                            <i class="fa fa-shuffle me-1"></i>Shuffle On
+                        </span>
+                        <span class="shuffle-indicator ms-3" id="repeat_indicator" style="display:none">
+                            <i class="fa fa-repeat me-1"></i>Repeat On
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT: Add URL + Playlist -->
+            <div class="col-lg-5">
+
+                <!-- Add URL -->
+                <div class="card p-3 mb-3">
+                    <div class="info-label mb-2">Add to Playlist</div>
+                    <div class="d-flex gap-2 mb-2">
+                        <input
+                            type="text"
+                            id="url_input"
+                            class="form-control url-input"
+                            placeholder="Paste YouTube URL here..."
+                        >
+                        <button class="btn btn-add px-3" id="btn_add">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                    <!-- Bulk Add -->
+                    <textarea
+                        id="bulk_input"
+                        class="form-control url-input mt-1"
+                        rows="3"
+                        placeholder="Or paste multiple URLs (one per line)...">
+                    </textarea>
+                    <button class="btn btn-add w-100 mt-2" id="btn_bulk_add">
+                        <i class="fa fa-list me-1"></i> Add All
+                    </button>
+                    <div id="add_error" class="text-danger mt-2" style="font-size:13px; display:none"></div>
+                </div>
+
+                <!-- Playlist -->
+                <div class="card p-3">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fw-bold">Playlist</span>
+                            <span class="badge-count" id="playlist_count">0</span>
+                        </div>
+                        <div class="info-label" id="current_index_label">—</div>
+                    </div>
+
+                    <div class="playlist-scroll" id="playlist_container">
+                        <div class="empty-playlist" id="empty_msg">
+                            <i class="fa fa-music fa-2x mb-2 d-block"></i>
+                            No songs yet. Add a YouTube URL above!
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        // ✅ State
+        let playlist        = []
+        let currentIndex    = -1
+        let isShuffle       = false
+        let isRepeat        = false
+        let shuffleOrder    = []
+
+        // ✅ Extract Video ID
+        function extractVideoId(url) {
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
+            const match = url.match(regex)
+            return match ? match[1] : null
+        }
+
+        // ✅ Fetch video info from oEmbed
+        async function fetchVideoInfo(url) {
+            const videoId = extractVideoId(url)
+            if (!videoId) throw new Error("Invalid URL")
+
+            const cleanUrl  = `https://www.youtube.com/watch?v=${videoId}`
+            const oEmbedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(cleanUrl)}&format=json`
+            const response  = await fetch(oEmbedUrl)
+
+            if (!response.ok) throw new Error("Video not found or private")
+
+            const data = await response.json()
+            return {
+                videoId,
+                title     : data.title,
+                author    : data.author_name,
+                thumbnail : data.thumbnail_url,
+            }
+        }
+
+        // ✅ Add single URL
+        async function addUrl(url) {
+            url = url.trim()
+            if (!url) return
+
+            const videoId = extractVideoId(url)
+            if (!videoId) {
+                showError("Invalid YouTube URL: " + url)
+                return
+            }
+
+            // Check duplicate
+            if (playlist.find(p => p.videoId === videoId)) {
+                showError("Already in playlist: " + url)
+                return
+            }
+
+            showLoading(true)
+            try {
+                const info = await fetchVideoInfo(url)
+                playlist.push(info)
+                renderPlaylist()
+
+                // Auto play first song
+                if (playlist.length === 1) playSong(0)
+
+            } catch(err) {
+                showError(err.message)
+            }
+            showLoading(false)
+        }
+
+        // ✅ Play song by index
+        function playSong(index) {
+            if (index < 0 || index >= playlist.length) return
+
+            currentIndex = index
+            const song   = playlist[index]
+
+            // Update player
+            const src = `https://www.youtube.com/embed/${song.videoId}?autoplay=1&rel=0`
+            document.getElementById("yt_player").src          = src
+            document.getElementById("yt_player").title        = song.title
+
+            // Update now playing
+            document.getElementById("now_playing_title").textContent  = song.title
+            document.getElementById("now_playing_author").textContent = song.author
+            document.getElementById("now_playing_card").style.display = "block"
+
+            // Update playlist highlight
+            renderPlaylist()
+            updateControls()
+        }
+
+        // ✅ Play next song
+        function playNext() {
+            if (playlist.length === 0) return
+
+            if (isRepeat) {
+                playSong(currentIndex)
+                return
+            }
+
+            if (isShuffle) {
+                const nextShuffleIdx = shuffleOrder.indexOf(currentIndex) + 1
+                if (nextShuffleIdx < shuffleOrder.length) {
+                    playSong(shuffleOrder[nextShuffleIdx])
+                } else {
+                    // Reshuffle and start again
+                    generateShuffleOrder()
+                    playSong(shuffleOrder[0])
+                }
+            } else {
+                const next = currentIndex + 1
+                if (next < playlist.length) {
+                    playSong(next)
+                } else {
+                    playSong(0)   // loop back to start
+                }
+            }
+        }
+
+        // ✅ Play previous song
+        function playPrev() {
+            if (playlist.length === 0) return
+
+            if (isShuffle) {
+                const prevShuffleIdx = shuffleOrder.indexOf(currentIndex) - 1
+                if (prevShuffleIdx >= 0) {
+                    playSong(shuffleOrder[prevShuffleIdx])
+                }
+            } else {
+                const prev = currentIndex - 1
+                if (prev >= 0) {
+                    playSong(prev)
+                } else {
+                    playSong(playlist.length - 1)   // loop to last
+                }
+            }
+        }
+
+        // ✅ Generate shuffle order
+        function generateShuffleOrder() {
+            shuffleOrder = [...Array(playlist.length).keys()]
+            for (let i = shuffleOrder.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffleOrder[i], shuffleOrder[j]] = [shuffleOrder[j], shuffleOrder[i]]
+            }
+        }
+
+        // ✅ Remove song from playlist
+        function removeSong(index) {
+            playlist.splice(index, 1)
+
+            if (playlist.length === 0) {
+                currentIndex = -1
+                document.getElementById("yt_player").src = ""
+                document.getElementById("now_playing_card").style.display = "none"
+            } else if (index === currentIndex) {
+                playSong(Math.min(index, playlist.length - 1))
+            } else if (index < currentIndex) {
+                currentIndex--
+            }
+
+            renderPlaylist()
+            updateControls()
+        }
+
+        // ✅ Render playlist
+        function renderPlaylist() {
+            const container = document.getElementById("playlist_container")
+            const emptyMsg  = document.getElementById("empty_msg")
+
+            document.getElementById("playlist_count").textContent = playlist.length
+            document.getElementById("current_index_label").textContent =
+                currentIndex >= 0 ? `${currentIndex + 1} / ${playlist.length}` : "—"
+
+            if (playlist.length === 0) {
+                container.innerHTML = ""
+                container.appendChild(emptyMsg)
+                emptyMsg.style.display = "block"
+                return
+            }
+
+            emptyMsg.style.display = "none"
+            container.innerHTML = ""
+
+            playlist.forEach((song, i) => {
+                const isActive  = i === currentIndex
+                const div       = document.createElement("div")
+                div.className   = `playlist-item mb-2 ${isActive ? "active" : ""}`
+                div.innerHTML   = `
+                    <div class="item-number">${isActive ? '<i class="fa fa-volume-up text-danger"></i>' : i + 1}</div>
+                    <img class="thumb" src="${song.thumbnail}" alt="">
+                    <div class="flex-grow-1 overflow-hidden">
+                        <div class="item-title ${isActive ? "text-danger" : ""}">${song.title}</div>
+                        <div class="item-author">${song.author}</div>
+                    </div>
+                    <button class="remove-btn" data-index="${i}" title="Remove">
+                        <i class="fa fa-xmark"></i>
+                    </button>
+                `
+
+                // Click to play
+                div.addEventListener("click", (e) => {
+                    if (e.target.closest(".remove-btn")) return
+                    playSong(i)
+                })
+
+                // Remove button
+                div.querySelector(".remove-btn").addEventListener("click", (e) => {
+                    e.stopPropagation()
+                    removeSong(i)
+                })
+
+                container.appendChild(div)
+            })
+
+            // Scroll active item into view
+            const activeItem = container.querySelector(".active")
+            if (activeItem) {
+                activeItem.scrollIntoView({ behavior: "smooth", block: "nearest" })
+            }
+        }
+
+        // ✅ Update control buttons
+        function updateControls() {
+            document.getElementById("btn_prev").disabled = playlist.length <= 1 && !isShuffle
+            document.getElementById("btn_next").disabled = playlist.length <= 1 && !isShuffle
+        }
+
+        // ✅ Show/hide loading
+        function showLoading(show) {
+            document.getElementById("loading_overlay").classList.toggle("show", show)
+        }
+
+        // ✅ Show error
+        function showError(msg) {
+            const el        = document.getElementById("add_error")
+            el.textContent  = msg
+            el.style.display = "block"
+            setTimeout(() => el.style.display = "none", 3000)
+        }
+
+        // ✅ Auto play next when video ends
+        // Uses postMessage from YouTube iframe
+        window.addEventListener("message", (e) => {
+            if (e.origin !== "https://www.youtube.com") return
+            try {
+                const data = JSON.parse(e.data)
+                // playerState 0 = ended
+                if (data.event === "onStateChange" && data.info === 0) {
+                    playNext()
+                }
+            } catch(err) {}
+        })
+
+        // ✅ Fallback auto next — check every 3 seconds using iframe title trick
+        // Since YouTube doesn't always send postMessage, use a timer approach
+        let autoNextTimer = null
+        function startAutoNextWatcher() {
+            clearInterval(autoNextTimer)
+            autoNextTimer = setInterval(() => {
+                const iframe = document.getElementById("yt_player")
+                // If iframe src has ended param, play next
+                // This is a fallback — main method is postMessage above
+            }, 3000)
+        }
+
+        // ✅ Button Events
+
+        // Add single URL
+        document.getElementById("btn_add").addEventListener("click", async () => {
+            const url = document.getElementById("url_input").value.trim()
+            if (!url) return
+            await addUrl(url)
+            document.getElementById("url_input").value = ""
+        })
+
+        // Add on Enter key
+        document.getElementById("url_input").addEventListener("keydown", async (e) => {
+            if (e.key === "Enter") {
+                document.getElementById("btn_add").click()
+            }
+        })
+
+        // Bulk add
+        document.getElementById("btn_bulk_add").addEventListener("click", async () => {
+            const lines = document.getElementById("bulk_input").value
+                .split("\n")
+                .map(l => l.trim())
+                .filter(Boolean)
+
+            if (lines.length === 0) return
+
+            showLoading(true)
+            for (const url of lines) {
+                await addUrl(url)
+            }
+            showLoading(false)
+            document.getElementById("bulk_input").value = ""
+        })
+
+        // Prev
+        document.getElementById("btn_prev").addEventListener("click", playPrev)
+
+        // Next
+        document.getElementById("btn_next").addEventListener("click", playNext)
+
+        // Shuffle
+        document.getElementById("btn_shuffle").addEventListener("click", () => {
+            isShuffle = !isShuffle
+            document.getElementById("btn_shuffle").classList.toggle("active", isShuffle)
+            document.getElementById("shuffle_indicator").classList.toggle("show", isShuffle)
+            if (isShuffle) generateShuffleOrder()
+        })
+
+        // Repeat
+        document.getElementById("btn_repeat").addEventListener("click", () => {
+            isRepeat = !isRepeat
+            document.getElementById("btn_repeat").classList.toggle("active", isRepeat)
+            document.getElementById("repeat_indicator").style.display = isRepeat ? "inline" : "none"
+        })
+
+        // Clear all
+        document.getElementById("btn_clear").addEventListener("click", () => {
+            if (playlist.length === 0) return
+            if (!confirm("Clear all songs from playlist?")) return
+            playlist      = []
+            currentIndex  = -1
+            document.getElementById("yt_player").src           = ""
+            document.getElementById("now_playing_card").style.display = "none"
+            renderPlaylist()
+            updateControls()
+        })
+
+        // ✅ Init
+        updateControls()
+        renderPlaylist()
+
+    </script>
+</body>
+</html>
