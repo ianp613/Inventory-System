@@ -20,7 +20,9 @@
         "ConsumablesMigration",
         "Consumable_LogMigration",
         "Consumable_RequestMigration",
-        "Post_ItMigration"
+        "Post_ItMigration",
+        "YK_RoomMigration",
+        "YK_ReservedMigration"
     ];
 
     class UserMigration
@@ -367,6 +369,26 @@
             Migrate::string("name");
             Migrate::string("recipient");
             Migrate::string("message");
+        }
+    }
+
+    class YK_RoomMigration
+    {
+        public static function index(){
+            Migrate::attrib_table("yk_room");
+            Migrate::attrib_string(1000);
+            Migrate::string("room_id");
+            Migrate::string("room_name");
+        }
+    }
+
+    class YK_ReservedMigration
+    {
+        public static function index(){
+            Migrate::attrib_table("yk_reserved");
+            Migrate::attrib_string(1000);
+            Migrate::string("rid");
+            Migrate::string("yt_link");
         }
     }
 ?>

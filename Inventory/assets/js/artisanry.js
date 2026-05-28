@@ -530,7 +530,7 @@ if(document.getElementById("artisan")){
     var youtube_karaoke = document.getElementById("youtube_karaoke")
     youtube_karaoke.addEventListener("click", e => {
         // bs5.toast("info","<code>Work in progress...</code>")
-        // window.open('file-browser.php', '_blank');
+        // window.open('youtube-karaoke.php', '_blank');
         window.location.href = '?loc=file-browser';
     })
 }

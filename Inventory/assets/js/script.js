@@ -565,10 +565,10 @@ if(document.getElementById("sidebar")){
 }
 
 
-function splash(message, seconds) {
+function splash(message, seconds, theme = "dark") {
   // Create splash element
   const splashScreen = document.createElement("div");
-  const bs5_spinner = "<div class=\"spinner-border text-dark ht-70 wd-70 me-5\" role=\"status\"></div>"
+  const bs5_spinner = "<div class=\"spinner-border text-"+theme+" ht-70 wd-70 me-5\" role=\"status\"></div>"
   splashScreen.innerHTML = bs5_spinner
   splashScreen.id = "splash";
   splashScreen.style.position = "fixed";
@@ -599,4 +599,9 @@ function splash(message, seconds) {
     }, 500); // Matches fade transition duration
   }, seconds);
 }
-splash(null, 200)
+
+if(document.querySelector("#youtube_karaoke_")){
+    splash(null, 200, "danger")
+}else{
+    splash(null, 200)
+}

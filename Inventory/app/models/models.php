@@ -841,4 +841,26 @@
         public string $recipient;
         public string $message;
     }
+
+    class YK_Room{
+        public $table = "yk_room";
+        public $fillable = [
+            "room_id",
+            "room_name"
+        ];
+
+        public string $room_id;
+        public string $room_name;
+    }
+
+        class YK_Reserved{
+        public $table = "yk_reserved";
+        public $fillable = [
+            "rid",
+            "yt_link"
+        ];
+
+        public string $rid;
+        public string $yt_link;
+    }
 ?>
