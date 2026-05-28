@@ -13,14 +13,13 @@
         <link rel="stylesheet" href="../assets/css/bootstrap/bootstrap.min.css">
         <link rel="stylesheet" href="../assets/css/sole.splash/splash.css">
         <link rel="stylesheet" href="../assets/css/style.css">
-        <link rel="stylesheet" href="../assets/css/theme/Default.css">
     </head>
     <body id="youtube_karaoke_">
         <div hidden id="room_creation" class="w-100 justify-content-center">
-            <div class="wd-500 bg-dark p-4 rounded-3 text-secondary" style="position: absolute; top: 50%; transform: translateY(-50%);">
+            <div class="wd-500 bg-dark p-4 rounded-3 text-secondary card_yk" style="position: absolute; top: 50%; transform: translateY(-50%);">
                 <div class="d-flex">
                     <div class="bg-light p-2" style="border-radius: 100px;">
-                        <img  class="wd-30" src="../assets/img/artisanry/youtube-karaoke.png" alt="">
+                        <img  class="wd-25" src="../assets/img/artisanry/youtube-karaoke.png" alt="">
                     </div>
                     <h5 class="text-danger mt-2 ms-2 fw-bolder">YOUTUBE <span class="text-light">KARAOKE</span></h5>
                 </div>
@@ -28,11 +27,11 @@
                 <input id="yk_room_name" type="text" name="" id="" class="form-control mb-3" placeholder="Input Room Name">
                 <div class="d-flex justify-content-between">
                     <h6 class="mt-3 fw-bolder">ROOM ID: <span id="yk_generated_key">Auto-generated</span></h6>                    
-                    <button class="btn btn-danger" id="yk_create_room">Generate Room ID</button>
+                    <button id="yk_create_room">Generate ID</button>
                 </div>
                 <hr>
-                <button class="btn btn-dark w-100 mb-2"><span class="fa fa-desktop" id="yk_enter_room"></span> Enter Karaoke Room</button>
-                <button class="btn btn-dark w-100"><span class="fa fa-book" id="yk_reservation_control"></span> Song Reservation Control</button>
+                <button class="w-100 mb-2" id="yk_enter_room"><span class="fa fa-desktop"></span> Enter Karaoke Room</button>
+                <button class="w-100"><span class="fa fa-book" id="yk_reservation_control"></span> Song Reservation Control</button>
                 <p class="w-100 text-center f-13 text-light f-i mt-4 mb-0">Youtube Karaoke v1.0</p>
             </div>
         </div>
@@ -46,27 +45,33 @@
                     <h5 class="text-danger mt-2 ms-2 fw-bolder">YOUTUBE <span class="text-light">KARAOKE</span></h5>
                 </div>
                 <div class="col-md-9">
-                    <div class="video-wrapper">
-                        <iframe src="https://www.youtube.com/embed/Y3akxv_O_KE" 
+                    <div class="video-wrapper mb-2">
+                        <!-- <iframe src="https://www.youtube.com/embed/Y3akxv_O_KE" 
                                 frameborder="0" 
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                                 allowfullscreen>
-                        </iframe>
+                        </iframe> -->
                     </div>
                 </div>
                 <div class="col-md-3">
+                    <div hidden class="card_yk text-danger mb-3">
+                        <h5>---</h5>
+                    </div>
                     <div class="card_yk">
                         <h6 style="color: #d3d3d3">NOW PLAYING</h6>
-                        <h6>You Won’t Believe This Place Exists in Samar, Philippines</h6>
-                        <h6 class="text-danger">Singer: <span style="color: #d3d3d3">PAUL IAN DUMDUM</span></h6>                        
-                        <h6 class="mt-4" style="color: #d3d3d3">NEXT SONG</h6>
-                        <h6>You Won’t Believe This Place Exists in Samar, Philippines</h6>
-                        <h6 class="text-success">Singer: <span style="color: #d3d3d3">JUAN DELA CRUZ</span></h6>                        
+                        <h6>No song yet. Use the reservation control to add song.</h6>
+                        <h6 class="text-danger">Singer: <span style="color: #d3d3d3">---</span></h6>     
+                        <div hidden id="yk_next_song">
+                            <h6 class="mt-4" style="color: #d3d3d3">NEXT SONG</h6>
+                            <h6 id="yk_next_song_title">---</h6>
+                            <h6 class="text-success">Singer: <span style="color: #d3d3d3" id="yk_next_song_singer">---</span></h6>                               
+                        </div>                   
                     </div>
                     <div class="card_yk mt-3 d-flex gap-2">
-                        <button>Next <span class="fw-bolder fa fa-step-forward"></span></button>
-                        <button>Reload <span class="fw-bolder fa fa-refresh"></span></button>
-                        <button>Room ID <span class="fw-bolder fa fa-desktop"></span></button>
+                        <button disabled id="yk_next">Next <span class="fw-bolder fa fa-step-forward"></span></button>
+                        <button id="yk_reload">Reload <span class="fw-bolder fa fa-refresh"></span></button>
+                        <button id="yk_room_id">Room ID <span class="fw-bolder fa fa-desktop"></span></button>
+                        <h3 class="text-danger mt-1">-----</h3>
                     </div>
                 </div>
             </div>
@@ -76,27 +81,31 @@
 
         </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <div class="modal fade" id="room_id_modal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content p-0 bg-dark">
+                    <div class="card_yk m-0">
+                        <h5 class="text-danger">ENTER ROOM ID</h5>
+                        <input type="text" class="form-control mb-3">
+                        <div class="d-flex justify-content-end gap-2">
+                            <button data-bs-dismiss="modal" class="w-50"><span class="fa fa-remove"></span> Cancel</button>
+                            <button class="w-50"><span class="fa fa-check"></span> Proceed</button>    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <style>
             .card_yk{
                 padding: 20px;
                 border: solid 1px #677079;
                 background-color: #30363b;
                 border-radius: 15px;
+                overflow: auto;
+            }
+            .card_yk::-webkit-scrollbar{
+                width: 0px;
+                display: none;
             }
             .card_yk button{
                 background-color: #41484e;
@@ -114,6 +123,12 @@
                 color: #ff2020;
                 background-color: #30363b;
 
+            }
+            .card_yk button:disabled{
+                cursor: not-allowed;
+                border: solid 1px #4d5a66;
+                background-color: #30363b;
+                color: #4d5a66;
             }
             .video-wrapper iframe {
                 width: 100%;

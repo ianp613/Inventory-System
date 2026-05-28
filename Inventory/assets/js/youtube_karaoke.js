@@ -10,6 +10,12 @@ if(document.querySelector("#youtube_karaoke_")){
     var yk_enter_room               = document.querySelector("#yk_enter_room")
     var yk_reservation_control      = document.querySelector("#yk_reservation_control")
 
+    var yk_next                     = document.querySelector("#yk_next")
+    var yk_reload                   = document.querySelector("#yk_reload")
+    var yk_room_id                  = document.querySelector("#yk_room_id")
+
+    const room_id_modal = new bootstrap.Modal(document.getElementById('room_id_modal'),unclose);
+    
     yk_create_room.addEventListener("click", e => {
         if(!yk_room_name.value){
             bs5.toast("warning","Please input room name.")
@@ -25,6 +31,29 @@ if(document.querySelector("#youtube_karaoke_")){
             }
             bs5.toast(res.type,res.message,res.size)
         })
+    })
+
+    yk_enter_room.addEventListener("click", e => {
+        window.location.href = "?yk=room"
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    yk_room_id.addEventListener("click", e => {
+        room_id_modal.show()
     })
 
 

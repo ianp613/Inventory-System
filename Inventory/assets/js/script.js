@@ -565,7 +565,7 @@ if(document.getElementById("sidebar")){
 }
 
 
-function splash(message, seconds, theme = "dark") {
+function splash_(message, seconds, theme = "dark") {
   // Create splash element
   const splashScreen = document.createElement("div");
   const bs5_spinner = "<div class=\"spinner-border text-"+theme+" ht-70 wd-70 me-5\" role=\"status\"></div>"
@@ -600,8 +600,14 @@ function splash(message, seconds, theme = "dark") {
   }, seconds);
 }
 
-if(document.querySelector("#youtube_karaoke_")){
-    splash(null, 200, "danger")
+if(document.querySelector("#youtube_karaokes_")){
+    sole.splash(`<div class="d-flex">`+
+                    `<div class="bg-light p-2" style="border-radius: 100px;">`+
+                        `<img  class="wd-25" src="../assets/img/artisanry/youtube-karaoke.png" alt="">`+
+                    `</div>`+
+                    `<h5 class="text-danger mt-2 ms-2 fw-bolder">YOUTUBE <span class="text-light">KARAOKE</span></h5>`+
+                // `</div>`, Math.floor(Math.random() * (10000 - 5000 + 1)) + 5000 , "wave", false)
+                `</div>`, 1000 , "wave", false)
 }else{
-    splash(null, 200)
+    splash_(null, 200)
 }
