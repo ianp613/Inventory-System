@@ -45,7 +45,7 @@
                     <h5 class="text-danger mt-2 ms-2 fw-bolder">YOUTUBE <span class="text-light">KARAOKE</span></h5>
                 </div>
                 <div class="col-md-9">
-                    <div class="video-wrapper mb-2">
+                    <div class="video-wrapper mb-2" id="yk_iFrame">
                         <!-- <iframe src="https://www.youtube.com/embed/Y3akxv_O_KE" 
                                 frameborder="0" 
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
@@ -54,24 +54,24 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div hidden class="card_yk text-danger mb-3">
-                        <h5>---</h5>
+                    <div id="yk_room_name_container" hidden class="card_yk text-danger mb-3">
+                        <h5 id="yk_room_name_display">---</h5>
                     </div>
                     <div class="card_yk">
                         <h6 style="color: #d3d3d3">NOW PLAYING</h6>
-                        <h6>No song yet. Use the reservation control to add song.</h6>
-                        <h6 class="text-danger">Singer: <span style="color: #d3d3d3">---</span></h6>     
-                        <div hidden id="yk_next_song">
+                        <h6 id="yk_np_title">No song yet. Use the reservation control to add song.</h6>
+                        <h6 class="text-danger">Singer: <span style="color: #d3d3d3" id="yk_np_singer">---</span></h6>     
+                        <div hidden id="yk_ns">
                             <h6 class="mt-4" style="color: #d3d3d3">NEXT SONG</h6>
-                            <h6 id="yk_next_song_title">---</h6>
-                            <h6 class="text-success">Singer: <span style="color: #d3d3d3" id="yk_next_song_singer">---</span></h6>                               
+                            <h6 id="yk_ns_title">---</h6>
+                            <h6 class="text-success">Singer: <span style="color: #d3d3d3" id="yk_ns_singer">---</span></h6>                               
                         </div>                   
                     </div>
                     <div class="card_yk mt-3 d-flex gap-2">
                         <button disabled id="yk_next">Next <span class="fw-bolder fa fa-step-forward"></span></button>
                         <button id="yk_reload">Reload <span class="fw-bolder fa fa-refresh"></span></button>
                         <button id="yk_room_id">Room ID <span class="fw-bolder fa fa-desktop"></span></button>
-                        <h3 class="text-danger mt-1">-----</h3>
+                        <h3 class="text-danger mt-1" id="yk_room_id_display">-----</h3>
                     </div>
                 </div>
             </div>
@@ -86,10 +86,10 @@
                 <div class="modal-content p-0 bg-dark">
                     <div class="card_yk m-0">
                         <h5 class="text-danger">ENTER ROOM ID</h5>
-                        <input type="text" class="form-control mb-3">
+                        <input type="text" class="form-control mb-3 room-id-inp" id="yk_room_id_input">
                         <div class="d-flex justify-content-end gap-2">
                             <button data-bs-dismiss="modal" class="w-50"><span class="fa fa-remove"></span> Cancel</button>
-                            <button class="w-50"><span class="fa fa-check"></span> Proceed</button>    
+                            <button class="w-50" id="yk_proceed"><span class="fa fa-check"></span> Proceed</button>    
                         </div>
                     </div>
                 </div>
@@ -124,6 +124,11 @@
                 background-color: #30363b;
 
             }
+            .card_yk button:focus{
+                outline: solid 2px #ff5656;
+                /* color: #ff2020; */
+                background-color: #30363b;
+            }
             .card_yk button:disabled{
                 cursor: not-allowed;
                 border: solid 1px #4d5a66;
@@ -135,6 +140,10 @@
                 height: auto;
                 aspect-ratio: 16 / 9;
                 border-radius: 8px;
+            }
+            .room-id-inp{
+                font-weight: bolder !important;
+                text-transform: uppercase;
             }
         </style>
         
