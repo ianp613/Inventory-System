@@ -857,10 +857,12 @@
         public $table = "yk_reserved";
         public $fillable = [
             "rid",
-            "yt_link"
+            "yt_link",
+            "yk_singer"
         ];
 
         public string $rid;
         public string $yt_link;
+        public string $yk_singer;
     }
 ?>

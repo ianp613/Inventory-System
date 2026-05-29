@@ -389,6 +389,7 @@
             Migrate::attrib_string(1000);
             Migrate::string("rid");
             Migrate::string("yt_link");
+            Migrate::string("yt_singer");
         }
     }
 ?>

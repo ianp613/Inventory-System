@@ -16,22 +16,26 @@ if(document.querySelector("#youtube_karaoke_")){
             room_creation.hidden    = true
             room_creation.classList.remove("d-flex")
             yk_room.hidden          = false
+            yk_reserve.classList.remove("d-flex")
             yk_reserve.hidden       = true
         }else if(params.get("yk") == "reserve"){
             room_creation.hidden    = true
             room_creation.classList.remove("d-flex")
             yk_room.hidden          = true
+            yk_reserve.classList.add("d-flex")
             yk_reserve.hidden       = false
         }else{
             room_creation.hidden    = false
             room_creation.classList.add("d-flex")
             yk_room.hidden          = true
+            yk_reserve.classList.remove("d-flex")
             yk_reserve.hidden       = true
         }
     }else{
         room_creation.hidden    = false
         room_creation.classList.add("d-flex")
         yk_room.hidden          = true
+        yk_reserve.classList.remove("d-flex")
         yk_reserve.hidden       = true
     }
     
@@ -53,8 +57,41 @@ if(document.querySelector("#youtube_karaoke_")){
     })
 
     yk_enter_room.addEventListener("click", e => {
-        window.location.href = "?yk=room"
-    })
+        window.open("?yk=room", "_blank");
+    });
+
+    yk_reservation_control.addEventListener("click", e => {
+        console.log("ok")
+        window.open("?yk=reserve", "_blank");
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // ✅ Load YouTube API
     const tag = document.createElement('script');
@@ -160,6 +197,9 @@ if(document.querySelector("#youtube_karaoke_")){
     }
 
     function requestSong(){
+        if(yk_room.hidden == true){
+            return
+        }
         requestSong_Stop();
         intervalID = setInterval(() => {
             console.log("Requesting")
@@ -188,6 +228,7 @@ if(document.querySelector("#youtube_karaoke_")){
                                     });
                                 }, 500);
                             } else {
+                                playing = false
                                 yk_np_title.innerText   = "⚠️ Video not found or is private."
                                 yk_iFrame.innerHTML     = "";
                                 console.error("Error:", result.error);
@@ -198,7 +239,6 @@ if(document.querySelector("#youtube_karaoke_")){
                     currentSong                 = null
                     yk_np_title.innerText       = "No song yet. Use the reservation control to add song."
                     yk_np_singer.innerText      = "---"
-                    playing                     = false
                     yk_iFrame.innerHTML         = ""
                 }
                 if(res.length > 1){
@@ -291,4 +331,147 @@ if(document.querySelector("#youtube_karaoke_")){
         return match ? match[1] : null;
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    var yk_reserve_title                = document.querySelector("#yk_reserve_title")
+    var yk_reserve_link                 = document.querySelector("#yk_reserve_link")
+    var yk_reserve_singer               = document.querySelector("#yk_reserve_singer")
+    var yk_reserve_                     = document.querySelector("#yk_reserve_")
+    var yk_reserve_room_id              = document.querySelector("#yk_reserve_room_id")
+    var yk_reserve_set_id               = document.querySelector("#yk_reserve_set_id")
+
+    if(sessionStorage.getItem("room_id") !== null){
+        yk_reserve_room_id.value        = sessionStorage.getItem("room_id")
+        yk_reserve_title.innerText      = sessionStorage.getItem("room_name")
+    }
+
+    if(sessionStorage.getItem("singer_name") !== null){
+        yk_reserve_singer.value        = sessionStorage.getItem("singer_name")
+    }
+
+    yk_reserve_set_id.addEventListener("click", e => {
+        if(!yk_reserve_room_id.value){
+            bs5.toast("warning","Please input Room ID.")
+            return
+        }
+        sole.post("../controllers/youtube_karaoke/validate_id.php", {
+            id : yk_reserve_room_id.value.toUpperCase()
+        }).then(res => {
+            if(res.status){
+                yk_reserve_title.innerText = res.name
+                sessionStorage.setItem("room_id",yk_reserve_room_id.value.toUpperCase())
+                sessionStorage.setItem("room_name",res.name)
+                bs5.toast("success","You can now reserve a song.")
+            }else{
+                bs5.toast(res.type,res.message)
+            }
+        })
+    })
+
+    yk_reserve_.addEventListener("click", e => {
+        if(sessionStorage.getItem("room_id") == null){
+            bs5.toast("warning","Please set Room ID.")
+            return
+        }
+
+        if(!yk_reserve_singer.value){
+            bs5.toast("warning","Please input singer name.")
+            return
+        }
+        sessionStorage.setItem("singer_name",yk_reserve_singer.value)
+
+        let link = validateYouTubeLink(yk_reserve_link.value)
+
+        if(link.valid){
+            sole.post("../controllers/youtube_karaoke/reserve_song.php",{
+                id : sessionStorage.getItem("room_id"),
+                link : yk_reserve_link.value,
+                singer : sessionStorage.getItem("singer_name")
+            }).then(res => {
+                if(res.status){
+                    yk_reserve_link.value = ""
+                }
+                bs5.toast(res.type,res.message)
+            })
+        }else{
+            bs5.toast("warning",link.message)
+            return
+        }
+    })
+
+
+
+    function validateYouTubeLink(link) {
+        // ✅ Trim whitespace
+        const trimmedLink = link.trim();
+
+        // ✅ Check if empty
+        if (!trimmedLink) {
+            return {
+                valid: false,
+                message: "Please enter a YouTube link",
+                videoId: null
+            };
+        }
+
+        // ✅ Extract video ID using regex
+        const videoId = extractVideoId(trimmedLink);
+
+        if (!videoId) {
+            return {
+                valid: false,
+                message: "Invalid YouTube link format. Try: https://www.youtube.com/watch?v=VIDEO_ID or youtu.be/VIDEO_ID",
+                videoId: null
+            };
+        }
+
+        // ✅ Validate video ID (should be 11 characters)
+        if (videoId.length !== 11) {
+            return {
+                valid: false,
+                message: "Invalid YouTube video ID. Video ID should be 11 characters.",
+                videoId: null
+            };
+        }
+
+        // ✅ Check for valid characters in video ID (alphanumeric, dash, underscore)
+        if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+            return {
+                valid: false,
+                message: "Invalid YouTube video ID format",
+                videoId: null
+            };
+        }
+
+        return {
+            valid: true,
+            message: "✅ Valid YouTube link",
+            videoId: videoId
+        };
+    }
+
+    function extractVideoId(url) {
+        const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+        const match = url.match(regex);
+        return match ? match[1] : null;
+    }
 }
+
+

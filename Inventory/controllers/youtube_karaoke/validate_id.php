@@ -18,5 +18,4 @@
         $response["name"] = $yk_room[0]["room_name"];
     }
 
-
     echo json_encode($response);

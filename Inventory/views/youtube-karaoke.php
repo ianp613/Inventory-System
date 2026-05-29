@@ -14,9 +14,9 @@
         <link rel="stylesheet" href="../assets/css/sole.splash/splash.css">
         <link rel="stylesheet" href="../assets/css/style.css">
     </head>
-    <body id="youtube_karaoke_">
+    <body id="youtube_karaoke_" class="alert-dark">
         <div hidden id="room_creation" class="w-100 justify-content-center">
-            <div class="wd-500 bg-dark p-4 rounded-3 text-secondary card_yk" style="position: absolute; top: 50%; transform: translateY(-50%);">
+            <div class="bg-dark p-4 rounded-3 text-secondary card_yk" style="position: absolute; top: 50%; transform: translateY(-50%); width: auto;">
                 <div class="d-flex">
                     <div class="bg-light p-2" style="border-radius: 100px;">
                         <img  class="wd-25" src="../assets/img/artisanry/youtube-karaoke.png" alt="">
@@ -31,7 +31,7 @@
                 </div>
                 <hr>
                 <button class="w-100 mb-2" id="yk_enter_room"><span class="fa fa-desktop"></span> Enter Karaoke Room</button>
-                <button class="w-100"><span class="fa fa-book" id="yk_reservation_control"></span> Song Reservation Control</button>
+                <button class="w-100" id="yk_reservation_control"><span class="fa fa-book"></span> Song Reservation Control</button>
                 <p class="w-100 text-center f-13 text-light f-i mt-4 mb-0">Youtube Karaoke v1.0</p>
             </div>
         </div>
@@ -77,8 +77,29 @@
             </div>
         </div>
 
-        <div hidden id="yk_reserve">
-
+        <div hidden id="yk_reserve" class="w-100 justify-content-center">
+            <div class="bg-dark p-4 rounded-3 text-secondary card_yk" style="position: absolute; top: 50%; transform: translateY(-50%); width: auto; min-width: 350px;">
+                <div class="d-flex">
+                    <div class="bg-light p-2" style="border-radius: 100px;">
+                        <img  class="wd-25" src="../assets/img/artisanry/youtube-karaoke.png" alt="">
+                    </div>
+                    <h5 class="text-danger mt-2 ms-2 fw-bolder">YOUTUBE <span class="text-light">KARAOKE</span></h5>
+                </div>
+                <hr>
+                <h5 class="text-danger" id="yk_reserve_title">⚠️ Room ID is not yet set.</h5>
+                <h6>Input Youtube Link</h6>
+                <textarea name="" id="yk_reserve_link" class="form-control mb-2" placeholder="https://www.youtube.com/watch?v="></textarea>
+                <h6>Singer Name</h6>
+                <input type="text" name="" id="yk_reserve_singer" class="form-control mb-2 fw-bold" placeholder="Input Your Name">
+                <button class="w-100 fw-bold" id="yk_reserve_">Reserve Song</button>
+                <hr>
+                <div class="input-group">
+                    <input type="text" name="" id="yk_reserve_room_id" class="form-control room-id-inp" placeholder="Room ID">
+                    <button class="fw-bold" id="yk_reserve_set_id">SET ID</button>
+                </div>
+                <hr>
+                <p class="w-100 text-center f-13 text-light f-i mt-4 mb-0">Youtube Karaoke v1.0</p>
+            </div>
         </div>
 
         <div class="modal fade" id="room_id_modal" tabindex="-1">
@@ -103,7 +124,10 @@
                 border-radius: 15px;
                 overflow: auto;
             }
-            .card_yk::-webkit-scrollbar{
+            .modal-content{
+                border-radius: 15px;
+            }
+            .card_yk::-webkit-scrollbar, textarea::-webkit-scrollbar{
                 width: 0px;
                 display: none;
             }
@@ -144,6 +168,14 @@
             .room-id-inp{
                 font-weight: bolder !important;
                 text-transform: uppercase;
+            }
+            input, textarea{
+                border-radius: 8px !important;
+                background-color: #5a636b !important;
+                color: #ffffff !important;
+            }
+            input::placeholder, textarea::placeholder{
+                color: #b2c5d6 !important;
             }
         </style>
         
