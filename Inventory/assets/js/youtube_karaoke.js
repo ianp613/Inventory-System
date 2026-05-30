@@ -218,7 +218,7 @@ if(document.querySelector("#youtube_karaoke_")){
                                 yk_iFrame.innerHTML     = result.iframe;
                                 console.log("Author:", result.author);
                                 playing = true
-
+                                visualize()
                                 // ✅ Initialize player after iframe loads
                                 setTimeout(() => {
                                     player = new YT.Player('youtube-player', {
@@ -330,25 +330,6 @@ if(document.querySelector("#youtube_karaoke_")){
         const match = url.match(regex);
         return match ? match[1] : null;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     var yk_reserve_title                = document.querySelector("#yk_reserve_title")
     var yk_reserve_link                 = document.querySelector("#yk_reserve_link")
@@ -471,6 +452,21 @@ if(document.querySelector("#youtube_karaoke_")){
         const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
         const match = url.match(regex);
         return match ? match[1] : null;
+    }
+
+
+    var vcont       = document.querySelector("#vcont");
+    var vrefresh    = document.querySelector("#vrefresh");
+
+    vrefresh.addEventListener("click", e => {
+        visualize()
+    })
+
+    function visualize() {
+        vcont.innerHTML = ""
+        var types = ["wave", "bar", "heartbeat"];
+        var type = types[Math.floor(Math.random() * types.length)];
+        visualizer(vcont, type);
     }
 }
 

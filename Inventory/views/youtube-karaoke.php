@@ -73,6 +73,13 @@
                         <button id="yk_room_id">Room ID <span class="fw-bolder fa fa-desktop"></span></button>
                         <h3 class="text-danger mt-1" id="yk_room_id_display">-----</h3>
                     </div>
+                    <div class="card_yk mt-3">
+                        <div class="d-flex justify-content-between">
+                            <h6>Visualizer</h6>
+                            <span class="fa fa-refresh" id="vrefresh"></span>
+                        </div>
+                        <div class="w-100" id="vcont"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -187,6 +194,7 @@
         <script src="../assets/js/sole.splash/splash.js"></script>
         <script src="../assets/js/quagga/quagga.min.js"></script>
         <script src="../assets/js/sole.js"></script>
+        <script src="../assets/js/visualizer.js"></script>
         <script src="../assets/js/youtube_karaoke.js"></script>
         <script src="../assets/js/script.js"></script>
         <script src="../assets/js/modal_alert.js"></script>
