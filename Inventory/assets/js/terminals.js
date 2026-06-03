@@ -36,7 +36,7 @@ if(document.getElementById("terminals")){
         autoWidth: true,
         language: {
            sLengthMenu: "Show _MENU_entries",
-           search:  `<a href="../../assets/files/terminals.xlsx" class=\"btn btn-sm btn-success me-3\"><span class=\"fa fa-file-excel-o\"></span> Use Template</a>`+
+           search:  `<a href="../../assets/files/terminals.xlsx" class=\"btn btn-sm btn-success me-1\"><span class=\"fa fa-file-excel-o\"></span> Use Template</a>`+
                     `<button id=\"add_router_btn\" data-bs-toggle=\"modal\" data-bs-target=\"#add_terminal\" class=\"btn btn-sm btn-dark me-3\"><span class=\"fa fa-plus\"></span> Add Terminal</button>`+
                     `Search: `
         }
