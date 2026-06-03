@@ -80,11 +80,11 @@
                             <i class="fa fa-map-marker red-1 <?php $mac ?  printf("text-dark rounded") :  null;?>" style="width: 13px;"></i> <span>MAC Address</span>
                         </a>
                     </li>
-                    <li hidden class="g_menu nav-item mb-2">
+                    <!-- <li hidden class="g_menu nav-item mb-2">
                         <a href="?loc=terminals" class="nav-link f-15 text-light <?php $terminals ?  printf("bg-light text-dark rounded") :  null;?>">
                             <i class="fa fa-desktop red-1 <?php $terminals ?  printf("text-dark rounded") :  null;?>" style="width: 13px;"></i> <span>Terminals <span class="fa fa-warning"></span></span>
                         </a>
-                    </li>
+                    </li> -->
                     <li hidden class="g_menu nav-item mb-2">
                         <a href="?loc=cctv" class="nav-link f-15 text-light <?php $cctv ?  printf("bg-light text-dark rounded") :  null;?>">
                             <i class="fa fa-video-camera red-1 <?php $cctv ?  printf("text-dark rounded") :  null;?>" style="width: 13px;"></i> <span>CCTV</span>
