@@ -346,3 +346,24 @@ Thank You Sir.
 
 
 - PAUL
+
+
+
+
+TERMINAL REPORTS
+4. Barcode/Asset Tracking Report
+
+All barcodes per terminal and component
+Useful for physical inventory checks
+
+
+5. Security & Software Compliance Report
+
+Kaspersky / Bitdefender status
+Windows Update status, OS version, Windows license validity
+Flags non-compliant terminals
+
+7. Terminals Needing Attention
+
+Filters terminals with tech recommendations or remarks filled in
+Acts as a maintenance/action-items list

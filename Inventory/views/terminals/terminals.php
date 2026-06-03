@@ -1,5 +1,11 @@
 <div id="terminals" class="ff-logins theme-card theme-card-dark">
     <div class="row">
+        <div class="mb-3">
+            <button id="import_" class="btn btn-dark wd-120 alert-dark fw-bold"><span class="fa fa-upload"></span><div>IMPORT</div></button>
+            <button id="export_" class="btn btn-dark wd-120 alert-dark fw-bold"><span class="fa fa-download"></span><div>EXPORT</div></button>
+            <button id="reports_" class="btn btn-dark wd-120 alert-dark fw-bold"><span class="fa fa-bar-chart"></span><div>REPORTS</div></button>
+            <a href="../../assets/files/terminals.xlsx" class="btn btn-success wd-180 alert-success fw-bold"><span class="fa fa-file-excel-o"></span><div>USE TEMPLATE</div></a>
+        </div>
         <!-- <div class="col-md-6"> -->
             <table id="tb_terminals" class="table table-secondary table-hover table-striped">
                 <thead>

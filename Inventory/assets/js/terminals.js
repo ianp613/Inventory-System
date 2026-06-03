@@ -2,6 +2,7 @@ if(document.getElementById("terminals")){
     const add_terminal                         = new bootstrap.Modal(document.getElementById('add_terminal'),unclose);
     const edit_terminal                        = new bootstrap.Modal(document.getElementById('edit_terminal'),unclose);
     const delete_terminal                      = new bootstrap.Modal(document.getElementById('delete_terminal'),unclose);
+    const export_terminal                      = new bootstrap.Modal(document.getElementById('export_terminal'),unclose);
     let terminalTable = new DataTable('#tb_terminals',{
         rowCallback: function(row) {
             $(row).addClass("trow");
@@ -35,9 +36,8 @@ if(document.getElementById("terminals")){
         ],
         autoWidth: true,
         language: {
-           sLengthMenu: "Show _MENU_entries",
-           search:  `<a href="../../assets/files/terminals.xlsx" class=\"btn btn-sm btn-success me-1\"><span class=\"fa fa-file-excel-o\"></span> Use Template</a>`+
-                    `<button id=\"add_router_btn\" data-bs-toggle=\"modal\" data-bs-target=\"#add_terminal\" class=\"btn btn-sm btn-dark me-3\"><span class=\"fa fa-plus\"></span> Add Terminal</button>`+
+            sLengthMenu: "Show _MENU_entries",
+            search: `<button id=\"add_router_btn\" data-bs-toggle=\"modal\" data-bs-target=\"#add_terminal\" class=\"btn btn-sm btn-dark me-3\"><span class=\"fa fa-plus\"></span> Add Terminal</button>`+
                     `Search: `
         }
     });
@@ -1458,6 +1458,13 @@ if(document.getElementById("terminals")){
         fillCombinedFieldsWithType(res.od, "edit_od_add_field", "edit_od_type", "edit_od_model", "edit_od_barcode", "OD", "edit_od_field")
         fillCombinedFieldsWithType(res.sp, "edit_sp_add_field", "edit_sp_type", "edit_sp_model", "edit_sp_barcode", "SP", "edit_sp_field")
     }
+
+
+    var export_             = document.querySelector("#export_")
+
+    export_.addEventListener("click", e => {
+        export_terminal.show()
+    })
 
 
 

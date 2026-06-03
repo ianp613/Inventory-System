@@ -493,7 +493,35 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><span class="fa fa-remove"></span> No</button>
-                <button id="delete_terminal_btn" e-id="" type="button" data-bs-dismiss="" class="btn btn-danger btn-sm"><span class="fa fa-trash-o"></span> Yes</button>
+                <button id="delete_terminal_btn" type="button" data-bs-dismiss="" class="btn btn-danger btn-sm"><span class="fa fa-trash-o"></span> Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<!-- EXPORT TERMINAL MODAL -->
+<div class="modal fade" id="export_terminal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered ">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h6>Export Terminal</h6>
+            </div>
+            <div class="modal-body">
+                <!-- <input type="checkbox">
+                <label for="">Export All</label>
+                <p>What to export?</p>
+                <input type="checkbox">
+                <label for="">Unit Type</label> -->
+                <h4 class="fw-bold text-danger">PAUL CUTE</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><span class="fa fa-remove"></span> Cancel</button>
+                <button id="" type="button" data-bs-dismiss="" class="btn btn-success btn-sm"><span class="fa fa-download"></span> Export</button>
             </div>
         </div>
     </div>
