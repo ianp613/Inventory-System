@@ -1,6 +1,6 @@
 if(document.getElementById("terminals")){
     const add_terminal                         = new bootstrap.Modal(document.getElementById('add_terminal'),unclose);
-    const edit_terminal                        = new bootstrap.Modal(document.getElementById('edit_terminal'));
+    const edit_terminal                        = new bootstrap.Modal(document.getElementById('edit_terminal'),unclose);
     const delete_terminal                      = new bootstrap.Modal(document.getElementById('delete_terminal'),unclose);
     let terminalTable = new DataTable('#tb_terminals',{
         rowCallback: function(row) {
@@ -36,7 +36,9 @@ if(document.getElementById("terminals")){
         autoWidth: true,
         language: {
            sLengthMenu: "Show _MENU_entries",
-           search: "<button id=\"add_router_btn\" data-bs-toggle=\"modal\" data-bs-target=\"#add_terminal\" class=\"btn btn-sm btn-dark me-3\"><span class=\"fa fa-plus\"></span> Add Terminal</button> Search: "
+           search:  `<a href="../../assets/files/terminals.xlsx" class=\"btn btn-sm btn-success me-3\"><span class=\"fa fa-file-excel-o\"></span> Use Template</a>`+
+                    `<button id=\"add_router_btn\" data-bs-toggle=\"modal\" data-bs-target=\"#add_terminal\" class=\"btn btn-sm btn-dark me-3\"><span class=\"fa fa-plus\"></span> Add Terminal</button>`+
+                    `Search: `
         }
     });
 
@@ -580,6 +582,7 @@ if(document.getElementById("terminals")){
     var remarks_                                = document.getElementById("remarks_")
     var tech_recommendation                     = document.getElementById("tech_recommendation")
     var unit_type                               = document.getElementById("unit_type")
+    var casing                                  = document.getElementById("casing")
     var motherboard_model                       = document.getElementById("motherboard_model")
     var motherboard_barcode                     = document.getElementById("motherboard_barcode")
     var ups_brand                               = document.getElementById("ups_brand")
@@ -599,6 +602,7 @@ if(document.getElementById("terminals")){
         remarks_                                = document.getElementById("remarks_")
         tech_recommendation                     = document.getElementById("tech_recommendation")
         unit_type                               = document.getElementById("unit_type")
+        casing                                  = document.getElementById("casing")
         motherboard_model                       = document.getElementById("motherboard_model")
         motherboard_barcode                     = document.getElementById("motherboard_barcode")
         ups_brand                               = document.getElementById("ups_brand")
@@ -770,6 +774,7 @@ if(document.getElementById("terminals")){
             remarks                 : remarks_.value,
             tech_recommendation     : tech_recommendation.value,
             unit_type               : unit_type.value,
+            casing                  : casing.value,
             motherboard_model       : motherboard_model.value,
             motherboard_barcode     : motherboard_barcode.value,
             cpu                     : cpu_combined,
@@ -821,6 +826,7 @@ if(document.getElementById("terminals")){
     var edit_remarks_                                = document.getElementById("edit_remarks_")
     var edit_tech_recommendation                     = document.getElementById("edit_tech_recommendation")
     var edit_unit_type                               = document.getElementById("edit_unit_type")
+    var edit_casing                                  = document.getElementById("edit_casing")
     var edit_motherboard_model                       = document.getElementById("edit_motherboard_model")
     var edit_motherboard_barcode                     = document.getElementById("edit_motherboard_barcode")
     var edit_ups_brand                               = document.getElementById("edit_ups_brand")
@@ -993,6 +999,7 @@ if(document.getElementById("terminals")){
             remarks                 : edit_remarks_.value,
             tech_recommendation     : edit_tech_recommendation.value,
             unit_type               : edit_unit_type.value,
+            casing                  : edit_casing.value,
             motherboard_model       : edit_motherboard_model.value,
             motherboard_barcode     : edit_motherboard_barcode.value,
             cpu                     : edit_cpu_combined,
@@ -1054,31 +1061,32 @@ if(document.getElementById("terminals")){
                         "<b>IP Address: </b>"               + (t["ip_address"] != "-"               ? t["ip_address"]           : "")
         rowData[2]  =   "<b>Project: </b>"                  + t["project"]                          + "</br>" +
                         "<b>Room: </b>"                     + t["room"]                             + "</br>" +
-                        "<b>Building: </b>"                 + t["building"]
-        rowData[3]  =   t["unit_type"] != "-"               ? t["unit_type"]                                                    : ""
-        rowData[4]  =   "<b>Model: </b>"                    + (t["motherboard_model"] != "-"        ? t["motherboard_model"]    : "")       + "</br>" +
+                        "<b>Building: </b>"                 + t["building"],
+        rowData[3]  =   t["unit_type"] != "-"               ? t["unit_type"]                                                    : "",
+        rowData[4]  =   t["casing"] != "-"                  ? t["casing"]                                                       : "",
+        rowData[5]  =   "<b>Model: </b>"                    + (t["motherboard_model"] != "-"        ? t["motherboard_model"]    : "")       + "</br>" +
                         "<b>Barcode: </b>"                  + (t["motherboard_barcode"] != "-"      ? t["motherboard_barcode"]  : "")
-        rowData[5]  =   separatorFormater(t["cpu"],         ["Model","Barcode"],                    "CPU")
-        rowData[6]  =   separatorFormater(t["ram"],         ["Model","Barcode"],                    "RAM")
-        rowData[7]  =   separatorFormater(t["storage"],     ["Model","Barcode"],                    "Storage")
-        rowData[8]  =   separatorFormater(t["psu"],         ["Model","Barcode"],                    "PSU")
-        rowData[9]  =   separatorFormater(t["cs"],          ["Model","Barcode"],                    "CS")
-        rowData[10] =   separatorFormater(t["ec"],          ["Model","Barcode"],                    "EC")
-        rowData[11] =   separatorFormater(t["id_"],         ["Type","Model","Barcode"],             "ID")
-        rowData[12] =   separatorFormater(t["od"],          ["Type","Model","Barcode"],             "OD")
-        rowData[13] =   separatorFormater(t["sp"],          ["Type","Model","Barcode"],             "SP")
-        rowData[14] =   t["ups_brand"] != "-"               ? t["ups_brand"]                        : ""
-        rowData[15] =   "<b>Model: </b>"                    + (t["ups_casing_model"] != "-"         ? t["ups_casing_model"]     : "")       + "</br>" +
+        rowData[6]  =   separatorFormater(t["cpu"],         ["Model","Barcode"],                    "CPU")
+        rowData[7]  =   separatorFormater(t["ram"],         ["Model","Barcode"],                    "RAM")
+        rowData[8]  =   separatorFormater(t["storage"],     ["Model","Barcode"],                    "Storage")
+        rowData[9]  =   separatorFormater(t["psu"],         ["Model","Barcode"],                    "PSU")
+        rowData[10]  =   separatorFormater(t["cs"],          ["Model","Barcode"],                    "CS")
+        rowData[11] =   separatorFormater(t["ec"],          ["Model","Barcode"],                    "EC")
+        rowData[12] =   separatorFormater(t["id_"],         ["Type","Model","Barcode"],             "ID")
+        rowData[13] =   separatorFormater(t["od"],          ["Type","Model","Barcode"],             "OD")
+        rowData[14] =   separatorFormater(t["sp"],          ["Type","Model","Barcode"],             "SP")
+        rowData[15] =   t["ups_brand"] != "-"               ? t["ups_brand"]                        : ""
+        rowData[16] =   "<b>Model: </b>"                    + (t["ups_casing_model"] != "-"         ? t["ups_casing_model"]     : "")       + "</br>" +
                         "<b>Barcode: </b>"                  + (t["ups_casing_barcode"] != "-"       ? t["ups_casing_barcode"]   : "")       + "</br>"
-        rowData[16] =   separatorFormater(t["ups_battery"],["Model","Barcode"],"Battery")
-        rowData[17] =   t["ups_status"] != "-"              ? t["ups_status"]                       : ""
-        rowData[18] =   t["kaspersky"] != "-"               ? t["kaspersky"]                        : ""
-        rowData[19] =   t["bitdefender"] != "-"             ? t["bitdefender"]                      : ""
-        rowData[20] =   t["windows_update"] != "-"          ? t["windows_update"]                   : ""
-        rowData[21] =   t["operating_system"] != "-"        ? t["operating_system"]                 : ""
-        rowData[22] =   t["windows_license"] != "-"         ? t["windows_license"]                  : ""
-        rowData[23] =   t["remarks"] != "-"                 ? t["remarks"]                          : ""
-        rowData[24] =   t["tech_recommendation"] != "-"     ? t["tech_recommendation"]              : ""
+        rowData[17] =   separatorFormater(t["ups_battery"],["Model","Barcode"],"Battery")
+        rowData[18] =   t["ups_status"] != "-"              ? t["ups_status"]                       : ""
+        rowData[19] =   t["kaspersky"] != "-"               ? t["kaspersky"]                        : ""
+        rowData[20] =   t["bitdefender"] != "-"             ? t["bitdefender"]                      : ""
+        rowData[21] =   t["windows_update"] != "-"          ? t["windows_update"]                   : ""
+        rowData[22] =   t["operating_system"] != "-"        ? t["operating_system"]                 : ""
+        rowData[23] =   t["windows_license"] != "-"         ? t["windows_license"]                  : ""
+        rowData[24] =   t["remarks"] != "-"                 ? t["remarks"]                          : ""
+        rowData[25] =   t["tech_recommendation"] != "-"     ? t["tech_recommendation"]              : ""
         terminalTable.row(row).data(rowData).draw(false);
     }
 
@@ -1096,6 +1104,7 @@ if(document.getElementById("terminals")){
             "<b>Building: </b>"                 + t["building"],
 
             t["unit_type"] != "-"               ? t["unit_type"]                                                    : "",
+            t["casing"] != "-"                  ? t["casing"]                                                       : "",
 
             "<b>Model: </b>"                    + (t["motherboard_model"] != "-"        ? t["motherboard_model"]    : "")       + "</br>" +
             "<b>Barcode: </b>"                  + (t["motherboard_barcode"] != "-"      ? t["motherboard_barcode"]  : ""),
@@ -1222,6 +1231,7 @@ if(document.getElementById("terminals")){
         edit_remarks_                                = document.getElementById("edit_remarks_")
         edit_tech_recommendation                     = document.getElementById("edit_tech_recommendation")
         edit_unit_type                               = document.getElementById("edit_unit_type")
+        edit_casing                                  = document.getElementById("edit_casing")
         edit_motherboard_model                       = document.getElementById("edit_motherboard_model")
         edit_motherboard_barcode                     = document.getElementById("edit_motherboard_barcode")
         edit_ups_brand                               = document.getElementById("edit_ups_brand")
@@ -1241,6 +1251,7 @@ if(document.getElementById("terminals")){
         edit_remarks_.value             = res.remarks                   != "-" ? res.remarks : ""
         edit_tech_recommendation.value  = res.tech_recommendation       != "-" ? res.tech_recommendation : ""
         edit_unit_type.value            = res.unit_type                 != "-" ? res.unit_type : ""
+        edit_casing.value               = res.casing                    != "-" ? res.casing : ""
         edit_motherboard_model.value    = res.motherboard_model         != "-" ? res.motherboard_model : ""
         edit_motherboard_barcode.value  = res.motherboard_barcode       != "-" ? res.motherboard_barcode : ""
         edit_ups_brand.value            = res.ups_brand                 != "-" ? res.ups_brand : ""

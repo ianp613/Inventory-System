@@ -8,6 +8,7 @@
                         <td>Terminal</td>
                         <td>Location</td>
                         <td>Unit Type</td>
+                        <td>Casing</td>
                         <td>Motherboard</td>
                         <td>CPU (Central Processing Unit)</td>
                         <td>RAM (Random Access Memory)</td>

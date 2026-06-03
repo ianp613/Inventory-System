@@ -275,6 +275,7 @@
             Migrate::string("remarks");
             Migrate::string("tech_recommendation");
             Migrate::string("unit_type");
+            Migrate::string("casing");
             Migrate::string("motherboard_model");
             Migrate::string("motherboard_barcode");
             Migrate::string("cpu");

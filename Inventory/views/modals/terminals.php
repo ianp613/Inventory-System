@@ -56,6 +56,9 @@
                     <option value="Tiny">Tiny</option>
                 </select>
 
+                <label for="">Casing</label>
+                <input type="text" name="" id="casing" class="form-control mt-2 mb-2" placeholder="Casing">
+
                 <label for="">Motherboard</label>
                 <input type="text" name="" id="motherboard_model" class="form-control mt-2" placeholder="Model">
                 <input type="text" name="" id="motherboard_barcode" class="form-control mt-2 mb-2" placeholder="Barcode">
@@ -286,6 +289,10 @@
                     <option value="Mini Tower">Mini Tower</option>
                     <option value="Tiny">Tiny</option>
                 </select>
+
+
+                <label for="">Casing</label>
+                <input type="text" name="" id="edit_casing" class="form-control mt-2 mb-2" placeholder="Casing">
 
                 <label for="">Motherboard</label>
                 <input type="text" name="" id="edit_motherboard_model" class="form-control mt-2" placeholder="Model">

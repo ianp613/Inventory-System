@@ -476,7 +476,7 @@ if(document.getElementsByClassName("ps-field")[0]){
 // PUBLIC
 
 document.addEventListener('contextmenu', event => {
-    // event.preventDefault();
+    event.preventDefault();
 });
 
 const elements = document.querySelectorAll("input[type='text'], input[type='password'], textarea");

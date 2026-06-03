@@ -38,6 +38,7 @@
             $ts->remarks                     = $data["remarks"]              ? $data["remarks"] : "-";
             $ts->tech_recommendation         = $data["tech_recommendation"]  ? $data["tech_recommendation"] : "-";
             $ts->unit_type                   = $data["unit_type"]            ? $data["unit_type"] : "-";
+            $ts->casing                      = $data["casing"]               ? $data["casing"] : "-";
             $ts->motherboard_model           = $data["motherboard_model"]    ? $data["motherboard_model"] : "-";
             $ts->motherboard_barcode         = $data["motherboard_barcode"]  ? $data["motherboard_barcode"] : "-";
             $ts->cpu                         = $data["cpu"]                  ? $data["cpu"] : "-";

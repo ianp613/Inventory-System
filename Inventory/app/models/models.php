@@ -589,6 +589,7 @@
             "remarks",
             "tech_recommendation",
             "unit_type",
+            "casing",
             "motherboard_model",
             "motherboard_barcode",
             "cpu",
@@ -622,6 +623,7 @@
         public string $remarks;
         public string $tech_recommendation;
         public string $unit_type;
+        public string $casing;
         public string $motherboard_model;
         public string $motherboard_barcode;
         public string $cpu;
