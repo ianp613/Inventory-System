@@ -1,7 +1,7 @@
 {
     "unifi" : [
         {
-            "name" : "Network 15 | Free Wifi Main Building",
+            "name" : "Network 33 | Free Wifi Main Building",
             "site_id" : "default",
             "host" : "203.177.127.150",
             "port" : "8443",
