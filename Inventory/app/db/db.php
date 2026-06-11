@@ -6,8 +6,8 @@
      */
     class DB{
         public static $DB_HOST = "localhost";
-        public static $DB_DATABASE = "inventory_system";
-        public static $DB_USERNAME = "root";
+        public static $DB_DATABASE = "DB*33253983";
+        public static $DB_USERNAME = "ddc_artisan";
         public static $DB_PASSWORD = "";
         /**
          * --------------------------------------------------------------------------------
