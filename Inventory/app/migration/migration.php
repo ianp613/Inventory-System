@@ -22,7 +22,8 @@
         "Consumable_RequestMigration",
         "Post_ItMigration",
         "YK_RoomMigration",
-        "YK_ReservedMigration"
+        "YK_ReservedMigration",
+        "PGUserMigration"
     ];
 
     class UserMigration
@@ -391,6 +392,23 @@
             Migrate::string("rid");
             Migrate::string("yt_link");
             Migrate::string("yt_singer");
+        }
+    }
+
+    class PGUserMigration
+    {
+        public static function index(){
+            Migrate::attrib_table("pg_user");
+            Migrate::attrib_string(1000);
+            Migrate::string("fname");
+            Migrate::string("lname");
+            Migrate::string("email");
+            Migrate::string("job_title");
+            Migrate::string("phone");
+            Migrate::string("employee_id");
+            Migrate::string("privileges");
+            Migrate::string("username");
+            Migrate::string("password");
         }
     }
 ?>

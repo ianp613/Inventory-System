@@ -855,7 +855,7 @@
         public string $room_name;
     }
 
-        class YK_Reserved{
+    class YK_Reserved{
         public $table = "yk_reserved";
         public $fillable = [
             "rid",
@@ -866,5 +866,35 @@
         public string $rid;
         public string $yt_link;
         public string $yk_singer;
+    }
+
+
+
+
+    class PG_User
+    {
+        public $table = "pg_user";
+
+        public $fillable = [
+            "fname",
+            "lname",
+            "email",
+            "job_title",
+            "phone",
+            "employee_id",
+            "privileges",
+            "username",
+            "password"
+        ];
+
+        public string $fname;
+        public string $lname;
+        public string $email;
+        public string $job_title;
+        public string $phone;
+        public string $employee_id;
+        public string $privileges;
+        public string $username;
+        public string $password;
     }
 ?>
