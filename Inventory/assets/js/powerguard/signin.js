@@ -60,10 +60,10 @@
             localStorage.setItem("login_type",res.type)
             localStorage.setItem("login_message",res.message)
             if(res.user.privileges == "supervisor"){
-                window.location.replace("supervisor.php")
+              window.location.replace("supervisor.php")
             }
             if(res.user.privileges == "technician"){
-
+              window.location.replace("technician.php")
             }
             if(res.user.privileges == "administrator"){
 
