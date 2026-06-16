@@ -1,3 +1,8 @@
+::selection {
+  background-color: #e75c00; /* highlight color */
+  color: #ffffff; /* text color while selected */
+}
+
 :root{
     --ink:#1f2421;
     --ink-soft:#5c645f;

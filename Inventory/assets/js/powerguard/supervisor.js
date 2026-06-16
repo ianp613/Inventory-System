@@ -11,8 +11,21 @@
       panes.forEach(p => p.classList.remove('pgs-pane-active'));
       tab.classList.add('pgs-tab-active');
       document.getElementById(tab.dataset.pane).classList.add('pgs-pane-active');
+      localStorage.setItem("pgs-active",tab.getAttribute("data-pane"))
     });
   });
+
+  if(localStorage.getItem("pgs-active") !== null){
+    tabs.forEach(t => t.classList.remove('pgs-tab-active'));
+    panes.forEach(p => p.classList.remove('pgs-pane-active'));
+     tabs.forEach(tab => {
+      if(tab.getAttribute("data-pane") == localStorage.getItem("pgs-active")){
+        tab.classList.add('pgs-tab-active');
+        document.getElementById(tab.dataset.pane).classList.add('pgs-pane-active');
+      }
+    });
+  }
+  
 
   /* ---------- WORKSTATION TABLE ---------- */
   const tbody = document.getElementById('pgsWsTbody');
@@ -107,6 +120,9 @@
 
 })();
 
-if(localStorage.getItem("login") == "true"){
+if(localStorage.getItem("login_sup") == "true"){
     ss.toast(localStorage.getItem("login_title"),localStorage.getItem("login_type"),localStorage.getItem("login_message"))
+    localStorage.removeItem("login_sup")
+}else{
+  splash(0.5, "light", "#082b49");
 }

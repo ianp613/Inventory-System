@@ -55,18 +55,22 @@
             password.value = ""
             document.getElementById('remember').checked = false
             localStorage.setItem("userid",res.user.id)
-            localStorage.setItem("login","true")
             localStorage.setItem("login_title",res.title)
             localStorage.setItem("login_type",res.type)
             localStorage.setItem("login_message",res.message)
             if(res.user.privileges == "supervisor"){
+              localStorage.setItem("login_sup","true")
+              localStorage.removeItem("pgs-active")
               window.location.replace("supervisor.php")
             }
             if(res.user.privileges == "technician"){
+              localStorage.setItem("login_tech","true")
+              localStorage.removeItem("pgt-active")
               window.location.replace("technician.php")
             }
             if(res.user.privileges == "administrator"){
-
+              localStorage.setItem("login_admin","true")
+              window.location.replace("administrator.php")
             }
         }
         ss.toast(res.title,res.type,res.message)

@@ -331,6 +331,7 @@
 <script src="../../assets/js/sweetalert2/sweetalert2.all.min.js"></script>
 <script src="../../assets/js/sole.js"></script>
 <script src="../../assets/js/sole.swal.js"></script>
+<script src="../../assets/js/powerguard/splash.js"></script>
 <script src="../../assets/js/powerguard/supervisor.js"></script>
 </body>
 </html>
