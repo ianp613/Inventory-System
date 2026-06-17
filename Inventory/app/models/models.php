@@ -874,7 +874,6 @@
     class PG_User
     {
         public $table = "pg_user";
-
         public $fillable = [
             "fname",
             "lname",
@@ -883,6 +882,7 @@
             "phone",
             "employee_id",
             "privileges",
+            "account",
             "username",
             "password"
         ];
@@ -894,7 +894,77 @@
         public string $phone;
         public string $employee_id;
         public string $privileges;
+        public string $account;
         public string $username;
         public string $password;
     }
+
+    class PG_Ticket{
+        public $table = "pg_ticket";
+        public $fillable = [
+            "sup_id",
+            "incident_datetime",
+            "fluctuation_type",
+            "priority",
+            "area",
+            "duration_minutes",
+            "description"
+        ];
+
+        public string $sup_id;
+        public string $incident_datetime;
+        public string $fluctuation_type;
+        public string $priority;
+        public string $area;
+        public string $duration_minutes;
+        public string $description;
+    }
+
+    class PG_WS{
+        public $table = "pg_ws";
+        public $fillable = [
+            "ticket_id",
+            "ws_number",
+            "assigned_user",
+            "ups_status",
+            "system_unit_status",
+            "monitor_status",
+            "notes",
+            "tech_id"
+        ];
+
+        public string $ticket_id;
+        public string $ws_number;
+        public string $assigned_user;
+        public string $ups_status;
+        public string $system_unit_status;
+        public string $monitor_status;
+        public string $notes;
+        public string $sign_off_queue; //[submitted,done,rejected]
+        public string $tech_id;
+    }
+
+    // class PG_WS_Assessment{
+    //     public $table = "pg_ws_assessment";
+    //     public $fillable = [
+    //         "ws_id",
+    //         "assessed_at",
+    //         "assigned_user",
+    //         "ups_status",
+    //         "system_unit_status",
+    //         "monitor_status",
+    //         "notes",
+    //         "tech_id"
+    //     ];
+
+    //     public string $ticket_id;
+    //     public string $ws_number;
+    //     public string $assigned_user;
+    //     public string $ups_status;
+    //     public string $system_unit_status;
+    //     public string $monitor_status;
+    //     public string $notes;
+    //     public string $sign_off_queue; //[submitted,done,rejected]
+    //     public string $tech_id;
+    // }
 ?>

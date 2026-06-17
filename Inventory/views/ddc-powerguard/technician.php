@@ -288,7 +288,7 @@
         <div class="pgt-field">
           <label for="pgtAssessWs">Select my terminal</label>
           <select id="pgtAssessWs">
-            <option value="">Choose a terminal…</option>
+            <option value="" selected disabled>Choose a terminal…</option>
             <option value="WS-101">WS-101 — #2024-0147 (parts pending)</option>
             <option value="WS-105">WS-105 — #2024-0147 (not started)</option>
             <option value="WS-110">WS-110 — #2024-0147 (not started)</option>
@@ -299,7 +299,7 @@
           <input type="datetime-local" id="pgtAssessDatetime">
         </div>
       </div>
-
+      
       <div class="pgt-comp-grid">
         <!-- UPS -->
         <div class="pgt-comp-card">
@@ -307,21 +307,10 @@
           <div class="pgt-comp-field">
             <label>Condition</label>
             <select id="pgtUpsCondition" onchange="applyCompClass(this)">
-              <option value="">Select…</option>
-              <option class="pgt-damaged" value="Damaged — replace">Damaged — replace</option>
-              <option class="pgt-suspected" value="Damaged — repairable">Damaged — repairable</option>
+              <option value="" selected disabled>Select…</option>
               <option class="pgt-ok" value="Functional">Functional</option>
-              <option value="Not tested">Not tested</option>
-            </select>
-          </div>
-          <div class="pgt-comp-field">
-            <label>Action</label>
-            <select id="pgtUpsAction">
-              <option value="">Select…</option>
-              <option>Replace unit</option>
-              <option>Replace battery only</option>
-              <option>Repair</option>
-              <option>No action</option>
+              <option class="pgt-damaged" value="Damaged — replace unit">Damaged — replace unit</option>
+              <option class="pgt-damaged" value="Damaged — replace battery">Damaged — replace battery</option>
             </select>
           </div>
         </div>
@@ -332,22 +321,13 @@
           <div class="pgt-comp-field">
             <label>Condition</label>
             <select id="pgtSuCondition" onchange="applyCompClass(this)">
-              <option value="">Select…</option>
+              <option value="" selected disabled>Select…</option>
               <option value="Functional">Functional</option>
-              <option value="Damaged — PSU">Damaged — PSU</option>
-              <option value="Damaged — motherboard">Damaged — motherboard</option>
-              <option value="Damaged — storage">Damaged — storage</option>
-              <option value="Total loss">Total loss</option>
-            </select>
-          </div>
-          <div class="pgt-comp-field">
-            <label>Action</label>
-            <select id="pgtSuAction">
-              <option value="">Select…</option>
-              <option>No action</option>
-              <option>Replace PSU</option>
-              <option>Full replacement</option>
-              <option>Repair</option>
+              <option value="Damaged — replace PSU">Damaged — replace PSU</option>
+              <option value="Damaged — replace storage">Damaged — replace storage</option>
+              <option value="Damaged — replace memory">Damaged — replace memory</option>
+              <option value="Damaged — replace motherboard">Damaged — replace motherboard</option>
+              <option value="Damaged — replace unit">Damaged — replace unit</option>
             </select>
           </div>
         </div>
@@ -358,19 +338,9 @@
           <div class="pgt-comp-field">
             <label>Condition</label>
             <select id="pgtMonCondition" onchange="applyCompClass(this)">
-              <option value="">Select…</option>
+              <option value="" selected disabled>Select…</option>
               <option value="Functional">Functional</option>
-              <option value="Damaged">Damaged</option>
-              <option value="Needs replacement">Needs replacement</option>
-            </select>
-          </div>
-          <div class="pgt-comp-field">
-            <label>Overall status</label>
-            <select id="pgtOverallStatus" onchange="applyCompClass(this)">
-              <option value="">Select…</option>
-              <option value="Critical — immediate replacement">Critical — immediate replacement</option>
-              <option value="Warning — repair needed">Warning — repair needed</option>
-              <option value="OK — cleared for use">OK — cleared for use</option>
+              <option value="Damaged — needs replacement">Damaged — needs replacement</option>
             </select>
           </div>
         </div>
@@ -399,9 +369,8 @@
           <label for="pgtEscalate">Escalate to</label>
           <select id="pgtEscalate">
             <option value="">None — no escalation needed</option>
-            <option>Supervisor</option>
+            <option>Procurement — For Status</option>
             <option>IT Manager</option>
-            <option>Procurement</option>
           </select>
         </div>
       </div>

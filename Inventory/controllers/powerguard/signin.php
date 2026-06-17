@@ -53,6 +53,19 @@
         }
     }
 
+    if($auth){
+        if($users[0]["account"] == "inactive"){
+            $auth = false;
+            $response = [
+                "status" => false,
+                "title" => "Pending Account Activation",
+                "type" => "warning",
+                "message" => "Your account is not yet activated, please wait for account activation notification that will be sent to ".$users[0]["email"],
+
+            ];
+        }
+    }
+
     echo json_encode($response);
 
 

@@ -407,6 +407,7 @@
             Migrate::string("phone");
             Migrate::string("employee_id");
             Migrate::string("privileges");
+            Migrate::string("account");
             Migrate::string("username");
             Migrate::string("password");
         }
