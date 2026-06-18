@@ -121,7 +121,7 @@
 })();
 
 if(localStorage.getItem("login_sup") == "true"){
-    ss.toast(localStorage.getItem("login_title"),localStorage.getItem("login_type"),localStorage.getItem("login_message"))
+    ss.toast(localStorage.getItem("login_title"),localStorage.getItem("login_type"),localStorage.getItem("login_message"),null,"#082b49")
     localStorage.removeItem("login_sup")
 }else{
   splash(0.5, "light", "#082b49");

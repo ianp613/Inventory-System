@@ -1,10 +1,14 @@
 class Sole_Swaler{
-    toast(title = null,icon = null,text = null,confirmButtonText = "OK"){
+    toast(title = null,icon = null,text = null,confirmButtonText = "OK",confirmButtonColor = null){
+        if(!confirmButtonText){
+            confirmButtonText = "OK"
+        }
         Swal.fire({
             title: title,
             text: text,
             icon: icon,
-            confirmButtonText: confirmButtonText
+            confirmButtonText: confirmButtonText,
+            confirmButtonColor: confirmButtonColor
         })    
     }
 }

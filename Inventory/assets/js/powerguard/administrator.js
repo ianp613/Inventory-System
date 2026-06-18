@@ -446,7 +446,7 @@
 })();
 
 if(localStorage.getItem("login_admin") == "true"){
-    ss.toast(localStorage.getItem("login_title"),localStorage.getItem("login_type"),localStorage.getItem("login_message"))
+    ss.toast(localStorage.getItem("login_title"),localStorage.getItem("login_type"),localStorage.getItem("login_message"),null,"#223330")
     localStorage.removeItem("login_admin")
 }else{
   splash(0.5, "light", "#16201d");

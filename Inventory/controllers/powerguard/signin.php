@@ -64,6 +64,17 @@
 
             ];
         }
+
+        if($users[0]["account"] == "deactivated"){
+            $auth = false;
+            $response = [
+                "status" => false,
+                "title" => "Deactivated Account",
+                "type" => "error",
+                "message" => "Your account has been deactivated. Please contact your system administrator immediately to prevent account deletion.",
+
+            ];
+        }
     }
 
     echo json_encode($response);

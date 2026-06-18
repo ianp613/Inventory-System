@@ -74,7 +74,7 @@
               window.location.replace("administrator.php")
             }
         }
-        ss.toast(res.title,res.type,res.message)
+        ss.toast(res.title,res.type,res.message,null,"#082b49")
     })
     // console.log('Signing in', { username: username.value, remember: document.getElementById('remember').checked });
   });
