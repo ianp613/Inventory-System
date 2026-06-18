@@ -1,6 +1,15 @@
 
 (function(){
 
+  /* ── TICKET DETAILS TOGGLE ── */
+  window.toggleTicketDetails = function(panelId, btn){
+    const panel = document.getElementById(panelId);
+    const isOpen = panel.classList.contains('pgt-details-panel-open');
+    panel.classList.toggle('pgt-details-panel-open', !isOpen);
+    btn.classList.toggle('pgt-details-open', !isOpen);
+    btn.childNodes[0].textContent = isOpen ? 'View details ' : 'Hide details ';
+  };
+
   /* ── TAB SWITCHING ── */
   const tabs = document.querySelectorAll('.pgt-tab');
   const panes = document.querySelectorAll('.pgt-pane');
@@ -123,6 +132,57 @@
     else if(val.includes('functional') || val.includes('ok') || val.includes('cleared')) select.classList.add('pgt-ok');
     else if(val.includes('warning') || val.includes('repair')) select.classList.add('pgt-warning');
   };
+
+  /* ── WORKSTATION DAMAGE DECLARATION (supervisor's original ticket data) ── */
+  const declarations = {
+    'WS-101': { user:'J. Santos', ups:'Damaged', system:'Suspected', monitor:'OK', notes:'Burnt smell from UPS' },
+    'WS-105': { user:'L. Garcia', ups:'Damaged', system:'Damaged', monitor:'OK', notes:'System won\'t POST' },
+    'WS-110': { user:'F. Aquino', ups:'Suspected', system:'OK', monitor:'OK', notes:'Awaiting technician inspection' },
+  };
+
+  function declStatusClass(status){
+    const s = (status || '').toLowerCase();
+    if(s === 'damaged') return 'pgt-decl-damaged';
+    if(s === 'suspected') return 'pgt-decl-suspected';
+    return 'pgt-decl-ok';
+  }
+
+  function renderDeclaration(ws){
+    const block = document.getElementById('pgtDeclBlock');
+    const d = declarations[ws];
+    if(!d){
+      block.innerHTML = `<div class="pgt-decl-empty">Select a terminal above to view the supervisor's original damage declaration.</div>`;
+      return;
+    }
+    block.innerHTML = `
+      <div class="pgt-decl-grid">
+        <div class="pgt-decl-item">
+          <div class="pgt-decl-lbl">Assigned user</div>
+          <div class="pgt-decl-val">${d.user}</div>
+        </div>
+        <div class="pgt-decl-item">
+          <div class="pgt-decl-lbl">UPS status</div>
+          <span class="pgt-decl-status ${declStatusClass(d.ups)}"><span class="pgt-decl-status-dot"></span>${d.ups}</span>
+        </div>
+        <div class="pgt-decl-item">
+          <div class="pgt-decl-lbl">System unit status</div>
+          <span class="pgt-decl-status ${declStatusClass(d.system)}"><span class="pgt-decl-status-dot"></span>${d.system}</span>
+        </div>
+        <div class="pgt-decl-item">
+          <div class="pgt-decl-lbl">Monitor status</div>
+          <span class="pgt-decl-status ${declStatusClass(d.monitor)}"><span class="pgt-decl-status-dot"></span>${d.monitor}</span>
+        </div>
+      </div>
+      <div class="pgt-decl-notes">
+        <div class="pgt-decl-notes-lbl">Supervisor notes</div>
+        ${d.notes}
+      </div>
+    `;
+  }
+
+  document.getElementById('pgtAssessWs').addEventListener('change', function(){
+    renderDeclaration(this.value);
+  });
 
   /* ── SUBMIT ASSESSMENT ── */
   document.getElementById('pgtSubmitAssessBtn').addEventListener('click', () => {

@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PowerGuard — Technician</title>
 <link rel="stylesheet" href="../../assets/css/powerguard.css">
-
 </head>
 <body class="pgt-body">
 
@@ -76,8 +75,36 @@
             <span class="pgt-mono" style="font-size:13px">#2024-0147</span>
             <span class="pgt-badge pgt-badge-red"><span class="pgt-badge-dot"></span> High priority</span>
             <span class="pgt-badge pgt-badge-amber"><span class="pgt-badge-dot"></span> In progress</span>
+            <button class="pgt-details-btn" onclick="toggleTicketDetails('pgtDetails0147', this)">
+              View details
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
           </div>
           <div class="pgt-ticket-meta">Jun 8 · R. Villanueva · 2F Admin Wing · Voltage spike · 14 terminals</div>
+        </div>
+        <div class="pgt-details-panel" id="pgtDetails0147">
+          <div class="pgt-details-grid">
+            <div class="pgt-details-item">
+              <div class="pgt-details-lbl">Fluctuation type</div>
+              <div class="pgt-details-val">Voltage spike</div>
+            </div>
+            <div class="pgt-details-item">
+              <div class="pgt-details-lbl">Duration</div>
+              <div class="pgt-details-val">12 minutes</div>
+            </div>
+            <div class="pgt-details-item">
+              <div class="pgt-details-lbl">Incident date &amp; time</div>
+              <div class="pgt-details-val">Jun 8, 2024 · 2:32 PM</div>
+            </div>
+            <div class="pgt-details-item">
+              <div class="pgt-details-lbl">Area / floor</div>
+              <div class="pgt-details-val">2F Admin Wing</div>
+            </div>
+          </div>
+          <div class="pgt-details-desc">
+            <div class="pgt-details-desc-lbl">Description</div>
+            Sudden voltage spike at 2:32 PM caused circuit breakers to trip in admin wing. Multiple UPS units reported burnt smell.
+          </div>
         </div>
         <div class="pgt-ticket-body">
           <div class="pgt-terminal-grid" id="pgtTerminalGrid1">
@@ -99,8 +126,36 @@
             <span class="pgt-mono" style="font-size:13px">#2024-0143</span>
             <span class="pgt-badge pgt-badge-amber"><span class="pgt-badge-dot"></span> Medium priority</span>
             <span class="pgt-badge pgt-badge-amber"><span class="pgt-badge-dot"></span> In progress</span>
+            <button class="pgt-details-btn" onclick="toggleTicketDetails('pgtDetails0143', this)">
+              View details
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
           </div>
           <div class="pgt-ticket-meta">Jun 5 · P. Mendoza · 4F Finance Wing · Brownout · 4 terminals</div>
+        </div>
+        <div class="pgt-details-panel" id="pgtDetails0143">
+          <div class="pgt-details-grid">
+            <div class="pgt-details-item">
+              <div class="pgt-details-lbl">Fluctuation type</div>
+              <div class="pgt-details-val">Brownout</div>
+            </div>
+            <div class="pgt-details-item">
+              <div class="pgt-details-lbl">Duration</div>
+              <div class="pgt-details-val">35 minutes</div>
+            </div>
+            <div class="pgt-details-item">
+              <div class="pgt-details-lbl">Incident date &amp; time</div>
+              <div class="pgt-details-val">Jun 5, 2024 · 9:14 AM</div>
+            </div>
+            <div class="pgt-details-item">
+              <div class="pgt-details-lbl">Area / floor</div>
+              <div class="pgt-details-val">4F Finance Wing</div>
+            </div>
+          </div>
+          <div class="pgt-details-desc">
+            <div class="pgt-details-desc-lbl">Description</div>
+            Voltage dropped below normal operating range for an extended period, causing intermittent shutdowns on several finance terminals. No visible burn damage reported, but UPS units may have deep-discharged.
+          </div>
         </div>
         <div class="pgt-ticket-body">
           <div class="pgt-terminal-grid" id="pgtTerminalGrid2">
@@ -115,8 +170,36 @@
           <div class="pgt-ticket-head-left">
             <span class="pgt-mono" style="font-size:13px">#2024-0089</span>
             <span class="pgt-badge pgt-badge-green"><span class="pgt-badge-dot"></span> Closed</span>
+            <button class="pgt-details-btn" onclick="toggleTicketDetails('pgtDetails0089', this)">
+              View details
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
           </div>
           <div class="pgt-ticket-meta">Mar 12 · R. Villanueva · 3F Admin Wing · Power surge · 2 terminals</div>
+        </div>
+        <div class="pgt-details-panel" id="pgtDetails0089">
+          <div class="pgt-details-grid">
+            <div class="pgt-details-item">
+              <div class="pgt-details-lbl">Fluctuation type</div>
+              <div class="pgt-details-val">Power surge</div>
+            </div>
+            <div class="pgt-details-item">
+              <div class="pgt-details-lbl">Duration</div>
+              <div class="pgt-details-val">4 minutes</div>
+            </div>
+            <div class="pgt-details-item">
+              <div class="pgt-details-lbl">Incident date &amp; time</div>
+              <div class="pgt-details-val">Mar 12, 2024 · 10:02 AM</div>
+            </div>
+            <div class="pgt-details-item">
+              <div class="pgt-details-lbl">Area / floor</div>
+              <div class="pgt-details-val">3F Admin Wing</div>
+            </div>
+          </div>
+          <div class="pgt-details-desc">
+            <div class="pgt-details-desc-lbl">Description</div>
+            Brief power surge following a grid switchover. Two workstations were affected; both were assessed, repaired, and restored to service the same day.
+          </div>
         </div>
       </div>
     </div>
@@ -288,7 +371,7 @@
         <div class="pgt-field">
           <label for="pgtAssessWs">Select my terminal</label>
           <select id="pgtAssessWs">
-            <option value="" selected disabled>Choose a terminal…</option>
+            <option value="">Choose a terminal…</option>
             <option value="WS-101">WS-101 — #2024-0147 (parts pending)</option>
             <option value="WS-105">WS-105 — #2024-0147 (not started)</option>
             <option value="WS-110">WS-110 — #2024-0147 (not started)</option>
@@ -299,9 +382,15 @@
           <input type="datetime-local" id="pgtAssessDatetime">
         </div>
       </div>
-      
+
+      <!-- WORKSTATION DAMAGE DECLARATION (read-only, from supervisor's ticket) -->
+      <div class="pgt-section-lbl">Workstation damage declaration</div>
+      <div class="pgt-decl-block" id="pgtDeclBlock">
+        <div class="pgt-decl-empty">Select a terminal above to view the supervisor's original damage declaration.</div>
+      </div>
+
       <div class="pgt-comp-grid">
-        <!-- UPS -->
+                <!-- UPS -->
         <div class="pgt-comp-card">
           <div class="pgt-comp-title">UPS</div>
           <div class="pgt-comp-field">
@@ -359,24 +448,18 @@
           <input type="text" id="pgtParts" placeholder="e.g. APC Back-UPS 650VA x1">
         </div>
         <div class="pgt-field">
-          <label for="pgtCompletion">Estimated completion</label>
-          <input type="date" id="pgtCompletion">
-        </div>
-      </div>
-
-      <div class="pgt-row">
-        <div class="pgt-field">
           <label for="pgtEscalate">Escalate to</label>
           <select id="pgtEscalate">
             <option value="">None — no escalation needed</option>
-            <option>Procurement — For Status</option>
+            <option>Supervisor</option>
             <option>IT Manager</option>
+            <option>Procurement</option>
           </select>
         </div>
       </div>
 
       <!-- Photo attachments -->
-      <div class="pgt-section-lbl" style="margin-top:4px">Photo attachments</div>
+      <!-- <div class="pgt-section-lbl" style="margin-top:4px">Photo attachments</div>
       <div class="pgt-photo-row">
         <div class="pgt-photo-thumb">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -388,7 +471,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           Add photo
         </button>
-      </div>
+      </div> -->
 
       <div class="pgt-form-footer">
         <button class="pgt-btn pgt-btn-ghost pgt-btn-sm" id="pgtSaveDraftBtn">Save draft</button>

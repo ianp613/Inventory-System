@@ -1622,7 +1622,7 @@
 
 
 
-    :root{
+  :root{
     --pgt-bg:#16201d;
     --pgt-panel:#1d2926;
     --pgt-panel-2:#222e2b;
@@ -1885,6 +1885,48 @@
 
   .pgt-closed-ticket{opacity:.5;}
 
+  /* ── TICKET DETAILS BUTTON & PANEL ── */
+  .pgt-details-btn{
+    font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:6px;
+    border:1px solid var(--pgt-line);background:var(--pgt-bg);color:var(--pgt-ink-soft);
+    cursor:pointer;display:inline-flex;align-items:center;gap:5px;
+    transition:border-color .15s,color .15s;font-family:inherit;
+    flex-shrink:0;
+  }
+  .pgt-details-btn:hover{border-color:var(--pgt-blue);color:var(--pgt-blue);}
+  .pgt-details-btn svg{width:12px;height:12px;transition:transform .15s;}
+  .pgt-details-btn.pgt-details-open svg{transform:rotate(180deg);}
+
+  .pgt-details-panel{
+    display:none;
+    background:var(--pgt-bg);border:1px solid var(--pgt-line-soft);border-radius:8px;
+    padding:14px 16px;margin:0 16px 14px 16px;
+  }
+  .pgt-details-panel.pgt-details-panel-open{display:block;}
+
+  .pgt-details-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px;
+  }
+  .pgt-details-item{}
+  .pgt-details-lbl{
+    font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+    color:var(--pgt-ink-faint);font-family:'IBM Plex Mono',monospace;margin-bottom:5px;
+  }
+  .pgt-details-val{font-size:13px;font-weight:600;}
+
+  .pgt-details-desc{
+    font-size:12.5px;color:var(--pgt-ink-soft);line-height:1.6;
+    border-top:1px solid var(--pgt-line-soft);padding-top:10px;
+  }
+  .pgt-details-desc-lbl{
+    font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+    color:var(--pgt-ink-faint);font-family:'IBM Plex Mono',monospace;margin-bottom:5px;
+  }
+
+  @media(max-width:760px){
+    .pgt-details-grid{grid-template-columns:repeat(2,1fr);}
+  }
+
   /* ─────────────────────────────────────────
      TAB 2 — MY WORK
   ───────────────────────────────────────── */
@@ -1985,10 +2027,399 @@
   .pgt-notif-sub{font-size:12px;color:var(--pgt-ink-soft);}
   .pgt-notif-time{font-size:11px;color:var(--pgt-ink-faint);white-space:nowrap;margin-left:auto;padding-top:2px;}
 
+  /* ── WORKSTATION DAMAGE DECLARATION (read-only) ── */
+  .pgt-decl-block{
+    border:1px solid var(--pgt-line-soft);border-radius:8px;
+    background:var(--pgt-panel-2);padding:14px 16px;margin-bottom:18px;
+  }
+  .pgt-decl-empty{
+    font-size:12.5px;color:var(--pgt-ink-faint);font-style:italic;
+  }
+  .pgt-decl-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:10px;
+  }
+  .pgt-decl-item{}
+  .pgt-decl-lbl{
+    font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+    color:var(--pgt-ink-faint);font-family:'IBM Plex Mono',monospace;margin-bottom:5px;
+  }
+  .pgt-decl-val{font-size:13px;font-weight:600;}
+  .pgt-decl-status{
+    display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;
+    padding:4px 10px;border-radius:6px;
+  }
+  .pgt-decl-status-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .pgt-decl-status.pgt-decl-damaged{background:var(--pgt-red-bg);color:var(--pgt-red);}
+  .pgt-decl-status.pgt-decl-suspected{background:var(--pgt-amber-bg);color:var(--pgt-amber-text);}
+  .pgt-decl-status.pgt-decl-ok{background:var(--pgt-green-bg);color:var(--pgt-green);}
+  .pgt-decl-notes{
+    font-size:12.5px;color:var(--pgt-ink-soft);line-height:1.6;
+    border-top:1px solid var(--pgt-line-soft);padding-top:10px;
+  }
+  .pgt-decl-notes-lbl{
+    font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+    color:var(--pgt-ink-faint);font-family:'IBM Plex Mono',monospace;margin-bottom:5px;
+  }
+
   @media(max-width:760px){
     .pgt-metrics{grid-template-columns:repeat(2,1fr);}
     .pgt-row{flex-direction:column;}
     .pgt-comp-grid{grid-template-columns:1fr;}
     .pgt-report-grid{grid-template-columns:1fr;}
     .pgt-topbar{flex-wrap:wrap;gap:12px;}
+    .pgt-decl-grid{grid-template-columns:repeat(2,1fr);}
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    :root{
+    --pga-bg:#16201d;
+    --pga-panel:#1d2926;
+    --pga-panel-2:#222e2b;
+    --pga-line:#33403c;
+    --pga-line-soft:#2a3633;
+    --pga-ink:#f5f3ee;
+    --pga-ink-soft:#a9b3ae;
+    --pga-ink-faint:#7d8a85;
+    --pga-amber:#e8954a;
+    --pga-amber-bg:#3a2f22;
+    --pga-amber-text:#f0b178;
+    --pga-red:#e06a5f;
+    --pga-red-bg:#3a2424;
+    --pga-green:#5fae8f;
+    --pga-green-bg:#223330;
+    --pga-blue:#6fa8d8;
+    --pga-blue-bg:#22303a;
+    --pga-purple:#b09ce0;
+    --pga-purple-bg:#2c2638;
+    --pga-radius:10px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  body.pga-body{
+    min-height:100vh;
+    font-family:'IBM Plex Sans',-apple-system,sans-serif;
+    background:var(--pga-bg);
+    color:var(--pga-ink);
+    padding:24px;
+  }
+
+  .pga-shell{
+    max-width:1020px;
+    margin:0 auto;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+
+  /* ── TOP BAR ── */
+  .pga-topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-bottom:14px;border-bottom:1px solid var(--pga-line-soft);
+  }
+  .pga-topbar-left{display:flex;align-items:center;gap:12px;}
+  .pga-avatar{
+    width:42px;height:42px;border-radius:50%;
+    background:var(--pga-purple-bg);color:var(--pga-purple);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;
+  }
+  .pga-name{font-size:14.5px;font-weight:600;}
+  .pga-role-label{font-size:12px;color:var(--pga-ink-soft);margin-top:1px;}
+  .pga-topbar-right{display:flex;align-items:center;gap:10px;}
+
+  .pga-badge{
+    font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:20px;
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:'IBM Plex Mono',monospace;letter-spacing:0.02em;
+  }
+  .pga-badge-red{background:var(--pga-red-bg);color:var(--pga-red);}
+  .pga-badge-amber{background:var(--pga-amber-bg);color:var(--pga-amber-text);}
+  .pga-badge-green{background:var(--pga-green-bg);color:var(--pga-green);}
+  .pga-badge-blue{background:var(--pga-blue-bg);color:var(--pga-blue);}
+  .pga-badge-purple{background:var(--pga-purple-bg);color:var(--pga-purple);}
+  .pga-badge-gray{background:var(--pga-panel-2);color:var(--pga-ink-faint);border:1px solid var(--pga-line);}
+  .pga-badge-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+
+  .pga-iconbtn{
+    width:36px;height:36px;border-radius:8px;
+    border:1px solid var(--pga-line);background:var(--pga-panel-2);
+    color:var(--pga-ink-soft);display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:border-color .15s,color .15s;
+  }
+  .pga-iconbtn:hover{border-color:var(--pga-purple);color:var(--pga-purple);}
+  .pga-iconbtn svg{width:16px;height:16px;}
+
+  /* ── METRICS ── */
+  .pga-metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+  .pga-metric{
+    background:var(--pga-panel);border:1px solid var(--pga-line-soft);
+    border-radius:var(--pga-radius);padding:14px 16px;
+  }
+  .pga-metric-lbl{
+    font-size:11px;color:var(--pga-ink-soft);font-family:'IBM Plex Mono',monospace;
+    letter-spacing:0.02em;margin-bottom:6px;
+  }
+  .pga-metric-val{font-size:22px;font-weight:700;letter-spacing:-0.01em;}
+  .pga-metric-val.pga-amber{color:var(--pga-amber-text);}
+  .pga-metric-val.pga-green{color:var(--pga-green);}
+  .pga-metric-val.pga-blue{color:var(--pga-blue);}
+  .pga-metric-val.pga-red{color:var(--pga-red);}
+  .pga-metric-val.pga-purple{color:var(--pga-purple);}
+
+  /* ── CARD / TABS ── */
+  .pga-card{
+    background:var(--pga-panel);border:1px solid var(--pga-line-soft);
+    border-radius:var(--pga-radius);overflow:hidden;
+  }
+  .pga-tabbar{
+    display:flex;padding:0 16px;border-bottom:1px solid var(--pga-line-soft);
+    overflow-x:auto;
+  }
+  .pga-tab{
+    font-size:13px;font-weight:500;padding:14px 6px;margin-right:18px;
+    color:var(--pga-ink-soft);border-bottom:2px solid transparent;
+    cursor:pointer;white-space:nowrap;transition:color .15s,border-color .15s;
+  }
+  .pga-tab:hover{color:var(--pga-ink);}
+  .pga-tab.pga-tab-active{color:var(--pga-ink);border-bottom-color:var(--pga-purple);font-weight:600;}
+  .pga-pane{display:none;padding:20px;}
+  .pga-pane.pga-pane-active{display:block;}
+
+  /* ── COMMON INPUTS ── */
+  .pga-field label{
+    display:block;font-size:11.5px;font-weight:600;letter-spacing:0.04em;
+    text-transform:uppercase;color:var(--pga-ink-soft);
+    font-family:'IBM Plex Mono',monospace;margin-bottom:7px;
+  }
+  .pga-field input,.pga-field select,.pga-field textarea{
+    width:100%;font-family:inherit;font-size:13.5px;padding:10px 12px;
+    border:1px solid var(--pga-line);border-radius:8px;
+    background:var(--pga-panel-2);color:var(--pga-ink);
+    transition:border-color .15s,box-shadow .15s;
+  }
+  .pga-field textarea{resize:vertical;min-height:70px;line-height:1.6;}
+  .pga-field input:focus,.pga-field select:focus,.pga-field textarea:focus{
+    outline:none;border-color:var(--pga-purple);
+    box-shadow:0 0 0 3px rgba(176,156,224,0.14);
+  }
+  .pga-field input::placeholder{color:var(--pga-ink-faint);}
+  .pga-field select{
+    appearance:none;cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a9b3ae' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;
+  }
+  .pga-row{display:flex;gap:14px;margin-bottom:16px;}
+  .pga-row .pga-field{flex:1;}
+  .pga-field{margin-bottom:0;}
+
+  /* ── BUTTONS ── */
+  .pga-btn{
+    font-size:13.5px;font-weight:600;padding:10px 18px;border-radius:8px;
+    border:1px solid var(--pga-line);background:var(--pga-panel-2);color:var(--pga-ink);
+    cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+    transition:background .15s,border-color .15s,transform .05s;font-family:inherit;
+  }
+  .pga-btn:hover{border-color:var(--pga-purple);}
+  .pga-btn:active{transform:translateY(1px);}
+  .pga-btn svg{width:15px;height:15px;}
+  .pga-btn-primary{background:var(--pga-purple);color:#201c2b;border-color:var(--pga-purple);}
+  .pga-btn-primary:hover{background:#c2b0ec;}
+  .pga-btn-sm{font-size:12.5px;padding:7px 13px;}
+  .pga-btn-ghost{background:transparent;border-color:transparent;color:var(--pga-ink-soft);}
+  .pga-btn-ghost:hover{color:var(--pga-ink);border-color:var(--pga-line);}
+  .pga-btn-success{background:var(--pga-green-bg);color:var(--pga-green);border-color:#3a5a50;}
+  .pga-btn-success:hover{border-color:var(--pga-green);}
+  .pga-btn-reject{background:var(--pga-red-bg);color:var(--pga-red);border-color:#5a3a3a;}
+  .pga-btn-reject:hover{border-color:var(--pga-red);}
+  .pga-btn-transfer{background:var(--pga-amber-bg);color:var(--pga-amber-text);border-color:#5a4230;}
+  .pga-btn-transfer:hover{border-color:var(--pga-amber);}
+
+  /* ── SECTION LABEL ── */
+  .pga-section-lbl{
+    font-size:11.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+    color:var(--pga-ink-soft);font-family:'IBM Plex Mono',monospace;margin-bottom:12px;
+  }
+  .pga-section-intro{font-size:13px;color:var(--pga-ink-soft);margin-bottom:16px;line-height:1.6;}
+
+  /* ── TABLE SHARED ── */
+  .pga-table-wrap{overflow-x:auto;border:1px solid var(--pga-line-soft);border-radius:8px;}
+  table.pga-table{width:100%;border-collapse:collapse;font-size:13px;}
+  table.pga-table th{
+    font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+    color:var(--pga-ink-soft);text-align:left;padding:10px 12px;
+    background:var(--pga-panel-2);border-bottom:1px solid var(--pga-line-soft);
+    font-family:'IBM Plex Mono',monospace;white-space:nowrap;
+  }
+  table.pga-table td{padding:11px 12px;border-bottom:1px solid var(--pga-line-soft);vertical-align:middle;}
+  table.pga-table tr:last-child td{border-bottom:none;}
+  .pga-mono{font-family:'IBM Plex Mono',monospace;font-weight:700;}
+
+  .pga-pbar{height:5px;border-radius:3px;background:var(--pga-line);margin-top:5px;overflow:hidden;}
+  .pga-pbar-fill{height:100%;border-radius:3px;background:var(--pga-green);}
+  .pga-pbar-text{font-size:11.5px;color:var(--pga-ink-soft);}
+
+  .pga-divider{border:none;border-top:1px solid var(--pga-line-soft);margin:18px 0;}
+
+  .pga-chip{
+    display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:4px 9px;
+    border-radius:6px;border:1px solid var(--pga-line);margin:2px 2px 2px 0;
+    font-family:'IBM Plex Mono',monospace;white-space:nowrap;
+  }
+
+  /* ─────────────────────────────────────────
+     TAB: OVERVIEW
+  ───────────────────────────────────────── */
+  .pga-overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:6px;}
+  .pga-overview-card{
+    background:var(--pga-panel-2);border:1px solid var(--pga-line-soft);
+    border-radius:8px;padding:16px 18px;
+  }
+  .pga-overview-card-title{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .pga-overview-card-title svg{width:15px;height:15px;color:var(--pga-ink-soft);}
+
+  /* ─────────────────────────────────────────
+     TAB: ALL TICKETS
+  ───────────────────────────────────────── */
+  .pga-filter-bar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+  .pga-filter-bar select{
+    font-size:12.5px;padding:8px 28px 8px 12px;border-radius:7px;
+    border:1px solid var(--pga-line);background:var(--pga-panel-2);color:var(--pga-ink);
+    appearance:none;cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a9b3ae' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 10px center;
+  }
+
+  /* ─────────────────────────────────────────
+     TAB: REASSIGN TERMINALS
+  ───────────────────────────────────────── */
+  .pga-terminal-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+  .pga-terminal-pill{
+    display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:6px 11px;
+    border-radius:7px;border:1px solid var(--pga-line);cursor:pointer;
+    font-family:'IBM Plex Mono',monospace;font-weight:600;
+    transition:border-color .15s,background .15s,color .15s;background:var(--pga-bg);
+  }
+  .pga-terminal-pill:hover{border-color:var(--pga-purple);}
+  .pga-pill-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0;}
+  .pga-pill-sub{font-size:10px;font-weight:400;opacity:.75;}
+  .pga-pill-assigned{color:var(--pga-blue);border-color:#2a4060;background:var(--pga-blue-bg);}
+  .pga-pill-unassigned{color:var(--pga-ink-faint);}
+  .pga-pill-done{color:var(--pga-green);border-color:#2a5040;background:var(--pga-green-bg);cursor:default;}
+
+  .pga-reassign-banner{
+    display:flex;align-items:flex-start;gap:10px;background:var(--pga-amber-bg);
+    border:1px solid #5a4230;border-radius:8px;padding:10px 13px;font-size:12.5px;
+    color:var(--pga-amber-text);line-height:1.5;margin-bottom:14px;
+  }
+  .pga-reassign-banner svg{width:15px;height:15px;flex-shrink:0;margin-top:1px;}
+
+  /* ─────────────────────────────────────────
+     TAB: DEPARTMENTS
+  ───────────────────────────────────────── */
+  .pga-dept-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .pga-dept-card{
+    background:var(--pga-panel-2);border:1px solid var(--pga-line-soft);
+    border-radius:8px;padding:15px 17px;
+  }
+  .pga-dept-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .pga-dept-name{font-size:14px;font-weight:600;}
+  .pga-dept-current-sup{
+    display:flex;align-items:center;justify-content:space-between;
+    font-size:12.5px;padding:9px 11px;background:var(--pga-bg);border-radius:6px;
+    border:1px solid var(--pga-line-soft);margin-bottom:10px;
+  }
+  .pga-dept-current-sup.pga-dept-unfilled{color:var(--pga-ink-faint);font-style:italic;}
+  .pga-dept-supervisor-name{display:flex;align-items:center;gap:6px;}
+  .pga-remove-x{
+    width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;
+    color:var(--pga-ink-faint);cursor:pointer;transition:color .15s,background .15s;
+  }
+  .pga-remove-x:hover{color:var(--pga-red);background:var(--pga-red-bg);}
+  .pga-remove-x svg{width:12px;height:12px;}
+
+  /* ─────────────────────────────────────────
+     TAB: ACCOUNT APPROVALS
+  ───────────────────────────────────────── */
+  .pga-approval-row{
+    display:flex;gap:14px;align-items:flex-start;padding:14px 0;
+    border-bottom:1px solid var(--pga-line-soft);
+  }
+  .pga-approval-row:last-child{border-bottom:none;}
+  .pga-approval-avatar{
+    width:38px;height:38px;border-radius:50%;background:var(--pga-purple-bg);
+    color:var(--pga-purple);display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;flex-shrink:0;
+  }
+  .pga-approval-info{flex:1;}
+  .pga-approval-name{font-size:13.5px;font-weight:600;margin-bottom:2px;}
+  .pga-approval-meta{font-size:12px;color:var(--pga-ink-soft);line-height:1.6;}
+  .pga-approval-actions{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;}
+  .pga-approval-actions-row{display:flex;gap:6px;}
+
+  /* ── REPORTS ── */
+  .pga-report-group{margin-bottom:22px;}
+  .pga-report-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .pga-rcard{
+    background:var(--pga-panel-2);border:1px solid var(--pga-line-soft);border-radius:8px;
+    padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  }
+  .pga-rcard-lbl{font-size:11px;color:var(--pga-ink-faint);font-family:'IBM Plex Mono',monospace;margin-bottom:3px;}
+  .pga-rcard-val{font-size:14px;font-weight:600;}
+
+  @media(max-width:760px){
+    .pga-metrics{grid-template-columns:repeat(2,1fr);}
+    .pga-row{flex-direction:column;}
+    .pga-overview-grid{grid-template-columns:1fr;}
+    .pga-dept-grid{grid-template-columns:1fr;}
+    .pga-report-grid{grid-template-columns:1fr;}
+    .pga-topbar{flex-wrap:wrap;gap:12px;}
+    .pga-approval-row{flex-wrap:wrap;}
+    .pga-approval-actions{align-items:flex-start;width:100%;}
   }

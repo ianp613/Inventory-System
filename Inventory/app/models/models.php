@@ -940,31 +940,31 @@
         public string $system_unit_status;
         public string $monitor_status;
         public string $notes;
-        public string $sign_off_queue; //[submitted,done,rejected]
+        public string $sign_off_queue; //[submitted,done,rejected,draft]
         public string $tech_id;
     }
 
-    // class PG_WS_Assessment{
-    //     public $table = "pg_ws_assessment";
-    //     public $fillable = [
-    //         "ws_id",
-    //         "assessed_at",
-    //         "assigned_user",
-    //         "ups_status",
-    //         "system_unit_status",
-    //         "monitor_status",
-    //         "notes",
-    //         "tech_id"
-    //     ];
+    class PG_WS_Assessment{
+        public $table = "pg_ws_assessment";
+        public $fillable = [
+            "ws_id",
+            "assessed_at",
+            "ups_condition",
+            "system_unit_condition",
+            "monitor_condition",
+            "technical_findings",
+            "parts_needed",
+            "escalate_to"
+        ];
 
-    //     public string $ticket_id;
-    //     public string $ws_number;
-    //     public string $assigned_user;
-    //     public string $ups_status;
-    //     public string $system_unit_status;
-    //     public string $monitor_status;
-    //     public string $notes;
-    //     public string $sign_off_queue; //[submitted,done,rejected]
-    //     public string $tech_id;
-    // }
+        // public string $ticket_id;
+        // public string $ws_number;
+        // public string $assigned_user;
+        // public string $ups_status;
+        // public string $system_unit_status;
+        // public string $monitor_status;
+        // public string $notes;
+        // public string $sign_off_queue; //[submitted,done,rejected,draft]
+        // public string $tech_id;
+    }
 ?>

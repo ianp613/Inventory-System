@@ -70,6 +70,7 @@
             }
             if(res.user.privileges == "administrator"){
               localStorage.setItem("login_admin","true")
+              localStorage.removeItem("pga-active")
               window.location.replace("administrator.php")
             }
         }
