@@ -903,6 +903,7 @@
         public $table = "pg_ticket";
         public $fillable = [
             "sup_id",
+            "ticket_no",
             "incident_datetime",
             "fluctuation_type",
             "priority",
@@ -912,6 +913,7 @@
         ];
 
         public string $sup_id;
+        public string $ticket_no;
         public string $incident_datetime;
         public string $fluctuation_type;
         public string $priority;
@@ -947,7 +949,7 @@
     class PG_WS_Assessment{
         public $table = "pg_ws_assessment";
         public $fillable = [
-            "ws_id",
+            "wd_id",
             "assessed_at",
             "ups_condition",
             "system_unit_condition",

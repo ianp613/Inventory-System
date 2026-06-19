@@ -143,6 +143,7 @@
         public static function save($data){
             $saveerror = false;
             $savemessage = "";
+            $insertId = null; // <-- ADDED
             try{
                 try{
                     $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
@@ -178,6 +179,7 @@
                 if(!$saveerror){
                     $SQL = "INSERT INTO `$table` ($columns) VALUES ($values)";
                     $DB_CONN->exec($SQL);
+                    $insertId = $DB_CONN->lastInsertId(); // <-- ADDED
                 }else{
                     echo $savemessage;
                 } 
@@ -186,6 +188,7 @@
                 $_SESSION["soleexceptionerror"] = $e;
                 exception_handler(0,$e->getMessage(),$e->getFile(),$e->getLine());
             }
+            return $insertId; // <-- ADDED
         }
         /**
          * --------------------------------------------------------------------------------

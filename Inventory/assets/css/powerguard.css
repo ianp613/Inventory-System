@@ -1584,6 +1584,53 @@
     font-weight:600;
   }
 
+  .pgs-field input.pgs-has-error{
+    border-color: var(--pgs-red);
+  }
+  .pgs-field input.pgs-has-error:focus{
+    box-shadow: 0 0 0 3px rgba(224,106,95,0.15);
+  }
+  .pgs-field-error{
+    display:none;
+    font-size:11.5px;
+    color:var(--pgs-red);
+    margin-top:5px;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .pgs-field-error.pgs-show{
+    display:block;
+  }
+
+  .pgs-field textarea.pgs-has-error{
+    border-color: var(--pgs-red);
+  }
+  .pgs-field textarea.pgs-has-error:focus{
+    box-shadow: 0 0 0 3px rgba(224,106,95,0.15);
+  }
+
+  .pgs-page-num{
+    font-size:12.5px;font-weight:600;
+    width:30px;height:30px;
+    border-radius:6px;
+    border:1px solid var(--pgs-line);
+    background:var(--pgs-panel-2);
+    color:var(--pgs-ink-soft);
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+  }
+  .pgs-page-num:hover{ border-color:var(--pgs-amber); }
+  .pgs-page-num.pgs-page-active{
+    background:var(--pgs-amber);
+    color:#1f2421;
+    border-color:var(--pgs-amber);
+  }
+  .pgs-btn:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+  }
+  .pgs-btn:disabled:hover{ border-color:var(--pgs-line); }
+
   @media (max-width: 760px){
     .pgs-metrics{ grid-template-columns:repeat(2,1fr); }
     .pgs-row{ flex-direction:column; gap:14px; }

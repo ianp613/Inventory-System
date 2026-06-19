@@ -14,10 +14,10 @@
   <!-- TOP BAR -->
   <div class="pgs-topbar">
     <div class="pgs-topbar-left">
-      <div class="pgs-avatar">RV</div>
+      <div class="pgs-avatar"></div>
       <div>
-        <div class="pgs-name">R. Villanueva</div>
-        <div class="pgs-role">Supervisor · Admin Department</div>
+        <div class="pgs-name"></div>
+        <div class="pgs-role"></div>
       </div>
     </div>
     <div class="pgs-topbar-right">
@@ -65,7 +65,8 @@
       <div class="pgs-row">
         <div class="pgs-field">
           <label for="pgsDatetime">Incident date &amp; time</label>
-          <input type="datetime-local" id="pgsDatetime" value="2024-06-08T14:32">
+          <input type="datetime-local" id="pgsDatetime">
+          <span class="pgs-field-error" id="pgsDatetimeError">Incident date & time is required.</span>
         </div>
         <div class="pgs-field">
           <label for="pgsFlucType">Fluctuation type</label>
@@ -81,7 +82,7 @@
           <label for="pgsPriority">Priority</label>
           <select id="pgsPriority">
             <option>High</option>
-            <option>Medium</option>
+            <option selected>Medium</option>
             <option>Low</option>
           </select>
         </div>
@@ -95,13 +96,15 @@
         <div class="pgs-field" style="max-width:200px">
           <label for="pgsDuration">Duration (minutes)</label>
           <input type="number" id="pgsDuration" value="0">
+          <span class="pgs-field-error" id="pgsDurationError">Enter a valid duration in minutes.</span>
         </div>
       </div>
 
       <div class="pgs-row">
         <div class="pgs-field">
           <label for="pgsDescription">Description</label>
-          <textarea id="pgsDescription" placeholder="Aa"></textarea>
+          <textarea id="pgsDescription"></textarea>
+          <span class="pgs-field-error" id="pgsDescriptionError">Description is required.</span>
         </div>
       </div>
 
@@ -134,6 +137,10 @@
       </div>
 
       <div class="pgs-form-footer">
+        <button type="button" class="pgs-btn" id="pgsClearFormBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          Clear form
+        </button>
         <button type="button" class="pgs-btn pgs-btn-primary" id="pgsSubmitTicketBtn">
           Submit incident ticket
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
@@ -143,6 +150,22 @@
 
     <!-- MY TICKETS -->
     <div class="pgs-pane" id="pgsTickets">
+      <div class="pgs-table-toolbar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap">
+        <div class="pgs-rows-select-wrap" style="display:flex;align-items:center;gap:8px">
+          <label for="pgsRowsPerPage" style="font-size:12px;color:var(--pgs-ink-soft);white-space:nowrap">Rows per page</label>
+          <select id="pgsRowsPerPage" style="font-size:12.5px;padding:6px 24px 6px 10px;border-radius:6px;border:1px solid var(--pgs-line);background:var(--pgs-panel-2);color:var(--pgs-ink);width:auto">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+
+        <div class="pgs-search-wrap" style="position:relative;max-width:260px;width:100%">
+          <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--pgs-ink-faint);pointer-events:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="pgsTicketSearch" placeholder="Search ticket no, type, area…" style="width:100%;font-size:12.5px;padding:7px 10px 7px 30px;border-radius:6px;border:1px solid var(--pgs-line);background:var(--pgs-panel-2);color:var(--pgs-ink)">
+        </div>
+      </div>
       <div class="pgs-table-wrap" style="overflow-x:auto">
         <table class="pgs-tickets-table">
           <thead>
@@ -156,41 +179,29 @@
               <th style="min-width:130px">Status</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td class="pgs-ticket-no">#2024-0147</td>
-              <td style="color:var(--pgs-ink-soft)">Jun 8, 2024</td>
-              <td>Voltage spike</td>
-              <td style="color:var(--pgs-ink-soft)">2F Admin Wing</td>
-              <td>
-                <span class="pgs-chip" style="border-color:var(--pgs-red);color:var(--pgs-red)">WS-101</span>
-                <span class="pgs-chip" style="border-color:var(--pgs-red);color:var(--pgs-red)">WS-102</span>
-                <span class="pgs-chip" style="border-color:var(--pgs-green);color:var(--pgs-green)">WS-104</span>
-                <span class="pgs-chip" style="color:var(--pgs-ink-faint)">+11 more</span>
-              </td>
-              <td>
-                <div class="pgs-progress-text">3 / 14 resolved</div>
-                <div class="pgs-progress-bar"><div class="pgs-progress-fill" style="width:21%"></div></div>
-              </td>
-              <td><span class="pgs-badge pgs-badge-amber"><span class="pgs-badge-dot"></span> In progress</span></td>
-            </tr>
-            <tr>
-              <td class="pgs-ticket-no">#2024-0089</td>
-              <td style="color:var(--pgs-ink-soft)">Mar 12, 2024</td>
-              <td>Power surge</td>
-              <td style="color:var(--pgs-ink-soft)">3F Admin Wing</td>
-              <td>
-                <span class="pgs-chip" style="border-color:var(--pgs-green);color:var(--pgs-green)">WS-07</span>
-                <span class="pgs-chip" style="border-color:var(--pgs-green);color:var(--pgs-green)">WS-08</span>
-              </td>
-              <td>
-                <div class="pgs-progress-text">2 / 2 resolved</div>
-                <div class="pgs-progress-bar"><div class="pgs-progress-fill" style="width:100%"></div></div>
-              </td>
-              <td><span class="pgs-badge pgs-badge-green"><span class="pgs-badge-dot"></span> Closed</span></td>
-            </tr>
+          <tbody id="pgsTicketsTbody">
+            <!-- rows injected by JS -->
           </tbody>
         </table>
+      </div>
+
+      <div id="pgsTicketsEmpty" style="display:none;text-align:center;padding:30px;color:var(--pgs-ink-soft);font-size:13px">
+        No tickets submitted yet.
+      </div>
+
+      <div class="pgs-pagination" id="pgsTicketsPagination" style="display:flex;align-items:center;justify-content:space-between;margin-top:14px">
+        <div class="pgs-pagination-info" id="pgsPaginationInfo" style="font-size:12px;color:var(--pgs-ink-soft)"></div>
+        <div class="pgs-pagination-controls" style="display:flex;gap:6px">
+          <button class="pgs-btn pgs-btn-sm" id="pgsPrevPageBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M15 18l-6-6 6-6"/></svg>
+            Prev
+          </button>
+          <div id="pgsPageNumbers" style="display:flex;gap:4px"></div>
+          <button class="pgs-btn pgs-btn-sm" id="pgsNextPageBtn">
+            Next
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
       </div>
     </div>
 

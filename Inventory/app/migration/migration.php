@@ -23,7 +23,10 @@
         "Post_ItMigration",
         "YK_RoomMigration",
         "YK_ReservedMigration",
-        "PGUserMigration"
+        "PGUserMigration",
+        "PG_TicketMigration",
+        "PG_WSMigration",
+        "PG_WS_AssessmentMigration"
     ];
 
     class UserMigration
@@ -418,6 +421,7 @@
             Migrate::attrib_table("pg_ticket");
             Migrate::attrib_string(1000);
             Migrate::string("sup_id");
+            Migrate::string("ticket_no");
             Migrate::string("incident_datetime");
             Migrate::string("fluctuation_type");
             Migrate::string("priority");
@@ -451,20 +455,9 @@
             Migrate::string("ups_condition");
             Migrate::string("system_unit_condition");
             Migrate::string("monitor_condition");
-            Migrate::string("");
-            Migrate::string("");
-            Migrate::string("");
+            Migrate::string("technical_findings");
+            Migrate::string("parts_needed");
+            Migrate::string("escalate_to");
         }
-        public $table = "";
-        public $fillable = [
-            "",
-            "",
-            "",
-            "",
-            "",
-            "technical_findings",
-            "parts_needed",
-            "escalate_to"
-        ];
     }
 ?>

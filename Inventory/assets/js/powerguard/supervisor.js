@@ -89,6 +89,55 @@
 
   /* ---------- SUBMIT TICKET ---------- */
   document.getElementById('pgsSubmitTicketBtn').addEventListener('click', () => {
+
+    const datetimeInput = document.getElementById('pgsDatetime');
+    const datetimeError = document.getElementById('pgsDatetimeError');
+    const durationInput = document.getElementById('pgsDuration');
+    const durationError = document.getElementById('pgsDurationError');
+    const descriptionInput = document.getElementById('pgsDescription');
+    const descriptionError = document.getElementById('pgsDescriptionError');
+
+    // reset previous error state
+    datetimeInput.classList.remove('pgs-has-error');
+    datetimeError.classList.remove('pgs-show');
+    durationInput.classList.remove('pgs-has-error');
+    durationError.classList.remove('pgs-show');
+    descriptionInput.classList.remove('pgs-has-error');
+    descriptionError.classList.remove('pgs-show');
+
+    let hasError = false;
+
+    // ── VALIDATION: Incident date & time ──
+    const datetimeVal = datetimeInput.value;
+    if(!datetimeVal){
+      datetimeInput.classList.add('pgs-has-error');
+      datetimeError.textContent = 'Incident date & time is required.';
+      datetimeError.classList.add('pgs-show');
+      hasError = true;
+    } else if(new Date(datetimeVal) > new Date()){
+      datetimeInput.classList.add('pgs-has-error');
+      datetimeError.textContent = 'Incident date & time cannot be in the future.';
+      datetimeError.classList.add('pgs-show');
+      hasError = true;
+    }
+
+    // ── VALIDATION: Duration (minutes) ──
+    const durationVal = durationInput.value;
+    if(!durationVal || isNaN(durationVal) || Number(durationVal) <= 0){
+      durationInput.classList.add('pgs-has-error');
+      durationError.textContent = 'Enter a valid duration in minutes (greater than 0).';
+      durationError.classList.add('pgs-show');
+      hasError = true;
+    }
+
+    // ── VALIDATION: Description ──
+    if(!descriptionInput.value.trim()){
+      descriptionInput.classList.add('pgs-has-error');
+      descriptionError.textContent = 'Description is required.';
+      descriptionError.classList.add('pgs-show');
+      hasError = true;
+    }
+
     const workstations = [];
     tbody.querySelectorAll('tr').forEach(tr => {
         if(tr.querySelector('.pgs-ws-num-input').value && tr.querySelector('.pgs-ws-user-input').value){
@@ -103,20 +152,327 @@
         }
     });
 
-    const payload = {
-        incident_datetime: document.getElementById('pgsDatetime').value,
-        fluctuation_type: document.getElementById('pgsFlucType').value,
-        priority: document.getElementById('pgsPriority').value,
-        area: document.getElementById('pgsArea').value,
-        duration_minutes: document.getElementById('pgsDuration').value,
-        description: document.getElementById('pgsDescription').value,
-        workstations: workstations
-    };
+    if(!workstations.length){
+      ss.toast("Invalid Ticket","warning","Workstation damage declaration field cannot be empty.",null,"#082b49")
+      hasError = true;
+    }
 
-    console.log('Submitting incident ticket:', payload);
-    // Wire this up to your backend endpoint, e.g.:
-    // sole.post("../../controllers/powerguard/submit_ticket.php", payload).then(res => console.log(res));
+    if(hasError) return;
+
+    sole.post("../../controllers/powerguard/supervisor/submit_ticket.php",{
+      sup_id: localStorage.getItem("userid_sup"),
+      incident_datetime: document.getElementById('pgsDatetime').value,
+      fluctuation_type: document.getElementById('pgsFlucType').value,
+      priority: document.getElementById('pgsPriority').value,
+      area: document.getElementById('pgsArea').value,
+      duration_minutes: document.getElementById('pgsDuration').value,
+      description: document.getElementById('pgsDescription').value,
+      workstations: workstations
+    }).then(res => {
+      if(res.status){
+        ss.toast(res.title,res.type,res.message,null,"#082b49")
+        clearForm()
+      }
+    })
   });
+
+  document.getElementById('pgsClearFormBtn').addEventListener('click', () => {
+    if(confirm('Clear all fields and reset the workstation list? Any unsaved input will be lost.')){
+      clearForm();
+    }
+  });
+
+  function clearForm(){
+    // clear top-level fields
+    document.getElementById('pgsDatetime').value = '';
+    document.getElementById('pgsFlucType').selectedIndex = 0;
+    document.getElementById('pgsPriority').selectedIndex = 1;
+    document.getElementById('pgsArea').value = '';
+    document.getElementById('pgsDuration').value = '';
+    document.getElementById('pgsDescription').value = '';
+
+    // clear any lingering error states
+    ['pgsDatetime','pgsDuration','pgsDescription'].forEach(id => {
+      const input = document.getElementById(id);
+      const errorEl = document.getElementById(id + 'Error');
+      if(input) input.classList.remove('pgs-has-error');
+      if(errorEl) errorEl.classList.remove('pgs-show');
+    });
+
+    // clear and reset workstation rows back to 5 blank rows
+    tbody.innerHTML = '';
+    for(let i = 0; i < 5; i++){
+      addWsRow({ wsNumber:'', user:'', ups:'OK', su:'OK', monitor:'OK', notes:'' });
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* ---------- MY TICKETS: FETCH + RENDER + PAGINATION ---------- */
+  let pgsAllTickets = [];
+  let pgsFilteredTickets = [];
+  let pgsCurrentPage = 1;
+  let pgsPageSize = 5;
+  let pgsSearchTerm = '';
+
+  function statusBadgeHTML(status){
+    const map = {
+      'in_progress': { cls:'pgs-badge-amber', label:'In progress' },
+      'closed':      { cls:'pgs-badge-green', label:'Closed' },
+      'pending':     { cls:'pgs-badge-gray',  label:'Pending' }
+    };
+    const s = map[status] || { cls:'pgs-badge-gray', label: status };
+    return `<span class="pgs-badge ${s.cls}"><span class="pgs-badge-dot"></span> ${s.label}</span>`;
+  }
+
+  function wsChipsHTML(workstations){
+    console.log(workstations)
+
+    if(!workstations || !workstations.length) return '<span style="color:var(--pgs-ink-faint);font-size:12px">No workstations</span>';
+    const visible = workstations.slice(0, 3);
+    const remaining = workstations.length - visible.length;
+    let html = visible.map(ws => {
+      const color = ws.status === 'resolved' ? 'var(--pgs-green)' : (ws.status === 'damaged' ? 'var(--pgs-red)' : 'var(--pgs-amber)');
+      return `<span class="pgs-chip" style="border-color:${color};color:${color}">${ws.ws_number}</span>`;
+    }).join('');
+    if(remaining > 0){
+      html += `<span class="pgs-chip" style="color:var(--pgs-ink-faint)">+${remaining} more</span>`;
+    }
+    return html;
+  }
+
+  function applyTicketFilter(){
+    const term = pgsSearchTerm.trim().toLowerCase();
+    if(!term){
+      pgsFilteredTickets = pgsAllTickets;
+    } else {
+      pgsFilteredTickets = pgsAllTickets.filter(t => {
+        return (
+          String(t.ticket_no).toLowerCase().includes(term) ||
+          (t.fluctuation_type || '').toLowerCase().includes(term) ||
+          (t.area || '').toLowerCase().includes(term) ||
+          (t.status || '').toLowerCase().includes(term)
+        );
+      });
+    }
+    pgsCurrentPage = 1;
+    renderTicketsPage();
+  }
+
+  function renderTicketsPage(){
+    const tbody = document.getElementById('pgsTicketsTbody');
+    const emptyState = document.getElementById('pgsTicketsEmpty');
+    const paginationBar = document.getElementById('pgsTicketsPagination');
+
+    if(!pgsFilteredTickets.length){
+      tbody.innerHTML = '';
+      emptyState.style.display = 'block';
+      emptyState.textContent = pgsSearchTerm ? 'No tickets match your search.' : 'No tickets submitted yet.';
+      paginationBar.style.display = 'none';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    paginationBar.style.display = 'flex';
+
+    const totalPages = Math.ceil(pgsFilteredTickets.length / pgsPageSize);
+    if(pgsCurrentPage > totalPages) pgsCurrentPage = totalPages;
+    if(pgsCurrentPage < 1) pgsCurrentPage = 1;
+
+    const start = (pgsCurrentPage - 1) * pgsPageSize;
+    const pageItems = pgsFilteredTickets.slice(start, start + pgsPageSize);
+
+    tbody.innerHTML = pageItems.map(t => {
+      const resolved = t.resolved_count ?? 0;
+      const total = t.workstation_count ?? (t.workstations ? t.workstations.length : 0);
+      const pct = total > 0 ? Math.round((resolved / total) * 100) : 0;
+
+      return `
+        <tr>
+          <td class="pgs-ticket-no">#${t.ticket_no}</td>
+          <td style="color:var(--pgs-ink-soft)">${new Date(t.incident_datetime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+          <td>${t.fluctuation_type}</td>
+          <td style="color:var(--pgs-ink-soft)">${t.area != "-" ? t.area : ""}</td>
+          <td>${wsChipsHTML(t.workstations)}</td>
+          <td>
+            <div class="pgs-progress-text">${resolved} / ${total} resolved</div>
+            <div class="pgs-progress-bar"><div class="pgs-progress-fill" style="width:${pct}%"></div></div>
+          </td>
+          <td>${statusBadgeHTML(t.status)}</td>
+        </tr>
+      `;
+    }).join('');
+
+    renderPaginationControls(totalPages);
+  }
+
+  function renderPaginationControls(totalPages){
+    const infoEl = document.getElementById('pgsPaginationInfo');
+    const pageNumsEl = document.getElementById('pgsPageNumbers');
+    const prevBtn = document.getElementById('pgsPrevPageBtn');
+    const nextBtn = document.getElementById('pgsNextPageBtn');
+
+    const start = (pgsCurrentPage - 1) * pgsPageSize + 1;
+    const end = Math.min(pgsCurrentPage * pgsPageSize, pgsFilteredTickets.length);
+    infoEl.textContent = `Showing ${start}–${end} of ${pgsFilteredTickets.length} tickets`;
+
+    pageNumsEl.innerHTML = '';
+    for(let i = 1; i <= totalPages; i++){
+      const btn = document.createElement('button');
+      btn.className = 'pgs-page-num' + (i === pgsCurrentPage ? ' pgs-page-active' : '');
+      btn.textContent = i;
+      btn.addEventListener('click', () => {
+        pgsCurrentPage = i;
+        renderTicketsPage();
+      });
+      pageNumsEl.appendChild(btn);
+    }
+
+    prevBtn.disabled = pgsCurrentPage <= 1;
+    nextBtn.disabled = pgsCurrentPage >= totalPages;
+  }
+
+  document.getElementById('pgsPrevPageBtn').addEventListener('click', () => {
+    if(pgsCurrentPage > 1){
+      pgsCurrentPage--;
+      renderTicketsPage();
+    }
+  });
+  document.getElementById('pgsNextPageBtn').addEventListener('click', () => {
+    const totalPages = Math.ceil(pgsFilteredTickets.length / pgsPageSize);
+    if(pgsCurrentPage < totalPages){
+      pgsCurrentPage++;
+      renderTicketsPage();
+    }
+  });
+
+  // rows-per-page dropdown
+  document.getElementById('pgsRowsPerPage').addEventListener('change', function(){
+    pgsPageSize = parseInt(this.value, 10);
+    pgsCurrentPage = 1;
+    renderTicketsPage();
+  });
+
+  // search input — debounced slightly so it doesn't refilter on every keystroke
+  let pgsSearchDebounce;
+  document.getElementById('pgsTicketSearch').addEventListener('input', function(){
+    clearTimeout(pgsSearchDebounce);
+    const value = this.value;
+    pgsSearchDebounce = setTimeout(() => {
+      pgsSearchTerm = value;
+      applyTicketFilter();
+    }, 200);
+  });
+
+  loadMyTickets()
+
+  function loadMyTickets(){
+    sole.post("../../controllers/powerguard/supervisor/get_tickets.php", {
+      sup_id: localStorage.getItem("userid_sup")
+    }).then(res => {
+      pgsAllTickets = res.data || res || [];
+      pgsFilteredTickets = pgsAllTickets;
+      pgsCurrentPage = 1;
+      renderTicketsPage();
+    });
+  }
+
+  // load tickets when the "My tickets" tab is clicked
+  document.querySelector('.pgs-tab[data-pane="pgsTickets"]').addEventListener('click', () => {
+    loadMyTickets();
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 })();
 
@@ -126,3 +482,7 @@ if(localStorage.getItem("login_sup") == "true"){
 }else{
   splash(0.5, "light", "#082b49");
 }
+
+document.getElementsByClassName("pgs-avatar")[0].innerText = localStorage.getItem("pgs_avatar")
+document.getElementsByClassName("pgs-name")[0].innerText = localStorage.getItem("pgs_name")
+document.getElementsByClassName("pgs-role")[0].innerText = localStorage.getItem("pgs_role")
