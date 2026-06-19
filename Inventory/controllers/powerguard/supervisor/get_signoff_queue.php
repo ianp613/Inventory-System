@@ -22,15 +22,32 @@
         $ws_add = false;
         foreach ($pg_ws_temp as $ws) {
 
-            if($ws["tech_id"] != "-" && $ws["sign_off_queue"] != "pending"){
-
+            if($ws["tech_id"] != "-"){
+                $tech = new PG_User;
+                $tech = DB::find($tech,$ws["tech_id"])[0];
+                
                 $ws_temp = [
                     "ws_number" => $ws["ws_number"],
-                    "technician_name" => "",
+                    "technician_name" => $tech["fname"][0].". ".$tech["lname"],
                     "submitted_at" => "",
-                    "findings" => "Done",
+                    "findings" => "",
                     "status" => $ws["sign_off_queue"]
                 ];
+
+                $ws_assessment = new PG_WS_Assessment;
+                $ws_assessment = DB::where($ws_assessment,"ws_id","=",$ws["id"]);
+
+                if(count($ws_assessment) && $ws["sign_off_queue"] != "draft" || $ws["sign_off_queue"] != "rejected"){
+                    $ws_temp["submitted_at"] = $ws_assessment[0]["assessed_at"];
+                    $ws_temp["findings"] = $ws_assessment[0]["ups_condition"] != "Functional" ? "UPS ".$ws_assessment[0]["ups_condition"] : "" ;
+                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["ups_condition"] != "Functional" ? " · " : "").($ws_assessment[0]["system_unit_condition"] != "Functional" ? "System Unit ".$ws_assessment[0]["system_unit_condition"] : "");
+                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["system_unit_condition"] != "Functional" ? " · " : "").($ws_assessment[0]["monitor_condition"] != "Functional" ? "Monitor ".$ws_assessment[0]["monitor_condition"] : "");
+                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["monitor_condition"] != "Functional" ? " · " : "").($ws_assessment[0]["technical_findings"]);
+                }
+
+                if($ws["sign_off_queue"] == "pending"){
+                    $ws_temp["findings"] = "Assessment has not yet started.";
+                }
 
                 if($ws["sign_off_queue"] != "done"){
                     $ws_add = true;
@@ -42,7 +59,7 @@
                     "ws_number" => $ws["ws_number"],
                     "technician_name" => "",
                     "submitted_at" => "",
-                    "findings" => "Awaiting technician ...",
+                    "findings" => "Not yet assigned to any technician.",
                     "status" => "pending"
                 ];
             }
@@ -53,7 +70,7 @@
         $dt = new DateTime($pgt["incident_datetime"]);
         $year = $dt->format('Y');
 
-        if((new DateTime())->format('Y') == $year && $ws_add){
+        if((new DateTime())->format('Y') == $year || $ws_add){
             array_push($pg_ticket_final,$pgt);
         }
     }
