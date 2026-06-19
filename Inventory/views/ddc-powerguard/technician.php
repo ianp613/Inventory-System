@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PowerGuard — Technician</title>
+<title>DDC PowerGuard — Technician</title>
 <link rel="stylesheet" href="../../assets/css/powerguard.css">
 </head>
 <body class="pgt-body">

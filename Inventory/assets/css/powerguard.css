@@ -1631,6 +1631,24 @@
   }
   .pgs-btn:disabled:hover{ border-color:var(--pgs-line); }
 
+  .pgs-signoff-ticket-group{
+    margin-bottom:24px;
+  }
+  .pgs-signoff-ticket-group:last-child{
+    margin-bottom:0;
+  }
+  .pgs-signoff-ticket-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  .pgs-signoff-ticket-no{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    font-size:13px;
+  }
+
   @media (max-width: 760px){
     .pgs-metrics{ grid-template-columns:repeat(2,1fr); }
     .pgs-row{ flex-direction:column; gap:14px; }

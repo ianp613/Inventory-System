@@ -57,7 +57,7 @@
       <div class="pgs-tab pgs-tab-active" data-pane="pgsSubmit">Submit ticket</div>
       <div class="pgs-tab" data-pane="pgsTickets">My tickets</div>
       <div class="pgs-tab" data-pane="pgsSignoff">Sign-off queue</div>
-      <div class="pgs-tab" data-pane="pgsReports">Reports</div>
+      <div hidden class="pgs-tab" data-pane="pgsReports">Reports</div>
     </div>
 
     <!-- SUBMIT TICKET -->
@@ -170,9 +170,9 @@
         <table class="pgs-tickets-table">
           <thead>
             <tr>
-              <th>Ticket no.</th>
-              <th>Date</th>
-              <th>Type</th>
+              <th style="min-width:110px">Ticket no.</th>
+              <th style="min-width:100px">Date</th>
+              <th style="min-width:120px">Type</th>
               <th>Area</th>
               <th>Workstations</th>
               <th style="min-width:120px">Progress</th>
@@ -205,86 +205,11 @@
       </div>
     </div>
 
+    
     <!-- SIGN-OFF QUEUE -->
     <div class="pgs-pane" id="pgsSignoff">
-      <div class="pgs-signoff-intro">Submitted assessments awaiting your sign-off — Ticket #2024-0147</div>
-
-      <div class="pgs-signoff-row">
-        <div class="pgs-signoff-ws">WS-104</div>
-        <div class="pgs-signoff-tech">
-          <svg style="width:12px;height:12px;vertical-align:-1px;margin-right:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          E. Macaraeg<br><span class="pgs-signoff-tech-time">Jun 8 · 3:28 PM</span>
-        </div>
-        <div class="pgs-signoff-finding">All components functional. UPS charging normally, system unit POST successful, monitor clear.</div>
-        <div class="pgs-signoff-actions">
-          <span class="pgs-badge pgs-badge-green"><span class="pgs-badge-dot"></span> OK — cleared</span>
-          <div class="pgs-signoff-actions-row">
-            <button class="pgs-btn pgs-btn-sm pgs-btn-success">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-              Sign off
-            </button>
-            <button class="pgs-btn pgs-btn-sm pgs-btn-reject">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
-              Reject
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pgs-signoff-row">
-        <div class="pgs-signoff-ws">WS-109</div>
-        <div class="pgs-signoff-tech">
-          <svg style="width:12px;height:12px;vertical-align:-1px;margin-right:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          E. Macaraeg<br><span class="pgs-signoff-tech-time">Jun 8 · 3:45 PM</span>
-        </div>
-        <div class="pgs-signoff-finding">All components functional. Cleared for use.</div>
-        <div class="pgs-signoff-actions">
-          <span class="pgs-badge pgs-badge-green"><span class="pgs-badge-dot"></span> OK — cleared</span>
-          <div class="pgs-signoff-actions-row">
-            <button class="pgs-btn pgs-btn-sm pgs-btn-success">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-              Sign off
-            </button>
-            <button class="pgs-btn pgs-btn-sm pgs-btn-reject">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
-              Reject
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pgs-signoff-row">
-        <div class="pgs-signoff-ws">WS-101</div>
-        <div class="pgs-signoff-tech">
-          <svg style="width:12px;height:12px;vertical-align:-1px;margin-right:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          E. Macaraeg<br><span class="pgs-signoff-tech-time">Jun 8 · 3:10 PM</span>
-        </div>
-        <div class="pgs-signoff-finding">UPS damaged — replace unit. System unit intact and boots normally. Parts requested: APC 650VA x1.</div>
-        <div class="pgs-signoff-actions">
-          <span class="pgs-badge pgs-badge-amber"><span class="pgs-badge-dot"></span> Parts pending</span>
-          <div class="pgs-signoff-actions-row">
-            <button class="pgs-btn pgs-btn-sm pgs-btn-success">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-              Sign off
-            </button>
-            <button class="pgs-btn pgs-btn-sm pgs-btn-reject">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
-              Reject
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pgs-signoff-row pgs-disabled">
-        <div class="pgs-signoff-ws">WS-102</div>
-        <div class="pgs-signoff-tech">
-          <svg style="width:12px;height:12px;vertical-align:-1px;margin-right:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          R. Bautista<br><span class="pgs-signoff-tech-time">Not yet submitted</span>
-        </div>
-        <div class="pgs-signoff-finding" style="color:var(--pgs-ink-faint)">Assessment in progress…</div>
-        <div class="pgs-signoff-actions">
-          <span class="pgs-badge" style="background:var(--pgs-panel-2);color:var(--pgs-ink-faint);border:1px solid var(--pgs-line)">Awaiting tech</span>
-        </div>
+      <div id="pgsSignoffContainer">
+        <!-- ticket groups injected by JS -->
       </div>
     </div>
 

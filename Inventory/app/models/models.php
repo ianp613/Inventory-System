@@ -932,6 +932,7 @@
             "system_unit_status",
             "monitor_status",
             "notes",
+            "sign_off_queue",
             "tech_id"
         ];
 
@@ -942,7 +943,7 @@
         public string $system_unit_status;
         public string $monitor_status;
         public string $notes;
-        public string $sign_off_queue; //[submitted,done,rejected,draft]
+        public string $sign_off_queue; //[submitted,done,rejected,draft,pending]
         public string $tech_id;
     }
 

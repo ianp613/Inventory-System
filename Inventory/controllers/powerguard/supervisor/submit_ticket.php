@@ -40,6 +40,7 @@
       $pg_ws->system_unit_status   = $ws["system_unit_status"];
       $pg_ws->monitor_status       = $ws["monitor_status"];
       $pg_ws->notes                = $ws["notes"] ? $ws["notes"] : "-";
+      $pg_ws->sign_off_queue       = "pending"; 
       $pg_ws->tech_id              = "-";
       DB::save($pg_ws);
    }

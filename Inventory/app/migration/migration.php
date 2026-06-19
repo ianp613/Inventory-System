@@ -442,6 +442,7 @@
             Migrate::string("system_unit_status");
             Migrate::string("monitor_status");
             Migrate::string("notes");
+            Migrate::string("sign_off_queue");
             Migrate::string("tech_id");
         }
     }

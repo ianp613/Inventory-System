@@ -271,8 +271,6 @@
   }
 
   function wsChipsHTML(workstations){
-    console.log(workstations)
-
     if(!workstations || !workstations.length) return '<span style="color:var(--pgs-ink-faint);font-size:12px">No workstations</span>';
     const visible = workstations.slice(0, 3);
     const remaining = workstations.length - visible.length;
@@ -292,11 +290,17 @@
       pgsFilteredTickets = pgsAllTickets;
     } else {
       pgsFilteredTickets = pgsAllTickets.filter(t => {
+        const dateFormatted = t.incident_datetime
+          ? new Date(t.incident_datetime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toLowerCase()
+          : '';
+        const areaValue = (t.area && t.area !== '-') ? t.area.toLowerCase() : '';
+
         return (
           String(t.ticket_no).toLowerCase().includes(term) ||
           (t.fluctuation_type || '').toLowerCase().includes(term) ||
-          (t.area || '').toLowerCase().includes(term) ||
-          (t.status || '').toLowerCase().includes(term)
+          areaValue.includes(term) ||
+          (t.status || '').toLowerCase().includes(term) ||
+          dateFormatted.includes(term)
         );
       });
     }
@@ -468,7 +472,218 @@
 
 
 
+/* ---------- SIGN-OFF QUEUE: FETCH + RENDER ---------- */
 
+function signoffStatusBadge(status){
+    const map = {
+      'submitted': { cls:'pgs-badge-amber', label:'Submitted — awaiting sign-off' },
+      'pending':   { cls:'pgs-badge', label:'Pending', extraStyle:'background:var(--pgs-panel-2);color:var(--pgs-ink-faint);border:1px solid var(--pgs-line)' },
+      'draft':     { cls:'pgs-badge', label:'Awaiting tech', extraStyle:'background:var(--pgs-panel-2);color:var(--pgs-ink-faint);border:1px solid var(--pgs-line)' },
+      'rejected':  { cls:'pgs-badge-red', label:'Rejected' },
+      'done':      { cls:'pgs-badge-green', label:'Signed off' }
+    };
+    const s = map[status] || { cls:'pgs-badge', label: status, extraStyle:'background:var(--pgs-panel-2);color:var(--pgs-ink-faint);border:1px solid var(--pgs-line)' };
+    const styleAttr = s.extraStyle ? ` style="${s.extraStyle}"` : '';
+    return `<span class="pgs-badge ${s.cls}"${styleAttr}><span class="pgs-badge-dot"></span> ${s.label}</span>`;
+  }
+
+  function signoffRowHTML(ws, ticketId){
+    const isPending = ws.status === 'submitted';
+    const isDimmed = ws.status === 'draft' || ws.status === 'pending';
+
+    const findingText = ws.findings
+      ? ws.findings
+      : 'Assessment in progress…';
+
+    const timeLine = ws.submitted_at
+      ? new Date(ws.submitted_at).toLocaleString('en-US', { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' })
+      : 'Not yet submitted';
+
+    const actionsHTML = isPending
+      ? `
+        <div class="pgs-signoff-actions-row">
+          <button class="pgs-btn pgs-btn-sm pgs-btn-success" onclick="signOffWorkstation(${ticketId}, '${ws.ws_number}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Sign off
+          </button>
+          <button class="pgs-btn pgs-btn-sm pgs-btn-reject" onclick="rejectWorkstation(${ticketId}, '${ws.ws_number}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+            Reject
+          </button>
+        </div>
+      `
+      : '';
+
+    return `
+      <div class="pgs-signoff-row ${isDimmed ? 'pgs-disabled' : ''}">
+        <div class="pgs-signoff-ws">${ws.ws_number}</div>
+        <div class="pgs-signoff-tech">
+          <svg style="width:12px;height:12px;vertical-align:-1px;margin-right:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          ${ws.technician_name || 'Unassigned'}<br><span class="pgs-signoff-tech-time">${timeLine}</span>
+        </div>
+        <div class="pgs-signoff-finding" ${isDimmed ? 'style="color:var(--pgs-ink-faint)"' : ''}>${findingText}</div>
+        <div class="pgs-signoff-actions">
+          ${signoffStatusBadge(ws.status)}
+          ${actionsHTML}
+        </div>
+      </div>
+    `;
+  }
+
+  function signoffRowHTML(ws, ticketId){
+    const showActionButtons = ws.status === 'submitted'; // only an actual submitted assessment can be signed off or rejected
+    const isDimmed = ws.status === 'draft' || ws.status === 'pending';
+
+    const findingText = ws.findings
+      ? ws.findings
+      : 'Assessment in progress…';
+
+    const timeLine = ws.submitted_at
+      ? new Date(ws.submitted_at).toLocaleString('en-US', { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' })
+      : 'Not yet submitted';
+
+    const actionsHTML = showActionButtons
+      ? `
+        <div class="pgs-signoff-actions-row">
+          <button class="pgs-btn pgs-btn-sm pgs-btn-success" onclick="signOffWorkstation(${ticketId}, '${ws.ws_number}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Sign off
+          </button>
+          <button class="pgs-btn pgs-btn-sm pgs-btn-reject" onclick="rejectWorkstation(${ticketId}, '${ws.ws_number}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+            Reject
+          </button>
+        </div>
+      `
+      : ''; // pending (unclaimed) and draft both get no buttons — nothing has been submitted yet
+
+    return `
+      <div class="pgs-signoff-row ${isDimmed ? 'pgs-disabled' : ''}">
+        <div class="pgs-signoff-ws">${ws.ws_number}</div>
+        <div class="pgs-signoff-tech">
+          <svg style="width:12px;height:12px;vertical-align:-1px;margin-right:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          ${ws.technician_name || 'Unassigned'}<br><span class="pgs-signoff-tech-time">${timeLine}</span>
+        </div>
+        <div class="pgs-signoff-finding" ${isDimmed ? 'style="color:var(--pgs-ink-faint)"' : ''}>${findingText}</div>
+        <div class="pgs-signoff-actions">
+          ${signoffStatusBadge(ws.status)}
+          ${actionsHTML}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderSignoffQueue(tickets){
+    console.log(tickets)
+    const container = document.getElementById('pgsSignoffContainer');
+
+    if(!tickets.length){
+      container.innerHTML = `
+        <div style="text-align:center;padding:40px 16px;color:var(--pgs-ink-faint);font-size:13px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;opacity:.5"><path d="M20 6 9 17l-5-5"/></svg>
+            No workstations awaiting sign-off.
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = tickets.map(ticket => `
+      <div class="pgs-signoff-ticket-group">
+        <div class="pgs-signoff-ticket-header">
+          <span class="pgs-badge pgs-badge-blue"><span class="pgs-badge-dot"></span> #${ticket.ticket_no}</span>
+        </div>
+        <div class="pgs-signoff-intro">Submitted assessments awaiting your sign-off — Ticket #${ticket.ticket_no}</div>
+        ${ticket.workstations.map(ws => signoffRowHTML(ws, ticket.id)).join('')}
+      </div>
+    `).join('');
+  }
+
+  loadSignoffQueue()
+  function loadSignoffQueue(){
+    sole.post("../../controllers/powerguard/supervisor/get_signoff_queue.php", {
+      sup_id: localStorage.getItem("userid_sup")
+    }).then(res => {
+      const tickets = res.data || res || [];
+      renderSignoffQueue(tickets);
+    });
+  }
+
+  // load sign-off queue when the tab is clicked
+  document.querySelector('.pgs-tab[data-pane="pgsSignoff"]').addEventListener('click', () => {
+    loadSignoffQueue();
+  });
+
+  /* ---------- SIGN OFF / REJECT ACTIONS ---------- */
+  function signOffWorkstation(ticketId, wsNumber){
+    sole.post("../../controllers/powerguard/supervisor/signoff_workstation.php", {
+      sup_id: localStorage.getItem("userid_sup"),
+      ticket_id: ticketId,
+      ws_number: wsNumber
+    }).then(res => {
+      console.log(res);
+      loadSignoffQueue(); // refresh the list after action
+    });
+  }
+
+  function rejectWorkstation(ticketId, wsNumber){
+    sole.post("../../controllers/powerguard/supervisor/reject_workstation.php", {
+      sup_id: localStorage.getItem("userid_sup"),
+      ticket_id: ticketId,
+      ws_number: wsNumber
+    }).then(res => {
+      console.log(res);
+      loadSignoffQueue(); // refresh the list after action
+    });
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
 
 
 
