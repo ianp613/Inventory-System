@@ -957,14 +957,13 @@
             "escalate_to"
         ];
 
-        // public string $ticket_id;
-        // public string $ws_number;
-        // public string $assigned_user;
-        // public string $ups_status;
-        // public string $system_unit_status;
-        // public string $monitor_status;
-        // public string $notes;
-        // public string $sign_off_queue; //[submitted,done,rejected,draft]
-        // public string $tech_id;
+        public string $ws_id;
+        public string $assessed_at;
+        public string $ups_condition;
+        public string $system_unit_condition;
+        public string $monitor_condition;
+        public string $technical_findings;
+        public string $parts_needed;
+        public string $escalate_to;
     }
 ?>

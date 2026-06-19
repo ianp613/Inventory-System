@@ -412,4 +412,59 @@
             Migrate::string("password");
         }
     }
+
+    class PG_TicketMigration{
+        public static function index(){
+            Migrate::attrib_table("pg_ticket");
+            Migrate::attrib_string(1000);
+            Migrate::string("sup_id");
+            Migrate::string("incident_datetime");
+            Migrate::string("fluctuation_type");
+            Migrate::string("priority");
+            Migrate::string("area");
+            Migrate::string("duration_minutes");
+            Migrate::string("description");
+        }
+    }
+
+    class PG_WSMigration{
+        public static function index(){
+            Migrate::attrib_table("pg_ws");
+            Migrate::attrib_string(1000);
+            Migrate::string("ticket_id");
+            Migrate::string("ws_number");
+            Migrate::string("assigned_user");
+            Migrate::string("ups_status");
+            Migrate::string("system_unit_status");
+            Migrate::string("monitor_status");
+            Migrate::string("notes");
+            Migrate::string("tech_id");
+        }
+    }
+
+    class PG_WS_AssessmentMigration{
+        public static function index(){
+            Migrate::attrib_table("pg_ws_assessment");
+            Migrate::attrib_string(1000);
+            Migrate::string("ws_id");
+            Migrate::string("assessed_at");
+            Migrate::string("ups_condition");
+            Migrate::string("system_unit_condition");
+            Migrate::string("monitor_condition");
+            Migrate::string("");
+            Migrate::string("");
+            Migrate::string("");
+        }
+        public $table = "";
+        public $fillable = [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "technical_findings",
+            "parts_needed",
+            "escalate_to"
+        ];
+    }
 ?>
