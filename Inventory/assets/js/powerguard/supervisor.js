@@ -574,7 +574,20 @@ function signoffStatusBadge(status){
   }
 
   function renderSignoffQueue(tickets){
-    console.log(tickets)
+    
+    document.getElementById("pgs_open_ticket").innerText = tickets[0].length
+    submitted_ = 0
+    tickets[0].forEach(t => {
+      t.workstations.forEach(w => {
+        submitted_ += w.status == "submitted" ?  1 : 0
+      })
+    })
+    document.getElementById("pgs_awaiting_sign_off").innerText = submitted_
+    document.getElementById("pgs_workstation_resolved").innerText = tickets[1]
+    document.getElementById("pgs_workstation_resolved").innerText = tickets[1]
+    document.getElementById("pgs_ticket_closed").innerText = tickets[2]
+
+    tickets = tickets[0]
     const container = document.getElementById('pgsSignoffContainer');
 
     if(!tickets.length){

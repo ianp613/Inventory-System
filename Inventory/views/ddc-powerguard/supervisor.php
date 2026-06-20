@@ -35,19 +35,19 @@
   <div class="pgs-metrics">
     <div class="pgs-metric">
       <div class="pgs-metric-lbl">MY OPEN TICKETS</div>
-      <div class="pgs-metric-val pgs-blue">0</div>
+      <div id="pgs_open_ticket" class="pgs-metric-val pgs-blue">0</div>
     </div>
     <div class="pgs-metric">
       <div class="pgs-metric-lbl">AWAITING SIGN-OFF</div>
-      <div class="pgs-metric-val pgs-amber">0</div>
+      <div id="pgs_awaiting_sign_off" class="pgs-metric-val pgs-amber">0</div>
     </div>
     <div class="pgs-metric">
       <div class="pgs-metric-lbl">WORKSTATIONS RESOLVED</div>
-      <div class="pgs-metric-val pgs-green">0 / 0</div>
+      <div id="pgs_workstation_resolved" class="pgs-metric-val pgs-green">0 / 0</div>
     </div>
     <div class="pgs-metric">
       <div class="pgs-metric-lbl">TICKETS CLOSED (ALL TIME)</div>
-      <div class="pgs-metric-val">0</div>
+      <div id="pgs_ticket_closed" class="pgs-metric-val">0</div>
     </div>
   </div>
 
