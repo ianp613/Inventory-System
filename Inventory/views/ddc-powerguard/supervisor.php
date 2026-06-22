@@ -11,25 +11,38 @@
 
 <div class="pgs-shell">
 
-  <!-- TOP BAR -->
-  <div class="pgs-topbar">
-    <div class="pgs-topbar-left">
-      <div class="pgs-avatar"></div>
-      <div>
-        <div class="pgs-name"></div>
-        <div class="pgs-role"></div>
-      </div>
-    </div>
-    <div class="pgs-topbar-right">
-      <span class="pgs-badge pgs-badge-red"><span class="pgs-badge-dot"></span> 1 active incident</span>
-      <button class="pgs-iconbtn" aria-label="Notifications">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      </button>
-      <button class="pgs-iconbtn" aria-label="More options">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-      </button>
+<!-- TOP BAR -->
+<div class="pgs-topbar">
+  <div class="pgs-topbar-left">
+    <div class="pgs-avatar"></div>
+    <div>
+      <div class="pgs-name"></div>
+      <div class="pgs-role"></div>
     </div>
   </div>
+  <div class="pgs-topbar-right">
+    <span id="pgs_active_incident_container" hidden class="pgs-badge-red"><span class="pgs-badge-dot"></span><span id="pgs_active_incident"> 1 active incident</span></span>
+    <button class="pgs-iconbtn" aria-label="Notifications">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </button>
+    <div style="position:relative;display:inline-flex;">
+      <button class="pgs-iconbtn" aria-label="More options" id="pgsMoreBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+      <div class="pgs-dropdown" id="pgsMoreDropdown">
+        <button class="pgs-dropdown-item" id="pgsSettingsBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </button>
+        <div class="pgs-dropdown-divider"></div>
+        <button class="pgs-dropdown-item pgs-dropdown-item-danger" id="pgsLogoutBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Log out
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- METRICS -->
   <div class="pgs-metrics">

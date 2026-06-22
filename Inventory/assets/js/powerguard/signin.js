@@ -63,19 +63,27 @@
               localStorage.setItem("pgs_role","Supervisor · Admin Department")
 
               localStorage.setItem("userid_sup",res.user.id)
-              localStorage.setItem("login_sup","true")
+              localStorage.setItem("login_sup",true)
               localStorage.removeItem("pgs-active")
               window.location.replace("supervisor.php")
             }
             if(res.user.privileges == "technician"){
+              localStorage.setItem("pgt_avatar",res.user.fname[0]+res.user.lname[0].toUpperCase())
+              localStorage.setItem("pgt_name",res.user.fname[0]+". "+res.user.lname)
+              localStorage.setItem("pgt_role","Technician · IT Department")
+
               localStorage.setItem("userid_tech",res.user.id)
-              localStorage.setItem("login_tech","true")
+              localStorage.setItem("login_tech",true)
               localStorage.removeItem("pgt-active")
               window.location.replace("technician.php")
             }
             if(res.user.privileges == "administrator"){
+              localStorage.setItem("pga_avatar",res.user.fname[0]+res.user.lname[0].toUpperCase())
+              localStorage.setItem("pga_name",res.user.fname[0]+". "+res.user.lname)
+              localStorage.setItem("pga_role","Administrator · Full system access")
+
               localStorage.setItem("userid_admin",res.user.id)
-              localStorage.setItem("login_admin","true")
+              localStorage.setItem("login_admin",true)
               localStorage.removeItem("pga-active")
               window.location.replace("administrator.php")
             }

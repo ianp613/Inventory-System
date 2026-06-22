@@ -1,5 +1,5 @@
 class Sole_Swaler{
-    toast(title = null,icon = null,text = null,confirmButtonText = "OK",confirmButtonColor = null){
+    toast(title = null,icon = null,text = null,confirmButtonText,confirmButtonColor = null){
         if(!confirmButtonText){
             confirmButtonText = "OK"
         }

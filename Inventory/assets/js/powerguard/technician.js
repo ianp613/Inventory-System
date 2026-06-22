@@ -1,3 +1,14 @@
+if(localStorage.getItem("login_tech") !== null){
+  if(localStorage.getItem("login_tech") == "true"){
+      ss.toast(localStorage.getItem("login_title"),localStorage.getItem("login_type"),localStorage.getItem("login_message"),null,"#082b49")
+      localStorage.setItem("login_tech",false)
+  }else{
+    splash(0.5, "light", "#16201d");
+  }  
+}else{
+  window.location.replace("signin.php")
+  splash(5, "light", "#16201d");
+}
 
 (function(){
 
@@ -210,12 +221,66 @@
     console.log('Saving draft...');
   });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  const pgtMoreBtn      = document.getElementById('pgtMoreBtn');
+  const pgtMoreDropdown = document.getElementById('pgtMoreDropdown');
+
+  pgtMoreBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    pgtMoreDropdown.classList.toggle('pgt-dropdown-open');
+  });
+
+  document.addEventListener('click', () => {
+    pgtMoreDropdown.classList.remove('pgt-dropdown-open');
+  });
+
+  document.getElementById('pgtSettingsBtn').addEventListener('click', () => {
+    pgtMoreDropdown.classList.remove('pgt-dropdown-open');
+    window.location.href = '../../views/powerguard/settings.php';
+  });
+
+  document.getElementById('pgtLogoutBtn').addEventListener('click', () => {
+    pgtMoreDropdown.classList.remove('pgt-dropdown-open');
+      Swal.fire({
+        title: "You are about to leave",
+        text: "Do you wish to end your current session?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+        customClass: {
+            popup: 'my-custom-popup',
+            actions: 'my-right-buttons'
+        }
+    }).then((result) => {
+        if (result.isConfirmed){
+            localStorage.removeItem("userid_tech")
+            localStorage.removeItem("login_tech")
+          window.location.href = '../../views/ddc-powerguard/signin.php';
+        }
+    });
+  });
+
+
 })();
 
 
-if(localStorage.getItem("login_tech") == "true"){
-    ss.toast(localStorage.getItem("login_title"),localStorage.getItem("login_type"),localStorage.getItem("login_message"),null,"#223330")
-    localStorage.removeItem("login_tech")
-}else{
-  splash(0.5, "light", "#16201d");
-}
+document.getElementsByClassName("pgt-avatar")[0].innerText = localStorage.getItem("pgt_avatar")
+document.getElementsByClassName("pgt-name")[0].innerText = localStorage.getItem("pgt_name")
+document.getElementsByClassName("pgt-role-label")[0].innerText = localStorage.getItem("pgt_role")

@@ -1,6 +1,16 @@
-    
-(function(){
+if(localStorage.getItem("login_sup") !== null){
+  if(localStorage.getItem("login_sup") == "true"){
+      ss.toast(localStorage.getItem("login_title"),localStorage.getItem("login_type"),localStorage.getItem("login_message"),null,"#082b49")
+      localStorage.setItem("login_sup",false)
+  }else{
+    splash(0.5, "light", "#082b49");
+  }  
+}else{
+  window.location.replace("signin.php")
+  splash(5, "light", "#082b49");
+}
 
+(function(){
   /* ---------- TAB SWITCHING ---------- */
   const tabs = document.querySelectorAll('.pgs-tab');
   const panes = document.querySelectorAll('.pgs-pane');
@@ -478,7 +488,7 @@ function signoffStatusBadge(status){
     const map = {
       'submitted': { cls:'pgs-badge-amber', label:'Submitted — awaiting sign-off' },
       'pending':   { cls:'pgs-badge', label:'Pending', extraStyle:'background:var(--pgs-panel-2);color:var(--pgs-ink-faint);border:1px solid var(--pgs-line)' },
-      'draft':     { cls:'pgs-badge', label:'Awaiting tech', extraStyle:'background:var(--pgs-panel-2);color:var(--pgs-ink-faint);border:1px solid var(--pgs-line)' },
+      'draft':     { cls:'pgs-badge-amber', label:'Ongoing Assessment', extraStyle:'background:var(--pgs-panel-2);color:var(--pgs-ink-faint);border:1px solid var(--pgs-line)' },
       'rejected':  { cls:'pgs-badge-red', label:'Rejected' },
       'done':      { cls:'pgs-badge-green', label:'Signed off' }
     };
@@ -488,7 +498,7 @@ function signoffStatusBadge(status){
   }
 
   function signoffRowHTML(ws, ticketId){
-    const isPending = ws.status === 'submitted';
+    const showActionButtons = ws.status === 'submitted';
     const isDimmed = ws.status === 'draft' || ws.status === 'pending';
 
     const findingText = ws.findings
@@ -499,14 +509,20 @@ function signoffStatusBadge(status){
       ? new Date(ws.submitted_at).toLocaleString('en-US', { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' })
       : 'Not yet submitted';
 
-    const actionsHTML = isPending
+    const actionsHTML = showActionButtons
       ? `
         <div class="pgs-signoff-actions-row">
-          <button class="pgs-btn pgs-btn-sm pgs-btn-success" onclick="signOffWorkstation(${ticketId}, '${ws.ws_number}')">
+          <button class="pgs-btn pgs-btn-sm pgs-btn-success"
+            data-action="signoff"
+            data-ticket-id="${ticketId}"
+            data-ws-number="${ws.ws_number}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
             Sign off
           </button>
-          <button class="pgs-btn pgs-btn-sm pgs-btn-reject" onclick="rejectWorkstation(${ticketId}, '${ws.ws_number}')">
+          <button class="pgs-btn pgs-btn-sm pgs-btn-reject"
+            data-action="reject"
+            data-ticket-id="${ticketId}"
+            data-ws-number="${ws.ws_number}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
             Reject
           </button>
@@ -522,7 +538,7 @@ function signoffStatusBadge(status){
           ${ws.technician_name || 'Unassigned'}<br><span class="pgs-signoff-tech-time">${timeLine}</span>
         </div>
         <div class="pgs-signoff-finding" ${isDimmed ? 'style="color:var(--pgs-ink-faint)"' : ''}>${findingText}</div>
-        <div class="pgs-signoff-actions">
+        <div class="pgs-signoff-actions" id="pgs-actions-${ticketId}-${ws.ws_number.replace(/\W/g,'_')}">
           ${signoffStatusBadge(ws.status)}
           ${actionsHTML}
         </div>
@@ -530,52 +546,50 @@ function signoffStatusBadge(status){
     `;
   }
 
-  function signoffRowHTML(ws, ticketId){
-    const showActionButtons = ws.status === 'submitted'; // only an actual submitted assessment can be signed off or rejected
-    const isDimmed = ws.status === 'draft' || ws.status === 'pending';
+  document.getElementById('pgsSignoffContainer').addEventListener('click', function(e){
+    const btn = e.target.closest('[data-action]');
+    if(!btn) return;
 
-    const findingText = ws.findings
-      ? ws.findings
-      : 'Assessment in progress…';
+    const action   = btn.dataset.action;
+    const ticketId = btn.dataset.ticketId;
+    const wsNumber = btn.dataset.wsNumber;
 
-    const timeLine = ws.submitted_at
-      ? new Date(ws.submitted_at).toLocaleString('en-US', { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' })
-      : 'Not yet submitted';
+    // immediately update the badge + hide buttons (optimistic UI)
+    const actionsEl = document.getElementById(`pgs-actions-${ticketId}-${wsNumber.replace(/\W/g,'_')}`);
+    if(actionsEl){
+      actionsEl.innerHTML = signoffStatusBadge(action === 'signoff' ? 'done' : 'rejected');
+    }
 
-    const actionsHTML = showActionButtons
-      ? `
-        <div class="pgs-signoff-actions-row">
-          <button class="pgs-btn pgs-btn-sm pgs-btn-success" onclick="signOffWorkstation(${ticketId}, '${ws.ws_number}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-            Sign off
-          </button>
-          <button class="pgs-btn pgs-btn-sm pgs-btn-reject" onclick="rejectWorkstation(${ticketId}, '${ws.ws_number}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
-            Reject
-          </button>
-        </div>
-      `
-      : ''; // pending (unclaimed) and draft both get no buttons — nothing has been submitted yet
+    if(action === 'signoff'){
+      sole.post("../../controllers/powerguard/supervisor/signoff_workstation.php", {
+        sup_id:    localStorage.getItem("userid_sup"),
+        ticket_id: ticketId,
+        ws_number: wsNumber
+      }).then(res => {
+        console.log(res);
+      });
+    }
 
-    return `
-      <div class="pgs-signoff-row ${isDimmed ? 'pgs-disabled' : ''}">
-        <div class="pgs-signoff-ws">${ws.ws_number}</div>
-        <div class="pgs-signoff-tech">
-          <svg style="width:12px;height:12px;vertical-align:-1px;margin-right:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          ${ws.technician_name || 'Unassigned'}<br><span class="pgs-signoff-tech-time">${timeLine}</span>
-        </div>
-        <div class="pgs-signoff-finding" ${isDimmed ? 'style="color:var(--pgs-ink-faint)"' : ''}>${findingText}</div>
-        <div class="pgs-signoff-actions">
-          ${signoffStatusBadge(ws.status)}
-          ${actionsHTML}
-        </div>
-      </div>
-    `;
-  }
+    if(action === 'reject'){
+      sole.post("../../controllers/powerguard/supervisor/reject_workstation.php", {
+        sup_id:    localStorage.getItem("userid_sup"),
+        ticket_id: ticketId,
+        ws_number: wsNumber
+      }).then(res => {
+        console.log(res);
+      });
+    }
+  });
 
   function renderSignoffQueue(tickets){
     
     document.getElementById("pgs_open_ticket").innerText = tickets[0].length
+    if(tickets[0].length){
+      document.getElementById("pgs_active_incident_container").classList.add("pgs-badge")
+      document.getElementById("pgs_active_incident_container").hidden = false
+      document.getElementById("pgs_active_incident").innerText = tickets[0].length + " active incident" + (tickets[0].length > 1 ? "s" : "")
+    }
+    document.getElementsByClassName("pgs-badge")[0]
     submitted_ = 0
     tickets[0].forEach(t => {
       t.workstations.forEach(w => {
@@ -623,53 +637,59 @@ function signoffStatusBadge(status){
     });
   }
 
-  // load sign-off queue when the tab is clicked
-  document.querySelector('.pgs-tab[data-pane="pgsSignoff"]').addEventListener('click', () => {
-    loadSignoffQueue();
+
+
+
+
+
+  // ss.ask("You are about to leave","warning","Do you wish to end your current session?",null,"#d33")
+
+
+
+
+
+
+
+
+
+const pgsMoreBtn      = document.getElementById('pgsMoreBtn');
+  const pgsMoreDropdown = document.getElementById('pgsMoreDropdown');
+
+  pgsMoreBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    pgsMoreDropdown.classList.toggle('pgs-dropdown-open');
   });
 
-  /* ---------- SIGN OFF / REJECT ACTIONS ---------- */
-  function signOffWorkstation(ticketId, wsNumber){
-    sole.post("../../controllers/powerguard/supervisor/signoff_workstation.php", {
-      sup_id: localStorage.getItem("userid_sup"),
-      ticket_id: ticketId,
-      ws_number: wsNumber
-    }).then(res => {
-      console.log(res);
-      loadSignoffQueue(); // refresh the list after action
+  document.addEventListener('click', () => {
+    pgsMoreDropdown.classList.remove('pgs-dropdown-open');
+  });
+
+  document.getElementById('pgsSettingsBtn').addEventListener('click', () => {
+    pgsMoreDropdown.classList.remove('pgs-dropdown-open');
+    window.location.href = '../../views/powerguard/settings.php';
+  });
+
+  document.getElementById('pgsLogoutBtn').addEventListener('click', () => {
+    pgsMoreDropdown.classList.remove('pgs-dropdown-open');
+      Swal.fire({
+        title: "You are about to leave",
+        text: "Do you wish to end your current session?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+        customClass: {
+            popup: 'my-custom-popup',
+            actions: 'my-right-buttons'
+        }
+    }).then((result) => {
+        if (result.isConfirmed){
+            localStorage.removeItem("userid_sup")
+            localStorage.removeItem("login_sup")
+          window.location.href = '../../views/ddc-powerguard/signin.php';
+        }
     });
-  }
-
-  function rejectWorkstation(ticketId, wsNumber){
-    sole.post("../../controllers/powerguard/supervisor/reject_workstation.php", {
-      sup_id: localStorage.getItem("userid_sup"),
-      ticket_id: ticketId,
-      ws_number: wsNumber
-    }).then(res => {
-      console.log(res);
-      loadSignoffQueue(); // refresh the list after action
-    });
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  });
 
 
 
@@ -704,12 +724,6 @@ function signoffStatusBadge(status){
 
 })();
 
-if(localStorage.getItem("login_sup") == "true"){
-    ss.toast(localStorage.getItem("login_title"),localStorage.getItem("login_type"),localStorage.getItem("login_message"),null,"#082b49")
-    localStorage.removeItem("login_sup")
-}else{
-  splash(0.5, "light", "#082b49");
-}
 
 document.getElementsByClassName("pgs-avatar")[0].innerText = localStorage.getItem("pgs_avatar")
 document.getElementsByClassName("pgs-name")[0].innerText = localStorage.getItem("pgs_name")

@@ -1649,6 +1649,33 @@
     font-size:13px;
   }
 
+  .pgs-dropdown{
+    display:none;
+    position:absolute;
+    top:calc(100% + 8px);
+    right:0;
+    min-width:160px;
+    background:var(--pgs-panel);
+    border:1px solid var(--pgs-line);
+    border-radius:8px;
+    padding:4px;
+    z-index:999;
+    box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  }
+  .pgs-dropdown.pgs-dropdown-open{ display:block; }
+  .pgs-dropdown-item{
+    width:100%;display:flex;align-items:center;gap:9px;
+    font-size:13px;font-weight:500;padding:8px 11px;
+    border-radius:6px;border:none;background:transparent;
+    color:var(--pgs-ink);cursor:pointer;font-family:inherit;
+    text-align:left;transition:background .12s ease;
+  }
+  .pgs-dropdown-item:hover{ background:var(--pgs-panel-2); }
+  .pgs-dropdown-item svg{ width:15px;height:15px;flex-shrink:0;color:var(--pgs-ink-soft); }
+  .pgs-dropdown-item-danger{ color:var(--pgs-red); }
+  .pgs-dropdown-item-danger svg{ color:var(--pgs-red); }
+  .pgs-dropdown-divider{ height:1px;background:var(--pgs-line-soft);margin:4px 0; }
+
   @media (max-width: 760px){
     .pgs-metrics{ grid-template-columns:repeat(2,1fr); }
     .pgs-row{ flex-direction:column; gap:14px; }
@@ -1657,9 +1684,6 @@
     .pgs-signoff-row{ flex-wrap:wrap; }
     .pgs-signoff-actions{ align-items:flex-start; width:100%; }
   }
-
-
-
 
 
 
@@ -2126,6 +2150,33 @@
     color:var(--pgt-ink-faint);font-family:'IBM Plex Mono',monospace;margin-bottom:5px;
   }
 
+  .pgt-dropdown{
+    display:none;
+    position:absolute;
+    top:calc(100% + 8px);
+    right:0;
+    min-width:160px;
+    background:var(--pgt-panel);
+    border:1px solid var(--pgt-line);
+    border-radius:8px;
+    padding:4px;
+    z-index:999;
+    box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  }
+  .pgt-dropdown.pgt-dropdown-open{ display:block; }
+  .pgt-dropdown-item{
+    width:100%;display:flex;align-items:center;gap:9px;
+    font-size:13px;font-weight:500;padding:8px 11px;
+    border-radius:6px;border:none;background:transparent;
+    color:var(--pgt-ink);cursor:pointer;font-family:inherit;
+    text-align:left;transition:background .12s ease;
+  }
+  .pgt-dropdown-item:hover{ background:var(--pgt-panel-2); }
+  .pgt-dropdown-item svg{ width:15px;height:15px;flex-shrink:0;color:var(--pgt-ink-soft); }
+  .pgt-dropdown-item-danger{ color:var(--pgt-red); }
+  .pgt-dropdown-item-danger svg{ color:var(--pgt-red); }
+  .pgt-dropdown-divider{ height:1px;background:var(--pgt-line-soft);margin:4px 0; }
+
   @media(max-width:760px){
     .pgt-metrics{grid-template-columns:repeat(2,1fr);}
     .pgt-row{flex-direction:column;}
@@ -2478,6 +2529,33 @@
   .pga-rcard-lbl{font-size:11px;color:var(--pga-ink-faint);font-family:'IBM Plex Mono',monospace;margin-bottom:3px;}
   .pga-rcard-val{font-size:14px;font-weight:600;}
 
+  .pga-dropdown{
+    display:none;
+    position:absolute;
+    top:calc(100% + 8px);
+    right:0;
+    min-width:160px;
+    background:var(--pga-panel);
+    border:1px solid var(--pga-line);
+    border-radius:8px;
+    padding:4px;
+    z-index:999;
+    box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  }
+  .pga-dropdown.pga-dropdown-open{ display:block; }
+  .pga-dropdown-item{
+    width:100%;display:flex;align-items:center;gap:9px;
+    font-size:13px;font-weight:500;padding:8px 11px;
+    border-radius:6px;border:none;background:transparent;
+    color:var(--pga-ink);cursor:pointer;font-family:inherit;
+    text-align:left;transition:background .12s ease;
+  }
+  .pga-dropdown-item:hover{ background:var(--pga-panel-2); }
+  .pga-dropdown-item svg{ width:15px;height:15px;flex-shrink:0;color:var(--pga-ink-soft); }
+  .pga-dropdown-item-danger{ color:var(--pga-red); }
+  .pga-dropdown-item-danger svg{ color:var(--pga-red); }
+  .pga-dropdown-divider{ height:1px;background:var(--pga-line-soft);margin:4px 0; }
+
   @media(max-width:760px){
     .pga-metrics{grid-template-columns:repeat(2,1fr);}
     .pga-row{flex-direction:column;}
@@ -2487,4 +2565,29 @@
     .pga-topbar{flex-wrap:wrap;gap:12px;}
     .pga-approval-row{flex-wrap:wrap;}
     .pga-approval-actions{align-items:flex-start;width:100%;}
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* Nesting ensures the browser prioritizes your right-alignment */
+  .swal2-popup.my-custom-popup .swal2-actions.my-right-buttons {
+    justify-content: flex-end !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding-right: 1.5em !important;
   }

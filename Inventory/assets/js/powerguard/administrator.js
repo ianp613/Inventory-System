@@ -1,3 +1,15 @@
+if(localStorage.getItem("login_admin") !== null){
+  if(localStorage.getItem("login_admin") == "true"){
+      ss.toast(localStorage.getItem("login_title"),localStorage.getItem("login_type"),localStorage.getItem("login_message"),null,"#082b49")
+      localStorage.setItem("login_admin",false)
+  }else{
+    splash(0.5, "light", "#16201d");
+  }  
+}else{
+  window.location.replace("signin.php")
+  splash(5, "light", "#16201d");
+}
+
 (function(){
 
   /* ── TAB SWITCHING ── */
@@ -443,11 +455,65 @@
     renderAccounts();
   };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  const pgaMoreBtn      = document.getElementById('pgaMoreBtn');
+  const pgaMoreDropdown = document.getElementById('pgaMoreDropdown');
+
+  pgaMoreBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    pgaMoreDropdown.classList.toggle('pga-dropdown-open');
+  });
+
+  document.addEventListener('click', () => {
+    pgaMoreDropdown.classList.remove('pga-dropdown-open');
+  });
+
+  document.getElementById('pgaSettingsBtn').addEventListener('click', () => {
+    pgaMoreDropdown.classList.remove('pga-dropdown-open');
+    window.location.href = '../../views/powerguard/settings.php';
+  });
+
+  document.getElementById('pgaLogoutBtn').addEventListener('click', () => {
+    pgaMoreDropdown.classList.remove('pga-dropdown-open');
+      Swal.fire({
+        title: "You are about to leave",
+        text: "Do you wish to end your current session?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+        customClass: {
+            popup: 'my-custom-popup',
+            actions: 'my-right-buttons'
+        }
+    }).then((result) => {
+        if (result.isConfirmed){
+            localStorage.removeItem("userid_admin")
+            localStorage.removeItem("login_admin")
+          window.location.href = '../../views/ddc-powerguard/signin.php';
+        }
+    });
+  });
+
 })();
 
-if(localStorage.getItem("login_admin") == "true"){
-    ss.toast(localStorage.getItem("login_title"),localStorage.getItem("login_type"),localStorage.getItem("login_message"),null,"#223330")
-    localStorage.removeItem("login_admin")
-}else{
-  splash(0.5, "light", "#16201d");
-}
+document.getElementsByClassName("pga-avatar")[0].innerText = localStorage.getItem("pga_avatar")
+document.getElementsByClassName("pga-name")[0].innerText = localStorage.getItem("pga_name")
+document.getElementsByClassName("pga-role-label")[0].innerText = localStorage.getItem("pga_role")

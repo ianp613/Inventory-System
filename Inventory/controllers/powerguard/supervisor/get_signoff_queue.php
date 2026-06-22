@@ -38,7 +38,8 @@
                 $ws_assessment = new PG_WS_Assessment;
                 $ws_assessment = DB::where($ws_assessment,"ws_id","=",$ws["id"]);
 
-                if(count($ws_assessment) && $ws["sign_off_queue"] != "draft"){
+                // if(count($ws_assessment) && $ws["sign_off_queue"] != "draft"){
+                if(count($ws_assessment)){
                     // if($ws["sign_off_queue"] != "rejected"){
                     //     continue;
                     // }
