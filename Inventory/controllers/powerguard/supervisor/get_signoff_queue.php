@@ -11,6 +11,7 @@
     $pg_ticket_final = [];
     $ws_resolved = 0;
     $ticket_closed = 0;
+    $ticket_open = 0;
     foreach ($pg_ticket as $pgt) {
         $pgt["workstations"] = [];
         $pg_ws_temp = DB::where($pg_ws,"ticket_id","=",$pgt["id"]);
@@ -44,13 +45,21 @@
                     //     continue;
                     // }
                     
-                    $ws_resolved += $ws["sign_off_queue"] == "done" ? 1 : 0;
 
                     $ws_temp["submitted_at"] = $ws_assessment[0]["assessed_at"];
-                    $ws_temp["findings"] = $ws_assessment[0]["ups_condition"] != "Functional" ? "UPS ".$ws_assessment[0]["ups_condition"] : "" ;
-                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["ups_condition"] != "Functional" ? " · " : "").($ws_assessment[0]["system_unit_condition"] != "Functional" ? "System Unit ".$ws_assessment[0]["system_unit_condition"] : "");
-                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["system_unit_condition"] != "Functional" ? " · " : "").($ws_assessment[0]["monitor_condition"] != "Functional" ? "Monitor ".$ws_assessment[0]["monitor_condition"] : "");
-                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["monitor_condition"] != "Functional" ? " · " : "").($ws_assessment[0]["technical_findings"]);
+                    $ws_temp["findings"] = $ws_assessment[0]["ups_condition"] != "Functional" && $ws_assessment[0]["ups_condition"] != "-" ? "UPS ".$ws_assessment[0]["ups_condition"] : "" ;
+                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["ups_condition"] != "Functional" ? " · " : "").($ws_assessment[0]["system_unit_condition"] != "Functional" && $ws_assessment[0]["system_unit_condition"] != "-" ? "System Unit ".$ws_assessment[0]["system_unit_condition"] : "");
+                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["system_unit_condition"] != "Functional" ? " · " : "").($ws_assessment[0]["monitor_condition"] != "Functional" && $ws_assessment[0]["monitor_condition"] != "-" ? "Monitor ".$ws_assessment[0]["monitor_condition"] : "");
+                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["monitor_condition"] != "Functional" && $ws_assessment[0]["technical_findings"] != "-" ? " · " : "").($ws_assessment[0]["technical_findings"] != "-" ? $ws_assessment[0]["technical_findings"] : "");
+
+
+                    if($ws["sign_off_queue"] == "done"){
+                        $ws_resolved++;
+                    }
+                    if(!$ws_temp["findings"]){
+                        $ws_temp["findings"] = "This workstation is in good condition and operating normally.";
+                    }
+
                 }
 
                 if($ws["sign_off_queue"] == "pending"){
@@ -92,7 +101,9 @@
         }
         if(!$ws_add){
             $ticket_closed++;
+        }else{
+            $ticket_open++;
         }
     }
 
-    echo json_encode([$pg_ticket_final,$ws_resolved,$ticket_closed]);
+    echo json_encode([$pg_ticket_final,$ws_resolved,$ticket_closed,$ticket_open]);

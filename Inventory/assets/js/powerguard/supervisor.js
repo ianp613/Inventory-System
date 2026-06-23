@@ -583,7 +583,7 @@ function signoffStatusBadge(status){
 
   function renderSignoffQueue(tickets){
     
-    document.getElementById("pgs_open_ticket").innerText = tickets[0].length
+    document.getElementById("pgs_open_ticket").innerText = tickets[3]
     if(tickets[0].length){
       document.getElementById("pgs_active_incident_container").classList.add("pgs-badge")
       document.getElementById("pgs_active_incident_container").hidden = false
@@ -666,7 +666,7 @@ const pgsMoreBtn      = document.getElementById('pgsMoreBtn');
 
   document.getElementById('pgsSettingsBtn').addEventListener('click', () => {
     pgsMoreDropdown.classList.remove('pgs-dropdown-open');
-    window.location.href = '../../views/powerguard/settings.php';
+    // window.location.href = '../../views/powerguard/settings.php';
   });
 
   document.getElementById('pgsLogoutBtn').addEventListener('click', () => {
@@ -684,9 +684,9 @@ const pgsMoreBtn      = document.getElementById('pgsMoreBtn');
         }
     }).then((result) => {
         if (result.isConfirmed){
-            localStorage.removeItem("userid_sup")
-            localStorage.removeItem("login_sup")
-          window.location.href = '../../views/ddc-powerguard/signin.php';
+          localStorage.removeItem("userid_sup")
+          localStorage.removeItem("login_sup")
+          window.location.replace("signin.php");
         }
     });
   });

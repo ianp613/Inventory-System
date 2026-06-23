@@ -1,6 +1,6 @@
 if(localStorage.getItem("login_admin") !== null){
   if(localStorage.getItem("login_admin") == "true"){
-      ss.toast(localStorage.getItem("login_title"),localStorage.getItem("login_type"),localStorage.getItem("login_message"),null,"#082b49")
+      ss.toast(localStorage.getItem("login_title"),localStorage.getItem("login_type"),localStorage.getItem("login_message"),null,"#16201d")
       localStorage.setItem("login_admin",false)
   }else{
     splash(0.5, "light", "#16201d");
@@ -505,9 +505,9 @@ if(localStorage.getItem("login_admin") !== null){
         }
     }).then((result) => {
         if (result.isConfirmed){
-            localStorage.removeItem("userid_admin")
-            localStorage.removeItem("login_admin")
-          window.location.href = '../../views/ddc-powerguard/signin.php';
+          localStorage.removeItem("userid_admin")
+          localStorage.removeItem("login_admin")
+          window.location.replace("signin.php");
         }
     });
   });

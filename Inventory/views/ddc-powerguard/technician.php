@@ -47,7 +47,7 @@
   <!-- METRICS -->
   <div class="pgt-metrics">
     <div class="pgt-metric">
-      <div class="pgt-metric-lbl">MY CLAIMED TERMINALS</div>
+      <div class="pgt-metric-lbl">MY CLAIMED WORKSTATIONS</div>
       <div class="pgt-metric-val pgt-blue">3</div>
     </div>
     <div class="pgt-metric">
@@ -74,146 +74,14 @@
     </div>
 
     <!-- ═══════════════════════════════════════
-         TAB 1 — ALL TICKETS
+     TAB 1 — ALL TICKETS
     ════════════════════════════════════════ -->
     <div class="pgt-pane pgt-pane-active" id="pgtAllTickets">
       <p style="font-size:13px;color:var(--pgt-ink-soft);margin-bottom:16px;">
-        All submitted incident tickets — tap any unclaimed terminal to self-assign it.
+        All submitted incident tickets — tap any unclaimed workstation to self-assign it.
       </p>
-
-      <!-- TICKET #2024-0147 -->
-      <div class="pgt-ticket-block">
-        <div class="pgt-ticket-head">
-          <div class="pgt-ticket-head-left">
-            <span class="pgt-mono" style="font-size:13px">#2024-0147</span>
-            <span class="pgt-badge pgt-badge-red"><span class="pgt-badge-dot"></span> High priority</span>
-            <span class="pgt-badge pgt-badge-amber"><span class="pgt-badge-dot"></span> In progress</span>
-            <button class="pgt-details-btn" onclick="toggleTicketDetails('pgtDetails0147', this)">
-              View details
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-            </button>
-          </div>
-          <div class="pgt-ticket-meta">Jun 8 · R. Villanueva · 2F Admin Wing · Voltage spike · 14 terminals</div>
-        </div>
-        <div class="pgt-details-panel" id="pgtDetails0147">
-          <div class="pgt-details-grid">
-            <div class="pgt-details-item">
-              <div class="pgt-details-lbl">Fluctuation type</div>
-              <div class="pgt-details-val">Voltage spike</div>
-            </div>
-            <div class="pgt-details-item">
-              <div class="pgt-details-lbl">Duration</div>
-              <div class="pgt-details-val">12 minutes</div>
-            </div>
-            <div class="pgt-details-item">
-              <div class="pgt-details-lbl">Incident date &amp; time</div>
-              <div class="pgt-details-val">Jun 8, 2024 · 2:32 PM</div>
-            </div>
-            <div class="pgt-details-item">
-              <div class="pgt-details-lbl">Area / floor</div>
-              <div class="pgt-details-val">2F Admin Wing</div>
-            </div>
-          </div>
-          <div class="pgt-details-desc">
-            <div class="pgt-details-desc-lbl">Description</div>
-            Sudden voltage spike at 2:32 PM caused circuit breakers to trip in admin wing. Multiple UPS units reported burnt smell.
-          </div>
-        </div>
-        <div class="pgt-ticket-body">
-          <div class="pgt-terminal-grid" id="pgtTerminalGrid1">
-            <!-- seeded by JS -->
-          </div>
-          <div class="pgt-legend">
-            <div class="pgt-legend-item"><div class="pgt-legend-dot" style="background:var(--pgt-blue)"></div> Mine</div>
-            <div class="pgt-legend-item"><div class="pgt-legend-dot" style="background:var(--pgt-ink-faint)"></div> Unclaimed — tap to claim</div>
-            <div class="pgt-legend-item"><div class="pgt-legend-dot" style="background:var(--pgt-green)"></div> Resolved</div>
-            <div class="pgt-legend-item"><div class="pgt-legend-dot" style="background:var(--pgt-ink-faint);opacity:.4"></div> Taken by another tech</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TICKET #2024-0143 -->
-      <div class="pgt-ticket-block">
-        <div class="pgt-ticket-head">
-          <div class="pgt-ticket-head-left">
-            <span class="pgt-mono" style="font-size:13px">#2024-0143</span>
-            <span class="pgt-badge pgt-badge-amber"><span class="pgt-badge-dot"></span> Medium priority</span>
-            <span class="pgt-badge pgt-badge-amber"><span class="pgt-badge-dot"></span> In progress</span>
-            <button class="pgt-details-btn" onclick="toggleTicketDetails('pgtDetails0143', this)">
-              View details
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-            </button>
-          </div>
-          <div class="pgt-ticket-meta">Jun 5 · P. Mendoza · 4F Finance Wing · Brownout · 4 terminals</div>
-        </div>
-        <div class="pgt-details-panel" id="pgtDetails0143">
-          <div class="pgt-details-grid">
-            <div class="pgt-details-item">
-              <div class="pgt-details-lbl">Fluctuation type</div>
-              <div class="pgt-details-val">Brownout</div>
-            </div>
-            <div class="pgt-details-item">
-              <div class="pgt-details-lbl">Duration</div>
-              <div class="pgt-details-val">35 minutes</div>
-            </div>
-            <div class="pgt-details-item">
-              <div class="pgt-details-lbl">Incident date &amp; time</div>
-              <div class="pgt-details-val">Jun 5, 2024 · 9:14 AM</div>
-            </div>
-            <div class="pgt-details-item">
-              <div class="pgt-details-lbl">Area / floor</div>
-              <div class="pgt-details-val">4F Finance Wing</div>
-            </div>
-          </div>
-          <div class="pgt-details-desc">
-            <div class="pgt-details-desc-lbl">Description</div>
-            Voltage dropped below normal operating range for an extended period, causing intermittent shutdowns on several finance terminals. No visible burn damage reported, but UPS units may have deep-discharged.
-          </div>
-        </div>
-        <div class="pgt-ticket-body">
-          <div class="pgt-terminal-grid" id="pgtTerminalGrid2">
-            <!-- seeded by JS -->
-          </div>
-        </div>
-      </div>
-
-      <!-- TICKET #2024-0089 CLOSED -->
-      <div class="pgt-ticket-block pgt-closed-ticket">
-        <div class="pgt-ticket-head">
-          <div class="pgt-ticket-head-left">
-            <span class="pgt-mono" style="font-size:13px">#2024-0089</span>
-            <span class="pgt-badge pgt-badge-green"><span class="pgt-badge-dot"></span> Closed</span>
-            <button class="pgt-details-btn" onclick="toggleTicketDetails('pgtDetails0089', this)">
-              View details
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-            </button>
-          </div>
-          <div class="pgt-ticket-meta">Mar 12 · R. Villanueva · 3F Admin Wing · Power surge · 2 terminals</div>
-        </div>
-        <div class="pgt-details-panel" id="pgtDetails0089">
-          <div class="pgt-details-grid">
-            <div class="pgt-details-item">
-              <div class="pgt-details-lbl">Fluctuation type</div>
-              <div class="pgt-details-val">Power surge</div>
-            </div>
-            <div class="pgt-details-item">
-              <div class="pgt-details-lbl">Duration</div>
-              <div class="pgt-details-val">4 minutes</div>
-            </div>
-            <div class="pgt-details-item">
-              <div class="pgt-details-lbl">Incident date &amp; time</div>
-              <div class="pgt-details-val">Mar 12, 2024 · 10:02 AM</div>
-            </div>
-            <div class="pgt-details-item">
-              <div class="pgt-details-lbl">Area / floor</div>
-              <div class="pgt-details-val">3F Admin Wing</div>
-            </div>
-          </div>
-          <div class="pgt-details-desc">
-            <div class="pgt-details-desc-lbl">Description</div>
-            Brief power surge following a grid switchover. Two workstations were affected; both were assessed, repaired, and restored to service the same day.
-          </div>
-        </div>
+      <div id="pgtAllTicketsContainer">
+        <!-- injected by JS -->
       </div>
     </div>
 
@@ -223,12 +91,12 @@
     <div class="pgt-pane" id="pgtMyWork">
 
       <div class="pgt-my-work-section">
-        <div class="pgt-section-lbl">Claimed terminals — in progress</div>
+        <div class="pgt-section-lbl">Claimed workstations — in progress</div>
         <div class="pgt-table-wrap">
           <table class="pgt-table">
             <thead>
               <tr>
-                <th>Terminal</th>
+                <th>Workstation</th>
                 <th>Ticket</th>
                 <th>Priority</th>
                 <th>Status</th>
@@ -287,7 +155,7 @@
           <table class="pgt-table">
             <thead>
               <tr>
-                <th>Terminal</th>
+                <th>Workstation</th>
                 <th>Ticket</th>
                 <th>Result</th>
                 <th>Sign-off</th>
@@ -339,10 +207,10 @@
       <!-- TRANSFER MODAL (hidden) -->
       <div id="pgtTransferModal" style="display:none;margin-top:0">
         <hr class="pgt-divider">
-        <div class="pgt-section-lbl">Transfer terminal</div>
+        <div class="pgt-section-lbl">Transfer workstation</div>
         <div class="pgt-transfer-banner">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <span>Transferring <strong id="pgtTransferWs"></strong> from ticket <strong id="pgtTransferTicket"></strong>. Once transferred, you will no longer be responsible for this terminal.</span>
+          <span>Transferring <strong id="pgtTransferWs"></strong> from ticket <strong id="pgtTransferTicket"></strong>. Once transferred, you will no longer be responsible for this workstation.</span>
         </div>
         <div class="pgt-row">
           <div class="pgt-field">
@@ -359,7 +227,7 @@
             <label for="pgtTransferReason">Reason for transfer</label>
             <select id="pgtTransferReason">
               <option value="">Select reason</option>
-              <option>Workload — too many terminals</option>
+              <option>Workload — too many workstations</option>
               <option>Specialization — outside my expertise</option>
               <option>Unavailability — leave / schedule conflict</option>
               <option>Other</option>
@@ -382,9 +250,9 @@
     <div class="pgt-pane" id="pgtAssessment">
       <div class="pgt-row" style="margin-bottom:16px">
         <div class="pgt-field">
-          <label for="pgtAssessWs">Select my terminal</label>
+          <label for="pgtAssessWs">Select my workstation</label>
           <select id="pgtAssessWs">
-            <option value="">Choose a terminal…</option>
+            <option value="">Choose a workstation…</option>
             <option value="WS-101">WS-101 — #2024-0147 (parts pending)</option>
             <option value="WS-105">WS-105 — #2024-0147 (not started)</option>
             <option value="WS-110">WS-110 — #2024-0147 (not started)</option>
@@ -393,13 +261,14 @@
         <div class="pgt-field">
           <label for="pgtAssessDatetime">Assessment date &amp; time</label>
           <input type="datetime-local" id="pgtAssessDatetime">
+          <span class="pgt-field-error" id="pgtAssessDatetimeError">Assessment date & time is required.</span>
         </div>
       </div>
 
       <!-- WORKSTATION DAMAGE DECLARATION (read-only, from supervisor's ticket) -->
       <div class="pgt-section-lbl">Workstation damage declaration</div>
       <div class="pgt-decl-block" id="pgtDeclBlock">
-        <div class="pgt-decl-empty">Select a terminal above to view the supervisor's original damage declaration.</div>
+        <div class="pgt-decl-empty">Select a workstation above to view the supervisor's original damage declaration.</div>
       </div>
 
       <div class="pgt-comp-grid">
@@ -414,6 +283,7 @@
               <option class="pgt-damaged" value="Damaged — replace unit">Damaged — replace unit</option>
               <option class="pgt-damaged" value="Damaged — replace battery">Damaged — replace battery</option>
             </select>
+            <span class="pgt-comp-error" id="pgtUpsConditionError">UPS condition is required.</span>
           </div>
         </div>
 
@@ -424,13 +294,14 @@
             <label>Condition</label>
             <select id="pgtSuCondition" onchange="applyCompClass(this)">
               <option value="" selected disabled>Select…</option>
-              <option value="Functional">Functional</option>
-              <option value="Damaged — replace PSU">Damaged — replace PSU</option>
-              <option value="Damaged — replace storage">Damaged — replace storage</option>
-              <option value="Damaged — replace memory">Damaged — replace memory</option>
-              <option value="Damaged — replace motherboard">Damaged — replace motherboard</option>
-              <option value="Damaged — replace unit">Damaged — replace unit</option>
+              <option class="pgt-ok" value="Functional">Functional</option>
+              <option class="pgt-damaged" value="Damaged — replace PSU">Damaged — replace PSU</option>
+              <option class="pgt-damaged" value="Damaged — replace storage">Damaged — replace storage</option>
+              <option class="pgt-damaged" value="Damaged — replace memory">Damaged — replace memory</option>
+              <option class="pgt-damaged" value="Damaged — replace motherboard">Damaged — replace motherboard</option>
+              <option class="pgt-damaged" value="Damaged — replace unit">Damaged — replace unit</option>
             </select>
+            <span class="pgt-comp-error" id="pgtSuConditionError">System unit condition is required.</span>
           </div>
         </div>
 
@@ -441,9 +312,10 @@
             <label>Condition</label>
             <select id="pgtMonCondition" onchange="applyCompClass(this)">
               <option value="" selected disabled>Select…</option>
-              <option value="Functional">Functional</option>
-              <option value="Damaged — needs replacement">Damaged — needs replacement</option>
+              <option class="pgt-ok" value="Functional">Functional</option>
+              <option class="pgt-damaged" value="Damaged — needs replacement">Damaged — needs replacement</option>
             </select>
+            <span class="pgt-comp-error" id="pgtMonConditionError">Monitor condition is required.</span>
           </div>
         </div>
       </div>
@@ -452,6 +324,7 @@
         <div class="pgt-field">
           <label for="pgtFindings">Technical findings</label>
           <textarea id="pgtFindings" placeholder="Describe what you found — component condition, visible damage, test results, POST outcome…"></textarea>
+          <span class="pgt-field-error" id="pgtFindingsError">Technical findings are required.</span>
         </div>
       </div>
 
@@ -487,6 +360,10 @@
       </div> -->
 
       <div class="pgt-form-footer">
+        <button hidden class="pgt-btn-warning pgt-btn-sm" id="pgtClearAssessBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          Clear
+        </button>
         <button class="pgt-btn pgt-btn-ghost pgt-btn-sm" id="pgtSaveDraftBtn">Save draft</button>
         <button class="pgt-btn pgt-btn-primary pgt-btn-sm" id="pgtSubmitAssessBtn">
           Submit assessment
