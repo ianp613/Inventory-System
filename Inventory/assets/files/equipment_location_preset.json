@@ -26,7 +26,11 @@
                 "SocMed",
                 "Data Control",
                 "Boohoo",
-                "Honorlock"
+                "Honorlock",
+                "Utility",
+                "Maintenance",
+                "Guard",
+                "Driver"
             ]
         }},
         {"2nd Flr. Main Building" : {
@@ -46,7 +50,11 @@
                 "IT",
                 "CCO",
                 "Network Monitoring Team",
-                "Wifi Team"
+                "Wifi Team",
+                "Utility",
+                "Maintenance",
+                "Guard",
+                "Driver"
             ]
         }},
         {"1st Flr. Annex Building" : {
@@ -66,6 +74,10 @@
             ],
             "Project" : [
                 "IT",
+                "Utility",
+                "Maintenance",
+                "Guard",
+                "Driver",
                 "CSUK",
                 "MAGNUM",
                 "OAK",
@@ -105,6 +117,10 @@
             ],
             "Project" : [
                 "IT",
+                "Utility",
+                "Maintenance",
+                "Guard",
+                "Driver",
                 "Planning",
                 "US ODC",
                 "APAC",
@@ -132,7 +148,11 @@
                 "Residential"
             ],
             "Project" : [
-                "IT"
+                "IT",
+                "Utility",
+                "Maintenance",
+                "Guard",
+                "Driver"
             ]
         }},
         {"Real Office" : {
@@ -142,7 +162,26 @@
             ],
             "Project" : [
                 "IT",
-                "Accounting"
+                "Accounting",
+                "Utility",
+                "Maintenance",
+                "Guard",
+                "Driver"
+            ]
+        }},
+        {"Roaming | Multi-site" : {
+            "Room" : [
+                "Roaming | Multi-site"
+            ],
+            "Project" : [
+                "IT - Technician",
+                "IT - Manager",
+                "IT - Assistant Manager",
+                "Admin",
+                "Utility",
+                "Maintenance",
+                "Guard",
+                "Driver"
             ]
         }}
     ]
