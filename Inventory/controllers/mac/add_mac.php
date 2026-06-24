@@ -20,7 +20,7 @@
                 $mac->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
                 $mac->uid = $data["uid"];
                 $mac->wid = $data["wid"];
-                $mac->mac = $data["mac"];
+                $mac->mac = $data["mac"] ? $data["mac"] : "-";
                 $mac->name = $data["name"] ? $data["name"] : "-";
                 $mac->device = $data["device"] ? $data["device"] : "-";
                 $mac->project = $data["project"] ? $data["project"] : "-";

@@ -20,8 +20,8 @@
       </div>
     </div>
     <div class="pgt-topbar-right">
-      <span class="pgt-badge pgt-badge-blue"><span class="pgt-badge-dot"></span> 3 claimed</span>
-      <span class="pgt-badge pgt-badge-amber"><span class="pgt-badge-dot"></span> 2 pending sign-off</span>
+      <!-- <span class="pgt-badge pgt-badge-blue"><span class="pgt-badge-dot"></span> 3 claimed</span> -->
+      <span class="pgt-badge pgt-badge-red"><span class="pgt-badge-dot"></span> 2 rejected assessment</span>
       <button class="pgt-iconbtn" aria-label="Notifications">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       </button>
@@ -48,11 +48,11 @@
   <div class="pgt-metrics">
     <div class="pgt-metric">
       <div class="pgt-metric-lbl">MY CLAIMED WORKSTATIONS</div>
-      <div class="pgt-metric-val pgt-blue">3</div>
+      <div id="pgt_claimed" class="pgt-metric-val pgt-blue">0</div>
     </div>
     <div class="pgt-metric">
       <div class="pgt-metric-lbl">COMPLETED (ALL TIME)</div>
-      <div class="pgt-metric-val pgt-green">12</div>
+      <div id="pgt_completed" class="pgt-metric-val pgt-green">0</div>
     </div>
     <div class="pgt-metric">
       <div class="pgt-metric-lbl">AWAITING SIGN-OFF</div>
@@ -260,7 +260,7 @@
         </div>
         <div class="pgt-field">
           <label for="pgtAssessDatetime">Assessment date &amp; time</label>
-          <input type="datetime-local" id="pgtAssessDatetime">
+          <input readonly type="datetime-local" id="pgtAssessDatetime">
           <span class="pgt-field-error" id="pgtAssessDatetimeError">Assessment date & time is required.</span>
         </div>
       </div>
@@ -364,11 +364,17 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
           Clear
         </button>
-        <button class="pgt-btn pgt-btn-ghost pgt-btn-sm" id="pgtSaveDraftBtn">Save draft</button>
-        <button class="pgt-btn pgt-btn-primary pgt-btn-sm" id="pgtSubmitAssessBtn">
-          Submit assessment
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
-        </button>
+        <div hidden id="pgt_already_submitted_container">
+          <h6 class="pgt-badge" style="color: var(--pgt-blue); margin-top: 4px;">Already Submitted</h6>
+        </div>
+        <div id="pgt_save_container">
+          <button class="pgt-btn pgt-btn-ghost pgt-btn-sm" id="pgtSaveDraftBtn">Save draft</button>
+          <button class="pgt-btn pgt-btn-primary pgt-btn-sm" id="pgtSubmitAssessBtn">
+            Submit assessment
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
+          </button>  
+        </div>
+
       </div>
     </div>
 

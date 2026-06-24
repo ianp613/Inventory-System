@@ -278,11 +278,6 @@ if(localStorage.getItem("login_tech") !== null){
 
   loadAllTickets();
 
-  // reload when tab is clicked
-  document.querySelector('.pgt-tab[data-pane="pgtAllTickets"]').addEventListener('click', () => {
-    loadAllTickets();
-  });
-
   /* ── DETAIL TOGGLE — event delegation (no onclick) ── */
   document.getElementById('pgtAllTicketsContainer').addEventListener('click', function(e){
 
@@ -334,6 +329,7 @@ if(localStorage.getItem("login_tech") !== null){
         ws_number: wsNumber,
         ws_id: wsId
       }).then(res => {
+        loadWorkStations()
         console.log('Claim response:', res);
       });
     });
@@ -383,15 +379,18 @@ if(localStorage.getItem("login_tech") !== null){
     sole.post("../../controllers/powerguard/technician/get_claimed_workstation.php",{
       tech_id : localStorage.getItem("userid_tech")
     }).then(res => {
+      document.getElementById("pgt_completed").innerText = res[1]
+      document.getElementById("pgt_claimed").innerText = res[0].length
+
       pgtAssessWs.innerHTML = `<option value="">Choose a workstation…</option>`
-      res.forEach(pg_ws => {
+      res[0].forEach(pg_ws => {
         var op = document.createElement("option")
-        op.value = `${pg_ws["ws_number"]}|${pg_ws["id"]}`
+        op.value = `${pg_ws["ws_number"]}|${pg_ws["id"]}|${pg_ws["sign_off_queue"]}`
         op.innerText = `${pg_ws["ws_number"]} — #${pg_ws["ticket_no"]} (${pg_ws["sign_off_queue"]})`
         pgtAssessWs.appendChild(op)
       })
 
-      declarations = res.reduce((acc, item) => {
+      declarations = res[0].reduce((acc, item) => {
         acc[item.ws_number] = {
           user: item.assigned_user,
           ups: item.ups_status,
@@ -443,13 +442,25 @@ if(localStorage.getItem("login_tech") !== null){
         document.getElementById('pgtParts').value =  res[0]["parts_needed"] != "-" ? res[0]["parts_needed"] : "";
         document.getElementById('pgtEscalate').value =  res[0]["escalate_to"] != "-" ? res[0]["escalate_to"] : "";
 
+      }else{
+        document.getElementById('pgtAssessDatetime').value = getNow()
       }
     })
   }
 
   document.querySelector('.pgt-tab[data-pane="pgtAssessment"]').addEventListener('click', () => {
-    loadWorkStations();
+    callAllLoadFunction()
   });
+
+  // reload when tab is clicked
+  document.querySelector('.pgt-tab[data-pane="pgtAllTickets"]').addEventListener('click', () => {
+    callAllLoadFunction()
+  });
+
+  function callAllLoadFunction(){
+    loadWorkStations()
+    loadAllTickets()
+  }
 
   loadWorkStations()
 
@@ -484,6 +495,9 @@ if(localStorage.getItem("login_tech") !== null){
     `;
     pgtClearAssessBtn.hidden = true
     pgtClearAssessBtn.classList.remove("pgt-btn")
+
+    document.getElementById("pgt_already_submitted_container").hidden = true
+    document.getElementById("pgt_save_container").hidden = false
     clearAssessmentForm()
   }
 
@@ -637,8 +651,15 @@ if(localStorage.getItem("login_tech") !== null){
       pgtClearAssessBtn.classList.remove("pgt-btn")
       localStorage.removeItem("pgtAssessWs")
     }
-    var pgtAssessWs_ = this.value.split("|")[0]
-    renderDeclaration(pgtAssessWs_);
+    var pgtAssessWs_ = this.value.split("|")
+    if(pgtAssessWs_[2] == "submitted"){
+      document.getElementById("pgt_already_submitted_container").hidden = false
+      document.getElementById("pgt_save_container").hidden = true
+    }else{
+      document.getElementById("pgt_already_submitted_container").hidden = true
+      document.getElementById("pgt_save_container").hidden = false
+    }
+    renderDeclaration(pgtAssessWs_[0]);
   });
 
 /* ── ASSESSMENT FORM: LIVE ERROR CLEAR ── */
@@ -720,64 +741,58 @@ if(localStorage.getItem("login_tech") !== null){
     }
 
     if(hasError) return;
+    
+    sole.post("../../controllers/powerguard/technician/submit_assessment.php", {
+      ws_id:                  pgtAssessWs.value.split("|")[1],
+      assessed_at:            getNow(),
+      ups_condition:          upsInput.value,
+      system_unit_condition:  suInput.value,
+      monitor_condition:      monInput.value,
+      technical_findings:     findingsInput.value,
+      parts_needed:           document.getElementById('pgtParts').value,
+      escalate_to:            document.getElementById('pgtEscalate').value,
+      type:                   "submit"
+    }).then(res => {
+      ss.toast(res.title,res.type,res.message,null,"#16201d")
+      localStorage.removeItem("pgtAssessWs")
+      loadWorkStations()
+      setTimeout(() => {
+        clearAssessmentForm_All()
+      }, 100);
+    })
 
-    const payload = {
-      ws_number:            ws,
-      assessed_at:          datetimeInput.value,
-      ups_condition:        upsInput.value,
-      system_unit_condition: suInput.value,
-      monitor_condition:    monInput.value,
-      technical_findings:   findingsInput.value,
-      parts_needed:         document.getElementById('pgtParts').value,
-      escalate_to:          document.getElementById('pgtEscalate').value,
-    };
-
-    console.log('Assessment payload:', payload);
     // sole.post("../../controllers/powerguard/assessment.php", payload).then(res => console.log(res));
   });
 
   /* ── SAVE DRAFT ── */
   document.getElementById('pgtSaveDraftBtn').addEventListener('click', () => {
-    if(pgtAssessWs.value){
-      ss.toast("Draft Saved","success","Assessment form saved as draft. You can continue the assessment later.",null,"#16201d")
-      clearAssessmentForm_All()
+    if(!pgtAssessWs.value){ ss.toast("Select Workstation","warning","Please select a workstation to assess.",null,"#16201d"); return; }
+
+    const datetimeInput  = document.getElementById('pgtAssessDatetime');
+    const upsInput       = document.getElementById('pgtUpsCondition');
+    const suInput        = document.getElementById('pgtSuCondition');
+    const monInput       = document.getElementById('pgtMonCondition');
+    const findingsInput  = document.getElementById('pgtFindings');
+    
+    sole.post("../../controllers/powerguard/technician/submit_assessment.php", {
+      ws_id:                  pgtAssessWs.value.split("|")[1],
+      assessed_at:            getNow(),
+      ups_condition:          upsInput.value,
+      system_unit_condition:  suInput.value,
+      monitor_condition:      monInput.value,
+      technical_findings:     findingsInput.value,
+      parts_needed:           document.getElementById('pgtParts').value,
+      escalate_to:            document.getElementById('pgtEscalate').value,
+      type:                   "draft"
+    }).then(res => {
+      ss.toast(res.title,res.type,res.message,null,"#16201d")
+      localStorage.removeItem("pgtAssessWs")
       loadWorkStations()
-    }else{
-      ss.toast("Select Workstation","warning","Please select a workstation to assess.",null,"#16201d"); return;
-    }
+      setTimeout(() => {
+        clearAssessmentForm_All()
+      }, 100);
+    })
   });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -854,7 +869,22 @@ if(localStorage.getItem("login_tech") !== null){
   });
 
 
+
+
+
+
+
+
+
+  function getNow(){
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    return `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  }
+
+
 })();
+
 
 
 document.getElementsByClassName("pgt-avatar")[0].innerText = localStorage.getItem("pgt_avatar")

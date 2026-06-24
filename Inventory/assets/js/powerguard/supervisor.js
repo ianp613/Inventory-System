@@ -436,11 +436,22 @@ if(localStorage.getItem("login_sup") !== null){
     });
   }
 
-  // load tickets when the "My tickets" tab is clicked
   document.querySelector('.pgs-tab[data-pane="pgsTickets"]').addEventListener('click', () => {
-    loadMyTickets();
+    callAllLoadFunction()
   });
 
+  document.querySelector('.pgs-tab[data-pane="pgsSignoff"]').addEventListener('click', () => {
+    callAllLoadFunction()
+  });
+
+  document.querySelector('.pgs-tab[data-pane="pgsSubmit"]').addEventListener('click', () => {
+    callAllLoadFunction()
+  });
+
+  function callAllLoadFunction(){
+    loadSignoffQueue()
+    loadMyTickets()
+  }
 
 
 
@@ -482,9 +493,10 @@ if(localStorage.getItem("login_sup") !== null){
 
 
 
-/* ---------- SIGN-OFF QUEUE: FETCH + RENDER ---------- */
 
-function signoffStatusBadge(status){
+  /* ---------- SIGN-OFF QUEUE: FETCH + RENDER ---------- */
+
+  function signoffStatusBadge(status){
     const map = {
       'submitted': { cls:'pgs-badge-amber', label:'Submitted — awaiting sign-off' },
       'pending':   { cls:'pgs-badge', label:'Pending', extraStyle:'background:var(--pgs-panel-2);color:var(--pgs-ink-faint);border:1px solid var(--pgs-line)' },
@@ -515,6 +527,7 @@ function signoffStatusBadge(status){
           <button class="pgs-btn pgs-btn-sm pgs-btn-success"
             data-action="signoff"
             data-ticket-id="${ticketId}"
+            data-ws-id="${ws.id}"
             data-ws-number="${ws.ws_number}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
             Sign off
@@ -522,6 +535,7 @@ function signoffStatusBadge(status){
           <button class="pgs-btn pgs-btn-sm pgs-btn-reject"
             data-action="reject"
             data-ticket-id="${ticketId}"
+            data-ws-id="${ws.id}"
             data-ws-number="${ws.ws_number}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
             Reject
@@ -552,9 +566,10 @@ function signoffStatusBadge(status){
 
     const action   = btn.dataset.action;
     const ticketId = btn.dataset.ticketId;
+    const wsId     = btn.dataset.wsId;
     const wsNumber = btn.dataset.wsNumber;
 
-    // immediately update the badge + hide buttons (optimistic UI)
+    // immediately update the badge (optimistic UI)
     const actionsEl = document.getElementById(`pgs-actions-${ticketId}-${wsNumber.replace(/\W/g,'_')}`);
     if(actionsEl){
       actionsEl.innerHTML = signoffStatusBadge(action === 'signoff' ? 'done' : 'rejected');
@@ -564,8 +579,10 @@ function signoffStatusBadge(status){
       sole.post("../../controllers/powerguard/supervisor/signoff_workstation.php", {
         sup_id:    localStorage.getItem("userid_sup"),
         ticket_id: ticketId,
+        ws_id:     wsId,
         ws_number: wsNumber
       }).then(res => {
+        callAllLoadFunction()
         console.log(res);
       });
     }
@@ -574,8 +591,10 @@ function signoffStatusBadge(status){
       sole.post("../../controllers/powerguard/supervisor/reject_workstation.php", {
         sup_id:    localStorage.getItem("userid_sup"),
         ticket_id: ticketId,
+        ws_id:     wsId,
         ws_number: wsNumber
       }).then(res => {
+        callAllLoadFunction()
         console.log(res);
       });
     }
@@ -584,10 +603,11 @@ function signoffStatusBadge(status){
   function renderSignoffQueue(tickets){
     
     document.getElementById("pgs_open_ticket").innerText = tickets[3]
-    if(tickets[0].length){
+
+    if(tickets[3]){
+      document.getElementById("pgs_active_incident").innerText = tickets[3] + " active incident" + (tickets[3] > 1 ? "s" : "")
       document.getElementById("pgs_active_incident_container").classList.add("pgs-badge")
       document.getElementById("pgs_active_incident_container").hidden = false
-      document.getElementById("pgs_active_incident").innerText = tickets[0].length + " active incident" + (tickets[0].length > 1 ? "s" : "")
     }
     document.getElementsByClassName("pgs-badge")[0]
     submitted_ = 0
@@ -652,7 +672,7 @@ function signoffStatusBadge(status){
 
 
 
-const pgsMoreBtn      = document.getElementById('pgsMoreBtn');
+  const pgsMoreBtn      = document.getElementById('pgsMoreBtn');
   const pgsMoreDropdown = document.getElementById('pgsMoreDropdown');
 
   pgsMoreBtn.addEventListener('click', (e) => {

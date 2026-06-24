@@ -950,7 +950,7 @@
     class PG_WS_Assessment{
         public $table = "pg_ws_assessment";
         public $fillable = [
-            "wd_id",
+            "ws_id",
             "assessed_at",
             "ups_condition",
             "system_unit_condition",

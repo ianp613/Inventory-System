@@ -193,7 +193,7 @@ if(document.getElementById("mac")){
     // })
 
     add_mac_entry_btn.addEventListener("click",function(){
-        if(mac_address.value && mac_address.value.length == 17){
+        // if(mac_address.value && mac_address.value.length == 17){
             sole.post("../../controllers/mac/add_mac.php",{
                 uid: localStorage.getItem("userid"),
                 wid: localStorage.getItem("selected_wifi_id"),
@@ -210,14 +210,14 @@ if(document.getElementById("mac")){
                     alert(res.message)
                 }
             })    
-        }else{
-            bs5.toast("warning","Please input a valid MAC address.")
-        }
+        // }else{
+        //     bs5.toast("warning","Please input a valid MAC address.")
+        // }
         
     })
 
     edit_mac_entry_btn.addEventListener("click",function(){
-        if(edit_mac_address.value && edit_mac_address.value.length == 17){
+        // if(edit_mac_address.value && edit_mac_address.value.length == 17){
             sole.post("../../controllers/mac/edit_mac.php",{
                 id: this.getAttribute("m-id"),
                 wid: this.getAttribute("w-id"),
@@ -234,9 +234,9 @@ if(document.getElementById("mac")){
                     alert(res.message)
                 }
             })    
-        }else{
-            bs5.toast("warning","Please input a valid MAC address.")
-        }
+        // }else{
+        //     bs5.toast("warning","Please input a valid MAC address.")
+        // }
     })
 
     delete_mac_btn.addEventListener("click",function(){
@@ -379,7 +379,7 @@ if(document.getElementById("mac")){
             mac_count++
             macTable.row.add([
                 e["id"],
-                e["mac"],
+                e["mac"] != "-" ? e["mac"] : "",
                 e["name"] != "-" ? e["name"] : "",
                 e["device"] != "-" ? e["device"] : "",
                 e["project"] != "-" ? e["project"] : "",

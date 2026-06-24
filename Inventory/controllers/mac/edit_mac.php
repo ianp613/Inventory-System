@@ -21,7 +21,7 @@
             if($bol){
                 $mac = DB::prepare($mac,$data["id"]);
                 $mac_mac_temp = $mac->mac;
-                $mac->mac = $data["mac"];
+                $mac->mac = $data["mac"] ? $data["mac"] : "-";
                 $mac->name = $data["name"] ? $data["name"] : "-";
                 $mac->device = $data["device"] ? $data["device"] : "-";
                 $mac->project = $data["project"] ? $data["project"] : "-";

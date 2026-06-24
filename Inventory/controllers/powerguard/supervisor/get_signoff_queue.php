@@ -20,7 +20,8 @@
             "technician_name" => "",
             "submitted_at" => "",
             "findings" => "",
-            "status" => "pending"
+            "status" => "pending",
+            "id" => ""
         ];
         $ws_add = false;
         foreach ($pg_ws_temp as $ws) {
@@ -33,7 +34,8 @@
                     "technician_name" => count($tech) ? $tech[0]["fname"][0].". ".$tech[0]["lname"] : "",
                     "submitted_at" => "",
                     "findings" => "",
-                    "status" => $ws["sign_off_queue"]
+                    "status" => $ws["sign_off_queue"],
+                    "id" => $ws["id"]
                 ];
 
                 $ws_assessment = new PG_WS_Assessment;
@@ -85,7 +87,8 @@
                     "technician_name" => "",
                     "submitted_at" => "",
                     "findings" => "Not yet assigned to any technician.",
-                    "status" => "pending"
+                    "status" => "pending",
+                    "id" => $ws["id"]
                 ];
             }
 

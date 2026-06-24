@@ -12,7 +12,7 @@
     ];
 
     $ws = new PG_WS;
-    $ws = DB::prepare($ws,$data["ticket_id"]);
+    $ws = DB::prepare($ws,$data["ws_id"]);
     $ws->sign_off_queue = "rejected";
     DB::update($ws);
 
