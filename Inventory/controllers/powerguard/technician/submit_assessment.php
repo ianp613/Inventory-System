@@ -6,7 +6,7 @@
 
     $response = [
         "status" => true,
-        "title" => "Assessment Submitted!",
+        "title" => "",
         "type" => "success",
         "message" => ""
     ];
@@ -46,8 +46,10 @@
     }
 
     if($data["type"] == "submit"){
+        $response["title"] = "Assessment Submitted!";
         $response["message"] = "Assessment for workstation ".$pg_ws->ws_number." has been submitted.";
     }else{
+        $response["title"] = "Draft Saved!";
         $response["message"] = "Assessment for workstation ".$pg_ws->ws_number." has been save as draft. You can continue the assessment later.";
     }
 

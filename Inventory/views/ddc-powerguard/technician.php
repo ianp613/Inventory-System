@@ -60,7 +60,7 @@
     </div>
     <div class="pgt-metric">
       <div class="pgt-metric-lbl">ACTIVE INCIDENTS</div>
-      <div class="pgt-metric-val">2</div>
+      <div id="pgt_tickets" class="pgt-metric-val">2</div>
     </div>
   </div>
 
@@ -90,8 +90,25 @@
     ════════════════════════════════════════ -->
     <div class="pgt-pane" id="pgtMyWork">
 
+      <!-- CLAIMED WORKSTATIONS -->
       <div class="pgt-my-work-section">
-        <div class="pgt-section-lbl">Claimed workstations — in progress</div>
+        <div class="pgt-section-lbl">Claimed workstations</div>
+
+        <div class="pgt-table-toolbar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:8px">
+            <label style="font-size:12px;color:var(--pgt-ink-soft);white-space:nowrap">Rows</label>
+            <select id="pgtClaimedRowsPerPage" style="font-size:12.5px;padding:5px 22px 5px 9px;border-radius:6px;border:1px solid var(--pgt-line);background:var(--pgt-panel-2);color:var(--pgt-ink);appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a9b3ae' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 7px center;">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="25">25</option>
+            </select>
+          </div>
+          <div style="position:relative">
+            <svg style="position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--pgt-ink-faint);pointer-events:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="pgtClaimedSearch" placeholder="Search…" style="font-size:12.5px;padding:6px 10px 6px 28px;border-radius:6px;border:1px solid var(--pgt-line);background:var(--pgt-panel-2);color:var(--pgt-ink);width:200px">
+          </div>
+        </div>
+
         <div class="pgt-table-wrap">
           <table class="pgt-table">
             <thead>
@@ -100,107 +117,69 @@
                 <th>Ticket</th>
                 <th>Priority</th>
                 <th>Status</th>
-                <th>Last action</th>
                 <th></th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td class="pgt-mono">WS-101</td>
-                <td style="color:var(--pgt-ink-soft)">#2024-0147</td>
-                <td><span class="pgt-badge pgt-badge-red" style="font-size:11px"><span class="pgt-badge-dot"></span> High</span></td>
-                <td><span class="pgt-badge pgt-badge-amber"><span class="pgt-badge-dot"></span> Parts pending</span></td>
-                <td style="color:var(--pgt-ink-soft);font-size:12px">Assessment submitted Jun 8</td>
-                <td>
-                  <button class="pgt-btn pgt-btn-sm pgt-btn-transfer" onclick="openTransfer('WS-101','#2024-0147')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-                    Transfer
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td class="pgt-mono">WS-105</td>
-                <td style="color:var(--pgt-ink-soft)">#2024-0147</td>
-                <td><span class="pgt-badge pgt-badge-red" style="font-size:11px"><span class="pgt-badge-dot"></span> High</span></td>
-                <td><span class="pgt-badge pgt-badge-blue"><span class="pgt-badge-dot"></span> In progress</span></td>
-                <td style="color:var(--pgt-ink-soft);font-size:12px">Claimed Jun 8 — not yet submitted</td>
-                <td>
-                  <button class="pgt-btn pgt-btn-sm pgt-btn-transfer" onclick="openTransfer('WS-105','#2024-0147')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-                    Transfer
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td class="pgt-mono">WS-110</td>
-                <td style="color:var(--pgt-ink-soft)">#2024-0147</td>
-                <td><span class="pgt-badge pgt-badge-red" style="font-size:11px"><span class="pgt-badge-dot"></span> High</span></td>
-                <td><span class="pgt-badge pgt-badge-gray"><span class="pgt-badge-dot"></span> Not started</span></td>
-                <td style="color:var(--pgt-ink-soft);font-size:12px">Claimed Jun 8</td>
-                <td>
-                  <button class="pgt-btn pgt-btn-sm pgt-btn-transfer" onclick="openTransfer('WS-110','#2024-0147')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-                    Transfer
-                  </button>
-                </td>
-              </tr>
-            </tbody>
+            <tbody id="pgtClaimedTbody"></tbody>
           </table>
+        </div>
+        <div id="pgtClaimedPagination" style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
+          <div id="pgtClaimedPaginationInfo" style="font-size:12px;color:var(--pgt-ink-soft)"></div>
+          <div style="display:flex;gap:4px">
+            <button class="pgt-btn pgt-btn-sm" id="pgtClaimedPrev">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M15 18l-6-6 6-6"/></svg> Prev
+            </button>
+            <div id="pgtClaimedPageNums" style="display:flex;gap:4px"></div>
+            <button class="pgt-btn pgt-btn-sm" id="pgtClaimedNext">
+              Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
         </div>
       </div>
 
+      <!-- COMPLETED ASSESSMENTS -->
       <div class="pgt-my-work-section">
-        <div class="pgt-section-lbl">Completed assessments</div>
+        <div class="pgt-section-lbl">Completed assessments — <span class="pgt-badge pgt-badge-green" style="font-size:11px">✓ done | signed-off</span></div>
+
+        <div class="pgt-table-toolbar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:8px">
+            <label style="font-size:12px;color:var(--pgt-ink-soft);white-space:nowrap">Rows</label>
+            <select id="pgtCompletedRowsPerPage" style="font-size:12.5px;padding:5px 22px 5px 9px;border-radius:6px;border:1px solid var(--pgt-line);background:var(--pgt-panel-2);color:var(--pgt-ink);appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a9b3ae' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 7px center;">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="25">25</option>
+            </select>
+          </div>
+          <div style="position:relative">
+            <svg style="position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--pgt-ink-faint);pointer-events:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="pgtCompletedSearch" placeholder="Search…" style="font-size:12.5px;padding:6px 10px 6px 28px;border-radius:6px;border:1px solid var(--pgt-line);background:var(--pgt-panel-2);color:var(--pgt-ink);width:200px">
+          </div>
+        </div>
+
         <div class="pgt-table-wrap">
           <table class="pgt-table">
             <thead>
               <tr>
                 <th>Workstation</th>
                 <th>Ticket</th>
-                <th>Result</th>
-                <th>Sign-off</th>
+                <th>Technical findings</th>
                 <th>Date</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td class="pgt-mono">WS-104</td>
-                <td style="color:var(--pgt-ink-soft)">#2024-0147</td>
-                <td><span class="pgt-badge pgt-badge-green"><span class="pgt-badge-dot"></span> Cleared</span></td>
-                <td>
-                  <span class="pgt-badge pgt-badge-green">
-                    <svg style="width:11px;height:11px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                    Signed off
-                  </span>
-                </td>
-                <td style="color:var(--pgt-ink-soft);font-size:12px">Jun 8, 3:28 PM</td>
-              </tr>
-              <tr>
-                <td class="pgt-mono">WS-109</td>
-                <td style="color:var(--pgt-ink-soft)">#2024-0147</td>
-                <td><span class="pgt-badge pgt-badge-green"><span class="pgt-badge-dot"></span> Cleared</span></td>
-                <td>
-                  <span class="pgt-badge pgt-badge-green">
-                    <svg style="width:11px;height:11px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                    Signed off
-                  </span>
-                </td>
-                <td style="color:var(--pgt-ink-soft);font-size:12px">Jun 8, 3:45 PM</td>
-              </tr>
-              <tr>
-                <td class="pgt-mono">WS-07</td>
-                <td style="color:var(--pgt-ink-soft)">#2024-0089</td>
-                <td><span class="pgt-badge pgt-badge-green"><span class="pgt-badge-dot"></span> Restored</span></td>
-                <td>
-                  <span class="pgt-badge pgt-badge-green">
-                    <svg style="width:11px;height:11px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                    Signed off
-                  </span>
-                </td>
-                <td style="color:var(--pgt-ink-soft);font-size:12px">Mar 12, 10:14 AM</td>
-              </tr>
-            </tbody>
+            <tbody id="pgtCompletedTbody"></tbody>
           </table>
+        </div>
+        <div id="pgtCompletedPagination" style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
+          <div id="pgtCompletedPaginationInfo" style="font-size:12px;color:var(--pgt-ink-soft)"></div>
+          <div style="display:flex;gap:4px">
+            <button class="pgt-btn pgt-btn-sm" id="pgtCompletedPrev">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M15 18l-6-6 6-6"/></svg> Prev
+            </button>
+            <div id="pgtCompletedPageNums" style="display:flex;gap:4px"></div>
+            <button class="pgt-btn pgt-btn-sm" id="pgtCompletedNext">
+              Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -217,16 +196,13 @@
             <label for="pgtTransferTo">Transfer to technician</label>
             <select id="pgtTransferTo">
               <option value="">Select technician</option>
-              <option>R. Bautista</option>
-              <option>J. Pascual</option>
-              <option>C. Navarro</option>
-              <option>M. dela Rosa</option>
             </select>
           </div>
           <div class="pgt-field">
             <label for="pgtTransferReason">Reason for transfer</label>
             <select id="pgtTransferReason">
               <option value="">Select reason</option>
+              <option>Off — out of duty hours</option>
               <option>Workload — too many workstations</option>
               <option>Specialization — outside my expertise</option>
               <option>Unavailability — leave / schedule conflict</option>
@@ -337,9 +313,11 @@
           <label for="pgtEscalate">Escalate to</label>
           <select id="pgtEscalate">
             <option value="">None — no escalation needed</option>
-            <option>Supervisor</option>
+            <option>Procurement — AIMS (for status)</option>
             <option>IT Manager</option>
-            <option>Procurement</option>
+            <option>Planning</option>
+            <option>Human Resource — Administrator</option>
+            <option>General Manager</option>
           </select>
         </div>
       </div>

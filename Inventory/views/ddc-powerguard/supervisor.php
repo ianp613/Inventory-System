@@ -227,50 +227,50 @@
     </div>
 
     <!-- REPORTS -->
-    <div class="pgs-pane" id="pgsReports" style="filter: blur(2px);">
+    <div class="pgs-pane" id="pgsReports" style="color:var(--pgs-ink-faint)">
       <div class="pgs-report-intro">Reports are scoped to your own submitted tickets only.</div>
       <div class="pgs-report-grid">
         <div class="pgs-rcard">
           <div>
-            <div class="pgs-rcard-lbl">CURRENT TICKET — #2024-0147</div>
+            <div class="pgs-rcard-lbl">CURRENT TICKET — #0000-0000</div>
             <div class="pgs-rcard-val">Incident summary</div>
           </div>
-          <button class="pgs-btn pgs-btn-sm">Generate</button>
+          <button style="color:var(--pgs-ink-faint)" class="pgs-btn pgs-btn-sm">Generate</button>
         </div>
         <div class="pgs-rcard">
           <div>
-            <div class="pgs-rcard-lbl">CURRENT TICKET — #2024-0147</div>
+            <div class="pgs-rcard-lbl">CURRENT TICKET — #0000-0000</div>
             <div class="pgs-rcard-val">Damage assessment</div>
           </div>
-          <button class="pgs-btn pgs-btn-sm">Generate</button>
+          <button style="color:var(--pgs-ink-faint)" class="pgs-btn pgs-btn-sm">Generate</button>
         </div>
         <div class="pgs-rcard">
           <div>
-            <div class="pgs-rcard-lbl">CURRENT TICKET — #2024-0147</div>
+            <div class="pgs-rcard-lbl">CURRENT TICKET — #0000-0000</div>
             <div class="pgs-rcard-val">Technician log</div>
           </div>
-          <button class="pgs-btn pgs-btn-sm">Generate</button>
+          <button style="color:var(--pgs-ink-faint)" class="pgs-btn pgs-btn-sm">Generate</button>
         </div>
         <div class="pgs-rcard">
           <div>
-            <div class="pgs-rcard-lbl">CURRENT TICKET — #2024-0147</div>
+            <div class="pgs-rcard-lbl">CURRENT TICKET — #0000-0000</div>
             <div class="pgs-rcard-val">Parts request</div>
           </div>
-          <button class="pgs-btn pgs-btn-sm">Generate</button>
+          <button style="color:var(--pgs-ink-faint)" class="pgs-btn pgs-btn-sm">Generate</button>
         </div>
         <div class="pgs-rcard">
           <div>
             <div class="pgs-rcard-lbl">ALL MY TICKETS</div>
             <div class="pgs-rcard-val">Historical summary</div>
           </div>
-          <button class="pgs-btn pgs-btn-sm">Generate</button>
+          <button style="color:var(--pgs-ink-faint)" class="pgs-btn pgs-btn-sm">Generate</button>
         </div>
         <div class="pgs-rcard">
           <div>
             <div class="pgs-rcard-lbl">ALL MY TICKETS</div>
             <div class="pgs-rcard-val">Incident frequency</div>
           </div>
-          <button class="pgs-btn pgs-btn-sm">Generate</button>
+          <button style="color:var(--pgs-ink-faint)" class="pgs-btn pgs-btn-sm">Generate</button>
         </div>
       </div>
     </div>

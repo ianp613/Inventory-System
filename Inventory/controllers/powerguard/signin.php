@@ -33,6 +33,28 @@
     }
 
     if($auth){
+        if($users[0]["account"] == "inactive"){
+            $auth = false;
+            $response = [
+                "status" => false,
+                "title" => "Pending Account Activation",
+                "type" => "warning",
+                "message" => "Your account is not yet activated, please wait for account activation notification that will be sent to ".$users[0]["email"],
+            ];
+        }
+
+        if($users[0]["account"] == "deactivated"){
+            $auth = false;
+            $response = [
+                "status" => false,
+                "title" => "Deactivated Account",
+                "type" => "error",
+                "message" => "Your account has been deactivated. Please contact your system administrator immediately to prevent account deletion.",
+            ];
+        }
+    }
+
+    if($auth){
         echo json_encode($response);
         exit;        
     }
@@ -61,7 +83,6 @@
                 "title" => "Pending Account Activation",
                 "type" => "warning",
                 "message" => "Your account is not yet activated, please wait for account activation notification that will be sent to ".$users[0]["email"],
-
             ];
         }
 
@@ -72,7 +93,6 @@
                 "title" => "Deactivated Account",
                 "type" => "error",
                 "message" => "Your account has been deactivated. Please contact your system administrator immediately to prevent account deletion.",
-
             ];
         }
     }

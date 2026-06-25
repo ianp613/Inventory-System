@@ -48,12 +48,29 @@
                     // }
                     
 
+                    // $ws_temp["submitted_at"] = $ws_assessment[0]["assessed_at"];
+                    // $ws_temp["findings"] = $ws_assessment[0]["ups_condition"] != "Functional" && $ws_assessment[0]["ups_condition"] != "-" ? "UPS ".$ws_assessment[0]["ups_condition"] : "" ;
+                    // $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["ups_condition"] != "Functional" ? " • " : "").($ws_assessment[0]["system_unit_condition"] != "Functional" && $ws_assessment[0]["system_unit_condition"] != "-" ? "System Unit ".$ws_assessment[0]["system_unit_condition"] : "");
+                    // $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["system_unit_condition"] != "Functional" ? " • " : "").($ws_assessment[0]["monitor_condition"] != "Functional" && $ws_assessment[0]["monitor_condition"] != "-" ? "Monitor ".$ws_assessment[0]["monitor_condition"] : "");
+                    // $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["monitor_condition"] != "Functional" && $ws_assessment[0]["technical_findings"] != "-" ? " • " : "").($ws_assessment[0]["technical_findings"] != "-" ? $ws_assessment[0]["technical_findings"] : "");
+
                     $ws_temp["submitted_at"] = $ws_assessment[0]["assessed_at"];
                     $ws_temp["findings"] = $ws_assessment[0]["ups_condition"] != "Functional" && $ws_assessment[0]["ups_condition"] != "-" ? "UPS ".$ws_assessment[0]["ups_condition"] : "" ;
-                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["ups_condition"] != "Functional" ? " · " : "").($ws_assessment[0]["system_unit_condition"] != "Functional" && $ws_assessment[0]["system_unit_condition"] != "-" ? "System Unit ".$ws_assessment[0]["system_unit_condition"] : "");
-                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["system_unit_condition"] != "Functional" ? " · " : "").($ws_assessment[0]["monitor_condition"] != "Functional" && $ws_assessment[0]["monitor_condition"] != "-" ? "Monitor ".$ws_assessment[0]["monitor_condition"] : "");
-                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["monitor_condition"] != "Functional" && $ws_assessment[0]["technical_findings"] != "-" ? " · " : "").($ws_assessment[0]["technical_findings"] != "-" ? $ws_assessment[0]["technical_findings"] : "");
+                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["ups_condition"] != "Functional" ? " • " : "").($ws_assessment[0]["system_unit_condition"] != "Functional" && $ws_assessment[0]["system_unit_condition"] != "-" ? "System Unit ".$ws_assessment[0]["system_unit_condition"] : "");
+                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["system_unit_condition"] != "Functional" ? " • " : "").($ws_assessment[0]["monitor_condition"] != "Functional" && $ws_assessment[0]["monitor_condition"] != "-" ? "Monitor ".$ws_assessment[0]["monitor_condition"] : "");
+                    $ws_temp["findings"] .= ($ws_temp["findings"] && $ws_assessment[0]["monitor_condition"] != "Functional" && $ws_assessment[0]["technical_findings"] != "-" ? " • " : "").($ws_assessment[0]["technical_findings"] != "-" ? $ws_assessment[0]["technical_findings"] : "");
 
+                    // add parts_needed only if not empty
+                    $parts = $ws_assessment[0]["parts_needed"] != "-" && $ws_assessment[0]["parts_needed"] != "" ? $ws_assessment[0]["parts_needed"] : "";
+                    if($parts){
+                        $ws_temp["findings"] .= ($ws_temp["findings"] ? " • " : "")."Parts needed: ".$parts;
+
+                        // add escalate_to only if parts_needed is not empty AND escalate_to is not empty
+                        $escalate = $ws_assessment[0]["escalate_to"] != "-" && $ws_assessment[0]["escalate_to"] != "" ? $ws_assessment[0]["escalate_to"] : "";
+                        if($escalate){
+                            $ws_temp["findings"] .= " • Escalate to: ".$escalate;
+                        }
+                    }
 
                     if($ws["sign_off_queue"] == "done"){
                         $ws_resolved++;

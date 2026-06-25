@@ -271,12 +271,11 @@ if(localStorage.getItem("login_tech") !== null){
     sole.post("../../controllers/powerguard/technician/get_all_tickets.php", {
       tech_id: localStorage.getItem("userid_tech")
     }).then(res => {
+      document.getElementById("pgt_tickets").innerText = res.length
       const tickets = res.data || res || [];
       renderAllTickets(tickets);
     });
   }
-
-  loadAllTickets();
 
   /* ── DETAIL TOGGLE — event delegation (no onclick) ── */
   document.getElementById('pgtAllTicketsContainer').addEventListener('click', function(e){
@@ -363,6 +362,38 @@ if(localStorage.getItem("login_tech") !== null){
 
 
 
+
+
+
+
+
+
+
+  function loadAllTechnician(){
+    pgtTransferTo.innerHTML = `<option value="">Select technician</option>`
+    sole.post("../../controllers/powerguard/technician/get_all_technician.php",{
+      id : localStorage.getItem("userid_tech")
+    }).then(res => {
+      res.forEach(user => {
+        var op = document.createElement("option")
+        op.value = `${user.id}|${user.fname[0]}. ${user.lname}`
+        op.innerText = `${user.fname[0]}. ${user.lname}`
+        pgtTransferTo.appendChild(op)
+      })
+    })
+  }
+
+
+
+
+
+
+
+
+
+
+
+
   /* ── WORKSTATION DAMAGE DECLARATION (supervisor's original ticket data) ── */
   let declarations = {
     'WS-101': { user:'J. Santos', ups:'Damaged', system:'Suspected', monitor:'OK', notes:'Burnt smell from UPS' },
@@ -379,7 +410,7 @@ if(localStorage.getItem("login_tech") !== null){
     sole.post("../../controllers/powerguard/technician/get_claimed_workstation.php",{
       tech_id : localStorage.getItem("userid_tech")
     }).then(res => {
-      document.getElementById("pgt_completed").innerText = res[1][0]
+      document.getElementById("pgt_completed").innerText = res[1][0].length
       document.getElementById("pgt_submitted").innerText = res[1][1]
       if(res[1][2]){
         document.getElementById("pgt_rejected_container").hidden = false
@@ -399,6 +430,18 @@ if(localStorage.getItem("login_tech") !== null){
         op.innerText = `${pg_ws["ws_number"]} — #${pg_ws["ticket_no"]} (${pg_ws["sign_off_queue"]})`
         pgtAssessWs.appendChild(op)
       })
+
+      // Load completed assessements
+      pgtCompletedAll      = res[1][0].data || res[1][0] || [];
+      pgtCompletedFiltered = pgtCompletedAll;
+      pgtCompletedPage     = 1;
+      renderCompletedTable();
+
+      // Load claimed workstation
+      pgtClaimedAll      = res[0];
+      pgtClaimedFiltered = pgtClaimedAll;
+      pgtClaimedPage     = 1;
+      renderClaimedTable();
 
       declarations = res[0].reduce((acc, item) => {
         acc[item.ws_number] = {
@@ -421,6 +464,289 @@ if(localStorage.getItem("login_tech") !== null){
       }
     })
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ── MY WORK — CLAIMED TABLE ── */
+  let pgtClaimedAll = [], pgtClaimedFiltered = [], pgtClaimedPage = 1, pgtClaimedPageSize = 5;
+
+  function wsStatusBadge(status){
+    const map = {
+      'submitted': { cls:'pgt-badge-amber', label:'Submitted' },
+      'draft':     { cls:'pgt-badge-blue',  label:'In progress' },
+      'pending':   { cls:'pgt-badge-gray',  label:'Not started' },
+      'rejected':  { cls:'pgt-badge-red',   label:'Rejected' },
+    };
+    const s = map[(status||'').toLowerCase()] || { cls:'pgt-badge-gray', label: status };
+    return `<span class="pgt-badge ${s.cls}"><span class="pgt-badge-dot"></span> ${s.label}</span>`;
+  }
+
+  function wsPriorityBadge(priority){
+    const map = {
+      'high':   { cls:'pgt-badge-red',   label:'High' },
+      'medium': { cls:'pgt-badge-amber', label:'Medium' },
+      'low':    { cls:'pgt-badge-green', label:'Low' },
+    };
+    const p = map[(priority||'').toLowerCase()] || { cls:'pgt-badge-gray', label: priority };
+    return `<span class="pgt-badge ${p.cls}" style="font-size:11px"><span class="pgt-badge-dot"></span> ${p.label}</span>`;
+  }
+
+  function renderClaimedTable(){
+    const tbody    = document.getElementById('pgtClaimedTbody');
+    const pagination = document.getElementById('pgtClaimedPagination');
+
+    if(!pgtClaimedFiltered.length){
+      tbody.innerHTML = `
+        <tr><td colspan="5" style="text-align:center;padding:28px;color:var(--pgt-ink-faint);font-size:13px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;opacity:.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            No claimed workstations.
+          </div>
+        </td></tr>`;
+      pagination.style.display = 'none';
+      return;
+    }
+
+    pagination.style.display = 'flex';
+    const totalPages = Math.ceil(pgtClaimedFiltered.length / pgtClaimedPageSize);
+    if(pgtClaimedPage > totalPages) pgtClaimedPage = totalPages;
+    if(pgtClaimedPage < 1) pgtClaimedPage = 1;
+
+    const start = (pgtClaimedPage - 1) * pgtClaimedPageSize;
+    const items = pgtClaimedFiltered.slice(start, start + pgtClaimedPageSize);
+
+    tbody.innerHTML = items.map(ws => {
+      return `
+        <tr>
+          <td class="pgt-mono">${ws.ws_number}</td>
+          <td style="color:var(--pgt-ink-soft)">#${ws.ticket_no}</td>
+          <td>${wsPriorityBadge(ws.priority)}</td>
+          <td>${wsStatusBadge(ws.sign_off_queue)}</td>
+          <td>
+            ${ws.sign_off_queue != "submitted" ? `
+            <button class="pgt-btn pgt-btn-sm pgt-btn-transfer"
+              data-transfer-id="${ws.id}"
+              data-transfer-ws="${ws.ws_number}"
+              data-transfer-ticket="#${ws.ticket_no}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+              Transfer
+            </button>` : "—" } 
+          </td>
+        </tr>`;
+    }).join('');
+
+    renderPaginationFor('pgtClaimed', totalPages, pgtClaimedPage, pgtClaimedFiltered.length, pgtClaimedPageSize, (p) => {
+      pgtClaimedPage = p; renderClaimedTable();
+    });
+  }
+
+  function applyClaimedFilter(){
+    const term = document.getElementById('pgtClaimedSearch').value.trim().toLowerCase();
+    pgtClaimedFiltered = !term ? pgtClaimedAll : pgtClaimedAll.filter(ws =>
+      (ws.ws_number||'').toLowerCase().includes(term) ||
+      (ws.ticket_no||'').toLowerCase().includes(term) ||
+      (ws.priority||'').toLowerCase().includes(term) ||
+      (ws.sign_off_queue||'').toLowerCase().includes(term)
+    );
+    pgtClaimedPage = 1;
+    renderClaimedTable();
+  }
+
+  /* ── MY WORK — COMPLETED TABLE ── */
+  let pgtCompletedAll = [], pgtCompletedFiltered = [], pgtCompletedPage = 1, pgtCompletedPageSize = 5;
+
+  // function signoffBadge(status){
+  //   if(status === 'done'){
+  //     return `<span class="pgt-badge pgt-badge-green"><svg style="width:11px;height:11px;margin-right:3px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Signed off</span>`;
+  //   }
+  //   if(status === 'rejected'){
+  //     return `<span class="pgt-badge pgt-badge-red"><span class="pgt-badge-dot"></span> Rejected</span>`;
+  //   }
+  //   return `<span class="pgt-badge pgt-badge-amber"><span class="pgt-badge-dot"></span> Awaiting sign-off</span>`;
+  // }
+
+  // function resultBadge(ups, su, monitor){
+  //   const allOk = [ups, su, monitor].every(v => (v||'').toLowerCase().includes('functional'));
+  //   return allOk
+  //     ? `<span class="pgt-badge pgt-badge-green"><span class="pgt-badge-dot"></span> Cleared</span>`
+  //     : `<span class="pgt-badge pgt-badge-amber"><span class="pgt-badge-dot"></span> Repaired</span>`;
+  // }
+
+  function renderCompletedTable(){
+    const tbody    = document.getElementById('pgtCompletedTbody');
+    const pagination = document.getElementById('pgtCompletedPagination');
+
+    if(!pgtCompletedFiltered.length){
+      tbody.innerHTML = `
+        <tr><td colspan="4" style="text-align:center;padding:28px;color:var(--pgt-ink-faint);font-size:13px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;opacity:.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            No completed assessments yet.
+          </div>
+        </td></tr>`;
+      pagination.style.display = 'none';
+      return;
+    }
+
+    pagination.style.display = 'flex';
+    const totalPages = Math.ceil(pgtCompletedFiltered.length / pgtCompletedPageSize);
+    if(pgtCompletedPage > totalPages) pgtCompletedPage = totalPages;
+    if(pgtCompletedPage < 1) pgtCompletedPage = 1;
+
+    const start = (pgtCompletedPage - 1) * pgtCompletedPageSize;
+    const items = pgtCompletedFiltered.slice(start, start + pgtCompletedPageSize);
+
+    tbody.innerHTML = items.map(ws => {
+      const dateStr = ws.assessed_at
+        ? new Date(ws.assessed_at).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})
+        : '—';
+      const findings = ws.technical_findings && ws.technical_findings !== '-'
+        ? ws.technical_findings
+        : dateStr != "—" ? '<span style="color:var(--pgt-ink-faint)">No findings recorded.</span>'
+        : '<span style="color:var(--pgt-ink-faint)">—</span>'
+      return `
+        <tr>
+          <td class="pgt-mono">${ws.ws_number}</td>
+          <td style="color:var(--pgt-ink-soft)">#${ws.ticket_no}</td>
+          <td style="font-size:12.5px;color:var(--pgt-ink-soft);max-width:280px">${findings}</td>
+          <td style="color:var(--pgt-ink-soft);font-size:12px">${dateStr}</td>
+        </tr>`;
+    }).join('');
+
+    renderPaginationFor('pgtCompleted', totalPages, pgtCompletedPage, pgtCompletedFiltered.length, pgtCompletedPageSize, (p) => {
+      pgtCompletedPage = p; renderCompletedTable();
+    });
+  }
+
+  function applyCompletedFilter(){
+    const term = document.getElementById('pgtCompletedSearch').value.trim().toLowerCase();
+    pgtCompletedFiltered = !term ? pgtCompletedAll : pgtCompletedAll.filter(ws =>
+      (ws.ws_number||'').toLowerCase().includes(term) ||
+      (ws.ticket_no||'').toLowerCase().includes(term) ||
+      (ws.technical_findings ||'').toLowerCase().includes(term) ||
+      (ws.assessed_at ||'').toLowerCase().includes(term)
+    );
+    pgtCompletedPage = 1;
+    renderCompletedTable();
+  }
+
+  /* ── SHARED PAGINATION RENDERER ── */
+  function renderPaginationFor(prefix, totalPages, currentPage, totalItems, pageSize, onPageClick){
+    const infoEl    = document.getElementById(prefix + 'PaginationInfo');
+    const pageNums  = document.getElementById(prefix + 'PageNums');
+    const prevBtn   = document.getElementById(prefix + 'Prev');
+    const nextBtn   = document.getElementById(prefix + 'Next');
+
+    const start = (currentPage - 1) * pageSize + 1;
+    const end   = Math.min(currentPage * pageSize, totalItems);
+    infoEl.textContent = `Showing ${start}–${end} of ${totalItems}`;
+
+    pageNums.innerHTML = '';
+    for(let i = 1; i <= totalPages; i++){
+      const btn = document.createElement('button');
+      btn.className = 'pgs-page-num' + (i === currentPage ? ' pgs-page-active' : '');
+      btn.textContent = i;
+      btn.addEventListener('click', () => onPageClick(i));
+      pageNums.appendChild(btn);
+    }
+
+    prevBtn.disabled = currentPage <= 1;
+    nextBtn.disabled = currentPage >= totalPages;
+  }
+
+  /* ── WIRE CONTROLS ── */
+  document.getElementById('pgtClaimedRowsPerPage').addEventListener('change', function(){
+    pgtClaimedPageSize = parseInt(this.value); pgtClaimedPage = 1; renderClaimedTable();
+  });
+  document.getElementById('pgtCompletedRowsPerPage').addEventListener('change', function(){
+    pgtCompletedPageSize = parseInt(this.value); pgtCompletedPage = 1; renderCompletedTable();
+  });
+
+  let pgtClaimedSearchDebounce, pgtCompletedSearchDebounce;
+  document.getElementById('pgtClaimedSearch').addEventListener('input', function(){
+    clearTimeout(pgtClaimedSearchDebounce);
+    pgtClaimedSearchDebounce = setTimeout(() => applyClaimedFilter(), 200);
+  });
+  document.getElementById('pgtCompletedSearch').addEventListener('input', function(){
+    clearTimeout(pgtCompletedSearchDebounce);
+    pgtCompletedSearchDebounce = setTimeout(() => applyCompletedFilter(), 200);
+  });
+
+  document.getElementById('pgtClaimedPrev').addEventListener('click', () => {
+    if(pgtClaimedPage > 1){ pgtClaimedPage--; renderClaimedTable(); }
+  });
+  document.getElementById('pgtClaimedNext').addEventListener('click', () => {
+    if(pgtClaimedPage < Math.ceil(pgtClaimedFiltered.length / pgtClaimedPageSize)){ pgtClaimedPage++; renderClaimedTable(); }
+  });
+  document.getElementById('pgtCompletedPrev').addEventListener('click', () => {
+    if(pgtCompletedPage > 1){ pgtCompletedPage--; renderCompletedTable(); }
+  });
+  document.getElementById('pgtCompletedNext').addEventListener('click', () => {
+    if(pgtCompletedPage < Math.ceil(pgtCompletedFiltered.length / pgtCompletedPageSize)){ pgtCompletedPage++; renderCompletedTable(); }
+  });
+
+  /* ── TRANSFER — event delegation, no onclick ── */
+  document.getElementById('pgtMyWork').addEventListener('click', function(e){
+    const btn = e.target.closest('[data-transfer-ws]');
+    if(!btn) return;
+    openTransfer(btn.dataset.transferId, btn.dataset.transferWs, btn.dataset.transferTicket);
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   function toDatetimeLocal(val){
     if(!val) return '';
@@ -458,21 +784,6 @@ if(localStorage.getItem("login_tech") !== null){
     })
   }
 
-  document.querySelector('.pgt-tab[data-pane="pgtAssessment"]').addEventListener('click', () => {
-    callAllLoadFunction()
-  });
-
-  // reload when tab is clicked
-  document.querySelector('.pgt-tab[data-pane="pgtAllTickets"]').addEventListener('click', () => {
-    callAllLoadFunction()
-  });
-
-  function callAllLoadFunction(){
-    loadWorkStations()
-    loadAllTickets()
-  }
-
-  loadWorkStations()
 
 
 
@@ -568,16 +879,17 @@ if(localStorage.getItem("login_tech") !== null){
 
 
   /* ── TRANSFER MODAL ── */
+  let _transferWsId = '';
   let _transferWs = '';
   let _transferTicket = '';
 
-  window.openTransfer = function(ws, ticket){
-    _transferWs = ws;
+  window.openTransfer = function(wsId, ws, ticket){
+    _transferWsId   = wsId;
+    _transferWs     = ws;
     _transferTicket = ticket;
-    document.getElementById('pgtTransferWs').textContent = ws;
+    document.getElementById('pgtTransferWs').textContent     = ws;
     document.getElementById('pgtTransferTicket').textContent = ticket;
     document.getElementById('pgtTransferModal').style.display = 'block';
-    // scroll to modal
     document.getElementById('pgtTransferModal').scrollIntoView({ behavior:'smooth', block:'start' });
   };
 
@@ -588,15 +900,29 @@ if(localStorage.getItem("login_tech") !== null){
   };
 
   window.confirmTransfer = function(){
-    const to = document.getElementById('pgtTransferTo').value;
+    const to     = document.getElementById('pgtTransferTo').value;
     const reason = document.getElementById('pgtTransferReason').value;
-    if(!to){ alert('Please select a technician to transfer to.'); return; }
-    if(!reason){ alert('Please select a reason for the transfer.'); return; }
-    const payload = { ws: _transferWs, ticket: _transferTicket, transfer_to: to, reason };
+
+    if(!to)    { ss.toast("Tranfer Failed!","warning","Please select a technician to transfer to.",null,"#16201d"); return; }
+    if(!reason){ ss.toast("Tranfer Failed!","warning","Please select a reason for the transfer.",null,"#16201d"); return; }
+
+    const tech_id = to.split("|")[0]
+    const tech_name = to.split("|")[1]
+
+    const payload = {
+      ws:        _transferWs,
+      ws_id:     _transferWsId,
+      ticket:    _transferTicket,
+      tech_id:   tech_id,
+      tech_name: tech_name,
+      reason:    reason
+    };
     console.log('Transfer payload:', payload);
-    // sole.post("../../controllers/powerguard/transfer.php", payload).then(res => console.log(res));
-    closeTransfer();
-    alert(`${_transferWs} transferred to ${to} successfully.`);
+    sole.post("../../controllers/powerguard/technician/transfer_terminal.php", payload).then(res => {
+      ss.toast(res.title,res.type,res.message,null,"#16201d")
+      closeTransfer();
+      callAllLoadFunction();
+    });
   };
 
   /* ── COMPONENT SELECT COLOR CLASS ── */
@@ -893,6 +1219,34 @@ if(localStorage.getItem("login_tech") !== null){
   }
 
 
+
+
+
+
+
+
+
+
+
+  document.querySelector('.pgt-tab[data-pane="pgtMyWork"]').addEventListener('click', () => {
+    callAllLoadFunction();
+  });
+
+  document.querySelector('.pgt-tab[data-pane="pgtAssessment"]').addEventListener('click', () => {
+    callAllLoadFunction()
+  });
+
+  document.querySelector('.pgt-tab[data-pane="pgtAllTickets"]').addEventListener('click', () => {
+    callAllLoadFunction()
+  });
+
+  function callAllLoadFunction(){
+    loadWorkStations()
+    loadAllTickets()
+    loadAllTechnician()
+  }
+
+  callAllLoadFunction()
 })();
 
 
