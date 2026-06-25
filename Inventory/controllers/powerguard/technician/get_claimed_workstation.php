@@ -21,5 +21,7 @@
     }
 
     $pg_ws_completed = count(DB::where2($pg_ws_,"tech_id","=",$data["tech_id"],"sign_off_queue","=","done"));
+    $pg_ws_rejected = count(DB::where2($pg_ws_,"tech_id","=",$data["tech_id"],"sign_off_queue","=","rejected"));
+    $pg_ws_submitted = count(DB::where2($pg_ws_,"tech_id","=",$data["tech_id"],"sign_off_queue","=","submitted"));
 
-    echo json_encode([$pg_ws_final,$pg_ws_completed]);
+    echo json_encode([$pg_ws_final,[$pg_ws_completed,$pg_ws_submitted,$pg_ws_rejected]]);

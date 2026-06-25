@@ -70,7 +70,7 @@
       <div class="pgs-tab pgs-tab-active" data-pane="pgsSubmit">Submit ticket</div>
       <div class="pgs-tab" data-pane="pgsTickets">My tickets</div>
       <div class="pgs-tab" data-pane="pgsSignoff">Sign-off queue</div>
-      <div hidden class="pgs-tab" data-pane="pgsReports">Reports</div>
+      <div class="pgs-tab" data-pane="pgsReports">Reports</div>
     </div>
 
     <!-- SUBMIT TICKET -->
@@ -227,7 +227,7 @@
     </div>
 
     <!-- REPORTS -->
-    <div class="pgs-pane" id="pgsReports">
+    <div class="pgs-pane" id="pgsReports" style="filter: blur(2px);">
       <div class="pgs-report-intro">Reports are scoped to your own submitted tickets only.</div>
       <div class="pgs-report-grid">
         <div class="pgs-rcard">

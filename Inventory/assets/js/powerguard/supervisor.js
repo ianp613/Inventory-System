@@ -448,6 +448,10 @@ if(localStorage.getItem("login_sup") !== null){
     callAllLoadFunction()
   });
 
+  document.querySelector('.pgs-tab[data-pane="pgsReports"]').addEventListener('click', () => {
+    ss.toast("Reports Unavailable","info","Gereration of reports will be available soon.",null,"#082b49")
+  });
+
   function callAllLoadFunction(){
     loadSignoffQueue()
     loadMyTickets()

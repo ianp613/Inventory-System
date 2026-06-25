@@ -379,7 +379,17 @@ if(localStorage.getItem("login_tech") !== null){
     sole.post("../../controllers/powerguard/technician/get_claimed_workstation.php",{
       tech_id : localStorage.getItem("userid_tech")
     }).then(res => {
-      document.getElementById("pgt_completed").innerText = res[1]
+      document.getElementById("pgt_completed").innerText = res[1][0]
+      document.getElementById("pgt_submitted").innerText = res[1][1]
+      if(res[1][2]){
+        document.getElementById("pgt_rejected_container").hidden = false
+        document.getElementById("pgt_rejected_container").classList.add("pgt-badge")
+        document.getElementById("pgt_rejected").innerText = `${res[1][2]} rejected assessment${res[1][2] > 1 ? "s" : ""}`
+      }else{
+        document.getElementById("pgt_rejected_container").hidden = true
+        document.getElementById("pgt_rejected_container").classList.remove("pgt-badge")
+        document.getElementById("pgt_rejected").innerText = `0 rejected assessment`
+      }
       document.getElementById("pgt_claimed").innerText = res[0].length
 
       pgtAssessWs.innerHTML = `<option value="">Choose a workstation…</option>`
