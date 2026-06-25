@@ -64,12 +64,11 @@
                     $parts = $ws_assessment[0]["parts_needed"] != "-" && $ws_assessment[0]["parts_needed"] != "" ? $ws_assessment[0]["parts_needed"] : "";
                     if($parts){
                         $ws_temp["findings"] .= ($ws_temp["findings"] ? " • " : "")."Parts needed: ".$parts;
+                    }
 
-                        // add escalate_to only if parts_needed is not empty AND escalate_to is not empty
-                        $escalate = $ws_assessment[0]["escalate_to"] != "-" && $ws_assessment[0]["escalate_to"] != "" ? $ws_assessment[0]["escalate_to"] : "";
-                        if($escalate){
-                            $ws_temp["findings"] .= " • Escalate to: ".$escalate;
-                        }
+                    $escalate = $ws_assessment[0]["escalate_to"] != "-" && $ws_assessment[0]["escalate_to"] != "" ? $ws_assessment[0]["escalate_to"] : "";
+                    if($escalate){
+                        $ws_temp["findings"] .= ($ws_temp["findings"] ? " • " : "")."Escalate to: ".$escalate;
                     }
 
                     if($ws["sign_off_queue"] == "done"){
