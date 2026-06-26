@@ -187,14 +187,13 @@
         </style>
         
         <h6 class="copyright f-10 text-secondary"></h6>
-        <script src="../assets/js/sole.js"></script>
-        <script src="../assets/js/ipf.js"></script>
         <script src="../assets/js/jquery/jquery-3.7.1.js"></script>
         <script src="../assets/js/popper/popper.min.js"></script>
         <script src="../assets/js/datatables/datatables.min.js"></script>
         <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
         <script src="../assets/js/sole.splash/splash.js"></script>
         <script src="../assets/js/quagga/quagga.min.js"></script>
+        <script src="../assets/js/sole.js"></script>
         <script src="../assets/js/visualizer.js"></script>
         <script src="../assets/js/youtube_karaoke.js"></script>
         <script src="../assets/js/script.js"></script>
