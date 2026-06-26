@@ -95,7 +95,11 @@
                 $enabled      = ($target->enabled ?? false) ? "True" : "False";
                 $fastRoaming  = ($target->fast_roaming_enabled ?? false) ? "True" : "False";
                 $macFilter    = ($target->mac_filter_enabled ?? false) ? "True" : "False";
-                $securityKey  = $target->x_passphrase;
+                if(isset($target->x_passphrase)){
+                    $securityKey = $target->x_passphrase;
+                }else{
+                    $securityKey = "Open";
+                }
 
                 $formattedMessage =
                     $ssid."\n".
