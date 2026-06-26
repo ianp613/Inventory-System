@@ -110,9 +110,10 @@
             }
         </style>
         <h6 class="copyright f-10 text-secondary"></h6>
+        <script src="../assets/js/sole.js"></script>
+        <script src="../assets/js/ipf.js"></script>
         <script src="../assets/js/jquery/jquery-3.7.1.js"></script>
         <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
-        <script src="../assets/js/sole.js"></script>
         <script src="../assets/js/modal_alert.js"></script>
         <script src="../assets/js/file-browser.js"></script>
     </body>
