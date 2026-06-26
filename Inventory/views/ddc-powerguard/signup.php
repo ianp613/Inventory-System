@@ -50,12 +50,12 @@
 
     <div class="status-strip">
       <div class="status-row">
-        <span class="status-dot dot-warn"></span>
+        <span class="status-dot dot-ok"></span>
         <span>Copyright © 2026 - Wifi Team | Ian</span>
       </div>
       <div class="status-row">
-        <span class="status-dot dot-ok"></span>
-        <span>Vibe coded with <a href="https://claude.ai/" target="blank" style="color: orangered; font-weight: bolder;">Claude.AI</a></span>
+        <span class="status-dot dot-warn"></span>
+        <span>DDC Data Processing OPC <span style="color: orangered;">DDPO</span></span>
       </div>
     </div>
   </div>
@@ -161,7 +161,7 @@
           <label for="pgUname">Username</label>
           <div class="pg-signup-inputwrap">
             <svg class="pg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <input type="text" id="pgUname" placeholder="e.g. p.dumdum">
+            <input type="text" id="pgUname" placeholder="e.g. r.villanueva">
           </div>
           <span class="pg-signup-hint">Lowercase letters and dots only, no spaces.</span>
           <span class="pg-signup-error" id="pgUnameError">Enter a username.</span>

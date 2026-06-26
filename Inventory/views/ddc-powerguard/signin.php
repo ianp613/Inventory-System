@@ -35,12 +35,12 @@
 
     <div class="status-strip">
       <div class="status-row">
-        <span class="status-dot dot-warn"></span>
+        <span class="status-dot dot-ok"></span>
         <span>Copyright © 2026 - Wifi Team | Ian</span>
       </div>
       <div class="status-row">
-        <span class="status-dot dot-ok"></span>
-        <span>Vibe coded with <a href="https://claude.ai/" target="blank" style="color: orangered; font-weight: bolder;">Claude.AI</a></span>
+        <span class="status-dot dot-warn"></span>
+        <span>DDC Data Processing OPC <span style="color: orangered;">DDPO</span></span>
       </div>
     </div>
   </div>
