@@ -445,38 +445,88 @@ if(localStorage.getItem("login_admin") !== null){
       pw += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     document.getElementById('pgaTechPassword').value = pw;
+    // clear password error if auto-generated
+    document.getElementById('pgaTechPassword').classList.remove('pga-has-error');
+    document.getElementById('pgaTechPasswordError').classList.remove('pga-show');
   };
 
-  document.getElementById('pgaCreateTechBtn').addEventListener('click', () => {
-    const fname = document.getElementById('pgaTechFname').value.trim();
-    const lname = document.getElementById('pgaTechLname').value.trim();
-    const email = document.getElementById('pgaTechEmail').value.trim();
-    const phone = document.getElementById('pgaTechPhone').value.trim();
-    const empid = document.getElementById('pgaTechEmpid').value.trim();
-    const specialty = document.getElementById('pgaTechSpecialty').value.trim();
-    const username = document.getElementById('pgaTechUsername').value.trim();
-    const password = document.getElementById('pgaTechPassword').value.trim();
+  // live clear on input
+  ['pgaTechFname','pgaTechLname','pgaTechEmpid','pgaTechJobtitle','pgaTechUsername','pgaTechPassword'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function(){
+      this.classList.remove('pga-has-error');
+      document.getElementById(id + 'Error').classList.remove('pga-show');
+    });
+  });
 
-    if(!fname || !lname || !email || !empid || !username || !password){
-      alert('Please fill in first name, last name, email, employee ID, username, and password.');
-      return;
+  document.getElementById('pgaCreateTechBtn').addEventListener('click', () => {
+    const fname    = document.getElementById('pgaTechFname');
+    const lname    = document.getElementById('pgaTechLname');
+    const empid    = document.getElementById('pgaTechEmpid');
+    const jobtitle    = document.getElementById('pgaTechJobtitle');
+    const username = document.getElementById('pgaTechUsername');
+    const password = document.getElementById('pgaTechPassword');
+
+    // reset all errors
+    [fname, lname, empid, jobtitle, username, password].forEach(el => el.classList.remove('pga-has-error'));
+    ['pgaTechFnameError','pgaTechLnameError','pgaTechEmpidError','pgaTechJobtitleError','pgaTechUsernameError','pgaTechPasswordError'].forEach(id => {
+      document.getElementById(id).classList.remove('pga-show');
+    });
+
+    let hasError = false;
+
+    if(!fname.value.trim()){
+      fname.classList.add('pga-has-error');
+      document.getElementById('pgaTechFnameError').classList.add('pga-show');
+      hasError = true;
+    }
+    if(!lname.value.trim()){
+      lname.classList.add('pga-has-error');
+      document.getElementById('pgaTechLnameError').classList.add('pga-show');
+      hasError = true;
+    }
+    if(!empid.value.trim()){
+      empid.classList.add('pga-has-error');
+      document.getElementById('pgaTechEmpidError').classList.add('pga-show');
+      hasError = true;
+    }
+    if(!jobtitle.value.trim()){
+      jobtitle.classList.add('pga-has-error');
+      document.getElementById('pgaTechJobtitleError').classList.add('pga-show');
+      hasError = true;
+    }
+    if(!username.value.trim()){
+      username.classList.add('pga-has-error');
+      document.getElementById('pgaTechUsernameError').classList.add('pga-show');
+      hasError = true;
+    }
+    if(!password.value.trim()){
+      password.classList.add('pga-has-error');
+      document.getElementById('pgaTechPasswordError').classList.add('pga-show');
+      hasError = true;
     }
 
-    const payload = {
-      fname, lname, email, phone, employee_id: empid, specialty,
-      username, password,
-      privileges: 'technician',
-      status: 'active' /* technicians skip the pending approval queue entirely */
-    };
+    if(hasError) return;
 
-    console.log('Create technician payload:', payload);
-    // sole.post("../../controllers/powerguard/create_technician.php", payload).then(res => console.log(res));
-
-    alert(`Technician account created for ${fname} ${lname}. Account is active immediately — no approval needed.`);
-
-    // reset form
-    ['pgaTechFname','pgaTechLname','pgaTechEmail','pgaTechPhone','pgaTechEmpid','pgaTechSpecialty','pgaTechUsername','pgaTechPassword'].forEach(id => {
-      document.getElementById(id).value = '';
+    sole.post("../../controllers/powerguard/administrator/create_technician.php", {
+      fname:       fname.value.trim(),
+      lname:       lname.value.trim(),
+      email:       document.getElementById('pgaTechEmail').value.trim(),
+      phone:       document.getElementById('pgaTechPhone').value.trim(),
+      employee_id: empid.value.trim(),
+      job_title:   jobtitle.value.trim(),
+      username:    username.value.trim(),
+      password:    password.value.trim()
+    }).then(res => {
+      ss.toast(res.title, res.type, res.message, null, "#16201d");
+      if(res.status){
+        ['pgaTechFname','pgaTechLname','pgaTechEmail','pgaTechPhone','pgaTechEmpid','pgaTechJobtitle','pgaTechUsername','pgaTechPassword'].forEach(id => {
+          if(id == "pgaTechJobtitle"){
+            document.getElementById(id).value = 'Technician, IT Support';
+          }else{
+            document.getElementById(id).value = '';
+          }
+        });
+      }
     });
   });
 

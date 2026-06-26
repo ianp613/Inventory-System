@@ -342,10 +342,12 @@
         <div class="pga-field">
           <label for="pgaTechFname">First name</label>
           <input type="text" id="pgaTechFname" placeholder="e.g. Elena">
+          <span class="pga-field-error" id="pgaTechFnameError">First name is required.</span>
         </div>
         <div class="pga-field">
           <label for="pgaTechLname">Last name</label>
           <input type="text" id="pgaTechLname" placeholder="e.g. Macaraeg">
+          <span class="pga-field-error" id="pgaTechLnameError">Last name is required.</span>
         </div>
       </div>
 
@@ -364,10 +366,12 @@
         <div class="pga-field">
           <label for="pgaTechEmpid">Employee ID</label>
           <input type="text" id="pgaTechEmpid" placeholder="e.g. EMP-2024-0042">
+          <span class="pga-field-error" id="pgaTechEmpidError">Employee ID is required.</span>
         </div>
         <div class="pga-field">
-          <label for="pgaTechSpecialty">Specialty / focus (optional)</label>
-          <input type="text" id="pgaTechSpecialty" placeholder="e.g. Hardware repair, Networking">
+          <label for="pgaTechJobtitle">Job title</label>
+          <input type="text" id="pgaTechJobtitle" value="Technician, IT Support" placeholder="e.g. Technician, IT Support">
+          <span class="pga-field-error" id="pgaTechJobtitleError">Job title is required.</span>
         </div>
       </div>
 
@@ -377,7 +381,8 @@
       <div class="pga-row">
         <div class="pga-field">
           <label for="pgaTechUsername">Username</label>
-          <input type="text" id="pgaTechUsername" placeholder="e.g. e.macaraeg">
+          <input type="text" id="pgaTechUsername" placeholder="e.g. p.dumdum">
+          <span class="pga-field-error" id="pgaTechUsernameError">Username is required.</span>
         </div>
         <div class="pga-field">
           <label for="pgaTechPassword">Temporary password</label>
@@ -388,6 +393,7 @@
               Generate
             </button>
           </div>
+          <span class="pga-field-error" id="pgaTechPasswordError">Password is required.</span>
         </div>
       </div>
 

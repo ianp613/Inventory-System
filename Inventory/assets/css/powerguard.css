@@ -2607,6 +2607,21 @@
     font-weight:600;
   }
 
+  .pga-field input.pga-has-error{
+    border-color:var(--pga-red);
+  }
+  .pga-field input.pga-has-error:focus{
+    box-shadow:0 0 0 3px rgba(224,106,95,0.15);
+  }
+  .pga-field-error{
+    font-size:11.5px;
+    color:var(--pga-red);
+    display:none;
+    margin-top:4px;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .pga-field-error.pga-show{ display:block; }
+
   @media(max-width:760px){
     .pga-metrics{grid-template-columns:repeat(2,1fr);}
     .pga-row{flex-direction:column;}
