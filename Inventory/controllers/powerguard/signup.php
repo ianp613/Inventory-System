@@ -33,7 +33,7 @@
         $user->username = $data["username"];
         $user->password = Data::encrypt($data["password"]);
         $user->privileges = "supervisor";
-        $user->account = "inactive";
+        $user->account = "pending";
         DB::save($user);
 
         $response = [

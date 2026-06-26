@@ -201,7 +201,7 @@
           <div class="pgt-field">
             <label for="pgtTransferReason">Reason for transfer</label>
             <select id="pgtTransferReason">
-              <option value="">Select reason</option>
+              <option selected disabled value="">Select reason</option>
               <option>Off — out of duty hours</option>
               <option>Workload — too many workstations</option>
               <option>Specialization — outside my expertise</option>
@@ -228,10 +228,7 @@
         <div class="pgt-field">
           <label for="pgtAssessWs">Select my workstation</label>
           <select id="pgtAssessWs">
-            <option value="">Choose a workstation…</option>
-            <option value="WS-101">WS-101 — #2024-0147 (parts pending)</option>
-            <option value="WS-105">WS-105 — #2024-0147 (not started)</option>
-            <option value="WS-110">WS-110 — #2024-0147 (not started)</option>
+            <option selected disabled value="">Choose a workstation…</option>
           </select>
         </div>
         <div class="pgt-field">
@@ -359,21 +356,21 @@
     <!-- ═══════════════════════════════════════
          TAB 4 — REPORTS
     ════════════════════════════════════════ -->
-    <div class="pgt-pane" id="pgtReports">
+    <div class="pgt-pane" id="pgtReports" style="color:var(--pgt-ink-faint)">
       <p style="font-size:13px;color:var(--pgt-ink-soft);margin-bottom:20px;">
         Technicians can view and generate reports across all incidents and projects.
       </p>
 
       <div class="pgt-report-group">
-        <div class="pgt-section-lbl">Current ticket — #2024-0147</div>
+        <div class="pgt-section-lbl">Current ticket — #0000-0000</div>
         <div class="pgt-report-grid">
           <div class="pgt-rcard">
             <div><div class="pgt-rcard-lbl">ALL TECHNICIANS</div><div class="pgt-rcard-val">Incident summary</div></div>
-            <button class="pgt-btn pgt-btn-sm">View</button>
+            <button style="color:var(--pgt-ink-faint)" class="pgt-btn pgt-btn-sm">View</button>
           </div>
           <div class="pgt-rcard">
             <div><div class="pgt-rcard-lbl">ALL TECHNICIANS</div><div class="pgt-rcard-val">All technician logs</div></div>
-            <button class="pgt-btn pgt-btn-sm">View</button>
+            <button style="color:var(--pgt-ink-faint)" class="pgt-btn pgt-btn-sm">View</button>
           </div>
         </div>
       </div>
@@ -383,11 +380,11 @@
         <div class="pgt-report-grid">
           <div class="pgt-rcard">
             <div><div class="pgt-rcard-lbl">PERSONAL</div><div class="pgt-rcard-val">My assessment log</div></div>
-            <button class="pgt-btn pgt-btn-sm">View</button>
+            <button style="color:var(--pgt-ink-faint)" class="pgt-btn pgt-btn-sm">View</button>
           </div>
           <div class="pgt-rcard">
             <div><div class="pgt-rcard-lbl">PERSONAL</div><div class="pgt-rcard-val">My parts requests</div></div>
-            <button class="pgt-btn pgt-btn-sm">View</button>
+            <button style="color:var(--pgt-ink-faint)" class="pgt-btn pgt-btn-sm">View</button>
           </div>
         </div>
       </div>
@@ -397,19 +394,19 @@
         <div class="pgt-report-grid">
           <div class="pgt-rcard">
             <div><div class="pgt-rcard-lbl">ALL INCIDENTS</div><div class="pgt-rcard-val">Cross-incident status</div></div>
-            <button class="pgt-btn pgt-btn-sm">View</button>
+            <button style="color:var(--pgt-ink-faint)" class="pgt-btn pgt-btn-sm">View</button>
           </div>
           <div class="pgt-rcard">
             <div><div class="pgt-rcard-lbl">ALL INCIDENTS</div><div class="pgt-rcard-val">Parts requests history</div></div>
-            <button class="pgt-btn pgt-btn-sm">View</button>
+            <button style="color:var(--pgt-ink-faint)" class="pgt-btn pgt-btn-sm">View</button>
           </div>
           <div class="pgt-rcard">
             <div><div class="pgt-rcard-lbl">ALL INCIDENTS</div><div class="pgt-rcard-val">Workstation damage history</div></div>
-            <button class="pgt-btn pgt-btn-sm">View</button>
+            <button style="color:var(--pgt-ink-faint)" class="pgt-btn pgt-btn-sm">View</button>
           </div>
           <div class="pgt-rcard">
             <div><div class="pgt-rcard-lbl">ALL INCIDENTS</div><div class="pgt-rcard-val">Incident frequency</div></div>
-            <button class="pgt-btn pgt-btn-sm">View</button>
+            <button style="color:var(--pgt-ink-faint)" class="pgt-btn pgt-btn-sm">View</button>
           </div>
         </div>
       </div>

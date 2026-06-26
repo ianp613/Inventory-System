@@ -2591,6 +2591,22 @@
   .pga-dropdown-item-danger svg{ color:var(--pga-red); }
   .pga-dropdown-divider{ height:1px;background:var(--pga-line-soft);margin:4px 0; }
 
+  .pga-approval-row.pga-approval-acted{
+    opacity:0.4;
+    pointer-events:none;
+    position:relative;
+  }
+  /* .pga-approval-row.pga-approval-acted .pga-approval-name{
+    text-decoration:line-through;
+  } */
+  .pga-approval-acted-badge{
+    font-size:11.5px;
+    font-family:'IBM Plex Mono', monospace;
+    padding:4px 10px;
+    border-radius:20px;
+    font-weight:600;
+  }
+
   @media(max-width:760px){
     .pga-metrics{grid-template-columns:repeat(2,1fr);}
     .pga-row{flex-direction:column;}

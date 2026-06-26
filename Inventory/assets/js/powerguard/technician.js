@@ -370,7 +370,7 @@ if(localStorage.getItem("login_tech") !== null){
 
 
   function loadAllTechnician(){
-    pgtTransferTo.innerHTML = `<option value="">Select technician</option>`
+    pgtTransferTo.innerHTML = `<option selected disabled value="">Select technician</option>`
     sole.post("../../controllers/powerguard/technician/get_all_technician.php",{
       id : localStorage.getItem("userid_tech")
     }).then(res => {
@@ -423,7 +423,7 @@ if(localStorage.getItem("login_tech") !== null){
       }
       document.getElementById("pgt_claimed").innerText = res[0].length
 
-      pgtAssessWs.innerHTML = `<option value="">Choose a workstation…</option>`
+      pgtAssessWs.innerHTML = `<option selected disabled value="">Choose a workstation…</option>`
       res[0].forEach(pg_ws => {
         var op = document.createElement("option")
         op.value = `${pg_ws["ws_number"]}|${pg_ws["id"]}|${pg_ws["sign_off_queue"]}`
@@ -1238,6 +1238,10 @@ if(localStorage.getItem("login_tech") !== null){
 
   document.querySelector('.pgt-tab[data-pane="pgtAllTickets"]').addEventListener('click', () => {
     callAllLoadFunction()
+  });
+
+  document.querySelector('.pgt-tab[data-pane="pgtReports"]').addEventListener('click', () => {
+    ss.toast("Reports Unavailable","info","Gereration of reports will be available soon.",null,"#16201d")
   });
 
   function callAllLoadFunction(){

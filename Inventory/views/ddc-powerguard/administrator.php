@@ -296,57 +296,38 @@
       </div>
     </div>
 
-    <!-- ═══════════════════════════════════════
-         TAB: ACCOUNT APPROVALS
-    ════════════════════════════════════════ -->
-    <div class="pga-pane" id="pgaApprovals">
+   <div class="pga-pane" id="pgaApprovals">
       <div class="pga-section-intro">Pending supervisor registrations only. Technicians do not self-register — their accounts are created directly by the admin in the "Create technician" tab. Verify employee ID and details before approving.</div>
 
-      <div class="pga-approval-row">
-        <div class="pga-approval-avatar">PM</div>
-        <div class="pga-approval-info">
-          <div class="pga-approval-name">P. Mendoza</div>
-          <div class="pga-approval-meta">
-            Job title: Operations Manager · Employee ID: EMP-2024-0091<br>
-            p.mendoza@company.com · +63 917 555 0142 · Submitted Jun 14, 2024
-          </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px">
+          <label style="font-size:12px;color:var(--pga-ink-soft);white-space:nowrap">Rows</label>
+          <select id="pgaApprovalsRowsPerPage" style="font-size:12.5px;padding:5px 22px 5px 9px;border-radius:6px;border:1px solid var(--pga-line);background:var(--pga-panel-2);color:var(--pga-ink);appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a9b3ae' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 7px center;">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+          </select>
         </div>
-        <div class="pga-approval-actions">
-          <span class="pga-badge pga-badge-blue"><span class="pga-badge-dot"></span> Supervisor</span>
-          <div class="pga-approval-actions-row">
-            <button class="pga-btn pga-btn-sm pga-btn-success">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-              Approve
-            </button>
-            <button class="pga-btn pga-btn-sm pga-btn-reject">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
-              Reject
-            </button>
-          </div>
+        <div style="position:relative">
+          <svg style="position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--pga-ink-faint);pointer-events:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="pgaApprovalsSearch" placeholder="Search name, email, employee ID…" style="font-size:12.5px;padding:6px 10px 6px 28px;border-radius:6px;border:1px solid var(--pga-line);background:var(--pga-panel-2);color:var(--pga-ink);width:260px">
         </div>
       </div>
 
-      <div class="pga-approval-row">
-        <div class="pga-approval-avatar">LR</div>
-        <div class="pga-approval-info">
-          <div class="pga-approval-name">L. Ramos</div>
-          <div class="pga-approval-meta">
-            Job title: Supervisor · Employee ID: EMP-2024-0104<br>
-            l.ramos@company.com · +63 917 555 0212 · Submitted Jun 16, 2024
-          </div>
-        </div>
-        <div class="pga-approval-actions">
-          <span class="pga-badge pga-badge-blue"><span class="pga-badge-dot"></span> Supervisor</span>
-          <div class="pga-approval-actions-row">
-            <button class="pga-btn pga-btn-sm pga-btn-success">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-              Approve
-            </button>
-            <button class="pga-btn pga-btn-sm pga-btn-reject">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
-              Reject
-            </button>
-          </div>
+      <div id="pgaApprovalsContainer">
+        <!-- injected by JS -->
+      </div>
+
+      <div id="pgaApprovalsPagination" style="display:flex;align-items:center;justify-content:space-between;margin-top:14px">
+        <div id="pgaApprovalsPaginationInfo" style="font-size:12px;color:var(--pga-ink-soft)"></div>
+        <div style="display:flex;gap:4px">
+          <button class="pga-btn pga-btn-sm" id="pgaApprovalsPrev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M15 18l-6-6 6-6"/></svg> Prev
+          </button>
+          <div id="pgaApprovalsPageNums" style="display:flex;gap:4px"></div>
+          <button class="pga-btn pga-btn-sm" id="pgaApprovalsNext">
+            Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
         </div>
       </div>
     </div>

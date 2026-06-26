@@ -218,24 +218,223 @@ if(localStorage.getItem("login_admin") !== null){
     renderSupervisorOverview();
   };
 
-  /* ── ACCOUNT APPROVALS ── */
-  document.querySelectorAll('.pga-approval-row .pga-btn-success').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const row = btn.closest('.pga-approval-row');
-      const name = row.querySelector('.pga-approval-name').textContent;
-      console.log('Approved:', name);
-      row.style.opacity = '0.4';
-      row.style.pointerEvents = 'none';
+  /* ── ACCOUNT APPROVALS: FETCH + RENDER + PAGINATION ── */
+  let pgaApprovalsAll      = [];
+  let pgaApprovalsFiltered = [];
+  let pgaApprovalsPage     = 1;
+  let pgaApprovalsPageSize = 5;
+  let pgaApprovalsSearch   = '';
+
+  // tracks which user IDs have been acted on this session: { id: 'approved' | 'rejected' }
+  const pgaActedOn = {};
+
+  function sortApprovals(list){
+    // pending floats to top, rejected sinks to bottom
+    return [...list].sort((a, b) => {
+      const aActed = !!pgaActedOn[a.id] || a.account === 'rejected';
+      const bActed = !!pgaActedOn[b.id] || b.account === 'rejected';
+      if(aActed === bActed) return 0;
+      return aActed ? 1 : -1;
     });
+  }
+
+  function approvalRowHTML(user){
+    const acted  = pgaActedOn[user.id];
+    const avatar = (user.fname || '').charAt(0).toUpperCase() + (user.lname || '').charAt(0).toUpperCase();
+
+    const submittedDate = user.submitted_at
+      ? new Date(user.submitted_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })
+      : '';
+
+    let actionsHTML;
+
+    if(acted){
+      // optimistic UI — acted on this session
+      actionsHTML = `
+        <span class="pga-badge ${acted === 'approved' ? 'pga-badge-green' : 'pga-badge-red'} pga-approval-acted-badge">
+          <span class="pga-badge-dot"></span> ${acted === 'approved' ? 'Approved' : 'Rejected'}
+        </span>`;
+
+    } else if(user.account === 'rejected'){
+      // already rejected from backend
+      actionsHTML = `
+        <span class="pga-badge pga-badge-red">
+          <span class="pga-badge-dot"></span> Rejected
+        </span>`;
+
+    } else {
+      // pending — show approve / reject buttons
+      actionsHTML = `
+        <div class="pga-approval-actions-row">
+          <button class="pga-btn pga-btn-sm pga-btn-success"
+            data-approval-action="approve"
+            data-approval-id="${user.id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Approve
+          </button>
+          <button class="pga-btn pga-btn-sm pga-btn-reject"
+            data-approval-action="reject"
+            data-approval-id="${user.id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+            Reject
+          </button>
+        </div>`;
+    }
+
+    const isDimmed = acted || user.account === 'rejected';
+
+    return `
+      <div class="pga-approval-row ${isDimmed && isDimmed != "approved" ? 'pga-approval-acted' : ''}" id="pga-approval-row-${user.id}">
+        <div class="pga-approval-avatar">${avatar}</div>
+        <div class="pga-approval-info">
+          <div class="pga-approval-name">${user.fname} ${user.lname}</div>
+          <div class="pga-approval-meta">
+            Job title: ${user.job_title || '—'} · Employee ID: ${user.employee_id || '—'}<br>
+            ${user.email || '—'} · ${user.phone || '—'}${submittedDate ? ' · Submitted ' + submittedDate : ''}
+          </div>
+        </div>
+        <div class="pga-approval-actions">
+          <span class="pga-badge pga-badge-blue"><span class="pga-badge-dot"></span> Supervisor</span>
+          ${actionsHTML}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderApprovalsPage(){
+    const container    = document.getElementById('pgaApprovalsContainer');
+    const pagination   = document.getElementById('pgaApprovalsPagination');
+    const sorted       = sortApprovals(pgaApprovalsFiltered);
+
+    if(!sorted.length){
+      container.innerHTML = `
+        <div style="text-align:center;padding:40px 16px;color:var(--pga-ink-faint);font-size:13px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;opacity:.5"><path d="M20 6 9 17l-5-5"/></svg>
+            No pending approvals.
+          </div>
+        </div>`;
+      pagination.style.display = 'none';
+      return;
+    }
+
+    pagination.style.display = 'flex';
+    const totalPages = Math.ceil(sorted.length / pgaApprovalsPageSize);
+    if(pgaApprovalsPage > totalPages) pgaApprovalsPage = totalPages;
+    if(pgaApprovalsPage < 1) pgaApprovalsPage = 1;
+
+    const start = (pgaApprovalsPage - 1) * pgaApprovalsPageSize;
+    const items = sorted.slice(start, start + pgaApprovalsPageSize);
+
+    container.innerHTML = items.map(u => approvalRowHTML(u)).join('');
+
+    // pagination info + page numbers
+    const infoEl   = document.getElementById('pgaApprovalsPaginationInfo');
+    const pageNums = document.getElementById('pgaApprovalsPageNums');
+    const prevBtn  = document.getElementById('pgaApprovalsPrev');
+    const nextBtn  = document.getElementById('pgaApprovalsNext');
+
+    infoEl.textContent = `Showing ${start + 1}–${Math.min(start + pgaApprovalsPageSize, sorted.length)} of ${sorted.length}`;
+
+    pageNums.innerHTML = '';
+    for(let i = 1; i <= totalPages; i++){
+      const btn = document.createElement('button');
+      btn.className = 'pgs-page-num' + (i === pgaApprovalsPage ? ' pgs-page-active' : '');
+      btn.textContent = i;
+      btn.addEventListener('click', () => { pgaApprovalsPage = i; renderApprovalsPage(); });
+      pageNums.appendChild(btn);
+    }
+
+    prevBtn.disabled = pgaApprovalsPage <= 1;
+    nextBtn.disabled = pgaApprovalsPage >= totalPages;
+  }
+
+  function applyApprovalsFilter(){
+    const term = pgaApprovalsSearch.trim().toLowerCase();
+    pgaApprovalsFiltered = !term ? pgaApprovalsAll : pgaApprovalsAll.filter(u =>
+      (u.fname || '').toLowerCase().includes(term) ||
+      (u.lname || '').toLowerCase().includes(term) ||
+      (u.email || '').toLowerCase().includes(term) ||
+      (u.employee_id || '').toLowerCase().includes(term) ||
+      (u.job_title || '').toLowerCase().includes(term)
+    );
+    pgaApprovalsPage = 1;
+    renderApprovalsPage();
+  }
+
+  function loadApprovals(){
+    sole.post("../../controllers/powerguard/administrator/get_pending_approvals.php", {
+      admin_id: localStorage.getItem("userid_admin")
+    }).then(res => {
+      pgaApprovalsAll      = res.data || res || [];
+      pgaApprovalsFiltered = pgaApprovalsAll;
+      pgaApprovalsPage     = 1;
+      renderApprovalsPage();
+    });
+  }
+
+  loadApprovals();
+
+  document.querySelector('.pga-tab[data-pane="pgaApprovals"]').addEventListener('click', () => {
+    loadApprovals();
   });
-  document.querySelectorAll('.pga-approval-row .pga-btn-reject').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const row = btn.closest('.pga-approval-row');
-      const name = row.querySelector('.pga-approval-name').textContent;
-      console.log('Rejected:', name);
-      row.style.opacity = '0.4';
-      row.style.pointerEvents = 'none';
-    });
+
+  // rows per page
+  document.getElementById('pgaApprovalsRowsPerPage').addEventListener('change', function(){
+    pgaApprovalsPageSize = parseInt(this.value);
+    pgaApprovalsPage = 1;
+    renderApprovalsPage();
+  });
+
+  // search
+  let pgaApprovalsSearchDebounce;
+  document.getElementById('pgaApprovalsSearch').addEventListener('input', function(){
+    clearTimeout(pgaApprovalsSearchDebounce);
+    const val = this.value;
+    pgaApprovalsSearchDebounce = setTimeout(() => {
+      pgaApprovalsSearch = val;
+      applyApprovalsFilter();
+    }, 200);
+  });
+
+  // prev / next
+  document.getElementById('pgaApprovalsPrev').addEventListener('click', () => {
+    if(pgaApprovalsPage > 1){ pgaApprovalsPage--; renderApprovalsPage(); }
+  });
+  document.getElementById('pgaApprovalsNext').addEventListener('click', () => {
+    const total = Math.ceil(sortApprovals(pgaApprovalsFiltered).length / pgaApprovalsPageSize);
+    if(pgaApprovalsPage < total){ pgaApprovalsPage++; renderApprovalsPage(); }
+  });
+
+  // approve / reject — event delegation, no onclick
+  document.getElementById('pgaApprovalsContainer').addEventListener('click', function(e){
+    const btn = e.target.closest('[data-approval-action]');
+    if(!btn) return;
+
+    const action = btn.dataset.approvalAction;
+    const userId = btn.dataset.approvalId;
+
+    // optimistic UI — dim the row and replace buttons with badge immediately
+    pgaActedOn[userId] = action === 'approve' ? 'approved' : 'rejected';
+    renderApprovalsPage(); // re-render so acted-on row sinks to bottom
+
+    if(action === 'approve'){
+      sole.post("../../controllers/powerguard/administrator/approve_account.php", {
+        admin_id: localStorage.getItem("userid_admin"),
+        user_id:  userId
+      }).then(res => {
+        ss.toast(res.title,res.type,res.message,null,"#16201d")
+      });
+    }
+
+    if(action === 'reject'){
+      sole.post("../../controllers/powerguard/administrator/reject_account.php", {
+        admin_id: localStorage.getItem("userid_admin"),
+        user_id:  userId
+      }).then(res => {
+        ss.toast(res.title,res.type,res.message,null,"#16201d")
+      });
+    }
   });
 
   /* ── CREATE TECHNICIAN ACCOUNT ── */

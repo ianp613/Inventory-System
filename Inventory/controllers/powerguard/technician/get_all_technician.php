@@ -7,4 +7,12 @@
     $pg_user = new PG_User;
     $pg_user = DB::where2($pg_user,"id","!=",$data["id"],"privileges","=","technician");
 
-    echo json_encode($pg_user);
+    $pg_user_final = [];
+
+    foreach ($pg_user as $pgu) {
+        if($pgu["account"] == "active"){
+            array_push($pg_user_final,$pgu);
+        }
+    }
+
+    echo json_encode($pg_user_final);
