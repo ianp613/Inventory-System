@@ -60,7 +60,7 @@
             if(res.user.privileges == "supervisor"){
               localStorage.setItem("pgs_avatar",res.user.fname[0]+res.user.lname[0].toUpperCase())
               localStorage.setItem("pgs_name",res.user.fname[0]+". "+res.user.lname)
-              localStorage.setItem("pgs_role","Supervisor · Admin Department")
+              localStorage.setItem("pgs_role","Supervisor · ")
 
               localStorage.setItem("userid_sup",res.user.id)
               localStorage.setItem("login_sup",true)
@@ -70,7 +70,7 @@
             if(res.user.privileges == "technician"){
               localStorage.setItem("pgt_avatar",res.user.fname[0]+res.user.lname[0].toUpperCase())
               localStorage.setItem("pgt_name",res.user.fname[0]+". "+res.user.lname)
-              localStorage.setItem("pgt_role","Technician · IT Department")
+              localStorage.setItem("pgt_role",`${res.user.job_title} · IT Department`)
 
               localStorage.setItem("userid_tech",res.user.id)
               localStorage.setItem("login_tech",true)

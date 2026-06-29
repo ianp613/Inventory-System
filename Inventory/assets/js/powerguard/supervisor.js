@@ -11,6 +11,26 @@ if(localStorage.getItem("login_sup") !== null){
 }
 
 (function(){
+  /* ---------- LOAD TERMINALS --------- */
+  sole.post("../../controllers/powerguard/supervisor/get_departments.php",{
+    sup_id: localStorage.getItem("userid_sup")
+  }).then(res => {
+    if(res.length){
+      var pgs_role = document.getElementsByClassName("pgs-role")[0]
+      pgs_role.innerText = localStorage.getItem("pgs_role")
+      // count = 0
+      res.forEach(d => {
+        // pgs_role.innerText += (count > 1 ? " | " : "") + d.name
+        // count++
+        pgs_role.innerHTML += `<span class="pgs-badge pgs-badge-grey" style="margin-right: 3px;">${d.name}</span>`
+      })
+
+    }else{
+      document.getElementsByClassName("pgs-role")[0].innerText = localStorage.getItem("pgs_role")+" No department assigned"
+    }
+  })
+
+  
   /* ---------- TAB SWITCHING ---------- */
   const tabs = document.querySelectorAll('.pgs-tab');
   const panes = document.querySelectorAll('.pgs-pane');
@@ -749,6 +769,8 @@ if(localStorage.getItem("login_sup") !== null){
 })();
 
 
+
+
 document.getElementsByClassName("pgs-avatar")[0].innerText = localStorage.getItem("pgs_avatar")
 document.getElementsByClassName("pgs-name")[0].innerText = localStorage.getItem("pgs_name")
-document.getElementsByClassName("pgs-role")[0].innerText = localStorage.getItem("pgs_role")
+

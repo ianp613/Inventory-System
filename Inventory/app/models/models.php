@@ -969,4 +969,14 @@
         public string $parts_needed;
         public string $escalate_to;
     }
+
+    class PG_Department{
+        public $table = "pg_department";
+        public $fillable = [
+            "name",
+            "sup_id"
+        ];
+        public string $name;
+        public string $sup_id;
+    }
 ?>

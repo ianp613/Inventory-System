@@ -1134,6 +1134,7 @@
   }
   .pgs-badge-red{ background:var(--pgs-red-bg); color:var(--pgs-red); }
   .pgs-badge-amber{ background:var(--pgs-amber-bg); color:var(--pgs-amber-text); }
+  .pgs-badge-grey{ background:var(--pgs-panel); color:var(--pgs-ink-soft); }
   .pgs-badge-green{ background:var(--pgs-green-bg); color:var(--pgs-green); }
   .pgs-badge-blue{ background:var(--pgs-blue-bg); color:var(--pgs-blue); }
   .pgs-badge-dot{
@@ -2429,6 +2430,8 @@
   .pga-btn-success:hover{border-color:var(--pga-green);}
   .pga-btn-reject{background:var(--pga-red-bg);color:var(--pga-red);border-color:#5a3a3a;}
   .pga-btn-reject:hover{border-color:var(--pga-red);}
+  .pga-btn-delete{background:var(--pga-red-bg);color:var(--pga-red);border-color:#5a3a3a;}
+  .pga-btn-delete:hover{border-color:var(--pga-red);}
   .pga-btn-transfer{background:var(--pga-amber-bg);color:var(--pga-amber-text);border-color:#5a4230;}
   .pga-btn-transfer:hover{border-color:var(--pga-amber);}
 
@@ -2621,6 +2624,13 @@
     font-family:'IBM Plex Mono', monospace;
   }
   .pga-field-error.pga-show{ display:block; }
+
+  .pga-dept-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    margin-bottom:20px;
+  }
 
   @media(max-width:760px){
     .pga-metrics{grid-template-columns:repeat(2,1fr);}

@@ -110,113 +110,374 @@ if(localStorage.getItem("login_admin") !== null){
     alert(`${payload.ws} reassigned to ${to}.`);
   };
 
-  /* ── DEPARTMENTS ── */
-  /* RULE: exactly one supervisor per department. A supervisor may hold many departments. */
-  let departments = [
-    { name:'Administration', supervisor:'R. Villanueva' },
-    { name:'Finance', supervisor:'P. Mendoza' },
-    { name:'Information Technology', supervisor:'R. Villanueva' },
-    { name:'Operations', supervisor:null },
-    { name:'Human Resources', supervisor:null },
-    { name:'Procurement', supervisor:'L. Ramos' },
-  ];
 
-  const availableSupervisors = ['R. Villanueva', 'P. Mendoza', 'L. Ramos', 'D. Santos', 'A. Cruz'];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* ── DEPARTMENTS ── */
+  let departments        = [];
+  let availableSupervisors = [];
+
+  // supervisor overview pagination
+  let pgaDeptOvPage     = 1;
+  let pgaDeptOvPageSize = 5;
+
+  function loadDepartments(){
+    // fetch departments and supervisors in parallel
+    Promise.all([
+      sole.post("../../controllers/powerguard/administrator/get_departments.php", {
+        admin_id: localStorage.getItem("userid_admin")
+      }),
+      sole.post("../../controllers/powerguard/administrator/get_supervisors.php", {
+        admin_id: localStorage.getItem("userid_admin")
+      })
+    ]).then(([deptRes, supRes]) => {
+      departments        = deptRes.data || deptRes || [];
+      availableSupervisors = supRes.data || supRes || [];
+      renderDepartments();
+      renderSupervisorOverview();
+    });
+  }
+
+  loadDepartments();
 
   function renderDepartments(){
     const grid = document.getElementById('pgaDeptGrid');
     grid.innerHTML = '';
 
+    if(!departments.length){
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:28px;color:var(--pga-ink-faint);font-size:13px">No departments yet. Add one above.</div>`;
+      return;
+    }
+
     departments.forEach((dept, di) => {
       const card = document.createElement('div');
       card.className = 'pga-dept-card';
 
-      const currentSupHtml = dept.supervisor
+      const currentSupHtml = dept.sup_name
         ? `<div class="pga-dept-current-sup">
              <span class="pga-dept-supervisor-name">
                <svg style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-               ${dept.supervisor}
+               ${dept.sup_name}
              </span>
-             <span class="pga-remove-x" data-dept="${di}" title="Unassign supervisor">
+             <span class="pga-remove-x" data-dept-supervisor="${dept.sup_name}" data-dept-id="${dept.id}" data-dept-name="${dept.name}" title="Unassign supervisor">
                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
              </span>
            </div>`
         : `<div class="pga-dept-current-sup pga-dept-unfilled">No supervisor assigned</div>`;
 
       const options = availableSupervisors.map(s =>
-        `<option ${s===dept.supervisor ? 'selected':''}>${s}</option>`
+        `<option value="${s.id}|${s.name}" ${s.id == dept.sup_id ? 'selected' : ''}>${s.name}</option>`
       ).join('');
 
       card.innerHTML = `
         <div class="pga-dept-card-head">
           <div class="pga-dept-name">${dept.name}</div>
+          <button class="pga-btn pga-btn-sm pga-btn-delete" data-dept-id="${dept.id}" data-dept-name="${dept.name}" data-dept-has-sup="${!!dept.sup_name}" title="Delete department">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          </button>
         </div>
         ${currentSupHtml}
         <div style="display:flex;gap:6px">
-          <select class="pga-dept-assign-select" data-dept="${di}" style="flex:1;font-size:12.5px;padding:7px 26px 7px 10px;border-radius:6px;border:1px solid var(--pga-line);background:var(--pga-bg);color:var(--pga-ink);appearance:none;cursor:pointer;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a9b3ae' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 8px center;">
-            <option value="">${dept.supervisor ? 'Reassign to…' : 'Assign supervisor…'}</option>
+          <select class="pga-dept-assign-select" data-dept-id="${dept.id}" style="flex:1;font-size:12.5px;padding:7px 26px 7px 10px;border-radius:6px;border:1px solid var(--pga-line);background:var(--pga-bg);color:var(--pga-ink);appearance:none;cursor:pointer;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a9b3ae' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 8px center;">
+            <option value="">${dept.sup_name ? 'Reassign to…' : 'Assign supervisor…'}</option>
             ${options}
           </select>
-          <button class="pga-btn pga-btn-sm pga-dept-assign-btn" data-dept="${di}">${dept.supervisor ? 'Reassign' : 'Assign'}</button>
+          <button class="pga-btn pga-btn-sm pga-dept-assign-btn" data-dept-id="${dept.id}" data-dept-name="${dept.name}">${dept.sup_name ? 'Reassign' : 'Assign'}</button>
         </div>
       `;
       grid.appendChild(card);
     });
 
+    // wire delete buttons
+    grid.querySelectorAll('.pga-btn-delete').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const deptId   = btn.dataset.deptId;
+        const deptName = btn.dataset.deptName;
+        Swal.fire({
+            title: "Delete "+deptName,
+            text: "Please note that all tickets, termninals and assessments that are recorded under this department will also be deleted. This action cannot be undone.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            confirmButtonText: "Delete",
+            customClass: {
+                popup: 'my-custom-popup',
+                actions: 'my-right-buttons'
+            }
+        }).then((result) => {
+            if (result.isConfirmed){
+              sole.post("../../controllers/powerguard/administrator/delete_department.php", {
+                admin_id: localStorage.getItem("userid_admin"),
+                dept_id:  deptId,
+                dept_name: deptName
+              }).then(res => {
+                ss.toast(res.title, res.type, res.message, null, "#16201d");
+                if(res.status) loadDepartments();
+              });
+            }
+        });
+      });
+    });
+
     // wire unassign buttons
     grid.querySelectorAll('.pga-remove-x').forEach(el => {
       el.addEventListener('click', () => {
-        const di = parseInt(el.dataset.dept);
-        const removed = departments[di].supervisor;
-        departments[di].supervisor = null;
-        console.log('Unassigned', removed, 'from', departments[di].name);
-        renderDepartments();
-        renderSupervisorOverview();
+        const deptId = el.dataset.deptId;
+        const deptName = el.dataset.deptName;
+        const sup_name = el.dataset.deptSupervisor;
+
+
+
+        Swal.fire({
+            title: `Remove ${sup_name} from ${deptName}`,
+            text: `Please note that submitted assessments cannot be signed off if there is no supervisor assigned to this department.`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#16201d",
+            confirmButtonText: "Confirm",
+            customClass: {
+                popup: 'my-custom-popup',
+                actions: 'my-right-buttons'
+            }
+        }).then((result) => {
+            if (result.isConfirmed){
+              sole.post("../../controllers/powerguard/administrator/unassign_supervisor.php", {
+                admin_id: localStorage.getItem("userid_admin"),
+                dept_id:  deptId,
+                dept_name:  deptName,
+                sup_name: sup_name
+              }).then(res => {
+                ss.toast(res.title, res.type, res.message, null, "#16201d");
+                if(res.status) loadDepartments();
+              });     
+            }
+        });
+
+
+
+
+
       });
     });
 
     // wire assign/reassign buttons
     grid.querySelectorAll('.pga-dept-assign-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const di = parseInt(btn.dataset.dept);
-        const select = grid.querySelector(`.pga-dept-assign-select[data-dept="${di}"]`);
+        const deptId  = btn.dataset.deptId;
+        const deptName  = btn.dataset.deptName;
+        const select  = grid.querySelector(`.pga-dept-assign-select[data-dept-id="${deptId}"]`);
         if(!select.value) return;
-        const previous = departments[di].supervisor;
-        departments[di].supervisor = select.value;
-        console.log('Assigned', select.value, 'to', departments[di].name, previous ? `(replaced ${previous})` : '(new)');
-        renderDepartments();
-        renderSupervisorOverview();
+        const sup_id = select.value.split("|")[0]
+        const sup_name = select.value.split("|")[1]
+
+        Swal.fire({
+            title: `Assign ${sup_name} to ${deptName}`,
+            text: `All ongoing and closed tickets under this department will also be assigned to ${sup_name}.`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#16201d",
+            confirmButtonText: "Confirm",
+            customClass: {
+                popup: 'my-custom-popup',
+                actions: 'my-right-buttons'
+            }
+        }).then((result) => {
+            if (result.isConfirmed){
+              sole.post("../../controllers/powerguard/administrator/assign_supervisor.php", {
+                admin_id:    localStorage.getItem("userid_admin"),
+                dept_id:     deptId,
+                sup_id:      sup_id,
+                sup_name:      sup_name,
+                dept_name:    deptName
+              }).then(res => {
+                ss.toast(res.title, res.type, res.message, null, "#16201d");
+                if(res.status) loadDepartments();
+              });      
+            }
+        });
       });
     });
   }
 
+  /* ── SUPERVISOR OVERVIEW — paginated + search + alphabetical ── */
+  let pgaDeptOvSearchTerm = '';
+
   function renderSupervisorOverview(){
-    const tbody = document.querySelector('#pgaSupervisorOverviewTable tbody');
-    tbody.innerHTML = '';
-    availableSupervisors.forEach(sup => {
-      const held = departments.filter(d => d.supervisor === sup).map(d => d.name);
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${sup}</td>
-        <td>${held.length ? held.map(n => `<span class="pga-chip">${n}</span>`).join('') : '<span style="color:var(--pga-ink-faint);font-size:12px">No departments assigned</span>'}</td>
-        <td class="pga-mono">${held.length}</td>
-      `;
-      tbody.appendChild(tr);
+    const supMap = {};
+    availableSupervisors.forEach(s => { supMap[s.id] = { name: s.name, depts: [] }; });
+    departments.forEach(d => {
+      if(d.sup_id && supMap[d.sup_id]){
+        supMap[d.sup_id].depts.push(d.name);
+      }
     });
+
+    // sort alphabetically then filter by search
+    let sorted = Object.values(supMap).sort((a, b) => a.name.localeCompare(b.name));
+
+    const term = pgaDeptOvSearchTerm.trim().toLowerCase();
+    if(term){
+      sorted = sorted.filter(s => s.name.toLowerCase().includes(term));
+    }
+
+    const totalPages = Math.ceil(sorted.length / pgaDeptOvPageSize) || 1;
+    if(pgaDeptOvPage > totalPages) pgaDeptOvPage = totalPages;
+    if(pgaDeptOvPage < 1) pgaDeptOvPage = 1;
+
+    const start = (pgaDeptOvPage - 1) * pgaDeptOvPageSize;
+    const items = sorted.slice(start, start + pgaDeptOvPageSize);
+
+    const tbody = document.getElementById('pgaDeptOvTbody');
+
+    if(!sorted.length){
+      tbody.innerHTML = `
+        <tr><td colspan="3" style="text-align:center;padding:24px;color:var(--pga-ink-faint);font-size:13px">
+          No supervisors found.
+        </td></tr>`;
+        document.getElementById('pgaDeptOvPagination').style.display = 'none'
+      return;
+    }
+
+    tbody.innerHTML = items.map(sup => `
+      <tr>
+        <td>${sup.name}</td>
+        <td>${sup.depts.length
+          ? sup.depts.map(n => `<span class="pga-chip">${n}</span>`).join('')
+          : '<span style="color:var(--pga-ink-faint);font-size:12px">No departments assigned</span>'
+        }</td>
+        <td class="pga-mono">${sup.depts.length}</td>
+      </tr>
+    `).join('');
+
+    // pagination controls
+    const pagination = document.getElementById('pgaDeptOvPagination');
+    const infoEl     = document.getElementById('pgaDeptOvPaginationInfo');
+    const pageNums   = document.getElementById('pgaDeptOvPageNums');
+    const prevBtn    = document.getElementById('pgaDeptOvPrev');
+    const nextBtn    = document.getElementById('pgaDeptOvNext');
+
+    pagination.style.display = 'flex';
+
+    const end = Math.min(start + pgaDeptOvPageSize, sorted.length);
+    infoEl.textContent = `Showing ${start + 1}–${end} of ${sorted.length}`;
+
+    pageNums.innerHTML = '';
+    for(let i = 1; i <= totalPages; i++){
+      const btn = document.createElement('button');
+      btn.className = 'pgs-page-num' + (i === pgaDeptOvPage ? ' pgs-page-active' : '');
+      btn.textContent = i;
+      btn.addEventListener('click', () => { pgaDeptOvPage = i; renderSupervisorOverview(); });
+      pageNums.appendChild(btn);
+    }
+
+    prevBtn.disabled = pgaDeptOvPage <= 1;
+    nextBtn.disabled = pgaDeptOvPage >= totalPages;
   }
 
-  renderDepartments();
-  renderSupervisorOverview();
+  // rows per page
+  document.getElementById('pgaDeptOvRowsPerPage').addEventListener('change', function(){
+    pgaDeptOvPageSize = parseInt(this.value);
+    pgaDeptOvPage = 1;
+    renderSupervisorOverview();
+  });
+
+  // search
+  let pgaDeptOvSearchDebounce;
+  document.getElementById('pgaDeptOvSearch').addEventListener('input', function(){
+    clearTimeout(pgaDeptOvSearchDebounce);
+    const val = this.value;
+    pgaDeptOvSearchDebounce = setTimeout(() => {
+      pgaDeptOvSearchTerm = val;
+      pgaDeptOvPage = 1;
+      renderSupervisorOverview();
+    }, 200);
+  });
+
+  // prev / next
+  document.getElementById('pgaDeptOvPrev').addEventListener('click', () => {
+    if(pgaDeptOvPage > 1){ pgaDeptOvPage--; renderSupervisorOverview(); }
+  });
+  document.getElementById('pgaDeptOvNext').addEventListener('click', () => {
+    pgaDeptOvPage++; renderSupervisorOverview();
+  });
+
+  /* ── ADD DEPARTMENT — with validation ── */
+  document.getElementById('pgaNewDeptName').addEventListener('input', function(){
+    this.classList.remove('pga-has-error');
+    document.getElementById('pgaNewDeptNameError').classList.remove('pga-show');
+  });
 
   window.addDepartment = function(){
-    const input = document.getElementById('pgaNewDeptName');
-    const name = input.value.trim();
-    if(!name){ alert('Enter a department name.'); return; }
-    departments.push({ name, supervisor:null });
-    input.value = '';
-    renderDepartments();
-    renderSupervisorOverview();
+    const input   = document.getElementById('pgaNewDeptName');
+    const errorEl = document.getElementById('pgaNewDeptNameError');
+    const name    = input.value.trim();
+
+    input.classList.remove('pga-has-error');
+    errorEl.classList.remove('pga-show');
+
+    if(!name){
+      input.classList.add('pga-has-error');
+      errorEl.classList.add('pga-show');
+      return;
+    }
+
+    sole.post("../../controllers/powerguard/administrator/add_department.php", {
+      admin_id: localStorage.getItem("userid_admin"),
+      name:     name
+    }).then(res => {
+      ss.toast(res.title, res.type, res.message, null, "#16201d");
+      if(res.status){
+        input.value = '';
+        input.classList.remove('pga-has-error');
+        errorEl.classList.remove('pga-show');
+        loadDepartments();
+      }
+    });
   };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /* ── ACCOUNT APPROVALS: FETCH + RENDER + PAGINATION ── */
   let pgaApprovalsAll      = [];
@@ -375,9 +636,7 @@ if(localStorage.getItem("login_admin") !== null){
 
   loadApprovals();
 
-  document.querySelector('.pga-tab[data-pane="pgaApprovals"]').addEventListener('click', () => {
-    loadApprovals();
-  });
+
 
   // rows per page
   document.getElementById('pgaApprovalsRowsPerPage').addEventListener('change', function(){
@@ -741,7 +1000,7 @@ if(localStorage.getItem("login_admin") !== null){
 
   document.getElementById('pgaLogoutBtn').addEventListener('click', () => {
     pgaMoreDropdown.classList.remove('pga-dropdown-open');
-      Swal.fire({
+    Swal.fire({
         title: "You are about to leave",
         text: "Do you wish to end your current session?",
         icon: "warning",
@@ -759,6 +1018,21 @@ if(localStorage.getItem("login_admin") !== null){
           window.location.replace("signin.php");
         }
     });
+  });
+
+
+
+
+
+  document.querySelector('.pga-tab[data-pane="pgaDepartments"]').addEventListener('click', () => {
+    loadDepartments();
+    loadApprovals();
+  });
+  document.querySelector('.pga-tab[data-pane="pgaApprovals"]').addEventListener('click', () => {
+    loadApprovals();
+  });
+    document.querySelector('.pga-tab[data-pane="pgaReports"]').addEventListener('click', () => {
+    ss.toast("Reports Unavailable","info","Gereration of reports will be available soon.",null,"#16201d")
   });
 
 })();

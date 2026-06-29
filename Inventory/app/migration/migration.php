@@ -26,7 +26,8 @@
         "PGUserMigration",
         "PG_TicketMigration",
         "PG_WSMigration",
-        "PG_WS_AssessmentMigration"
+        "PG_WS_AssessmentMigration",
+        "PG_DepartmentMigration"
     ];
 
     class UserMigration
@@ -459,6 +460,15 @@
             Migrate::string("technical_findings");
             Migrate::string("parts_needed");
             Migrate::string("escalate_to");
+        }
+    }
+
+    class PG_DepartmentMigration{
+        public static function index(){
+            Migrate::attrib_table("pg_department");
+            Migrate::attrib_string(1000);
+            Migrate::string("name");
+            Migrate::string("sup_id");
         }
     }
 ?>

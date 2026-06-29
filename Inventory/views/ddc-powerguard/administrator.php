@@ -263,7 +263,7 @@
     </div>
 
     <!-- ═══════════════════════════════════════
-         TAB: DEPARTMENTS
+        TAB: DEPARTMENTS
     ════════════════════════════════════════ -->
     <div class="pga-pane" id="pgaDepartments">
       <div class="pga-section-intro">Each department has exactly one supervisor at a time. A supervisor, however, can be assigned to multiple departments simultaneously. Assigning a new supervisor to a department automatically replaces the previous one.</div>
@@ -272,6 +272,7 @@
         <div class="pga-field" style="max-width:260px">
           <label for="pgaNewDeptName">Create new department</label>
           <input type="text" id="pgaNewDeptName" placeholder="e.g. Records Management">
+          <span class="pga-field-error" id="pgaNewDeptNameError">Department name is required.</span>
         </div>
         <div class="pga-field" style="flex:0 0 auto;align-self:flex-end">
           <button class="pga-btn pga-btn-primary" onclick="addDepartment()">
@@ -288,13 +289,47 @@
       <hr class="pga-divider">
 
       <div class="pga-section-lbl">Supervisor → departments overview</div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px">
+          <label style="font-size:12px;color:var(--pga-ink-soft);white-space:nowrap">Rows</label>
+          <select id="pgaDeptOvRowsPerPage" style="font-size:12.5px;padding:5px 22px 5px 9px;border-radius:6px;border:1px solid var(--pga-line);background:var(--pga-panel-2);color:var(--pga-ink);appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a9b3ae' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 7px center;">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+          </select>
+        </div>
+        <div style="position:relative">
+          <svg style="position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--pga-ink-faint);pointer-events:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="pgaDeptOvSearch" placeholder="Search supervisor…" style="font-size:12.5px;padding:6px 10px 6px 28px;border-radius:6px;border:1px solid var(--pga-line);background:var(--pga-panel-2);color:var(--pga-ink);width:220px">
+        </div>
+      </div>
+
       <div class="pga-table-wrap">
         <table class="pga-table" id="pgaSupervisorOverviewTable">
           <thead><tr><th>Supervisor</th><th>Departments held</th><th># Departments</th></tr></thead>
-          <tbody><!-- seeded by JS --></tbody>
+          <tbody id="pgaDeptOvTbody"><!-- seeded by JS --></tbody>
         </table>
       </div>
+
+      <div id="pgaDeptOvPagination" style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
+        <div id="pgaDeptOvPaginationInfo" style="font-size:12px;color:var(--pga-ink-soft)"></div>
+        <div style="display:flex;gap:4px">
+          <button class="pga-btn pga-btn-sm" id="pgaDeptOvPrev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M15 18l-6-6 6-6"/></svg> Prev
+          </button>
+          <div id="pgaDeptOvPageNums" style="display:flex;gap:4px"></div>
+          <button class="pga-btn pga-btn-sm" id="pgaDeptOvNext">
+            Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
     </div>
+
+
+    <!-- ═══════════════════════════════════════
+      TAB: ACCOUNT APPROVALS
+    ════════════════════════════════════════ -->
 
    <div class="pga-pane" id="pgaApprovals">
       <div class="pga-section-intro">Pending supervisor registrations only. Technicians do not self-register — their accounts are created directly by the admin in the "Create technician" tab. Verify employee ID and details before approving.</div>
@@ -513,26 +548,26 @@
     <!-- ═══════════════════════════════════════
          TAB: REPORTS
     ════════════════════════════════════════ -->
-    <div class="pga-pane" id="pgaReports">
+    <div class="pga-pane" id="pgaReports" style="color:var(--pga-ink-faint)">
       <div class="pga-section-intro">System-wide reports across every department, ticket, and technician.</div>
 
       <div class="pga-report-group">
         <div class="pga-section-lbl">System-wide</div>
         <div class="pga-report-grid">
-          <div class="pga-rcard"><div><div class="pga-rcard-lbl">ALL DEPARTMENTS</div><div class="pga-rcard-val">Incident frequency</div></div><button class="pga-btn pga-btn-sm">Generate</button></div>
-          <div class="pga-rcard"><div><div class="pga-rcard-lbl">ALL DEPARTMENTS</div><div class="pga-rcard-val">Workstation damage history</div></div><button class="pga-btn pga-btn-sm">Generate</button></div>
-          <div class="pga-rcard"><div><div class="pga-rcard-lbl">ALL DEPARTMENTS</div><div class="pga-rcard-val">Technician performance</div></div><button class="pga-btn pga-btn-sm">Generate</button></div>
-          <div class="pga-rcard"><div><div class="pga-rcard-lbl">ALL DEPARTMENTS</div><div class="pga-rcard-val">Supervisor activity log</div></div><button class="pga-btn pga-btn-sm">Generate</button></div>
+          <div class="pga-rcard"><div><div class="pga-rcard-lbl">ALL DEPARTMENTS</div><div class="pga-rcard-val">Incident frequency</div></div><button style="color:var(--pga-ink-faint)" class="pga-btn pga-btn-sm">Generate</button></div>
+          <div class="pga-rcard"><div><div class="pga-rcard-lbl">ALL DEPARTMENTS</div><div class="pga-rcard-val">Workstation damage history</div></div><button style="color:var(--pga-ink-faint)" class="pga-btn pga-btn-sm">Generate</button></div>
+          <div class="pga-rcard"><div><div class="pga-rcard-lbl">ALL DEPARTMENTS</div><div class="pga-rcard-val">Technician performance</div></div><button style="color:var(--pga-ink-faint)" class="pga-btn pga-btn-sm">Generate</button></div>
+          <div class="pga-rcard"><div><div class="pga-rcard-lbl">ALL DEPARTMENTS</div><div class="pga-rcard-val">Supervisor activity log</div></div><button style="color:var(--pga-ink-faint)" class="pga-btn pga-btn-sm">Generate</button></div>
         </div>
       </div>
 
       <div class="pga-report-group">
         <div class="pga-section-lbl">Administrative</div>
         <div class="pga-report-grid">
-          <div class="pga-rcard"><div><div class="pga-rcard-lbl">ACCOUNTS</div><div class="pga-rcard-val">Account approval history</div></div><button class="pga-btn pga-btn-sm">Generate</button></div>
-          <div class="pga-rcard"><div><div class="pga-rcard-lbl">ACCOUNTS</div><div class="pga-rcard-val">Department assignment log</div></div><button class="pga-btn pga-btn-sm">Generate</button></div>
-          <div class="pga-rcard"><div><div class="pga-rcard-lbl">TERMINALS</div><div class="pga-rcard-val">Reassignment history</div></div><button class="pga-btn pga-btn-sm">Generate</button></div>
-          <div class="pga-rcard"><div><div class="pga-rcard-lbl">PARTS</div><div class="pga-rcard-val">Parts requests — all tickets</div></div><button class="pga-btn pga-btn-sm">Generate</button></div>
+          <div class="pga-rcard"><div><div class="pga-rcard-lbl">ACCOUNTS</div><div class="pga-rcard-val">Account approval history</div></div><button style="color:var(--pga-ink-faint)" class="pga-btn pga-btn-sm">Generate</button></div>
+          <div class="pga-rcard"><div><div class="pga-rcard-lbl">ACCOUNTS</div><div class="pga-rcard-val">Department assignment log</div></div><button style="color:var(--pga-ink-faint)" class="pga-btn pga-btn-sm">Generate</button></div>
+          <div class="pga-rcard"><div><div class="pga-rcard-lbl">TERMINALS</div><div class="pga-rcard-val">Reassignment history</div></div><button style="color:var(--pga-ink-faint)" class="pga-btn pga-btn-sm">Generate</button></div>
+          <div class="pga-rcard"><div><div class="pga-rcard-lbl">PARTS</div><div class="pga-rcard-val">Parts requests — all tickets</div></div><button style="color:var(--pga-ink-faint)" class="pga-btn pga-btn-sm">Generate</button></div>
         </div>
       </div>
     </div>
