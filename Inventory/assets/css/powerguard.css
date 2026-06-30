@@ -2629,14 +2629,36 @@
     display:grid;
     grid-template-columns:repeat(3,1fr);
     gap:14px;
-    margin-bottom:20px;
+    max-height:540px; /* approx 3 rows — adjust if your cards are taller/shorter */
+    overflow-y:auto;
+    padding-right:4px; /* prevent scrollbar from overlapping card edge */
+  }
+
+  /* style the scrollbar to match the dark theme */
+  .pga-dept-grid::-webkit-scrollbar{
+    width:6px;
+  }
+  .pga-dept-grid::-webkit-scrollbar-track{
+    background:var(--pga-panel-2);
+    border-radius:3px;
+  }
+  .pga-dept-grid::-webkit-scrollbar-thumb{
+    background:var(--pga-line);
+    border-radius:3px;
+  }
+  .pga-dept-grid::-webkit-scrollbar-thumb:hover{
+    background:var(--pga-ink-faint);
   }
 
   @media(max-width:760px){
     .pga-metrics{grid-template-columns:repeat(2,1fr);}
     .pga-row{flex-direction:column;}
     .pga-overview-grid{grid-template-columns:1fr;}
-    .pga-dept-grid{grid-template-columns:1fr;}
+    .pga-dept-grid{
+      grid-template-columns:1fr;
+      max-height:none; /* let it flow naturally on mobile */
+      overflow-y:visible;
+    }
     .pga-report-grid{grid-template-columns:1fr;}
     .pga-topbar{flex-wrap:wrap;gap:12px;}
     .pga-approval-row{flex-wrap:wrap;}
