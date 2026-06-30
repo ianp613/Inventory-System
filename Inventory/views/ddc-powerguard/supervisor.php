@@ -103,6 +103,14 @@
 
       <div class="pgs-row">
         <div class="pgs-field">
+          <label for="pgsDept">Department</label>
+          <select id="pgsDept">
+            <option value="">Select department…</option>
+            <!-- options injected by JS -->
+          </select>
+          <span class="pgs-field-error" id="pgsDeptError">Please select a department.</span>
+        </div>
+        <div class="pgs-field">
           <label for="pgsArea">Area / floor affected</label>
           <input type="text" id="pgsArea" value="">
         </div>
@@ -174,9 +182,9 @@
           </select>
         </div>
 
-        <div class="pgs-search-wrap" style="position:relative;max-width:260px;width:100%">
+        <div class="pgs-search-wrap" style="position:relative;max-width:280px;width:100%">
           <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--pgs-ink-faint);pointer-events:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input type="text" id="pgsTicketSearch" placeholder="Search ticket no, type, area…" style="width:100%;font-size:12.5px;padding:7px 10px 7px 30px;border-radius:6px;border:1px solid var(--pgs-line);background:var(--pgs-panel-2);color:var(--pgs-ink)">
+          <input type="text" id="pgsTicketSearch" placeholder="Search ticket no, department, type, area…" style="width:100%;font-size:12.5px;padding:7px 10px 7px 30px;border-radius:6px;border:1px solid var(--pgs-line);background:var(--pgs-panel-2);color:var(--pgs-ink)">
         </div>
       </div>
       <div class="pgs-table-wrap" style="overflow-x:auto">

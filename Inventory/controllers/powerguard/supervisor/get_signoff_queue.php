@@ -4,8 +4,27 @@
     include("../../../includes.php");
     $data = json_decode(file_get_contents('php://input'), true);
 
-    $pg_ticket = new PG_Ticket;
-    $pg_ticket = DB::where($pg_ticket,"sup_id","=",$data["sup_id"]);
+    $pg_ticket_ = new PG_Ticket;
+    $pg_ticket_ = DB::all($pg_ticket_);
+    $pg_ticket = [];
+
+    $pg_dept = new PG_Department;
+    $pg_dept = DB::where($pg_dept,"sup_id","=",$data["sup_id"]);
+    $pg_dept_id = [];
+
+    // get departments id
+    foreach ($pg_dept as $pgd) {
+        array_push($pg_dept_id,$pgd["id"]);
+    }
+
+    // get matching ticket with matcing dept id
+    foreach ($pg_ticket_ as $pgt_) {
+        if(in_array($pgt_["dept_id"],$pg_dept_id)){
+            array_push($pg_ticket,$pgt_);
+        }
+    }
+
+    
 
     $pg_ws = new PG_WS;
     $pg_ticket_final = [];

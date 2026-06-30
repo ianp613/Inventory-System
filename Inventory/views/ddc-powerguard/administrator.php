@@ -268,19 +268,27 @@
     <div class="pga-pane" id="pgaDepartments">
       <div class="pga-section-intro">Each department has exactly one supervisor at a time. A supervisor, however, can be assigned to multiple departments simultaneously. Assigning a new supervisor to a department automatically replaces the previous one.</div>
 
-      <div class="pga-row" style="margin-bottom:20px">
-        <div class="pga-field" style="max-width:260px">
-          <label for="pgaNewDeptName">Create new department</label>
-          <input type="text" id="pgaNewDeptName" placeholder="e.g. Records Management">
-          <span class="pga-field-error" id="pgaNewDeptNameError">Department name is required.</span>
+      <div class="pga-row" style="margin-bottom:20px;justify-content:space-between;align-items:flex-end">
+        <div style="display:flex;gap:10px;align-items:flex-end">
+          <div class="pga-field" style="max-width:260px">
+            <label for="pgaNewDeptName">Create new department</label>
+            <input type="text" id="pgaNewDeptName" placeholder="e.g. Records Management">
+          </div>
+          <div class="pga-field" style="flex:0 0 auto">
+            <button class="pga-btn pga-btn-primary" onclick="addDepartment()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              Add department
+            </button>
+          </div>
         </div>
-        <div class="pga-field" style="flex:0 0 auto;align-self:flex-end">
-          <button class="pga-btn pga-btn-primary" onclick="addDepartment()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-            Add department
-          </button>
+
+        <div style="position:relative;max-width:300px;width:100%">
+          <svg style="position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--pga-ink-faint);pointer-events:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="pgaDeptSearch" placeholder="Search department or supervisor…" style="width:100%;font-size:12.5px;padding:7px 10px 7px 30px;border-radius:6px;border:1px solid var(--pga-line);background:var(--pga-panel-2);color:var(--pga-ink)">
         </div>
       </div>
+
+      
 
       <div class="pga-dept-grid" id="pgaDeptGrid">
         <!-- seeded by JS -->

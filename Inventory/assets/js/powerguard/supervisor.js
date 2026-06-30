@@ -25,6 +25,21 @@ if(localStorage.getItem("login_sup") !== null){
         pgs_role.innerHTML += `<span class="pgs-badge pgs-badge-grey" style="margin-right: 3px;">${d.name}</span>`
       })
 
+      const depts = res.data || res || [];
+      const select = document.getElementById('pgsDept');
+      select.innerHTML = `<option value="">Select department…</option>`;
+
+      depts.forEach(d => {
+        const op = document.createElement('option');
+        op.value = d.id;
+        op.textContent = d.name;
+        select.appendChild(op);
+      });
+
+      // auto-select if supervisor only has one department
+      if(depts.length === 1){
+        select.value = depts[0].id;
+      }
     }else{
       document.getElementsByClassName("pgs-role")[0].innerText = localStorage.getItem("pgs_role")+" No department assigned"
     }
@@ -120,16 +135,20 @@ if(localStorage.getItem("login_sup") !== null){
   /* ---------- SUBMIT TICKET ---------- */
   document.getElementById('pgsSubmitTicketBtn').addEventListener('click', () => {
 
-    const datetimeInput = document.getElementById('pgsDatetime');
-    const datetimeError = document.getElementById('pgsDatetimeError');
-    const durationInput = document.getElementById('pgsDuration');
-    const durationError = document.getElementById('pgsDurationError');
-    const descriptionInput = document.getElementById('pgsDescription');
-    const descriptionError = document.getElementById('pgsDescriptionError');
+    const datetimeInput     = document.getElementById('pgsDatetime');
+    const datetimeError     = document.getElementById('pgsDatetimeError');
+    const deptInput         = document.getElementById('pgsDept');
+    const deptError         = document.getElementById('pgsDeptError');
+    const durationInput     = document.getElementById('pgsDuration');
+    const durationError     = document.getElementById('pgsDurationError');
+    const descriptionInput  = document.getElementById('pgsDescription');
+    const descriptionError  = document.getElementById('pgsDescriptionError');
 
     // reset previous error state
     datetimeInput.classList.remove('pgs-has-error');
     datetimeError.classList.remove('pgs-show');
+    deptInput.classList.remove('pgs-has-error');
+    deptError.classList.remove('pgs-show');
     durationInput.classList.remove('pgs-has-error');
     durationError.classList.remove('pgs-show');
     descriptionInput.classList.remove('pgs-has-error');
@@ -148,6 +167,13 @@ if(localStorage.getItem("login_sup") !== null){
       datetimeInput.classList.add('pgs-has-error');
       datetimeError.textContent = 'Incident date & time cannot be in the future.';
       datetimeError.classList.add('pgs-show');
+      hasError = true;
+    }
+
+    // ── VALIDATION: Department ──
+    if(!deptInput.value){
+      deptInput.classList.add('pgs-has-error');
+      deptError.classList.add('pgs-show');
       hasError = true;
     }
 
@@ -182,7 +208,7 @@ if(localStorage.getItem("login_sup") !== null){
         }
     });
 
-    if(!workstations.length){
+    if(!workstations.length && !hasError){
       ss.toast("Invalid Ticket","warning","Workstation damage declaration field cannot be empty.",null,"#082b49")
       hasError = true;
     }
@@ -191,6 +217,7 @@ if(localStorage.getItem("login_sup") !== null){
 
     sole.post("../../controllers/powerguard/supervisor/submit_ticket.php",{
       sup_id: localStorage.getItem("userid_sup"),
+      dept_id: document.getElementById('pgsDept').value,
       incident_datetime: document.getElementById('pgsDatetime').value,
       fluctuation_type: document.getElementById('pgsFlucType').value,
       priority: document.getElementById('pgsPriority').value,
@@ -207,9 +234,23 @@ if(localStorage.getItem("login_sup") !== null){
   });
 
   document.getElementById('pgsClearFormBtn').addEventListener('click', () => {
-    if(confirm('Clear all fields and reset the workstation list? Any unsaved input will be lost.')){
-      clearForm();
-    }
+    Swal.fire({
+        title: "Clear Form?",
+        text: "You are going to clear all fields, any unsaved input will be lost.",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        confirmButtonText: "Clear",
+        customClass: {
+            popup: 'my-custom-popup',
+            actions: 'my-right-buttons'
+        }
+    }).then((result) => {
+        if (result.isConfirmed){
+          clearForm();
+        }
+    });
+
   });
 
   function clearForm(){
@@ -217,12 +258,13 @@ if(localStorage.getItem("login_sup") !== null){
     document.getElementById('pgsDatetime').value = '';
     document.getElementById('pgsFlucType').selectedIndex = 0;
     document.getElementById('pgsPriority').selectedIndex = 1;
+    document.getElementById('pgsDept').value = '';
     document.getElementById('pgsArea').value = '';
     document.getElementById('pgsDuration').value = '';
     document.getElementById('pgsDescription').value = '';
 
     // clear any lingering error states
-    ['pgsDatetime','pgsDuration','pgsDescription'].forEach(id => {
+    ['pgsDatetime','pgsDuration','pgsDept','pgsDescription','pgsDeptError'].forEach(id => {
       const input = document.getElementById(id);
       const errorEl = document.getElementById(id + 'Error');
       if(input) input.classList.remove('pgs-has-error');
@@ -327,6 +369,7 @@ if(localStorage.getItem("login_sup") !== null){
 
         return (
           String(t.ticket_no).toLowerCase().includes(term) ||
+          String(t.dept_name).toLowerCase().includes(term) ||
           (t.fluctuation_type || '').toLowerCase().includes(term) ||
           areaValue.includes(term) ||
           (t.status || '').toLowerCase().includes(term) ||
@@ -368,7 +411,7 @@ if(localStorage.getItem("login_sup") !== null){
 
       return `
         <tr>
-          <td class="pgs-ticket-no">#${t.ticket_no}</td>
+          <td class="pgs-ticket-no">#${t.ticket_no}<br><span style="color:var(--pgs-ink-soft)">${t.dept_name}</span></td>
           <td style="color:var(--pgs-ink-soft)">${new Date(t.incident_datetime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
           <td>${t.fluctuation_type}</td>
           <td style="color:var(--pgs-ink-soft)">${t.area != "-" ? t.area : ""}</td>

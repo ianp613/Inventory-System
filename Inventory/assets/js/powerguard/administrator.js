@@ -165,16 +165,25 @@ if(localStorage.getItem("login_admin") !== null){
 
   loadDepartments();
 
+  let pgaDeptSearchTerm = '';
   function renderDepartments(){
     const grid = document.getElementById('pgaDeptGrid');
     grid.innerHTML = '';
 
-    if(!departments.length){
-      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:28px;color:var(--pga-ink-faint);font-size:13px">No departments yet. Add one above.</div>`;
+    const term = pgaDeptSearchTerm.trim().toLowerCase();
+    const filtered = !term
+      ? departments
+      : departments.filter(d =>
+          (d.name || '').toLowerCase().includes(term) ||
+          (d.sup_name || '').toLowerCase().includes(term)
+        );
+
+    if(!filtered.length){
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:28px;color:var(--pga-ink-faint);font-size:13px">${term ? 'No departments match your search.' : 'No departments yet. Add one above.'}</div>`;
       return;
     }
 
-    departments.forEach((dept, di) => {
+    filtered.forEach((dept, di) => {
       const card = document.createElement('div');
       card.className = 'pga-dept-card';
 
@@ -251,8 +260,6 @@ if(localStorage.getItem("login_admin") !== null){
         const deptName = el.dataset.deptName;
         const sup_name = el.dataset.deptSupervisor;
 
-
-
         Swal.fire({
             title: `Remove ${sup_name} from ${deptName}`,
             text: `Please note that submitted assessments cannot be signed off if there is no supervisor assigned to this department.`,
@@ -277,11 +284,6 @@ if(localStorage.getItem("login_admin") !== null){
               });     
             }
         });
-
-
-
-
-
       });
     });
 
@@ -323,6 +325,17 @@ if(localStorage.getItem("login_admin") !== null){
       });
     });
   }
+
+  // search listener
+  let pgaDeptSearchDebounce;
+  document.getElementById('pgaDeptSearch').addEventListener('input', function(){
+    clearTimeout(pgaDeptSearchDebounce);
+    const val = this.value;
+    pgaDeptSearchDebounce = setTimeout(() => {
+      pgaDeptSearchTerm = val;
+      renderDepartments();
+    }, 200);
+  });
 
   /* ── SUPERVISOR OVERVIEW — paginated + search + alphabetical ── */
   let pgaDeptOvSearchTerm = '';
@@ -428,20 +441,16 @@ if(localStorage.getItem("login_admin") !== null){
   /* ── ADD DEPARTMENT — with validation ── */
   document.getElementById('pgaNewDeptName').addEventListener('input', function(){
     this.classList.remove('pga-has-error');
-    document.getElementById('pgaNewDeptNameError').classList.remove('pga-show');
   });
 
   window.addDepartment = function(){
     const input   = document.getElementById('pgaNewDeptName');
-    const errorEl = document.getElementById('pgaNewDeptNameError');
     const name    = input.value.trim();
 
     input.classList.remove('pga-has-error');
-    errorEl.classList.remove('pga-show');
 
     if(!name){
       input.classList.add('pga-has-error');
-      errorEl.classList.add('pga-show');
       return;
     }
 
@@ -453,7 +462,6 @@ if(localStorage.getItem("login_admin") !== null){
       if(res.status){
         input.value = '';
         input.classList.remove('pga-has-error');
-        errorEl.classList.remove('pga-show');
         loadDepartments();
       }
     });

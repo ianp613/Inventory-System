@@ -421,7 +421,7 @@
         public static function index(){
             Migrate::attrib_table("pg_ticket");
             Migrate::attrib_string(1000);
-            Migrate::string("sup_id");
+            Migrate::string("dept_id");
             Migrate::string("ticket_no");
             Migrate::string("incident_datetime");
             Migrate::string("fluctuation_type");

@@ -20,7 +20,7 @@
       $ticket_no = $year."-".Data::generate(6,"numeric");
    }
 
-   $pg_ticket->sup_id              = $data["sup_id"];
+   $pg_ticket->dept_id             = $data["dept_id"];
    $pg_ticket->ticket_no           = $ticket_no;
    $pg_ticket->incident_datetime   = $data["incident_datetime"];
    $pg_ticket->fluctuation_type    = $data["fluctuation_type"];  

@@ -902,7 +902,7 @@
     class PG_Ticket{
         public $table = "pg_ticket";
         public $fillable = [
-            "sup_id",
+            "dept_id",
             "ticket_no",
             "incident_datetime",
             "fluctuation_type",

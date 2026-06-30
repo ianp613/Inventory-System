@@ -47,9 +47,17 @@
             $pgt["workstations"] = $pg_ws_final;
 
             // Get supervisor name
-            $pg_user = new PG_User;
-            $pg_user = DB::find($pg_user,$pgt["sup_id"])[0];
-            $pgt["supervisor_name"] = $pg_user["fname"][0].". ".$pg_user["lname"];
+            $pgt["supervisor_name"] = "Unassigned Department.";
+            $pg_dept = new PG_Department;
+            $pg_dept = DB::find($pg_dept,$pgt["dept_id"]);
+            if(count($pg_dept)){
+                $pg_user = new PG_User;
+                $pg_user = DB::find($pg_user,$pg_dept[0]["sup_id"]);
+                if(count($pg_user)){
+                    $pgt["supervisor_name"] = $pg_user[0]["fname"][0].". ".$pg_user[0]["lname"];
+                }
+            }
+
             array_push($pg_ticket_final,$pgt);
         }
     }
