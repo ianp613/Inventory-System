@@ -13,6 +13,10 @@
     $pg_tech = new PG_User;
     $pg_tech = DB::all($pg_tech);
 
+    $pg_dept_all = new PG_Department;
+    $pg_dept_all = DB::all($pg_dept_all);
+
+
     // Check all open ticket
     $pg_ticket_final = [];
     foreach ($pg_ticket as $pgt) {
@@ -45,9 +49,15 @@
         }
         if($add_ticket){
             $pgt["workstations"] = $pg_ws_final;
+            $pgt["dept_name"] = "No department";
+            foreach ($pg_dept_all as $pgd) {
+                if($pgd["id"] == $pgt["dept_id"]){
+                    $pgt["dept_name"] = $pgd["name"];
+                }
+            }
 
             // Get supervisor name
-            $pgt["supervisor_name"] = "Unassigned Department.";
+            $pgt["supervisor_name"] = "No Supervisor";
             $pg_dept = new PG_Department;
             $pg_dept = DB::find($pg_dept,$pgt["dept_id"]);
             if(count($pg_dept)){

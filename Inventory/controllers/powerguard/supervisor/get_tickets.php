@@ -74,5 +74,17 @@
             array_push($pg_ticket_final,$pgt);
         }
     }
+    
+    usort($pg_ticket_final, function ($a, $b) {
+        if ($a['status'] === 'closed' && $b['status'] !== 'closed') {
+            return 1; // Move "closed" after everything else
+        }
+
+        if ($a['status'] !== 'closed' && $b['status'] === 'closed') {
+            return -1; // Keep non-"closed" before "closed"
+        }
+
+        return 0; // Keep original order for other statuses
+    });
 
     echo json_encode($pg_ticket_final);

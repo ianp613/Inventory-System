@@ -204,7 +204,7 @@ if(localStorage.getItem("login_tech") !== null){
             </button>
           </div>
           <div class="pgt-ticket-meta">
-            ${dateStr}${ticket.supervisor_name ? ' · ' + ticket.supervisor_name : ''}${ticket.area ? ' · ' + ticket.area : ''} · ${ticket.fluctuation_type || ''} · ${(ticket.workstations || []).length} terminals
+            ${dateStr}${ticket.supervisor_name ? ' · ' + ticket.supervisor_name : ''} · ${ticket.dept_name}${ticket.area ? ' · ' + ticket.area : ''} · ${ticket.fluctuation_type || ''} · ${(ticket.workstations || []).length} terminals
           </div>
         </div>
 
@@ -272,10 +272,82 @@ if(localStorage.getItem("login_tech") !== null){
       tech_id: localStorage.getItem("userid_tech")
     }).then(res => {
       document.getElementById("pgt_tickets").innerText = res.length
-      const tickets = res.data || res || [];
-      renderAllTickets(tickets);
+      pgtAllTicketsData = res.data || res || [];
+      filterAndRenderTickets();
     });
   }
+
+
+  /* ----------- Search function ----------------- */
+  let pgtAllTicketsSearchTerm = '';
+  let pgtAllTicketsData       = []; // store the full unfiltered list
+
+  function filterAndRenderTickets(){
+    const term = pgtAllTicketsSearchTerm.trim().toLowerCase();
+    const techId = localStorage.getItem('userid_tech');
+
+    if(!term){
+      renderAllTickets(pgtAllTicketsData);
+      return;
+    }
+
+    const filtered = pgtAllTicketsData.filter(ticket => {
+
+        // format the date the same way your table renders it
+        const dateFormatted = ticket.incident_datetime
+        ? new Date(ticket.incident_datetime).toLocaleString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric',
+            hour: 'numeric', minute: '2-digit'
+          }).toLowerCase()
+        : '';
+
+      // ticket-level fields
+      const ticketMatch =
+        String(ticket.ticket_no || '').toLowerCase().includes(term) ||
+        (ticket.description || '').toLowerCase().includes(term) ||
+        (ticket.fluctuation_type || '').toLowerCase().includes(term) ||
+        (ticket.area || '').toLowerCase().includes(term) ||
+        (ticket.priority || '').toLowerCase().includes(term) ||
+        (ticket.status || '').toLowerCase().includes(term) ||
+        (ticket.supervisor_name || '').toLowerCase().includes(term) ||
+        (ticket.dept_name || '').toLowerCase().includes(term) ||
+        dateFormatted.includes(term);
+
+      // workstation-level fields
+      const wsMatch = (ticket.workstations || []).some(ws => {
+        // ws number
+        const wsNumMatch = (ws.ws_number || '').toLowerCase().includes(term);
+
+        // status labels — mine, unclaimed, done, taken + technician name
+        const isMine     = String(ws.claimed_by) === String(techId);
+        const isUnclaimed = !ws.claimed_by;
+        const isDone     = ws.status === 'done' || ws.status === 'closed';
+
+        const stateLabel = isMine ? 'mine' : isUnclaimed ? 'unclaimed' : isDone ? 'done' : 'taken';
+        const stateMatch = stateLabel.includes(term);
+
+        // technician name who claimed it
+        const techNameMatch = (ws.technician_name || '').toLowerCase().includes(term);
+
+        return wsNumMatch || stateMatch || techNameMatch;
+      });
+
+      return ticketMatch || wsMatch;
+    });
+
+    renderAllTickets(filtered);
+  }
+
+  // search input listener
+  let pgtAllTicketsSearchDebounce;
+  document.getElementById('pgtAllTicketsSearch').addEventListener('input', function(){
+    clearTimeout(pgtAllTicketsSearchDebounce);
+    const val = this.value;
+    pgtAllTicketsSearchDebounce = setTimeout(() => {
+      pgtAllTicketsSearchTerm = val;
+      filterAndRenderTickets();
+    }, 200);
+  });
 
   /* ── DETAIL TOGGLE — event delegation (no onclick) ── */
   document.getElementById('pgtAllTicketsContainer').addEventListener('click', function(e){

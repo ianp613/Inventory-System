@@ -77,9 +77,15 @@
      TAB 1 — ALL TICKETS
     ════════════════════════════════════════ -->
     <div class="pgt-pane pgt-pane-active" id="pgtAllTickets">
-      <p style="font-size:13px;color:var(--pgt-ink-soft);margin-bottom:16px;">
-        All submitted incident tickets — tap any unclaimed workstation to self-assign it.
-      </p>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <p style="font-size:13px;color:var(--pgt-ink-soft);">
+          All submitted incident tickets — tap any unclaimed workstation to self-assign it.
+        </p>
+        <div style="position:relative;min-width:305px">
+          <svg style="position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--pgt-ink-faint);pointer-events:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="pgtAllTicketsSearch" placeholder="Search ticket, project, workstation, supervisor…" style="width:100%;font-size:12.5px;padding:7px 10px 7px 30px;border-radius:6px;border:1px solid var(--pgt-line);background:var(--pgt-panel-2);color:var(--pgt-ink)">
+        </div>
+      </div>
       <div id="pgtAllTicketsContainer">
         <!-- injected by JS -->
       </div>

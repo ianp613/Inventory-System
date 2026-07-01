@@ -32,7 +32,9 @@
     $ticket_closed = 0;
     $ticket_open = 0;
     foreach ($pg_ticket as $pgt) {
+        $pgt["resolved_count"] = 0;
         $pgt["workstations"] = [];
+        $pgt["status"] = "pending";
         $pg_ws_temp = DB::where($pg_ws,"ticket_id","=",$pgt["id"]);
         $ws_temp = [
             "ws_number" => "",
@@ -59,6 +61,10 @@
 
                 $ws_assessment = new PG_WS_Assessment;
                 $ws_assessment = DB::where($ws_assessment,"ws_id","=",$ws["id"]);
+
+                if($ws["sign_off_queue"] == "done" && $ws["tech_id"] != "-"){
+                    $pgt["resolved_count"]++;
+                }
 
                 // if(count($ws_assessment) && $ws["sign_off_queue"] != "draft"){
                 if(count($ws_assessment)){
@@ -129,7 +135,12 @@
 
             array_push($pgt["workstations"],$ws_temp);
         }
-
+        if($pgt["resolved_count"] == count($pg_ws_temp) && count($pg_ws_temp)){
+            $pgt["status"] = "closed";
+        }
+        if($pgt["resolved_count"] <= count($pg_ws_temp) - 1 && $pgt["resolved_count"] != 0 && count($pg_ws_temp)){
+            $pgt["status"] = "in_progress";
+        }
 
         $dt = new DateTime($pgt["incident_datetime"]);
         $year = $dt->format('Y');
@@ -143,5 +154,17 @@
             $ticket_open++;
         }
     }
+
+    usort($pg_ticket_final, function ($a, $b) {
+        if ($a['status'] === 'closed' && $b['status'] !== 'closed') {
+            return 1; // Move "closed" after everything else
+        }
+
+        if ($a['status'] !== 'closed' && $b['status'] === 'closed') {
+            return -1; // Keep non-"closed" before "closed"
+        }
+
+        return 0; // Keep original order for other statuses
+    });
 
     echo json_encode([$pg_ticket_final,$ws_resolved,$ticket_closed,$ticket_open]);
