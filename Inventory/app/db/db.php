@@ -54,6 +54,12 @@
                     }else{
                         $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '%$val%'");
                     }   
+                }if(strtoupper($op) == "IN"){
+                    if ($on && $or) {
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` IN $val ORDER BY `$table`.`$on` ".strtoupper($or));
+                    } else {
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` IN $val");
+                    }  
                 }else{
                     if($on && $or){
                         $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' ORDER BY `$table`.`$on` ".strtoupper($or));
@@ -97,6 +103,12 @@
                         $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' AND `$col2` $op2 '%$val2%' ORDER BY `$table`.`$on` ".strtoupper($or));     
                     }else{
                         $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' AND `$col2` $op2 '%$val2%'");
+                    }
+                }elseif (strtoupper($op2) == "IN") {
+                    if ($on && $or) {
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' AND `$col2` IN $val2 ORDER BY `$table`.`$on` ".strtoupper($or));
+                    } else {
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' AND `$col2` IN $val2");
                     }
                 }else{
                     if($on && $or){

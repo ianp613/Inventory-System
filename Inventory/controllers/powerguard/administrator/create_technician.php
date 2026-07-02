@@ -34,16 +34,7 @@
         echo json_encode($response);
         exit;
     }
-    if(!DB::validate($pg_user,"username",$data["username"])){
-        $response = [
-            "status" => false,
-            "title" => "Opps!",
-            "type" => "warning",
-            "message" => "Account with username ".$data["username"]." already exist."
-        ];
-        echo json_encode($response);
-        exit;
-    }
+    
     DB::save($pg_user);
     $response["message"] = "Technician account created for ".$pg_user->fname." ".$pg_user->lname.". Account is active immediately — no approval needed.";
 

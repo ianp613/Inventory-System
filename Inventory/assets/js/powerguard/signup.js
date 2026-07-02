@@ -31,10 +31,19 @@
   }
 
   // live clear on input
-  ['pgFname','pgLname','pgJobtitle','pgEmail','pgPhone','pgEmpid'].forEach(id => {
+  ['pgFname','pgLname','pgJobtitle','pgEmail','pgPhone'].forEach(id => {
     const el = document.getElementById(id);
     el.addEventListener('input', () => clearErr(el, document.getElementById(id+'Error')));
   });
+
+  ['pgEmpid'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', () => {
+      document.getElementById('pgUname').value = el.value
+      clearErr(el, document.getElementById(id+'Error'))
+    });
+  });
+  
   ['pgUname','pgPw2'].forEach(id => {
     const el = document.getElementById(id);
     el.addEventListener('input', () => clearErr(el, document.getElementById(id+'Error')));
@@ -136,7 +145,7 @@
       email : document.getElementById('pgEmail').value,
       phone : document.getElementById('pgPhone').value || '—',
       employee_id : document.getElementById('pgEmpid').value,
-      username : document.getElementById('pgUname').value,
+      username : document.getElementById('pgEmpid').value,
       password : document.getElementById('pgPw').value
     }).then(res => {
       if(res.status){

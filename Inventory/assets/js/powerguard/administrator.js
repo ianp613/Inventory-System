@@ -228,13 +228,16 @@ if(localStorage.getItem("login_admin") !== null){
         const deptId   = btn.dataset.deptId;
         const deptName = btn.dataset.deptName;
         Swal.fire({
-            title: "Delete "+deptName,
+            position: "top",
+            title: `Delete ${deptName}?`,
             text: "Please note that all tickets, termninals and assessments that are recorded under this department will also be deleted. This action cannot be undone.",
-            icon: "question",
+            icon: null,
             showCancelButton: true,
             confirmButtonColor: "#d33",
             confirmButtonText: "Delete",
             customClass: {
+                title: 'left-align-swal',
+                htmlContainer: 'left-align-swal',
                 popup: 'my-custom-popup',
                 actions: 'my-right-buttons'
             }
@@ -261,13 +264,16 @@ if(localStorage.getItem("login_admin") !== null){
         const sup_name = el.dataset.deptSupervisor;
 
         Swal.fire({
-            title: `Remove ${sup_name} from ${deptName}`,
+            position: 'top',
+            title: `Remove ${sup_name} from ${deptName}?`,
             text: `Please note that submitted assessments cannot be signed off if there is no supervisor assigned to this department.`,
-            icon: "question",
+            icon: null,
             showCancelButton: true,
-            confirmButtonColor: "#16201d",
+            confirmButtonColor: "#d33",
             confirmButtonText: "Confirm",
             customClass: {
+                title: 'left-align-swal',
+                htmlContainer: 'left-align-swal',
                 popup: 'my-custom-popup',
                 actions: 'my-right-buttons'
             }
@@ -298,13 +304,16 @@ if(localStorage.getItem("login_admin") !== null){
         const sup_name = select.value.split("|")[1]
 
         Swal.fire({
-            title: `Assign ${sup_name} to ${deptName}`,
+            position: 'top',
+            title: `Assign ${sup_name} to ${deptName}?`,
             text: `All ongoing and closed tickets under this department will also be assigned to ${sup_name}.`,
-            icon: "question",
+            icon: null,
             showCancelButton: true,
             confirmButtonColor: "#16201d",
             confirmButtonText: "Confirm",
             customClass: {
+                title: 'left-align-swal',
+                htmlContainer: 'left-align-swal',
                 popup: 'my-custom-popup',
                 actions: 'my-right-buttons'
             }
@@ -718,8 +727,17 @@ if(localStorage.getItem("login_admin") !== null){
   };
 
   // live clear on input
-  ['pgaTechFname','pgaTechLname','pgaTechEmpid','pgaTechJobtitle','pgaTechUsername','pgaTechPassword'].forEach(id => {
+  ['pgaTechFname','pgaTechLname','pgaTechJobtitle','pgaTechUsername','pgaTechPassword'].forEach(id => {
     document.getElementById(id).addEventListener('input', function(){
+      this.classList.remove('pga-has-error');
+      document.getElementById(id + 'Error').classList.remove('pga-show');
+    });
+  });
+
+  // live clear on input
+  ['pgaTechEmpid'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function(){
+      document.getElementById('pgaTechUsername').value = this.value
       this.classList.remove('pga-has-error');
       document.getElementById(id + 'Error').classList.remove('pga-show');
     });
@@ -797,86 +815,302 @@ if(localStorage.getItem("login_admin") !== null){
     });
   });
 
-  /* ── MANAGE ACCOUNTS ── */
-  let accounts = [
-    { id:1, fname:'R.', lname:'Villanueva', role:'supervisor', jobtitle:'Supervisor', empid:'EMP-2024-0012', email:'r.villanueva@company.com', phone:'+63 917 555 0101', status:'active' },
-    { id:2, fname:'P.', lname:'Mendoza', role:'supervisor', jobtitle:'Operations Manager', empid:'EMP-2024-0091', email:'p.mendoza@company.com', phone:'+63 917 555 0142', status:'active' },
-    { id:3, fname:'L.', lname:'Ramos', role:'supervisor', jobtitle:'Supervisor', empid:'EMP-2024-0104', email:'l.ramos@company.com', phone:'+63 917 555 0212', status:'active' },
-    { id:4, fname:'E.', lname:'Macaraeg', role:'technician', jobtitle:'Technician', empid:'EMP-2024-0042', email:'e.macaraeg@company.com', phone:'+63 917 555 0301', status:'active' },
-    { id:5, fname:'R.', lname:'Bautista', role:'technician', jobtitle:'Technician', empid:'EMP-2024-0095', email:'r.bautista@company.com', phone:'+63 917 555 0322', status:'active' },
-    { id:6, fname:'J.', lname:'Pascual', role:'technician', jobtitle:'Technician', empid:'EMP-2024-0102', email:'j.pascual@company.com', phone:'+63 917 555 0188', status:'deactivated' },
-  ];
 
-  function statusBadge(status){
-    return status === 'active'
-      ? `<span class="pga-badge pga-badge-green"><span class="pga-badge-dot"></span> Active</span>`
-      : `<span class="pga-badge pga-badge-gray"><span class="pga-badge-dot"></span> Deactivated</span>`;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* ── MANAGE ACCOUNTS ── */
+  let accounts         = [];
+  let accountsFiltered = [];
+  let pgaAccSearch     = '';
+  let pgaAccPage     = 1;
+  let pgaAccPageSize = 5;
+
+  function loadAccounts(){
+    sole.post("../../controllers/powerguard/administrator/get_accounts.php", {
+      admin_id: localStorage.getItem("userid_admin")
+    }).then(res => {
+      accounts         = res.data || res || [];
+      accountsFiltered = accounts;
+      pgaAccSearch     = '';
+      document.getElementById('pgaAccSearch').value = '';
+      applyAccountsFilter();
+    });
+  }
+
+  loadAccounts();
+
+  document.querySelector('.pga-tab[data-pane="pgaManageAccounts"]').addEventListener('click', () => {
+    loadAccounts();
+  });
+
+  function applyAccountsFilter(){
+    const roleFilter   = document.getElementById('pgaAccFilterRole').value;
+    const statusFilter = document.getElementById('pgaAccFilterStatus').value;
+    const term         = pgaAccSearch.trim().toLowerCase();
+
+    accountsFiltered = accounts
+      .filter(a => roleFilter   === 'all' || a.privileges   === roleFilter)
+      .filter(a => statusFilter === 'all' || a.account === statusFilter)
+      .filter(a => {
+        if(!term) return true;
+        return (
+          (a.fname     || '').toLowerCase().includes(term) ||
+          (a.lname     || '').toLowerCase().includes(term) ||
+          (a.email     || '').toLowerCase().includes(term) ||
+          (a.employee_id     || '').toLowerCase().includes(term) ||
+          (a.job_title || '').toLowerCase().includes(term) ||
+          (a.privileges      || '').toLowerCase().includes(term)
+        );
+      });
+
+    pgaAccPage = 1; // reset to first page on every filter/search change
+    renderAccounts();
   }
 
   function roleBadge(role){
-    return role === 'supervisor'
-      ? `<span class="pga-badge pga-badge-blue"><span class="pga-badge-dot"></span> Supervisor</span>`
-      : `<span class="pga-badge pga-badge-purple"><span class="pga-badge-dot"></span> Technician</span>`;
+    const map = {
+      'supervisor': { cls:'pga-badge-blue',   label:'Supervisor' },
+      'technician': { cls:'pga-badge-purple',  label:'Technician' },
+      'administrator':      { cls:'pga-badge-amber',   label:'Administrator' }
+    };
+    const r = map[(role||'').toLowerCase()] || { cls:'pga-badge-gray', label: role };
+    return `<span class="pga-badge ${r.cls}"><span class="pga-badge-dot"></span> ${r.label}</span>`;
+  }
+
+  function statusBadge(status){
+    const map = {
+      'active':      { cls:'pga-badge-green', label:'Active' },
+      'deactivated': { cls:'pga-badge-gray',  label:'Deactivated' },
+      'pending':     { cls:'pga-badge-amber', label:'Pending' }
+    };
+    const s = map[(status||'').toLowerCase()] || { cls:'pga-badge-gray', label: status };
+    return `<span class="pga-badge ${s.cls}"><span class="pga-badge-dot"></span> ${s.label}</span>`;
   }
 
   function renderAccounts(){
-    const tbody = document.querySelector('#pgaAccountsTable tbody');
-    const roleFilter = document.getElementById('pgaAccFilterRole').value;
-    const statusFilter = document.getElementById('pgaAccFilterStatus').value;
+    const tbody      = document.querySelector('#pgaAccountsTable tbody');
+    const table      = document.getElementById('pgaAccountsTable');
+    const pagination = document.getElementById('pgaAccountsPagination');
+    tbody.innerHTML  = '';
 
-    tbody.innerHTML = '';
-    accounts
-      .filter(a => roleFilter === 'all' || a.role === roleFilter)
-      .filter(a => statusFilter === 'all' || a.status === statusFilter)
-      .forEach(a => {
-        const tr = document.createElement('tr');
-        if(a.status === 'deactivated') tr.style.opacity = '0.55';
-        tr.innerHTML = `
-          <td>${a.fname} ${a.lname}</td>
-          <td>${roleBadge(a.role)}</td>
-          <td style="color:var(--pga-ink-soft)">${a.empid}</td>
-          <td style="color:var(--pga-ink-soft)">${a.email}</td>
-          <td>${statusBadge(a.status)}</td>
-          <td>
-            <div style="display:flex;gap:6px;flex-wrap:wrap">
-              <button class="pga-btn pga-btn-sm" onclick="openEditAccount(${a.id})">Edit</button>
-              <button class="pga-btn pga-btn-sm" onclick="openResetPassword(${a.id})">Reset password</button>
-              <button class="pga-btn pga-btn-sm ${a.status==='active' ? 'pga-btn-reject' : 'pga-btn-success'}" onclick="toggleAccountStatus(${a.id})">${a.status === 'active' ? 'Deactivate' : 'Reactivate'}</button>
-              <button class="pga-btn pga-btn-sm pga-btn-reject" onclick="deleteAccount(${a.id})">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-                Delete
-              </button>
-            </div>
-          </td>
-        `;
-        tbody.appendChild(tr);
+    if(!accountsFiltered.length){
+      const msg = pgaAccSearch ||
+        document.getElementById('pgaAccFilterRole').value   !== 'all' ||
+        document.getElementById('pgaAccFilterStatus').value !== 'all'
+          ? 'No accounts match your search or filter.'
+          : 'No accounts found.';
+
+      table.style.display      = 'none';
+      pagination.style.display = 'none';
+
+      let emptyEl = document.getElementById('pgaAccountsEmpty');
+      if(!emptyEl){
+        emptyEl = document.createElement('div');
+        emptyEl.id = 'pgaAccountsEmpty';
+        emptyEl.style.cssText = 'text-align:center;padding:36px;color:var(--pga-ink-faint);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:8px';
+        table.parentNode.insertBefore(emptyEl, table.nextSibling);
+      }
+      emptyEl.style.display = 'flex';
+      emptyEl.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;opacity:.45"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        ${msg}
+      `;
+      return;
+    }
+
+    // hide empty state, show table
+    table.style.display = '';
+    const emptyEl = document.getElementById('pgaAccountsEmpty');
+    if(emptyEl) emptyEl.style.display = 'none';
+
+    // pagination math
+    const totalPages = Math.ceil(accountsFiltered.length / pgaAccPageSize);
+    if(pgaAccPage > totalPages) pgaAccPage = totalPages;
+    if(pgaAccPage < 1) pgaAccPage = 1;
+
+    const start = (pgaAccPage - 1) * pgaAccPageSize;
+    const items = accountsFiltered.slice(start, start + pgaAccPageSize);
+
+    items.forEach(a => {
+      const tr = document.createElement('tr');
+      if(a.account === 'deactivated') tr.style.opacity = '0.55';
+      tr.innerHTML = `
+        <td>
+          <div style="font-weight:600;margin-bottom:5px">${a.fname[0]}. ${a.lname}</div>
+          ${roleBadge(a.privileges)}
+        </td>
+        <td style="color:var(--pga-ink-soft)">${a.employee_id || '—'}</td>
+        <td style="color:var(--pga-ink-soft)">${a.email || '—'}</td>
+        <td>${statusBadge(a.account)}</td>
+        <td>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="pga-btn pga-btn-sm" data-acc-action="edit" data-acc-id="${a.id}">Edit</button>
+            <button class="pga-btn pga-btn-sm" data-acc-action="reset" data-acc-id="${a.id}">Reset password</button>
+            <button class="pga-btn pga-btn-sm ${a.account==='active' ? 'pga-btn-reject' : 'pga-btn-success'}"
+              data-acc-action="toggle" data-acc-id="${a.id}">
+              ${a.account === 'active' ? 'Deactivate' : 'Reactivate'}
+            </button>
+            <button class="pga-btn pga-btn-sm pga-btn-reject" data-acc-action="delete" data-acc-id="${a.id}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              Delete
+            </button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // pagination controls
+    const infoEl   = document.getElementById('pgaAccountsPaginationInfo');
+    const pageNums = document.getElementById('pgaAccountsPageNums');
+    const prevBtn  = document.getElementById('pgaAccountsPrev');
+    const nextBtn  = document.getElementById('pgaAccountsNext');
+
+    pagination.style.display = 'flex';
+    const end = Math.min(start + pgaAccPageSize, accountsFiltered.length);
+    infoEl.textContent = `Showing ${start + 1}–${end} of ${accountsFiltered.length}`;
+
+    pageNums.innerHTML = '';
+    for(let i = 1; i <= totalPages; i++){
+      const btn = document.createElement('button');
+      btn.className = 'pgs-page-num' + (i === pgaAccPage ? ' pgs-page-active' : '');
+      btn.textContent = i;
+      btn.addEventListener('click', () => { pgaAccPage = i; renderAccounts(); });
+      pageNums.appendChild(btn);
+    }
+
+    prevBtn.disabled = pgaAccPage <= 1;
+    nextBtn.disabled = pgaAccPage >= totalPages;
+  }
+
+  /* ── ACCOUNTS TABLE — event delegation (no onclick) ── */
+  document.getElementById('pgaAccountsTable').addEventListener('click', function(e){
+    const btn = e.target.closest('[data-acc-action]');
+    if(!btn) return;
+
+    const action = btn.dataset.accAction;
+    const id     = parseInt(btn.dataset.accId);
+    const a      = accounts.find(acc => acc.id === id);
+    if(!a) return;
+
+    if(action === 'edit')   openEditAccount(id);
+    if(action === 'reset')  openResetPassword(id);
+
+    if(action === 'toggle'){
+      a.account = a.account === 'active' ? 'deactivated' : 'active';
+      sole.post("../../controllers/powerguard/administrator/toggle_account_status.php", {
+        admin_id: localStorage.getItem("userid_admin"),
+        user_id:  id,
+        status:   a.account
+      }).then(res => {
+        ss.toast(res.title, res.type, res.message, null, "#16201d");
+        if(res.status) loadAccounts();
       });
-  }
+    }
 
-  document.getElementById('pgaAccFilterRole').addEventListener('change', renderAccounts);
-  document.getElementById('pgaAccFilterStatus').addEventListener('change', renderAccounts);
-  renderAccounts();
+    if(action === 'delete'){
+      Swal.fire({
+        title: `Delete ${a.fname} ${a.lname}?`,
+        text: 'This action is permanent and cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Delete',
+        customClass: { popup:'my-custom-popup', actions:'my-right-buttons' }
+      }).then(result => {
+        if(!result.isConfirmed) return;
+        sole.post("../../controllers/powerguard/administrator/delete_account.php", {
+          admin_id: localStorage.getItem("userid_admin"),
+          user_id:  id
+        }).then(res => {
+          ss.toast(res.title, res.type, res.message, null, "#16201d");
+          if(res.status) loadAccounts();
+        });
+      });
+    }
+  });
 
-  function findAccount(id){
-    return accounts.find(a => a.id === id);
-  }
+  /* ── FILTER / SEARCH CONTROLS ── */
+  document.getElementById('pgaAccFilterRole').addEventListener('change', applyAccountsFilter);
+  document.getElementById('pgaAccFilterStatus').addEventListener('change', applyAccountsFilter);
 
-  /* Edit account */
+  document.getElementById('pgaAccRowsPerPage').addEventListener('change', function(){
+    pgaAccPageSize = parseInt(this.value);
+    pgaAccPage = 1;
+    applyAccountsFilter();
+  });
+
+  document.getElementById('pgaAccountsPrev').addEventListener('click', () => {
+    if(pgaAccPage > 1){ pgaAccPage--; renderAccounts(); }
+  });
+
+  document.getElementById('pgaAccountsNext').addEventListener('click', () => {
+    if(pgaAccPage < Math.ceil(accountsFiltered.length / pgaAccPageSize)){ pgaAccPage++; renderAccounts(); }
+  });
+
+  let pgaAccSearchDebounce;
+  document.getElementById('pgaAccSearch').addEventListener('input', function(){
+    clearTimeout(pgaAccSearchDebounce);
+    const val = this.value;
+    pgaAccSearchDebounce = setTimeout(() => {
+      pgaAccSearch = val;
+      applyAccountsFilter();
+    }, 200);
+  });
+
+  /* ── EDIT ACCOUNT ── */
   let _editingId = null;
 
   window.openEditAccount = function(id){
-    const a = findAccount(id);
+    const a = accounts.find(acc => acc.id === id);
     if(!a) return;
     _editingId = id;
-    document.getElementById('pgaEditAccName').textContent = a.fname + ' ' + a.lname;
-    document.getElementById('pgaEditFname').value = a.fname.replace('.', '');
-    document.getElementById('pgaEditLname').value = a.lname;
-    document.getElementById('pgaEditEmail').value = a.email;
-    document.getElementById('pgaEditPhone').value = a.phone;
-    document.getElementById('pgaEditEmpid').value = a.empid;
-    document.getElementById('pgaEditJobtitle').value = a.jobtitle;
-
-    document.getElementById('pgaResetPwPanel').style.display = 'none';
+    document.getElementById('pgaEditAccName').textContent  = a.fname + ' ' + a.lname;
+    document.getElementById('pgaEditFname').value          = a.fname  || '';
+    document.getElementById('pgaEditLname').value          = a.lname  || '';
+    document.getElementById('pgaEditEmail').value          = a.email  || '';
+    document.getElementById('pgaEditPhone').value          = a.phone  || '';
+    document.getElementById('pgaEditEmpid').value          = a.employee_id  || '';
+    document.getElementById('pgaEditJobtitle').value       = a.job_title || '';
+    document.getElementById('pgaResetPwPanel').style.display  = 'none';
     const panel = document.getElementById('pgaEditAccountPanel');
     panel.style.display = 'block';
     panel.scrollIntoView({ behavior:'smooth', block:'start' });
@@ -889,34 +1123,33 @@ if(localStorage.getItem("login_admin") !== null){
 
   window.saveEditAccount = function(){
     if(_editingId === null) return;
-    const a = findAccount(_editingId);
-    if(!a) return;
-
-    a.fname = document.getElementById('pgaEditFname').value.trim().charAt(0) + '.';
-    a.lname = document.getElementById('pgaEditLname').value.trim();
-    a.email = document.getElementById('pgaEditEmail').value.trim();
-    a.phone = document.getElementById('pgaEditPhone').value.trim();
-    a.empid = document.getElementById('pgaEditEmpid').value.trim();
-    a.jobtitle = document.getElementById('pgaEditJobtitle').value.trim();
-
-    console.log('Saved account edit:', a);
-    // sole.post("../../controllers/powerguard/update_account.php", a).then(res => console.log(res));
-
-    renderAccounts();
-    closeEditAccount();
-    alert('Account details updated.');
+    sole.post("../../controllers/powerguard/administrator/update_account.php", {
+      admin_id:  localStorage.getItem("userid_admin"),
+      user_id:   _editingId,
+      fname:     document.getElementById('pgaEditFname').value.trim(),
+      lname:     document.getElementById('pgaEditLname').value.trim(),
+      email:     document.getElementById('pgaEditEmail').value.trim(),
+      phone:     document.getElementById('pgaEditPhone').value.trim(),
+      empid:     document.getElementById('pgaEditEmpid').value.trim(),
+      job_title: document.getElementById('pgaEditJobtitle').value.trim()
+    }).then(res => {
+      ss.toast(res.title, res.type, res.message, null, "#16201d");
+      if(res.status){
+        closeEditAccount();
+        loadAccounts();
+      }
+    });
   };
 
-  /* Reset password */
+  /* ── RESET PASSWORD ── */
   let _resetId = null;
 
   window.openResetPassword = function(id){
-    const a = findAccount(id);
+    const a = accounts.find(acc => acc.id === id);
     if(!a) return;
     _resetId = id;
-    document.getElementById('pgaResetPwName').textContent = a.fname + ' ' + a.lname;
-    document.getElementById('pgaResetPwValue').value = '';
-
+    document.getElementById('pgaResetPwName').textContent    = a.fname + ' ' + a.lname;
+    document.getElementById('pgaResetPwValue').value         = '';
     document.getElementById('pgaEditAccountPanel').style.display = 'none';
     const panel = document.getElementById('pgaResetPwPanel');
     panel.style.display = 'block';
@@ -940,37 +1173,15 @@ if(localStorage.getItem("login_admin") !== null){
   window.confirmResetPassword = function(){
     const pw = document.getElementById('pgaResetPwValue').value.trim();
     if(!pw){ alert('Generate or enter a new password first.'); return; }
-    const a = findAccount(_resetId);
-    if(!a) return;
-
-    console.log('Password reset for', a.empid, '— new temp password:', pw);
-    // sole.post("../../controllers/powerguard/reset_password.php", { id: a.id, password: pw }).then(res => console.log(res));
-
-    alert(`Password reset for ${a.fname} ${a.lname}. They must change it on next login.`);
-    closeResetPassword();
+    sole.post("../../controllers/powerguard/administrator/reset_password.php", {
+      admin_id: localStorage.getItem("userid_admin"),
+      user_id:  _resetId,
+      password: pw
+    }).then(res => {
+      ss.toast(res.title, res.type, res.message, null, "#16201d");
+      if(res.status) closeResetPassword();
+    });
   };
-
-  /* Deactivate / reactivate */
-  window.toggleAccountStatus = function(id){
-    const a = findAccount(id);
-    if(!a) return;
-    a.status = a.status === 'active' ? 'deactivated' : 'active';
-    console.log('Status toggled for', a.empid, '→', a.status);
-    // sole.post("../../controllers/powerguard/toggle_status.php", { id: a.id, status: a.status }).then(res => console.log(res));
-    renderAccounts();
-  };
-
-  /* Delete */
-  window.deleteAccount = function(id){
-    const a = findAccount(id);
-    if(!a) return;
-    if(!confirm(`Permanently delete the account for ${a.fname} ${a.lname}? This cannot be undone.`)) return;
-    accounts = accounts.filter(acc => acc.id !== id);
-    console.log('Deleted account', a.empid);
-    // sole.post("../../controllers/powerguard/delete_account.php", { id }).then(res => console.log(res));
-    renderAccounts();
-  };
-
 
 
 
@@ -1009,13 +1220,16 @@ if(localStorage.getItem("login_admin") !== null){
   document.getElementById('pgaLogoutBtn').addEventListener('click', () => {
     pgaMoreDropdown.classList.remove('pga-dropdown-open');
     Swal.fire({
+        position: 'top',
         title: "You are about to leave",
-        text: "Do you wish to end your current session?",
-        icon: "warning",
+        text: "Feel free to come back anytime to continue your activities. Would you like to end your current session?",
+        icon: null,
         showCancelButton: true,
         confirmButtonColor: "#d33",
         confirmButtonText: "Confirm",
         customClass: {
+            title: 'left-align-swal',
+            htmlContainer: 'left-align-swal',
             popup: 'my-custom-popup',
             actions: 'my-right-buttons'
         }

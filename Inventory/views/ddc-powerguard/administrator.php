@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PowerGuard — Administrator</title>
+<title>DDC PowerGuard — Administrator</title>
 <link rel="stylesheet" href="../../assets/css/powerguard.css">
 </head>
 <body class="pga-body">
@@ -357,7 +357,7 @@
         </div>
       </div>
 
-      <div id="pgaApprovalsContainer">
+      <div class="pga-table-wrap" id="pgaApprovalsContainer" style="padding-left:15px;padding-right:20px;padding-top:10px;">
         <!-- injected by JS -->
       </div>
 
@@ -424,7 +424,7 @@
       <div class="pga-row">
         <div class="pga-field">
           <label for="pgaTechUsername">Username</label>
-          <input type="text" id="pgaTechUsername" placeholder="e.g. p.dumdum">
+          <input type="text" readonly id="pgaTechUsername" placeholder="The username is this account's employee ID.">
           <span class="pga-field-error" id="pgaTechUsernameError">Username is required.</span>
         </div>
         <div class="pga-field">
@@ -470,15 +470,39 @@
           <option value="active">Active only</option>
           <option value="deactivated">Deactivated only</option>
         </select>
+        <div style="display:flex;align-items:center;gap:8px">
+          <label style="font-size:12px;color:var(--pga-ink-soft);white-space:nowrap">Rows</label>
+          <select id="pgaAccRowsPerPage" style="font-size:12.5px;padding:5px 22px 5px 9px;border-radius:6px;border:1px solid var(--pga-line);background:var(--pga-panel-2);color:var(--pga-ink);appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a9b3ae' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 7px center;">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+          </select>
+        </div>
+        <div style="position:relative;margin-left:auto">
+          <svg style="position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--pga-ink-faint);pointer-events:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="pgaAccSearch" placeholder="Search name, email, employee ID…" style="font-size:12.5px;padding:6px 10px 6px 28px;border-radius:6px;border:1px solid var(--pga-line);background:var(--pga-panel-2);color:var(--pga-ink);width:260px">
+        </div>
       </div>
 
       <div class="pga-table-wrap">
         <table class="pga-table" id="pgaAccountsTable">
           <thead>
-            <tr><th>Name</th><th>Role</th><th>Employee ID</th><th>Email</th><th>Status</th><th style="min-width:230px">Actions</th></tr>
+            <tr><th>Name</th><th>Employee ID</th><th>Email</th><th>Status</th><th style="min-width:230px">Actions</th></tr>
           </thead>
           <tbody><!-- seeded by JS --></tbody>
         </table>
+      </div>
+      <div id="pgaAccountsPagination" style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
+        <div id="pgaAccountsPaginationInfo" style="font-size:12px;color:var(--pga-ink-soft)"></div>
+        <div style="display:flex;gap:4px">
+          <button class="pga-btn pga-btn-sm" id="pgaAccountsPrev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M15 18l-6-6 6-6"/></svg> Prev
+          </button>
+          <div id="pgaAccountsPageNums" style="display:flex;gap:4px"></div>
+          <button class="pga-btn pga-btn-sm" id="pgaAccountsNext">
+            Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
       </div>
 
       <!-- EDIT ACCOUNT PANEL (hidden by default) -->

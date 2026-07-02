@@ -127,7 +127,7 @@
             <label for="pgEmpid">Employee ID</label>
             <div class="pg-signup-inputwrap">
               <svg class="pg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 8h3M15 12h3M7 16h10"/></svg>
-              <input type="text" id="pgEmpid" placeholder="e.g. EMP-2024-0042">
+              <input type="text" id="pgEmpid" placeholder="e.g. EMP-2026-123A">
             </div>
             <span class="pg-signup-error" id="pgEmpidError">Enter your employee ID.</span>
           </div>
@@ -161,9 +161,9 @@
           <label for="pgUname">Username</label>
           <div class="pg-signup-inputwrap">
             <svg class="pg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <input type="text" id="pgUname" placeholder="e.g. r.villanueva">
+            <input type="text" readonly id="pgUname" placeholder="Your username is your employee ID">
           </div>
-          <span class="pg-signup-hint">Lowercase letters and dots only, no spaces.</span>
+          <span class="pg-signup-hint">Your employee ID is your username.</span>
           <span class="pg-signup-error" id="pgUnameError">Enter a username.</span>
         </div>
 
@@ -195,9 +195,9 @@
 
         <div class="pg-signup-terms">
           <input type="checkbox" id="pgTerms">
-          <label for="pgTerms">I agree to the <a href="#">terms of use</a> and understand that my account is subject to administrator approval before activation.</label>
+          <label for="pgTerms">I agree to the <a href="terms_and_conditions.php">terms and conditions</a> and understand that my account is subject to administrator approval before activation.</label>
         </div>
-        <span class="pg-signup-error" id="pgTermsError">You must agree to the terms of use to continue.</span>
+        <span class="pg-signup-error" id="pgTermsError">You must agree to the terms and conditions to continue.</span>
 
         <div class="pg-signup-actions">
           <button type="button" class="pg-signup-btn pg-signup-btn-ghost" id="pgBackToInfo">

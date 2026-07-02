@@ -235,13 +235,16 @@ if(localStorage.getItem("login_sup") !== null){
 
   document.getElementById('pgsClearFormBtn').addEventListener('click', () => {
     Swal.fire({
+        position: 'top',
         title: "Clear Form?",
-        text: "You are going to clear all fields, any unsaved input will be lost.",
-        icon: "question",
+        text: "You are going to clear all fields and reset the workstation list. Any unsaved input will be lost.",
+        icon: null,
         showCancelButton: true,
         confirmButtonColor: "#d33",
         confirmButtonText: "Clear",
         customClass: {
+            title: 'left-align-swal',
+            htmlContainer: 'left-align-swal',
             popup: 'my-custom-popup',
             actions: 'my-right-buttons'
         }
@@ -251,6 +254,26 @@ if(localStorage.getItem("login_sup") !== null){
         }
     });
 
+  });
+
+  document.getElementById('pgsDatetime').addEventListener('input', function(){
+    this.classList.remove('pgs-has-error');
+    document.getElementById('pgsDatetimeError').classList.remove('pgs-show');
+  });
+
+  document.getElementById('pgsDept').addEventListener('change', function(){
+    this.classList.remove('pgs-has-error');
+    document.getElementById('pgsDeptError').classList.remove('pgs-show');
+  });
+
+  document.getElementById('pgsDuration').addEventListener('input', function(){
+    this.classList.remove('pgs-has-error');
+    document.getElementById('pgsDurationError').classList.remove('pgs-show');
+  });
+
+  document.getElementById('pgsDescription').addEventListener('input', function(){
+    this.classList.remove('pgs-has-error');
+    document.getElementById('pgsDescriptionError').classList.remove('pgs-show');
   });
 
   function clearForm(){
@@ -759,15 +782,19 @@ if(localStorage.getItem("login_sup") !== null){
   document.getElementById('pgsLogoutBtn').addEventListener('click', () => {
     pgsMoreDropdown.classList.remove('pgs-dropdown-open');
       Swal.fire({
+        position: 'top',
         title: "You are about to leave",
-        text: "Do you wish to end your current session?",
-        icon: "warning",
+        text: "Feel free to come back anytime to continue your activities. Would you like to end your current session?",
+        icon: null,
         showCancelButton: true,
         confirmButtonColor: "#d33",
         confirmButtonText: "Confirm",
         customClass: {
+            title: 'left-align-swal',
+            htmlContainer: 'left-align-swal',
             popup: 'my-custom-popup',
             actions: 'my-right-buttons'
+            
         }
     }).then((result) => {
         if (result.isConfirmed){

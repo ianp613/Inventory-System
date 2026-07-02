@@ -373,9 +373,10 @@ if(localStorage.getItem("login_tech") !== null){
     const ticketId = pill.dataset.ticket;
 
     Swal.fire({
+      position: 'top',
       title: `Claim ${wsNumber}?`,
       text: `You will be assigned to workstation ${wsNumber}. Once claimed, you are responsible for assessing it.`,
-      icon: 'question',
+      icon: null,
       showCancelButton: true,
       confirmButtonColor: '#16201d',
       confirmButtonText: 'Claim it',
@@ -1257,13 +1258,16 @@ if(localStorage.getItem("login_tech") !== null){
   document.getElementById('pgtLogoutBtn').addEventListener('click', () => {
     pgtMoreDropdown.classList.remove('pgt-dropdown-open');
       Swal.fire({
+        position: 'top',
         title: "You are about to leave",
-        text: "Do you wish to end your current session?",
-        icon: "warning",
+        text: "Feel free to come back anytime to continue your activities. Would you like to end your current session?",
+        icon: null,
         showCancelButton: true,
         confirmButtonColor: "#d33",
         confirmButtonText: "Confirm",
         customClass: {
+            title: 'left-align-swal',
+            htmlContainer: 'left-align-swal',
             popup: 'my-custom-popup',
             actions: 'my-right-buttons'
         }

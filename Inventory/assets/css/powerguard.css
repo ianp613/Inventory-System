@@ -1043,7 +1043,7 @@
     --pgs-bg:#011322;
     --pgs-panel:#062238;
     --pgs-panel-2:#082b49;
-    --pgs-line:#33403c;
+    --pgs-line:#121144;
     --pgs-line-soft:#2a3633;
     --pgs-ink:#f5f3ee;
     --pgs-ink-soft:#a9b3ae;
@@ -1589,6 +1589,12 @@
     border-color: var(--pgs-red);
   }
   .pgs-field input.pgs-has-error:focus{
+    box-shadow: 0 0 0 3px rgba(224,106,95,0.15);
+  }
+  .pgs-field select.pgs-has-error{
+    border-color: var(--pgs-red);
+  }
+  .pgs-field select.pgs-has-error:focus{
     box-shadow: 0 0 0 3px rgba(224,106,95,0.15);
   }
   .pgs-field-error{
@@ -2682,6 +2688,18 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
   /* Nesting ensures the browser prioritizes your right-alignment */
   .swal2-popup.my-custom-popup .swal2-actions.my-right-buttons {
     justify-content: flex-end !important;
@@ -2689,3 +2707,7 @@
     box-sizing: border-box !important;
     padding-right: 1.5em !important;
   }
+
+  .left-align-swal {
+  text-align: left !important;
+}

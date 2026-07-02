@@ -14,10 +14,6 @@
     ];
     $user = new PG_User;
 
-    if(!DB::validate($user,"username",$data["username"])){
-        $response["message"] = "Account with username ".$data["username"]." already exist.";
-        $bol = false;
-    }
     if(!DB::validate($user,"employee_id",$data["employee_id"])){
         $response["message"] = "Account with Employee ID ".$data["employee_id"]." already exist.";
         $bol = false;
@@ -33,7 +29,7 @@
         $user->username = $data["username"];
         $user->password = Data::encrypt($data["password"]);
         $user->privileges = "supervisor";
-        $user->account = "pending";
+        $user->account = "inactive";
         DB::save($user);
 
         $response = [
