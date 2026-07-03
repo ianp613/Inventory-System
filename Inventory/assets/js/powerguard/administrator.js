@@ -904,6 +904,32 @@ if(localStorage.getItem("login_admin") !== null){
     pgaAccPage = 1; // reset to first page on every filter/search change
     renderAccounts();
   }
+  
+  function accountButtons(a){
+    let buttons = '';
+    if(a.privileges != 'administrator'){
+      buttons = `
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="pga-btn pga-btn-sm" data-acc-action="edit" data-acc-id="${a.id}">Edit</button>
+          <button class="pga-btn pga-btn-sm" data-acc-action="reset" data-acc-id="${a.id}">Reset password</button>
+          <button class="pga-btn pga-btn-sm ${a.account==='active' ? 'pga-btn-reject' : 'pga-btn-success'}"
+            data-acc-action="toggle" data-acc-id="${a.id}">
+            ${a.account === 'active' ? 'Deactivate' : 'Reactivate'}
+          </button>
+          <button class="pga-btn pga-btn-sm pga-btn-reject" data-acc-action="delete" data-acc-id="${a.id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+            Delete
+          </button>
+        </div>`
+    }else{
+      buttons = `
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="pga-btn pga-btn-sm" data-acc-action="edit" data-acc-id="${a.id}">Edit</button>
+          <button class="pga-btn pga-btn-sm" data-acc-action="reset" data-acc-id="${a.id}">Reset password</button>
+        </div>`
+    }
+    return buttons
+  }
 
   function roleBadge(role){
     const map = {
@@ -977,22 +1003,11 @@ if(localStorage.getItem("login_admin") !== null){
           <div style="font-weight:600;margin-bottom:5px">${a.fname[0]}. ${a.lname}</div>
           ${roleBadge(a.privileges)}
         </td>
-        <td style="color:var(--pga-ink-soft)">${a.employee_id || '—'}</td>
-        <td style="color:var(--pga-ink-soft)">${a.email || '—'}</td>
+        <td style="color:var(--pga-ink-soft)">${a.employee_id}</td>
+        <td style="color:var(--pga-ink-soft)">${a.email != '-' ? a.email : '—'}</td>
         <td>${statusBadge(a.account)}</td>
         <td>
-          <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="pga-btn pga-btn-sm" data-acc-action="edit" data-acc-id="${a.id}">Edit</button>
-            <button class="pga-btn pga-btn-sm" data-acc-action="reset" data-acc-id="${a.id}">Reset password</button>
-            <button class="pga-btn pga-btn-sm ${a.account==='active' ? 'pga-btn-reject' : 'pga-btn-success'}"
-              data-acc-action="toggle" data-acc-id="${a.id}">
-              ${a.account === 'active' ? 'Deactivate' : 'Reactivate'}
-            </button>
-            <button class="pga-btn pga-btn-sm pga-btn-reject" data-acc-action="delete" data-acc-id="${a.id}">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-              Delete
-            </button>
-          </div>
+          ${accountButtons(a)}
         </td>
       `;
       tbody.appendChild(tr);
@@ -1106,8 +1121,8 @@ if(localStorage.getItem("login_admin") !== null){
     document.getElementById('pgaEditAccName').textContent  = a.fname + ' ' + a.lname;
     document.getElementById('pgaEditFname').value          = a.fname  || '';
     document.getElementById('pgaEditLname').value          = a.lname  || '';
-    document.getElementById('pgaEditEmail').value          = a.email  || '';
-    document.getElementById('pgaEditPhone').value          = a.phone  || '';
+    document.getElementById('pgaEditEmail').value          = a.email != '-' ? a.email : '';
+    document.getElementById('pgaEditPhone').value          = a.phone != '-' ? a.phone : '';
     document.getElementById('pgaEditEmpid').value          = a.employee_id  || '';
     document.getElementById('pgaEditJobtitle').value       = a.job_title || '';
     document.getElementById('pgaResetPwPanel').style.display  = 'none';
@@ -1121,17 +1136,62 @@ if(localStorage.getItem("login_admin") !== null){
     _editingId = null;
   };
 
+  // live-clear listeners
+  ['pgaEditFname','pgaEditLname','pgaEditEmpid','pgaEditJobtitle'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function(){
+      this.classList.remove('pga-has-error');
+      document.getElementById(id + 'Error').classList.remove('pga-show');
+    });
+  });
+
   window.saveEditAccount = function(){
     if(_editingId === null) return;
+
+    const fname    = document.getElementById('pgaEditFname');
+    const lname    = document.getElementById('pgaEditLname');
+    const empid    = document.getElementById('pgaEditEmpid');
+    const jobtitle = document.getElementById('pgaEditJobtitle');
+
+    // reset errors
+    [fname, lname, empid, jobtitle].forEach(el => el.classList.remove('pga-has-error'));
+    ['pgaEditFnameError','pgaEditLnameError','pgaEditEmpidError','pgaEditJobtitleError'].forEach(id => {
+      document.getElementById(id).classList.remove('pga-show');
+    });
+
+    let hasError = false;
+
+    if(!fname.value.trim()){
+      fname.classList.add('pga-has-error');
+      document.getElementById('pgaEditFnameError').classList.add('pga-show');
+      hasError = true;
+    }
+    if(!lname.value.trim()){
+      lname.classList.add('pga-has-error');
+      document.getElementById('pgaEditLnameError').classList.add('pga-show');
+      hasError = true;
+    }
+    if(!empid.value.trim()){
+      empid.classList.add('pga-has-error');
+      document.getElementById('pgaEditEmpidError').classList.add('pga-show');
+      hasError = true;
+    }
+    if(!jobtitle.value.trim()){
+      jobtitle.classList.add('pga-has-error');
+      document.getElementById('pgaEditJobtitleError').classList.add('pga-show');
+      hasError = true;
+    }
+
+    if(hasError) return;
+
     sole.post("../../controllers/powerguard/administrator/update_account.php", {
       admin_id:  localStorage.getItem("userid_admin"),
       user_id:   _editingId,
-      fname:     document.getElementById('pgaEditFname').value.trim(),
-      lname:     document.getElementById('pgaEditLname').value.trim(),
+      fname:     fname.value.trim(),
+      lname:     lname.value.trim(),
       email:     document.getElementById('pgaEditEmail').value.trim(),
       phone:     document.getElementById('pgaEditPhone').value.trim(),
-      empid:     document.getElementById('pgaEditEmpid').value.trim(),
-      job_title: document.getElementById('pgaEditJobtitle').value.trim()
+      empid:     empid.value.trim(),
+      job_title: jobtitle.value.trim()
     }).then(res => {
       ss.toast(res.title, res.type, res.message, null, "#16201d");
       if(res.status){
@@ -1148,6 +1208,10 @@ if(localStorage.getItem("login_admin") !== null){
     const a = accounts.find(acc => acc.id === id);
     if(!a) return;
     _resetId = id;
+    if(a.privileges == "administrator"){
+      if(a.id == localStorage.getItem("userid_admin")) ss.toast("Warning!","warning","You are about to reset your administrator account password. Please be aware that you will lose access to the system if this password is forgotten.","I understand","#16201d")
+      if(a.id != localStorage.getItem("userid_admin")) ss.toast("Warning!","warning","You are about to reset this administrator account password. Please be aware that the user will lose access to the system if they forget their password.","I understand","#16201d")
+    }
     document.getElementById('pgaResetPwName').textContent    = a.fname + ' ' + a.lname;
     document.getElementById('pgaResetPwValue').value         = '';
     document.getElementById('pgaEditAccountPanel').style.display = 'none';
@@ -1161,22 +1225,35 @@ if(localStorage.getItem("login_admin") !== null){
     _resetId = null;
   };
 
+  document.getElementById('pgaResetPwValue').addEventListener('input', function(){
+    this.classList.remove('pga-has-error');
+  });
+
   window.generateResetPassword = function(){
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
     let pw = '';
     for(let i = 0; i < 12; i++){
       pw += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    document.getElementById('pgaResetPwValue').value = pw;
+    const input = document.getElementById('pgaResetPwValue');
+    input.value = pw;
+    input.classList.remove('pga-has-error');
   };
 
   window.confirmResetPassword = function(){
-    const pw = document.getElementById('pgaResetPwValue').value.trim();
-    if(!pw){ alert('Generate or enter a new password first.'); return; }
+    const input   = document.getElementById('pgaResetPwValue');
+
+    input.classList.remove('pga-has-error');
+
+    if(!input.value.trim()){
+      input.classList.add('pga-has-error');
+      return;
+    }
+
     sole.post("../../controllers/powerguard/administrator/reset_password.php", {
       admin_id: localStorage.getItem("userid_admin"),
       user_id:  _resetId,
-      password: pw
+      password: input.value.trim()
     }).then(res => {
       ss.toast(res.title, res.type, res.message, null, "#16201d");
       if(res.status) closeResetPassword();

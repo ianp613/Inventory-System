@@ -513,10 +513,12 @@
           <div class="pga-field">
             <label for="pgaEditFname">First name</label>
             <input type="text" id="pgaEditFname">
+            <span class="pga-field-error" id="pgaEditFnameError">First name is required.</span>
           </div>
           <div class="pga-field">
             <label for="pgaEditLname">Last name</label>
             <input type="text" id="pgaEditLname">
+            <span class="pga-field-error" id="pgaEditLnameError">Last name is required.</span>
           </div>
         </div>
         <div class="pga-row">
@@ -533,10 +535,12 @@
           <div class="pga-field">
             <label for="pgaEditEmpid">Employee ID</label>
             <input type="text" id="pgaEditEmpid">
+            <span class="pga-field-error" id="pgaEditEmpidError">Employee ID is required.</span>
           </div>
           <div class="pga-field">
             <label for="pgaEditJobtitle">Job title</label>
             <input type="text" id="pgaEditJobtitle">
+            <span class="pga-field-error" id="pgaEditJobtitleError">Job title is required.</span>
           </div>
         </div>
         <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
