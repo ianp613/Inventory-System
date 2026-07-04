@@ -10,8 +10,3 @@
             exit(0);
         }
     }
-
-
-
-
-    echo json_encode("Hello World");

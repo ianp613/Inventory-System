@@ -27,7 +27,8 @@
         "PG_TicketMigration",
         "PG_WSMigration",
         "PG_WS_AssessmentMigration",
-        "PG_DepartmentMigration"
+        "PG_DepartmentMigration",
+        "Captive_Migration"
     ];
 
     class UserMigration
@@ -469,6 +470,22 @@
             Migrate::attrib_string(1000);
             Migrate::string("name");
             Migrate::string("sup_id");
+        }
+    }
+
+    class Captive_Migration{
+        public static function index(){
+            Migrate::attrib_table("captive_");
+            Migrate::attrib_string(1000);
+            Migrate::string("code");
+            Migrate::string("voucher_name");
+            Migrate::string("duration");
+            Migrate::string("duration_unit");
+            Migrate::string("uses");
+            Migrate::string("uses_remaining");
+            Migrate::string("data_limit");
+            Migrate::string("data_cap");
+            Migrate::string("status");
         }
     }
 ?>

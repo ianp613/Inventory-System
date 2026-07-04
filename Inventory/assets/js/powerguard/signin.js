@@ -92,7 +92,3 @@
     })
     // console.log('Signing in', { username: username.value, remember: document.getElementById('remember').checked });
   });
-
-  sole.get("https://ddc-artisan.ddns.net:9552/controllers/api/test.php").then(res => {
-    console.log(res)
-  })
