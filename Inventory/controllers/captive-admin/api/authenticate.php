@@ -137,7 +137,7 @@ function unifiControllerLogin($controller) {
 // =================================================================
 // 6. Authorize the guest's MAC address on that controller/site.
 // =================================================================
-function unifiAuthorizeGuest($controller, $cookieFile, $csrfToken, $mac, $minutes, $dataCapMb, $apMac) {
+function unifiAuthorizeGuest($controller, $cookieFile, $csrfToken, $mac, $minutes, $dataCapMb, $speedLimitMbps, $apMac) {
     $baseUrl = "https://{$controller->host}:{$controller->port}";
     $url = "{$baseUrl}/api/s/{$controller->site_id}/cmd/stamgr";
 
@@ -147,14 +147,19 @@ function unifiAuthorizeGuest($controller, $cookieFile, $csrfToken, $mac, $minute
         "minutes" => (int)$minutes
     ];
     if (!empty($apMac))        $payload["ap_mac"] = strtolower($apMac);
-    // Total data quota for the session, converted MB -> bytes. UniFi has
-    // no separate "data limit" vs "data cap" concept in this legacy
-    // authorize-guest command — only one quota field ("bytes"). If your
-    // data_limit and data_cap are meant to do two different things
-    // (e.g. a speed cap vs a total quota), that distinction has to be
-    // enforced elsewhere (traffic rules / QoS on the controller), not
-    // through this call.
+    // Total data quota for the session, converted MB -> bytes.
     if ($dataCapMb > 0)        $payload["bytes"] = $dataCapMb * 1024 * 1024;
+
+    // Speed throttle. UniFi's "up"/"down" params are in Kbps; the voucher
+    // form collects this as Mbps, so convert (1 Mbps = 1000 Kbps).
+    // Using the same value for both directions for now — split this into
+    // separate up/down fields on the form later if you want asymmetric
+    // limits (e.g. faster download than upload).
+    if ($speedLimitMbps > 0) {
+        $kbps = (int)($speedLimitMbps * 1000);
+        $payload["up"] = $kbps;
+        $payload["down"] = $kbps;
+    }
 
     $headers = ["Content-Type: application/json"];
     if ($csrfToken) $headers[] = "X-Csrf-Token: {$csrfToken}";
@@ -176,6 +181,15 @@ function unifiAuthorizeGuest($controller, $cookieFile, $csrfToken, $mac, $minute
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $error = curl_error($ch);
     curl_close($ch);
+
+    // TEMP DEBUG — remove once this is sorted out.
+    file_put_contents(__DIR__ . '/authorize-debug.log',
+        date('c') . " SENT: " . json_encode($payload) . "\n" .
+        date('c') . " HTTP: " . $httpCode . "\n" .
+        date('c') . " RESPONSE: " . $response . "\n" .
+        date('c') . " CURL ERROR: " . ($error ?: 'none') . "\n\n",
+        FILE_APPEND
+    );
 
     if ($response === false) {
         return ["ok" => false, "error" => $error ?: "No response from controller"];
@@ -202,7 +216,7 @@ if (!$login['ok']) {
     exit;
 }
 
-$auth = unifiAuthorizeGuest($controller, $login['cookieFile'], $login['csrfToken'], $mac, $minutes, (int)$row["data_cap"], $apMac);
+$auth = unifiAuthorizeGuest($controller, $login['cookieFile'], $login['csrfToken'], $mac, $minutes, (int)$row["data_cap"], (int)$row["data_limit"], $apMac);
 
 @unlink($login['cookieFile']); // done with the session either way
 
