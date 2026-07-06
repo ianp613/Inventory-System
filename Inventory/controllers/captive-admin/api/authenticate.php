@@ -182,15 +182,6 @@ function unifiAuthorizeGuest($controller, $cookieFile, $csrfToken, $mac, $minute
     $error = curl_error($ch);
     curl_close($ch);
 
-    // TEMP DEBUG — remove once this is sorted out.
-    file_put_contents(__DIR__ . '/authorize-debug.log',
-        date('c') . " SENT: " . json_encode($payload) . "\n" .
-        date('c') . " HTTP: " . $httpCode . "\n" .
-        date('c') . " RESPONSE: " . $response . "\n" .
-        date('c') . " CURL ERROR: " . ($error ?: 'none') . "\n\n",
-        FILE_APPEND
-    );
-
     if ($response === false) {
         return ["ok" => false, "error" => $error ?: "No response from controller"];
     }
