@@ -18,7 +18,8 @@
   html,body{ margin:0; padding:0; background:var(--bg); color:var(--ink);
     font-family:'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing:antialiased; }
 
-  .shell{ max-width:1180px; margin:0 auto; padding:20px 20px 60px; }
+  .shell{max-width:1450px; position: fixed; left: 50%; transform: translateX(-50%); width: auto !important; padding-top: 10px; height: 100vh; overflow-y: auto;}
+  .shell::-webkit-scrollbar{display: none;}
 
   /* ---------- topbar ---------- */
   .topbar{
@@ -178,3 +179,31 @@
     background-color: #158F82; /* Custom highlight background */
     color: #ffffff;            /* Custom text color */
   }
+
+
+  .pagination{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  margin-top:14px; flex-wrap:wrap;
+}
+.pagination .page-info{ font-size:12.5px; color:var(--muted); }
+.pagination .page-info .mono{ color:var(--ink); }
+.pagination .page-controls{ display:flex; align-items:center; gap:6px; }
+ 
+.page-btn{
+  width:30px; height:30px; border:1.5px solid var(--line); border-radius:8px; background:#fff;
+  color:var(--ink); font-family:'JetBrains Mono', monospace; font-size:12px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.page-btn:hover:not(:disabled){ border-color:var(--accent); color:var(--accent-deep); }
+.page-btn:disabled{ opacity:0.35; cursor:not-allowed; }
+.page-btn.active{ background:var(--accent); border-color:var(--accent); color:#fff; }
+.page-btn svg{ width:14px; height:14px; }
+ 
+.page-ellipsis{
+  width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+  color:var(--muted-2); font-family:'JetBrains Mono', monospace; font-size:12px;
+}
+
+#voucherBody{
+  overflow: scroll;
+}

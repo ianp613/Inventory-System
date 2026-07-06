@@ -20,11 +20,10 @@
            onerror="this.style.display='none'; document.getElementById('brandFallbackMark').style.display='flex'; document.getElementById('brandName').style.display='block';">
       <span class="mark" id="brandFallbackMark" style="display:none;">DC</span>
       <div>
-        <div class="name" id="brandName" style="display:none;">DDC Wifi Captive Portal Admin</div>
+        <div class="name" id="brandName">DDC Wifi Captive Portal Admin</div>
         <div class="sub">WifiTestMode vouchers</div>
       </div>
     </div>
-    <div class="topbar-right" id="clock"></div>
   </header>
 
   <div class="layout">
@@ -83,6 +82,8 @@
 
         <p class="form-msg" id="formMsg"></p>
       </form>
+      <div class="topbar-right" id="clock" style="margin-top:25px;margin-bottom:30px;"></div>
+      <p class="legal">Powered by DDC Wifi Team<br>Copyright © <span id="year"></span> DDC Data Processing OPC. <br> All rights reserved.</p>
     </section>
 
     <!-- ---------- Vouchers table ---------- -->
@@ -119,11 +120,15 @@
           </tbody>
         </table>
       </div>
+
+      <div class="pagination">
+        <div class="page-info">Showing <span class="mono" id="pageRangeLabel">0</span> of <span class="mono" id="pageTotalLabel">0</span></div>
+        <div class="page-controls" id="pageControls"></div>
+      </div>
     </section>
 
   </div>
 
-  <p class="legal">Powered by DDC Wifi Team<br>© <span id="year"></span> DDC Data Processing OPC. All rights reserved.</p>
 </div>
 
 <div class="toast" id="toast"></div>
