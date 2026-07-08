@@ -235,7 +235,7 @@ $newStatus = ($row["uses"] > 0 && $newUsesRemaining <= 0) ? "used" : $row["statu
 
     if(count($voucher_)){
         $v = DB::prepare($voucher,$voucher_[0]["id"]);
-        $v->uses_remaining = (int)$voucher_[0]["uses"] > 0 ? max(0, (int)$voucher_[0]["uses_remaining"] - 1) : $voucher_[0]["uses_remaining"];
+        $v->uses_remaining = (int)$voucher_[0]["uses_remaining"] - 1;
         DB::update($v);
     }
 
