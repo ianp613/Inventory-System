@@ -54,7 +54,7 @@
                     }else{
                         $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '%$val%'");
                     }   
-                }if(strtoupper($op) == "IN"){
+                }elseif(strtoupper($op) == "IN"){
                     if ($on && $or) {
                         $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` IN $val ORDER BY `$table`.`$on` ".strtoupper($or));
                     } else {
