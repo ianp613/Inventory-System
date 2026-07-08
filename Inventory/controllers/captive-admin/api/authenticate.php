@@ -218,11 +218,13 @@ $newStatus = ($row["uses"] > 0 && $newUsesRemaining <= 0) ? "used" : $row["statu
 //     "status"         => $newStatus
 // ]);
 
-$voucher_ = DB::find($voucher,"code","=",$input["code"]);
+$voucher_ = DB::where($voucher,"code","=",$input["code"]);
 
+if(count($voucher_)){
     $v = DB::prepare($voucher,$voucher_[0]["id"]);
     $v->uses_remaining = (int)$voucher_[0]["uses_remaining"] - 1;
     DB::update($v);
+}
 
 echo json_encode([
     "status"   => true,
