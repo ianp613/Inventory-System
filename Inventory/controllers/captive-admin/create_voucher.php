@@ -12,8 +12,6 @@
         $captive_->duration_unit = $data["duration_unit"];
         $captive_->uses = $data["uses"];
         $captive_->uses_remaining = $data["uses"];
-        $captive_->data_limit = $data["data_limit"];
-        $captive_->data_cap = $data["data_cap"];
         $captive_->status = "active";
         DB::save($captive_);
     }

@@ -94,8 +94,6 @@
           '<td>' + v.name + '</td>' +
           '<td class="mono">' + v.duration + ' ' + v.durationUnit + '</td>' +
           '<td class="mono">' + (parseInt(v.usesRemaining) === 0 ? '∞' : v.usesRemaining) + (parseInt(v.uses) === 0 ? ' / ∞' : ' / ' + v.uses) + '</td>' +
-          '<td class="muted-cell">' + (parseInt(v.dataLimit) === 0 ? '∞' : v.dataLimit + ' MB') + '</td>' +
-          '<td class="muted-cell">' + (parseInt(v.dataCap) === 0 ? '∞' : v.dataCap + ' MB') + '</td>' +
           '<td>' + badge(v.status) + '</td>' +
           '<td class="muted-cell">' + formatDate(v.created) + '</td>' +
           '<td>' + (v.status === 'revoked' ? '' : '<button class="revoke-btn" data-id="' + v.id + '">Revoke</button>') + '</td>' +
@@ -153,9 +151,7 @@
       count: Math.min(Math.max(parseInt(document.getElementById('vCount').value, 10) || 1, 1), 500),
       duration: parseInt(document.getElementById('vDuration').value, 10) || 1,
       duration_unit: document.getElementById('vDurationUnit').value,
-      uses: parseInt(document.getElementById('vUses').value, 10) || 0,
-      data_limit: parseInt(document.getElementById('vDataLimit').value, 10) || 0,
-      data_cap: parseInt(document.getElementById('vDataCap').value, 10) || 0
+      uses: parseInt(document.getElementById('vUses').value, 10) || 0
     };
 
     var submitBtn = form.querySelector('button.generate');
@@ -175,15 +171,13 @@
           form.reset();
           document.getElementById('vCount').value = 1;
           document.getElementById('vUses').value = 1;
-          document.getElementById('vDataLimit').value = 0;
-          document.getElementById('vDataCap').value = 0;
           currentPage = 1;
           loadVouchers();
         } else {
           showToast(res.message || 'Could not create voucher.');
         }
       })
-      .catch(function(){
+      .catch(function(e){
         submitBtn.disabled = false;
         showToast('Request failed. Check your connection.');
       });
@@ -206,8 +200,6 @@
             durationUnit: row.duration_unit,
             uses: row.uses,
             usesRemaining: row.uses_remaining,
-            dataLimit: row.data_limit,
-            dataCap: row.data_cap,
             status: row.status,
             created: row.created_at ? new Date(row.created_at) : new Date()
           };

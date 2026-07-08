@@ -483,8 +483,6 @@
             Migrate::string("duration_unit");
             Migrate::string("uses");
             Migrate::string("uses_remaining");
-            Migrate::string("data_limit");
-            Migrate::string("data_cap");
             Migrate::string("status");
         }
     }

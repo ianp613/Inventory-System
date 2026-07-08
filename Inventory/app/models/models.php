@@ -990,8 +990,6 @@
             "duration_unit",
             "uses",
             "uses_remaining",
-            "data_limit",
-            "data_cap",
             "status"
         ];
         public string $code;
@@ -1000,8 +998,6 @@
         public string $duration_unit;
         public string $uses;
         public string $uses_remaining;
-        public string $data_limit;
-        public string $data_cap;
         public string $status;
     }
 ?>

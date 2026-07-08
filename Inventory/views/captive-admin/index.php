@@ -40,7 +40,7 @@
         </div>
 
         <div class="field">
-          <label for="vCount">Number of vouchers to make</label>
+          <label for="vCount">Number of vouchers to generate</label>
           <input type="number" id="vCount" min="1" max="500" value="1" required>
         </div>
 
@@ -54,7 +54,7 @@
               <option value="Days">Days</option>
             </select>
           </div>
-          <p class="hint">How long the voucher stays valid once activated.</p>
+          <p class="hint">How long the connection stay active once voucher is entered.</p>
         </div>
 
         <div class="field">
@@ -64,15 +64,8 @@
         </div>
 
         <div class="field">
-          <label for="vDataLimit">Data limitation (MB)</label>
-          <input type="number" id="vDataLimit" min="0" value="0">
-          <p class="hint">0 = no limit.</p>
-        </div>
-
-        <div class="field">
-          <label for="vDataCap">Data cap (MB)</label>
-          <input type="number" id="vDataCap" min="0" value="0">
-          <p class="hint">0 = no cap.</p>
+          <label for="vDataLimit">Wifi speed limitation</label>
+          <p class="hint">To limit wireless speeds for your clients, open the UniFi Network console, go to Settings > Profiles > WiFi Speed Limits to create or configure a speed limit profile, and then apply it to your SSID under Settings > WiFi by enabling manual speed limit configurations.</p>
         </div>
 
         <button type="submit" class="generate">
@@ -108,8 +101,6 @@
               <th>Voucher / Username</th>
               <th>Duration</th>
               <th style="min-width: 100px;">Uses</th>
-              <th>Data limit</th>
-              <th>Data cap</th>
               <th>Status</th>
               <th>Created</th>
               <th></th>
