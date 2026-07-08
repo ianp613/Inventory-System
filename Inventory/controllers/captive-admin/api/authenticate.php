@@ -137,7 +137,7 @@ function unifiControllerLogin($controller) {
 // =================================================================
 // 6. Authorize the guest's MAC address on that controller/site.
 // =================================================================
-function unifiAuthorizeGuest($controller, $cookieFile, $csrfToken, $mac, $minutes, $dataCapMb, $speedLimitMbps, $apMac) {
+function unifiAuthorizeGuest($controller, $cookieFile, $csrfToken, $mac, $minutes, $apMac) {
     $baseUrl = "https://{$controller->host}:{$controller->port}";
     $url = "{$baseUrl}/api/s/{$controller->site_id}/cmd/stamgr";
 
@@ -147,19 +147,6 @@ function unifiAuthorizeGuest($controller, $cookieFile, $csrfToken, $mac, $minute
         "minutes" => (int)$minutes
     ];
     if (!empty($apMac))        $payload["ap_mac"] = strtolower($apMac);
-    // Total data quota for the session, converted MB -> bytes.
-    if ($dataCapMb > 0)        $payload["bytes"] = $dataCapMb * 1024 * 1024;
-
-    // Speed throttle. UniFi's "up"/"down" params are in Kbps; the voucher
-    // form collects this as Mbps, so convert (1 Mbps = 1000 Kbps).
-    // Using the same value for both directions for now — split this into
-    // separate up/down fields on the form later if you want asymmetric
-    // limits (e.g. faster download than upload).
-    if ($speedLimitMbps > 0) {
-        $kbps = (int)($speedLimitMbps * 1000);
-        $payload["up"] = $kbps;
-        $payload["down"] = $kbps;
-    }
 
     $headers = ["Content-Type: application/json"];
     if ($csrfToken) $headers[] = "X-Csrf-Token: {$csrfToken}";
@@ -207,7 +194,7 @@ if (!$login['ok']) {
     exit;
 }
 
-$auth = unifiAuthorizeGuest($controller, $login['cookieFile'], $login['csrfToken'], $mac, $minutes, (int)$row["data_cap"], (int)$row["data_limit"], $apMac);
+$auth = unifiAuthorizeGuest($controller, $login['cookieFile'], $login['csrfToken'], $mac, $minutes, $apMac);
 
 @unlink($login['cookieFile']); // done with the session either way
 
