@@ -93,7 +93,7 @@
             '</button></div></td>' +
           '<td>' + v.name + '</td>' +
           '<td class="mono">' + v.duration + ' ' + v.durationUnit + '</td>' +
-          '<td class="mono">' + (parseInt(v.usesRemaining) === 0 ? '∞' : v.usesRemaining) + (parseInt(v.uses) === 0 ? ' / ∞' : ' / ' + v.uses) + '</td>' +
+          '<td class="mono">' + (parseInt(v.usesRemaining) === 0 && parseInt(v.uses) === 0 ? '∞' : v.usesRemaining) + (parseInt(v.uses) === 0 ? ' / ∞' : ' / ' + v.uses) + '</td>' +
           '<td>' + badge(v.status) + '</td>' +
           '<td class="muted-cell">' + formatDate(v.created) + '</td>' +
           '<td>' + (v.status === 'revoked' ? '' : '<button class="revoke-btn" data-id="' + v.id + '">Revoke</button>') + '</td>' +

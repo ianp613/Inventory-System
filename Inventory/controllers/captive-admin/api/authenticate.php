@@ -222,7 +222,10 @@ $voucher_ = DB::where($voucher,"code","=",$input["code"]);
 
 if(count($voucher_)){
     $v = DB::prepare($voucher,$voucher_[0]["id"]);
-    $v->uses_remaining = (int)$voucher_[0]["uses_remaining"] - 1;
+    if($v->uses != 0){
+        $v->uses_remaining = (int)$voucher_[0]["uses_remaining"] - 1;
+        $v->status = $v->uses_remaining == 0 ? "used" : $v->status;
+    }
     DB::update($v);
 }
 
