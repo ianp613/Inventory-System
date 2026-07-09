@@ -8,7 +8,7 @@ class Sole_Swaler{
             text: text,
             icon: icon,
             confirmButtonText: confirmButtonText,
-            confirmButtonColor: confirmButtonColor
+            confirmButtonColor: confirmButtonColor,
         })    
     }
 }

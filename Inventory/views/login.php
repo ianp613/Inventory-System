@@ -29,9 +29,6 @@
               <div class="row justify-content-center align-items-center">
                 <img src="../assets/img/fposi-logo.png" style="width: 250px;" alt="fposi-logo.png">
               </div>
-              <div id="login_alert" style="display: none !important;" class="alert alert-danger d-flex align-items-center" role="alert">
-                <!--  -->
-              </div>
                 <div class="mb-3">
                   <label for="userid" class="form-label">User ID</label>
                   <input type="userid" class="form-control" id="userid" placeholder="Enter User ID">
@@ -49,17 +46,17 @@
                 <div class="w-100 text-center mt-3"><a class="text-light" style="text-decoration: none;" href="forgot_password.php">Forgot password?</a></div>
             </div>
           </div>
-          <div hidden id="remembered_user_container" class="remembered_user_container">
+          <div hidden id="remembered_user_container" class="mt-3 p-1 pt-2 rounded-3 theme-login">
             <!-- USERS HERE -->
           </div>
-          <div class="bg-dark text-light mt-3 p-3 rounded-3 theme-login theme-login-dark theme-links theme-links-dark">
+          <!-- <div class="text-light mt-3 p-2 rounded-3 theme-login theme-login-dark theme-links theme-links-dark text-center"> -->
+          <div class="text-light mt-3 p-2 rounded-3 text-center">
             <div class="ms-3">
               <!-- <h6 class="m-0"><span class="fa fa-folder"></span> DDC LEYTE E-KATALOG</h6>
               <a class="text-success" target="_blank" href="https://203.177.127.155:58787/FPO/"><span class="fa fa-external-link"></span> https://203.177.127.155:58787/FPO/</a> -->
-              <h6 class="m-0 mt-3"><span class="fa fa-wifi"></span> IT STAFF INVENTORY REPORT</h6>
-              <a class="text-success" target="_blank" href="http://203.177.127.134:23939/dltr/app/home"><span class="fa fa-external-link"></span> http://203.177.127.134:23939/dltr/app/home</a>
-              <h6 class="m-0 mt-3"><span class="fa fa-wifi"></span> WIFI TEAM UNIFI MAC</h6>
-              <a class="text-success" target="_blank" href="https://ddc-artisan.ddns.net:9552/views/unifi-mac.php"><span class="fa fa-external-link"></span> https://ddc-artisan.ddns.net:9552/views/unifi-mac.php</a>
+              <a class="text-success text-light fw-bolder f-12" style="text-decoration: none;" target="_blank" href="https://ddc-artisan.ddns.net/views/unifi-mac.php"><span class="fa fa-caret-right"></span> WIFI TEAM UNIFI MAC</a>
+              <br>
+              <a class="text-success text-light fw-bolder f-12" style="text-decoration: none;" target="_blank" href="https://203.177.127.134:23945/auth/login"><span class="fa fa-caret-right"></span> DDC LEYTE IT ASSETS AND OPERATION MANAGEMENT SYSTEM <span class="text-dark">(ITAOMS)</span></a>
             </div>  
             </div>
           </div>
@@ -93,6 +90,9 @@
   </body>
   <script src="../assets/js/sole.js"></script>
   <script src="../assets/js/ipf.js"></script>
+
+  <script src="../../assets/js/sweetalert2/sweetalert2.all.min.js"></script>
+  <script src="../../assets/js/sole.swal.js"></script>
   
   <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
   <script src="../assets/js/modal_alert.js"></script>

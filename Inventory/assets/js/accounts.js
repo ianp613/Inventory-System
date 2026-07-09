@@ -44,6 +44,7 @@ if(document.getElementById("accounts")){
     }
 
     const edit_account_modal = new bootstrap.Modal(document.getElementById('edit_account'),unclose);
+    const add_account_modal = new bootstrap.Modal(document.getElementById('add_account'),unclose);
     const delete_account_modal = new bootstrap.Modal(document.getElementById('delete_account'),unclose);
     const reset_password_modal = new bootstrap.Modal(document.getElementById('reset_password'),unclose);
     const add_group_modal = new bootstrap.Modal(document.getElementById('add_group'),unclose);
@@ -306,7 +307,7 @@ if(document.getElementById("accounts")){
                 user : user_container_temp
             }).then(res => validateResponse(res,"add_group"))
         }else{
-            bs5.toast("warning","Please input group name.")
+            ss.toast("Please input group name.","warning",null,null,"#212529")
         }
     })
 
@@ -320,7 +321,7 @@ if(document.getElementById("accounts")){
                 user : edit_user_container_temp
             }).then(res => validateResponse(res,"edit_group"))
         }else{
-            bs5.toast("warning","Please input group name.")
+            ss.toast("Please input group name.","warning",null,null,"#212529")
         }
     })
 
@@ -350,7 +351,7 @@ if(document.getElementById("accounts")){
             })
             .then(res => validateResponse(res,"create_account"))    
         }else{
-            bs5.toast("warning",message)    
+            ss.toast(message,"warning",null,null,"#212529") 
         }
     })
 
@@ -390,7 +391,7 @@ if(document.getElementById("accounts")){
                 privilege: edit_privilege.value
             }).then(res => validateResponse(res,"edit_account"))    
         }else{
-            bs5.toast("warning",message);
+            ss.toast(message,"warning",null,null,"#212529")
         }
         
     })
@@ -403,7 +404,7 @@ if(document.getElementById("accounts")){
 
     reset_password_btn.addEventListener("click",function(){
         if(!reset_password_input.value){
-            bs5.toast("warning","Password field cannot be empty.")
+            ss.toast("Password field cannot be empty.","warning",null,null,"#212529")
             return
         }
         sole.post("../../controllers/administrator/reset_password.php",{
@@ -579,6 +580,7 @@ if(document.getElementById("accounts")){
                 add_email.value = ""
                 add_username.value = ""
                 add_privilege.value = "User"
+                add_account_modal.hide()
                 sole.get("../../controllers/administrator/get_accounts.php").then(res => loadAccounts(res))
             }
             if(func == "edit_account"){
@@ -623,9 +625,9 @@ if(document.getElementById("accounts")){
                 edit_group_modal.hide()
                 loadPage()
             }
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }else{
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }
     }
     document.querySelector('#accounts_table tbody').addEventListener('click', function(e) {

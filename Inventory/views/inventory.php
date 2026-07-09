@@ -273,6 +273,9 @@
         <script src="../assets/js/sole.js"></script>
         <script src="../assets/js/ipf.js"></script>
 
+        <script src="../../assets/js/sweetalert2/sweetalert2.all.min.js"></script>
+        <script src="../../assets/js/sole.swal.js"></script>
+
         <script src="../assets/js/jquery/jquery-3.7.1.js"></script>
         <script src="../assets/js/popper/popper.min.js"></script>
         <script src="../assets/js/datatables/datatables.min.js"></script>

@@ -114,7 +114,7 @@ if(document.getElementById("mac")){
     })
 
     edit_wifi_btn.addEventListener("click",function(){
-        !edit_wifi_name.value ? bs5.toast("warning","Please provide wifi name.") : null
+        !edit_wifi_name.value ? bss.toast("Please provide wifi name.","warning",null,null,"#212529") : null
 
         sole.post("../../controllers/mac/edit_wifi.php",{
             id: edit_wifi_btn.getAttribute("wid"),
@@ -137,10 +137,10 @@ if(document.getElementById("mac")){
             if(localStorage.getItem("selected_wifi").toLowerCase() != "show all"){
                 add_mac_entry_modal.show()
             }else{
-                bs5.toast("warning","Please select wifi first.")
+                ss.toast("Please select wifi first.","warning",null,null,"#212529")
             }
         }else{
-            bs5.toast("warning","Please select wifi first.")
+            ss.toast("Please select wifi first.","warning",null,null,"#212529")
         }
     })
 
@@ -211,7 +211,7 @@ if(document.getElementById("mac")){
                 }
             })    
         // }else{
-        //     bs5.toast("warning","Please input a valid MAC address.")
+        //     ss.toast("Please input a valid MAC address.","warning",null,null,"#212529")
         // }
         
     })
@@ -235,7 +235,7 @@ if(document.getElementById("mac")){
                 }
             })    
         // }else{
-        //     bs5.toast("warning","Please input a valid MAC address.")
+        //     ss.toast("Please input a valid MAC address.","warning",null,null,"#212529")
         // }
     })
 
@@ -332,7 +332,7 @@ if(document.getElementById("mac")){
             delete_wifi_btn.setAttribute("wid",res.wifi[0].id)
             edit_wifi_modal.show()
         }else{
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }
     }
 
@@ -508,9 +508,9 @@ if(document.getElementById("mac")){
                 }
                 delete_mac_entry_modal.hide()
             }
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }else{
-            bs5.toast(res.type,res.message,res.size)    
+            ss.toast(res.message,res.type,null,null,"#212529")    
         }
     }
     document.querySelector('#wifi_table tbody').addEventListener('click', function(e) {

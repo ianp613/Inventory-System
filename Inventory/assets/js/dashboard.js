@@ -351,7 +351,7 @@ if(document.getElementById("dashboard")){
 
     function insertYearly(year,to_year){
         if(year > to_year){
-            bs5.toast("warning","The starting year should be greater than the ending year.")
+            ss.toast("Invalid Year","warning","The starting year should be greater than the ending year.",null,"#212529")
             return
         }
         year--
@@ -604,7 +604,7 @@ if(document.getElementById("dashboard")){
             to_years_sdot.hidden = false
             insertYearly(years_sdot.value,to_years_sdot.value)
         }else{
-            bs5.toast("warning","Invalid Selection.")
+            ss.toast("Invalid Selection","warning",null,null,"#212529")
         }
     })
 
@@ -665,8 +665,12 @@ if(document.getElementById("dashboard")){
         pastel_color.appendChild(opt)
     })
 
-
-
+    if(localStorage.getItem("login_") !== null){
+        var toast_ = localStorage.getItem("login__").split("|")
+        ss.toast(toast_[1],toast_[0],null,null,"#212529")
+        localStorage.removeItem("login_")
+        localStorage.removeItem("login__")
+    }
 }
 
 

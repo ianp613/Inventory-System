@@ -182,7 +182,7 @@ if(document.getElementById("isp")){
                     edit_configuration_save.setAttribute("c-id",res.configuration[0].id)
                     edit_isp_configuration_modal.show()
                 }else{
-                    bs5.toast(res.type,res.message)
+                    ss.toast(res.message,res.type,null,null,"#212529")
                 }
             })
         }
@@ -198,15 +198,16 @@ if(document.getElementById("isp")){
             id : delete_isp_configuration_btn.getAttribute("c-id")
         }).then(res => {
             if(res.status){
+                delete_isp_configuration_modal.hide()
                 loadConfiguration()
             }
-            bs5.toast(res.type,res.message)
+            ss.toast(res.message,res.type,null,null,"#212529")
         })
     })
 
     edit_configuration_save.addEventListener("click", function () {
         if(!edit_configuration_name.value){
-            bs5.toast("warning","Please provide name.")
+            ss.toast("Please provide name.","warning",null,null,"#212529")
             return
         }
         sole.post("../../controllers/isp/edit_configuration.php",{
@@ -218,9 +219,10 @@ if(document.getElementById("isp")){
             dns2 : edit_configuration_dns2.value
         }).then(res => {
             if(res.status){
+                edit_isp_configuration_modal.hide()
                 loadConfiguration()
             }
-            bs5.toast(res.type,res.message)
+            ss.toast(res.message,res.type,null,null,"#212529")
         })
     })
 
@@ -267,7 +269,7 @@ if(document.getElementById("isp")){
 
     configuration_save.addEventListener("click", function () {
         if(!configuration_name.value){
-            bs5.toast("warning","Please provide name.")
+            ss.toast("Please provide name.","warning",null,null,"#212529")
             return
         }
         sole.post("../../controllers/isp/add_configuration.php", {
@@ -284,8 +286,9 @@ if(document.getElementById("isp")){
                 configuration_gateway.value = ""
                 configuration_dns1.value = ""
                 configuration_dns2.value = ""
+                add_isp_configuration_modal.hide()
             }
-            bs5.toast(res.type,res.message)
+            ss.toast(res.message,res.type,null,null,"#212529")
             loadConfiguration()
         })
     })
@@ -332,10 +335,10 @@ if(document.getElementById("isp")){
                     dns2: dns2.value
                 }).then(res => validateResponse(res,"add_isp"))   
             }else{
-                bs5.toast("warning","Please input WAN IP.")
+                ss.toast("Please input WAN IP.","warning",null,null,"#212529")
             }
         }else{
-            bs5.toast("warning","Please provide name.")
+            ss.toast("Please provide name.","warning",null,null,"#212529")
         }
     })
 
@@ -356,10 +359,10 @@ if(document.getElementById("isp")){
                     dns2: edit_dns2.value
                 }).then(res => validateResponse(res,"edit_isp"))   
             }else{
-                bs5.toast("warning","Please input WAN IP.")
+                ss.toast("Please input WAN IP.","warning",null,null,"#212529")
             }
         }else{
-            bs5.toast("warning","Please provide name.")
+            ss.toast("Please provide name.","warning",null,null,"#212529")
         }
     })
 
@@ -470,14 +473,16 @@ if(document.getElementById("isp")){
                 sole.get("../../controllers/isp/get_isp.php").then(res => loadISP(res))
             }
             if(func == "edit_isp"){
+                edit_isp_modal.hide()
                 sole.get("../../controllers/isp/get_isp.php").then(res => loadISP(res))
             }
             if(func == "delete_isp"){
+                delete_isp_modal.hide()
                 sole.get("../../controllers/isp/get_isp.php").then(res => loadISP(res))
             }
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }else{
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }
     }
     document.querySelector('#isp_table tbody').addEventListener('click', function(e) {

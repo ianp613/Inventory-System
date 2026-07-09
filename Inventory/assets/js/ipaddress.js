@@ -114,7 +114,7 @@ if(document.getElementById("ipaddress")){
 
     // POST EDIT NETWORK
     edit_network_btn.addEventListener("click", function(){
-        !edit_network_name.value ? bs5.toast("warning","Please provide network name.") : null
+        !edit_network_name.value ? ss.toast("Please provide network name.","warning",null,null,"#212529") : null
 
         edit_ready_state.style = "display: none;"
         edit_saving_state.style = "display: flex;"
@@ -179,7 +179,7 @@ if(document.getElementById("ipaddress")){
     // POST ADD NETWORK
     add_network_btn.addEventListener("click", function () {
         if(!ip_gateway_select.value || ip_gateway_select.value == "-"){
-            bs5.toast("warning","Please select router.")
+            ss.toast("Please select a router.","warning",null,null,"#212529")
             return
         }
         ready_state.style = "display: none;"
@@ -336,7 +336,7 @@ if(document.getElementById("ipaddress")){
             delete_network_btn.setAttribute("nid",res.network[0].id)
             edit_network_modal.show()
         }else{
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }
     }
 
@@ -466,6 +466,7 @@ if(document.getElementById("ipaddress")){
             delete_saving_state.style = "display: none;"
         }
         if(func == "ip_import"){
+            import_modal.hide()
             ip_import.removeAttribute("disabled")
             ip_import_input.value = ""
         }
@@ -514,9 +515,9 @@ if(document.getElementById("ipaddress")){
                     nid: localStorage.getItem("selected_network_id")
                 }).then(res => loadIP(res))
             }
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }else{
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }
         
     }
@@ -570,7 +571,7 @@ if(document.getElementById("ipaddress")){
                 id: localStorage.getItem("selected_network_id")
             }).then(res => downloadFile(baseUrl + res[0], res[1]))    
         }else{
-            bs5.toast("warning","Nothing to export.")
+            ss.toast("Nothing to export.","warning",null,null,"#212529")
         }
     })
 
@@ -582,12 +583,12 @@ if(document.getElementById("ipaddress")){
             ip_import.setAttribute("disabled","")
             let imp = true;
             if(this.files[0].name.split('.').pop().toLowerCase() != "xlsx" && this.files[0].name.split('.').pop().toLowerCase() != "xls"){
-                bs5.toast("warning","Invalid file.")
+                ss.toast("Invalid file.","warning",null,null,"#212529")
                 ip_import.removeAttribute("disabled")
                 imp = false
             }
             if(this.files[0].size > 102400){
-                bs5.toast("warning","File exceed the maximum file size of 100KB only.")
+                ss.toast("File exceed the maximum file size of 100KB only.","warning",null,null,"#212529")
                 ip_import.removeAttribute("disabled")
                 imp = false
             }
@@ -613,7 +614,7 @@ if(document.getElementById("ipaddress")){
             link.click();
             document.body.removeChild(link);
         })
-        .catch(error => bs5.toast("error", "Export Failed: " + error));
+        .catch(error => ss.toast("Export Failed: " + error,"error",null,null,"#212529"));
 
         setTimeout(() => {
             sole.post("../../controllers/clear_temp.php").then(res => console.log(res));

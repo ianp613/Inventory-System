@@ -120,20 +120,20 @@ if(document.getElementById("cctv")){
                     sole.file("../../controllers/cctv/add_site.php",formData)
                     .then(res => {
                         add_cctv_map_modal.hide()
-                        bs5.toast(res.type,res.message,res.size)
+                        ss.toast(res.message,res.type,null,null,"#212529")
                         map_location.value = ""
                         floorplan.value = ""
                         map_remarks.value = ""
                         loadSite(res)
                     })    
                 }else{
-                    bs5.toast("warning","Please select floor plan.")
+                    ss.toast("Please select floor plan.","warning",null,null,"#212529")
                 }
             }else{
-                bs5.toast("warning","Please input map location.")
+                ss.toast("Please input map location.","warning",null,null,"#212529")
             }    
         }else{
-            bs5.toast("info","Please operate as group member.")
+            ss.toast("Please operate as group member.","info",null,null,"#212529")
         }
         
 
@@ -141,7 +141,7 @@ if(document.getElementById("cctv")){
     })
 
     edit_site_btn.addEventListener("click",function(){
-        !edit_map_location.value ? bs5.toast("warning","Please input map location.") : null
+        !edit_map_location.value ? ss.toast("Please input map location.","warning",null,null,"#212529") : null
         // edit_floorplan.files.length > 0 ? null : bs5.toast("warning","Please select floor plan.")
 
         const formData = new FormData();
@@ -153,7 +153,7 @@ if(document.getElementById("cctv")){
 
         .then(res => {
             edit_cctv_map_modal.hide()
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
             if(cctv_dropdown_toggle.getAttribute("lid") == this.getAttribute("lid")){
                 cctv_dropdown_toggle.innerText = edit_map_location.value 
                 manage_camera_title.innerHTML = "<span class=\"fa fa-video-camera\"></span> " + edit_map_location.value 
@@ -179,7 +179,8 @@ if(document.getElementById("cctv")){
         sole.post("../../controllers/cctv/delete_site.php",{
             id: this.getAttribute("lid")
         }).then(res => {
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
+            delete_cctv_map_modal.hide()
             if(cctv_dropdown_toggle.getAttribute("lid") == this.getAttribute("lid")){
                 cctv_dropdown_toggle.innerText = "-- Select Map --"
             }
@@ -230,7 +231,7 @@ if(document.getElementById("cctv")){
                 })
             }    
         }else{
-            bs5.toast("info","Please operate as group member.")
+            ss.toast("Please operate as group member.","info",null,null,"#212529")
         }
         
     })
@@ -238,12 +239,12 @@ if(document.getElementById("cctv")){
     manage_camera_btn.addEventListener("click",function(){
         if(JSON.parse(localStorage.getItem("g_member"))){
             if(cctv_dropdown_toggle.innerText == "-- Select Map --"){
-                bs5.toast("warning","Please select map first.")
+                ss.toast("Please select map first.","warning",null,null,"#212529")
             }else{
                 manage_camera_modal.show()
             }    
         }else{
-            bs5.toast("info","Please operate as group member.")
+            ss.toast("Please operate as group member.","info",null,null,"#212529")
         }
         
     })
@@ -298,7 +299,7 @@ if(document.getElementById("cctv")){
                         id: e.target.getAttribute("c-id")
                     }).then(res => {
                         if(res.status){
-                            alert(res.message)
+                            ss.toast(res.message,"info",null,null,"#212529")
                             loadMAP_CAMERA()
                             saveCanvas()
                         }
@@ -477,7 +478,7 @@ if(document.getElementById("cctv")){
                 camera_list_modal.show()
             }    
         }else{
-            bs5.toast("info","Please operate as group member.")
+            ss.toast("Please operate as group member.","info",null,null,"#212529")
         }
         
     });
@@ -571,9 +572,9 @@ if(document.getElementById("cctv")){
                 saveCanvas()
                 clearForm()
             }
-            alert(res.message)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }else{
-            alert(res.message)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }
     }
 

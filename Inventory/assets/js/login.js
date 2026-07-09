@@ -6,14 +6,13 @@ if(document.getElementById("login")){
     // localStorage.removeItem("privileges");
 
     if(localStorage.getItem("inactivity")){
-        bs5.toast("info","<div class=\"w-100 mb-2 text-primary\"><span class=\"fa fa-info\"></span></div>You've been logged out of your account due to inactivity. <br> Please log in again to resume your work.","lg", true, false)
+        ss.toast("Logged Out","info","You've been logged out of your account due to inactivity. Please log in again to resume your work.","I understand","#212529")
         localStorage.removeItem("inactivity")
     }
     localStorage.clear();
     let userid = document.getElementById("userid")
     let password = document.getElementById("password")
     let login_btn = document.getElementById("login_btn")
-    let login_alert = document.getElementById("login_alert")
     let login_sound = false
     let rem_user_ = false
 
@@ -21,12 +20,6 @@ if(document.getElementById("login")){
     .then(res => {
         res["sound"] == "1" ? login_sound = true : login_sound = false;
     });
-    login_alert.addEventListener("click", e => {
-        login_alert.style = "display: none !important;";
-        userid.value = ""
-        password.value = ""
-        userid.focus()
-    })
     userid.focus()
 
     document.addEventListener("keydown", e=>{
@@ -79,22 +72,18 @@ if(document.getElementById("login")){
     function validateLogin(res){
         if(res.status){
             if(res.g_member){
-                bs5.toast(res.type,res.message + " " + res.user[0]["name"],res.size, true, false)    
+                localStorage.setItem("login_","true")
+                localStorage.setItem("login__",res.type+"|"+res.message + " " + res.user[0]["name"])
                 // login_sound ? audio.play() : null;
                 login_btn.setAttribute("disabled","")
-                setTimeout(() => {
-                    window.location.replace("inventory.php?loc=dashboard");
-                }, 3000);
+                window.location.replace("inventory.php?loc=dashboard");
             }else{
-                bs5.toast(res.type,res.message,res.size, true, true)
+                ss.toast("Inactive Account",res.type,res.message,"I understand","#212529")
             }
         }else{
-            login_alert.style = "display: flex !important; height: 30px;"
-            login_alert.innerText = res.message
-
-            setTimeout(() => {
-                login_alert.style = "display: none !important; height: 30px;"
-            }, 2000);
+            userid.value = ""
+            password.value = ""
+            ss.toast("Invalid username or password. Please try again!","error",null,"Close!","#212529")
         }
     }
 

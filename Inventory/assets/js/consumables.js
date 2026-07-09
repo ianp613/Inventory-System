@@ -271,7 +271,7 @@ if(document.getElementById("consumables")){
             if(JSON.parse(localStorage.getItem("g_member"))){
                 clear_consumable_log_modal.show()
             }else{
-                bs5.toast("info","Please operate as group member.")
+                ss.toast("Please operate as group member.","info",null,null,"#212529")
             }
         })    
     }
@@ -279,7 +279,8 @@ if(document.getElementById("consumables")){
     clear_consumable_log_confirm.addEventListener("click", function () {
         sole.get("../../controllers/consumables/delete_consumables_log.php")
         .then(res => {
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
+            clear_consumable_log_modal.hide()
             get_consumables_logs()
         })
     })
@@ -457,7 +458,7 @@ if(document.getElementById("consumables")){
                 id : e.target.getAttribute("r-id")
             }).then(res => {
                 get_consumables_requests_others()
-                bs5.toast(res.type,res.message,res.size)
+                ss.toast(res.message,res.type,null,null,"#212529")
             })
         }
         if(e.target.classList.contains('claimed_request_row')) {
@@ -465,7 +466,7 @@ if(document.getElementById("consumables")){
                 id : e.target.getAttribute("r-id")
             }).then(res => {
                 get_consumables_requests_others()
-                bs5.toast(res.type,res.message,res.size)    
+                ss.toast(res.message,res.type,null,null,"#212529") 
             })
         }
         if(e.target.classList.contains('cancel_request_row')) {
@@ -577,7 +578,7 @@ if(document.getElementById("consumables")){
 
     decline_request_btn.addEventListener("click", e => {
         if(!decline_request_remarks.value){
-            bs5.toast("warning","Please input a reason for declining.")
+            ss.toast("Please input a reason for declining.","warning",null,null,"#212529")
             return
         }
         sole.post("../../controllers/consumables/decline_request.php",{
@@ -585,7 +586,7 @@ if(document.getElementById("consumables")){
             remarks : decline_request_remarks.value ? decline_request_remarks.value : "-"
         }).then(res => {
             decline_request_modal.hide()
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
             get_consumables_requests_others()
         })
     })
@@ -594,7 +595,7 @@ if(document.getElementById("consumables")){
         sole.post("../../controllers/consumables/cancel_request.php",{
             id : el.getAttribute("r-id")
         }).then(res => {
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
             get_consumables_requests()
             if(localStorage.getItem("c_authority") == "true"){
                 get_consumables_requests_others()
@@ -710,13 +711,13 @@ if(document.getElementById("consumables")){
         if(JSON.parse(localStorage.getItem("g_member"))){
             add_log_modal.show()
         }else{
-            bs5.toast("info","Please operate as group member.")
+            ss.toast("Please operate as group member.","info",null,null,"#212529")
         }
     })
 
     add_consumables_btn.addEventListener("click",function(){
         if(!consumable_measurement.value){
-            bs5.toast("warning","Please select measurement.")
+            ss.toast("Please select measurement.","warning",null,null,"#212529")
             return
         }
         if(consumable_description.value){
@@ -729,7 +730,7 @@ if(document.getElementById("consumables")){
                 restock_point: consumable_restock_point.value
             }).then(res => validateResponse(res,"add_consumables"))
         }else{
-            bs5.toast("warning","Please add description.")
+            ss.toast("Please add description.","warning",null,null,"#212529")
         }
     })
 
@@ -745,7 +746,7 @@ if(document.getElementById("consumables")){
                 restock_point: edit_consumable_restock_point.value
             }).then(res => validateResponse(res,"edit_consumables"))
         }else{
-            bs5.toast("warning","Please add description.")
+            ss.toast("Please add description.","warning",null,null,"#212529")
         }
     })
 
@@ -892,7 +893,7 @@ if(document.getElementById("consumables")){
                     quantity: restock_quantity.value,
                 }).then(res => validateResponse(res,"restock_consumables"))
             }else{
-                bs5.toast("warning","Please enter a valid quantity.")
+                ss.toast("Please enter a valid quantity.","warning",null,null,"#212529")
             }
         }
     })
@@ -930,7 +931,7 @@ if(document.getElementById("consumables")){
             })
             
         }else{
-            bs5.toast("info","Please operate as group member.")
+            ss.toast("Please operate as group member.","info",null,null,"#212529")
         }
     })
 
@@ -1100,9 +1101,9 @@ if(document.getElementById("consumables")){
                 restock_consumables_modal.hide()
                 loadPage()
             }
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }else{
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }
     }
     document.querySelector('#consumables_table tbody').addEventListener('click', function(e) {

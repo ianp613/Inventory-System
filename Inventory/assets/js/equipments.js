@@ -385,7 +385,7 @@ if(document.getElementById("equipments")){
         if(localStorage.getItem("selected_equipment") != null){
             add_entry_modal.show()
         }else{
-            bs5.toast("warning","Please select equipment first.")
+            ss.toast("Please select equipment first.","warning",null,null,"#212529")
         }
     })
 
@@ -447,10 +447,10 @@ if(document.getElementById("equipments")){
                     remarks: add_entry_remarks_input.value
                 }).then(res => validateResponse(res,"add_entry"))
             }else{
-                bs5.toast("warning","Please select equipment first.")
+                ss.toast("Please select equipment first.","warning",null,null,"#212529")
             }
         }else{
-            bs5.toast("warning","Please input description.")
+            ss.toast("Please input description.","warning",null,null,"#212529")
         }
     })
 
@@ -569,9 +569,9 @@ if(document.getElementById("equipments")){
                 delete_equipment_modal.hide()
                 sole.get("../../controllers/equipments/get_equipment.php").then(res => loadEquipment(res))
             }
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }else{
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }
     }
 
@@ -678,10 +678,10 @@ if(document.getElementById("equipments")){
                             remarks: edit_entry_remarks_input.value
                         }).then(res => validateResponse(res,"edit_entry"))
                     }else{
-                        bs5.toast("warning","Please select equipment first.")
+                        ss.toast("Please select equipment first.","warning",null,null,"#212529")
                     }
                 }else{
-                    bs5.toast("warning","Please input description.")
+                    ss.toast("Please input description.","warning",null,null,"#212529")
                 }
                 
             })
@@ -833,7 +833,7 @@ if(document.getElementById("equipments")){
             edit_entry_remarks_input.value = res.entry[0].remarks != "-" ? res.entry[0].remarks : ""
             edit_entry_modal.show()
         }else{
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }
     }
 

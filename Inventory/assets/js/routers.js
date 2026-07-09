@@ -249,14 +249,14 @@ if(document.getElementById("routers")){
                     if(edit_router_wan1.value == "-" && edit_router_wan2.value == "-"){
                         postRouterUpdate(this.getAttribute("r-id"))
                     }else{
-                        bs5.toast("warning","WAN 1 (Primary) should not be the same as WAN 2 (Secondary).")
+                        ss.toast("WAN 1 (Primary) should not be the same as WAN 2 (Secondary).","warning",null,null,"#212529")
                     }
                 }
             }else{
                 postRouterUpdate(this.getAttribute("r-id"))
             }
         }else{
-            bs5.toast("warning",message)
+            ss.toast(message,"warning",null,null,"#212529")
         }
     })
 
@@ -314,14 +314,14 @@ if(document.getElementById("routers")){
                     if(router_wan1.value == "-" && router_wan2.value == "-"){
                         postRouter()
                     }else{
-                        bs5.toast("warning","WAN 1 (Primary) should not be the same as WAN 2 (Secondary).")
+                        ss.toast("WAN 1 (Primary) should not be the same as WAN 2 (Secondary).","warning",null,null,"#212529")
                     }
                 }
             }else{
                 postRouter()
             }
         }else{
-            bs5.toast("warning",message)
+            ss.toast(message,"warning",null,null,"#212529")
         }
     })
 
@@ -999,7 +999,7 @@ if(document.getElementById("routers")){
                 ]).draw(false)
             }
         }else{
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }    
     }
     function validateResponse(res, func){
@@ -1026,9 +1026,9 @@ if(document.getElementById("routers")){
                 delete_router_modal.hide()
                 loadPage()
             }
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }else{
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }
     }
 
