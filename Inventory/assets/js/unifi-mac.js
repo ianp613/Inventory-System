@@ -1,6 +1,7 @@
 var register_form_btn     = document.getElementById("register_form_btn")
 var delete_form_btn       = document.getElementById("delete_form_btn")
 var password_form_btn     = document.getElementById("password_form_btn")
+var voucher_form_btn     = document.getElementById("voucher_form_btn")
 
 var register_form         = document.getElementById("register_form")
 var delete_form           = document.getElementById("delete_form")
@@ -31,6 +32,23 @@ var delete_loading_mac    = document.getElementById("delete_loading_mac")
 var password_mac_ssid     = document.getElementById("password_mac_ssid")
 var password_mac          = document.getElementById("password_mac")
 var password_loading_mac  = document.getElementById("password_loading_mac")
+
+var voucher_clear         = document.getElementById("voucher_clear")
+var voucher_get           = document.getElementById("voucher_get")
+var voucher_get_loading   = document.getElementById("voucher_get_loading")
+
+var voucher_site            = document.getElementById("voucher_site")
+var voucher_name          = document.getElementById("voucher_name")
+var voucher_device        = document.getElementById("voucher_device")
+var voucher_project       = document.getElementById("voucher_project")
+var voucher_location      = document.getElementById("voucher_location")
+
+var voucher_code          = document.getElementById("voucher_code")
+var voucher_duration      = document.getElementById("voucher_duration")
+var voucher_speed         = document.getElementById("voucher_speed")
+var voucher_status        = document.getElementById("voucher_status")
+var voucher_qouta         = document.getElementById("voucher_qouta")
+var voucher_used          = document.getElementById("voucher_used")
 
 var um_login              = document.getElementById("um_login")
 var um_login_card         = document.getElementById("um_login_card")
@@ -75,9 +93,13 @@ register_form_btn.addEventListener("click", e => {
   password_form_btn.classList.remove("btn-light")
   password_form_btn.classList.add("btn-secondary")
 
+  voucher_form_btn.classList.remove("btn-light")
+  voucher_form_btn.classList.add("btn-secondary")
+
   register_form.hidden  = false
   delete_form.hidden    = true
   password_form.hidden  = true
+  voucher_form.hidden   = true
   mac_message.innerHTML = ""
 })
 
@@ -91,9 +113,13 @@ delete_form_btn.addEventListener("click", e => {
   password_form_btn.classList.remove("btn-light")
   password_form_btn.classList.add("btn-secondary")
 
+  voucher_form_btn.classList.remove("btn-light")
+  voucher_form_btn.classList.add("btn-secondary")
+
   register_form.hidden  = true
   delete_form.hidden    = false
   password_form.hidden  = true
+  voucher_form.hidden   = true
   mac_message.innerHTML = ""
 })
 
@@ -107,9 +133,33 @@ password_form_btn.addEventListener("click", e => {
   delete_form_btn.classList.remove("btn-light")
   delete_form_btn.classList.add("btn-secondary")
 
+  voucher_form_btn.classList.remove("btn-light")
+  voucher_form_btn.classList.add("btn-secondary")
+
   register_form.hidden  = true
   delete_form.hidden    = true
   password_form.hidden  = false
+  voucher_form.hidden   = true
+  mac_message.innerHTML = ""
+})
+
+voucher_form_btn.addEventListener("click", e => {
+  password_form_btn.classList.add("btn-secondary")
+  password_form_btn.classList.remove("btn-light")
+
+  register_form_btn.classList.remove("btn-light")
+  register_form_btn.classList.add("btn-secondary")
+
+  delete_form_btn.classList.remove("btn-light")
+  delete_form_btn.classList.add("btn-secondary")
+
+  voucher_form_btn.classList.add("btn-light")
+  voucher_form_btn.classList.remove("btn-secondary")
+
+  register_form.hidden  = true
+  delete_form.hidden    = true
+  password_form.hidden  = true
+  voucher_form.hidden   = false
   mac_message.innerHTML = ""
 })
 
@@ -149,6 +199,28 @@ clear_btn.addEventListener("click", e => {
   mac_project.appendChild(opt_project)
 })
 
+voucher_clear.addEventListener("click", e => {
+  voucher_site.value          = ""
+  voucher_name.value          = ""
+  voucher_device.value        = ""
+  voucher_project.value       = ""
+  voucher_location.value      = ""
+  voucher_project.innerHTML   = ""
+
+  voucher_code.innerText      = ""
+  voucher_duration.innerText  = ""
+  voucher_speed.innerText     = ""
+  voucher_status.innerText    = ""
+  voucher_qouta.innerText     = ""
+  voucher_used.innerText      = ""
+  var opt_project             = document.createElement("option")
+  opt_project.value           = ""
+  opt_project.innerText       = "-- Select Project / Office --"
+  opt_project.disabled        = true
+  opt_project.selected        = true
+  voucher_project.appendChild(opt_project)
+})
+
 delete_clear_btn.addEventListener("click", e => {
   delete_mac_address.value  = ""
   delete_mac_ssid.value     = ""
@@ -178,11 +250,11 @@ register_mac.addEventListener("click", e => {
     return
   }
   if(!mac_project.value){
-    alert("Please input project.")
+    alert("Please select project.")
     return
   }
   if(!mac_project.value){
-    alert("Please input location.")
+    alert("Please select location.")
     return
   }
   if(!mac_register_by.value){
@@ -210,6 +282,60 @@ register_mac.addEventListener("click", e => {
     clear_btn.click()
   })
 })
+
+voucher_get.addEventListener("click", e => {
+  if(!voucher_site.value){
+    alert("Please select wifi network.")
+    return    
+  }
+  if(!voucher_name.value){
+    alert("Please input name.")
+    return
+  }
+  if(!voucher_device.value){
+    alert("Please select device.")
+    return
+  }
+  if(!voucher_project.value){
+    alert("Please select project.")
+    return
+  }
+  if(!voucher_location.value){
+    alert("Please select location.")
+    return
+  }
+
+  voucher_get.hidden            = true
+  voucher_get_loading.hidden    = false
+  voucher_clear.hidden          = true
+  sole.post("../controllers/unifi-mac/get-code.php",{
+    voucher_site          : voucher_site.value,
+    voucher_name          : voucher_name.value,
+    voucher_device        : voucher_device.value,
+    voucher_project       : voucher_project.value,
+    voucher_location      : voucher_location.value
+  }).then(res => {
+    displayMessage_(res)
+
+    if (res.status === 'success' && res.vouchers.length > 0) {
+        const randomVoucher = res.vouchers[Math.floor(Math.random() * res.vouchers.length)];
+        voucher_code.innerText            = formatVoucherCode(randomVoucher.code)
+        voucher_duration.innerText        = randomVoucher.duration
+        voucher_speed.innerText           = randomVoucher.note
+        voucher_status.innerText          = randomVoucher.status
+        voucher_qouta.innerText           = randomVoucher.quota
+        voucher_used.innerText            = randomVoucher.used
+    }
+    voucher_clear.hidden          = false
+    voucher_get.hidden            = false
+    voucher_get_loading.hidden    = true
+  })
+})
+
+function formatVoucherCode(code) {
+    const str = String(code);
+    return str.slice(0, 5) + '-' + str.slice(5, 10);
+}
 
 delete_mac.addEventListener("click", e => {
   if(!delete_mac_address.value){
@@ -297,6 +423,19 @@ function displayMessage(res){
         )
       }
     }
+}
+function displayMessage_(res){
+  mac_message.innerHTML = ""
+    mac_message.insertAdjacentHTML("afterbegin", 
+      `<div class="alert-`+res.status+` p-3 pb-2 rounded-3 mb-2">`+
+          `<div class="d-flex justify-content-between">`+
+              `<h6 class="f-13"><span class="fa fa-wifi"></span> `+res.controller+`</h6>`+
+              `<span onclick="this.parentNode.parentNode.remove()" class="fa fa-remove"></span>`+
+          `</div>`+
+          `<h6 class="ms-4 f-i f-13 unifi-message">`+res.message+`</h6>`+
+      `</div>`
+    )
+
 }
 loadLastMAC()
 
@@ -417,11 +556,25 @@ function GetLocations(){
     opt_building.disabled     = true
     opt_building.selected     = true
     mac_location.appendChild(opt_building)
+
+    voucher_location.innerHTML    = ""
+    var opt_building          = document.createElement("option")
+    opt_building.value        = ""
+    opt_building.innerText    = "-- Select Site / Location --"
+    opt_building.disabled     = true
+    opt_building.selected     = true
+    voucher_location.appendChild(opt_building)
+
     Building.forEach(bldg_ => {
       var opt                 = document.createElement("option")
       opt.value               = bldg_[0]
       opt.innerText           = bldg_[0]
       mac_location.appendChild(opt)
+
+      var opt                 = document.createElement("option")
+      opt.value               = bldg_[0]
+      opt.innerText           = bldg_[0]
+      voucher_location.appendChild(opt)
     });
   })
 
@@ -440,6 +593,26 @@ function GetLocations(){
           opt.value           = project
           opt.innerText       = project
           mac_project.appendChild(opt)
+        })
+      }
+    });
+  })
+
+  voucher_location.addEventListener("change", e => {
+    voucher_project.innerHTML     = ""
+    var opt_project           = document.createElement("option")
+    opt_project.value         = ""
+    opt_project.innerText     = "-- Select Project / Office --"
+    opt_project.disabled      = true
+    opt_project.selected      = true
+    voucher_project.appendChild(opt_project)
+    Building.forEach(bldg_ => {
+      if(bldg_[0] == voucher_location.value){
+        bldg_[1][bldg_[0]].Project.forEach(project => {
+          var opt             = document.createElement("option")
+          opt.value           = project
+          opt.innerText       = project
+          voucher_project.appendChild(opt)
         })
       }
     });
@@ -487,3 +660,7 @@ document.addEventListener("contextmenu", e => {
 
 
 splash(null, 200)
+
+// um_login_userid.value = ""
+// um_login_password.value = ""
+// um_login_btn.click()

@@ -32,6 +32,7 @@
                         <button id="register_form_btn" class="btn btn-light border">Register MAC</button>
                         <button id="delete_form_btn" class="btn btn-secondary border">Delete MAC</button>
                         <button id="password_form_btn" class="btn btn-secondary border">Wifi Status</button>
+                        <button id="voucher_form_btn" class="btn btn-secondary border">Voucher Code</button>
                     </div>
                 </div>
 
@@ -170,6 +171,80 @@
                 </div>
                 <!-- PASSWORD FORM END -->
 
+
+
+
+
+
+
+
+
+
+
+
+                <!-- VOUCHER FORM START -->
+                <div hidden id="voucher_form">
+                    <div class="modal-body">
+                        <div class="row">
+                            <h6>Code: <span id="voucher_code"></span></h6>
+                            <h6>Duration <span class="f-i f-12">(minutes)</span>: <span id="voucher_duration"></span></h6>
+                            <h6>Speed: <span id="voucher_speed"></span></h6>
+                            <h6>Status: <span id="voucher_status"></span></h6>
+                            <h6>Qouta: <span id="voucher_qouta"></span></h6>
+                            <h6>Used: <span id="voucher_used"></span></h6>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col">
+                                <label for="voucher_site" class="mb-2">Wifi Network <span class="f-i f-12">(Check the device obtained IP Address)</span></label>
+                                <select name="" id="voucher_site" class="form-control">
+                                    <option value="" selected disabled>-- Select Wifi Network --</option>
+                                    <option value="z1qqymab">Network 10 | Free Wifi Planning</option>
+                                    <option value="5n1pz4m9">Network 07 | Annex Building 1st Floor</option>
+                                    <option value="dqevxwsa">Network 07 | Annex Building 2nd Floor</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <label for="voucher_name" class="mb-2">Name</label>
+                                <input required type="text" name="" id="voucher_name" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="voucher_device" class="mb-2">Device</label>
+                                <select name="" id="voucher_device" class="form-control">
+                                    <option disabled selected value="">-- Select Device --</option>
+                                    <option value="Cellphone">Cellphone</option>
+                                    <option value="Laptop">Laptop</option>
+                                    <option value="Desktop">Desktop</option>
+                                    <option value="Smart TV / Android TV">Smart TV / Android TV</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <label for="voucher_location" class="mb-2">Site / Location</label>
+                                <select name="" id="voucher_location" class="form-control">
+                                    <option selected disabled value="">-- Select Site / Location --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="voucher_project" class="mb-2">Project / Office</label>
+                                <select name="" id="voucher_project" class="form-control">
+                                    <option selected disabled value="">-- Select Project / Office --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-header border-0 pt-0">
+                        <div class="d-flex wd-500 justify-content-end">
+                            <button id="voucher_clear" type="button" class="btn btn-secondary btn-sm rounded-pill wd-120 me-1"><span class="fa fa-remove"></span> Clear</button>
+                            <button id="voucher_get" type="button" class="btn btn-success btn-sm rounded-pill wd-120 me-1"><span class="fa fa-key"></span> Get Code</button>
+                            <button hidden disabled id="voucher_get_loading" type="button" class="btn btn-danger btn-sm rounded-pill"><div class="spinner-border wd-15 ht-15" role="status"></div> Loading</button>     
+                        </div>
+                    </div>
+                </div>
+                <!-- VOUCHER FORM END -->
 
 
 
