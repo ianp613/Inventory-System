@@ -56,7 +56,7 @@
               <a class="text-success" target="_blank" href="https://203.177.127.155:58787/FPO/"><span class="fa fa-external-link"></span> https://203.177.127.155:58787/FPO/</a> -->
               <a class="text-success text-light fw-bolder f-12" style="text-decoration: none;" target="_blank" href="https://ddc-artisan.ddns.net/views/unifi-mac.php"><span class="fa fa-caret-right"></span> WIFI TEAM UNIFI MAC</a>
               <br>
-              <a class="text-success text-light fw-bolder f-12" style="text-decoration: none;" target="_blank" href="https://203.177.127.134:23945/auth/login"><span class="fa fa-caret-right"></span> DDC LEYTE IT ASSETS AND OPERATION MANAGEMENT SYSTEM <span class="text-dark">(ITAOMS)</span></a>
+              <a class="text-success text-light fw-bolder f-12" style="text-decoration: none;" target="_blank" href="https://203.177.127.134:23945/auth/login"><span class="fa fa-caret-right"></span> PRODUCTION RESOURCE & INFRASTRUCTURE STATUS MANAGER <span style="color: #36b9cc;">(PRISM)</span></a>
             </div>  
             </div>
           </div>
