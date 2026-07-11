@@ -1,224 +1,215 @@
 <?php
-/**
- * get-code.php
- *
- * Expects POST JSON body: { "voucher_site": "..." }  (matched against "site_id" in config)
- * Returns JSON: { status, message, controller, vouchers }
- *
- * status is one of: "success", "warning", "danger", "info"
- */
+    class UNIFI_MAC_REGISTER{
+        public static function register($config,$ssid,$client_mac){
+            $response = [
+                "site" => [],
+                "status" => [],
+                "message" => []
+            ];
+            foreach ($config->unifi as $conf) {
+                $controllerUrl = 'https://'.$conf->host.':'.$conf->port;
+                $siteId = $conf->site_id;
+                $username = $conf->username;
+                $password = $conf->password;
+                array_push($response["site"],$conf->name);
 
-header('Content-Type: application/json');
-include("../../includes.php");
-$data = json_decode(file_get_contents('php://input'), true);
 
-// ---------------------------------------------------------------
-// 1. Read input
-// ---------------------------------------------------------------
-$voucher_site = $data['voucher_site'] ?? '';
+                // Check if controller is reachable
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $controllerUrl);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_NOBODY, true);           // no body, faster
+                curl_setopt($ch, CURLOPT_TIMEOUT, 7);            // total timeout
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);     // connection timeout
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
-if ($voucher_site === '') {
-    respond('warning', 'Missing "voucher_site" parameter.');
-}
+                curl_exec($ch);
 
-// ---------------------------------------------------------------
-// 2. Load controllers config
-// ---------------------------------------------------------------
-$configPath = '../../assets/files/unifi-mac.config.json'; // adjust path if needed
+                if (curl_errno($ch)) {
+                    array_push($response["status"], "danger");
+                    array_push($response["message"], "⚠ Controller unreachable, please check unifi controller and try again.");
+                    curl_close($ch);
+                    continue;   // 🔥 skip to next server
+                }
 
-if (!file_exists($configPath)) {
-    respond('danger', 'controllers.json not found on server.');
-}
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
 
-$config = json_decode(file_get_contents($configPath), true);
+                $client_mac = strtolower(trim($client_mac ?? ''));
+                // Validate MAC address
+                if (!preg_match('/^([0-9a-f]{2}:){5}[0-9a-f]{2}$/', $client_mac)) {
+                    array_push($response["status"],"warning");
+                    array_push($response["message"],"⚠ Invalid MAC address");
+                    continue;
+                }
 
-if (json_last_error() !== JSON_ERROR_NONE || !isset($config['unifi'])) {
-    respond('danger', 'controllers.json is invalid or malformed.');
-}
+                // Step 1: Login
+                $loginData = json_encode([
+                    'username' => $username,
+                    'password' => $password
+                ]);
 
-// ---------------------------------------------------------------
-// 3. Find the matching controller by site_id
-// ---------------------------------------------------------------
-$controller = null;
-foreach ($config['unifi'] as $c) {
-    if (($c['site_id'] ?? '') === $voucher_site) {
-        $controller = $c;
-        break;
-    }
-}
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, "$controllerUrl/api/login");
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $loginData);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                curl_setopt($ch, CURLOPT_COOKIEJAR, 'unifi_cookie.txt');
+                curl_setopt($ch, CURLOPT_COOKIEFILE, 'unifi_cookie.txt');
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                curl_exec($ch);
+                curl_close($ch);
 
-if ($controller === null) {
-    respond('warning', "Site \"$voucher_site\" was not found in controllers.json.");
-}
+                // Step 2: Get WLAN configs
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, "$controllerUrl/api/s/$siteId/rest/wlanconf");
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                curl_setopt($ch, CURLOPT_COOKIEFILE, 'unifi_cookie.txt');
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                $clientsResponse = curl_exec($ch);
+                curl_close($ch);
 
-// ---------------------------------------------------------------
-// 4. Fetch vouchers from the matched controller
-// ---------------------------------------------------------------
-$result = fetchVouchers($controller);
+                $meta = json_decode($clientsResponse);
 
-respond(
-    $result['status'],
-    $result['message'],
-    $controller['name'],
-    $result['vouchers'] ?? []
-);
+                if ($meta->meta->rc != "ok") {
+                    array_push($response["status"],"danger");
+                    array_push($response["message"],"⚠ Failed to retrieve WLAN configs, please try again.");
+                    continue;
+                }
 
-// =================================================================
-// Functions
-// =================================================================
+                // Step 3: Find SSID by name (case-insensitive)
+                $target = null;
+                foreach ($meta->data as $wlan) {
+                if (isset($wlan->name) && strtolower($wlan->name) === strtolower($ssid)) {
+                    $target = $wlan;
+                    break;
+                }
+                }
 
-/**
- * Logs into a UniFi controller and retrieves its hotspot vouchers.
- */
-function fetchVouchers(array $controller): array
-{
-    $base = "https://{$controller['host']}:{$controller['port']}";
-    $site = $controller['site_id'];
-    $name = $controller['name'];
+                if (!$target) {
+                    array_push($response["status"],"warning");
+                    array_push($response["message"],"⚠ SSID '$ssid' not found.");
+                    continue;
+                }
 
-    $cookieFile = tempnam(sys_get_temp_dir(), 'unifi_');
+                $wlanId = $target->_id;
 
-    // --- Login ---
-    $loginPayload = json_encode([
-        'username' => $controller['username'],
-        'password' => $controller['password'],
-    ]);
 
-    $ch = curl_init("$base/api/login");
-    curl_setopt_array($ch, [
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => $loginPayload,
-        CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
-        CURLOPT_COOKIEJAR      => $cookieFile,
-        CURLOPT_COOKIEFILE     => $cookieFile,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_SSL_VERIFYPEER => false, // self-signed certs on local controllers
-        CURLOPT_SSL_VERIFYHOST => false,
-        CURLOPT_CONNECTTIMEOUT => 5,     // fail fast if host unreachable
-        CURLOPT_TIMEOUT        => 10,
-    ]);
+                // Step 4: Check MAC filtering enabled
+                $macFilterEnabled = $target->mac_filter_enabled ?? false;
+                $macFilterPolicy  = $target->mac_filter_policy ?? "none";
+                $macList          = $target->mac_filter_list ?? [];
 
-    $loginResponse = curl_exec($ch);
-    $curlErrno     = curl_errno($ch);
-    $curlError     = curl_error($ch);
-    $httpCode      = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+                if (!$macFilterEnabled) {
+                    array_push($response["status"],"warning");
+                    array_push($response["message"],"⚠ MAC filtering is not enabled on SSID '$ssid'.");
+                    continue;
+                }
 
-    // --- Connection-level failure (host down, timeout, DNS, refused) ---
-    if ($curlErrno !== 0) {
-        @unlink($cookieFile);
-        return [
-            'status'  => 'danger',
-            'message' => "Controller \"$name\" is not reachable ($curlError).",
-        ];
-    }
+                // Step 5: Check if MAC exists in filter list
+                $exists = false;
+                foreach ($macList as $mac) {
+                if (strtolower($mac) === strtolower($client_mac)) {
+                    $exists = true;
+                    break;
+                }
+                }
 
-    // --- Authentication failure ---
-    if ($httpCode !== 200) {
-        @unlink($cookieFile);
-        return [
-            'status'  => 'danger',
-            'message' => "Login failed for \"$name\" (HTTP $httpCode). Check credentials.",
-        ];
-    }
+                if ($exists) {
+                    array_push($response["status"],"warning");
+                    array_push($response["message"],"⚠ MAC $client_mac already exists in SSID '$ssid' filter list.");
+                    continue;
+                }
 
-    // --- Fetch vouchers ---
-    $ch = curl_init("$base/api/s/$site/stat/voucher");
-    curl_setopt_array($ch, [
-        CURLOPT_COOKIEFILE     => $cookieFile,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_SSL_VERIFYHOST => false,
-        CURLOPT_CONNECTTIMEOUT => 5,
-        CURLOPT_TIMEOUT        => 10,
-    ]);
+                // Step 6: Add MAC to filter list
+                $macList[] = strtolower($client_mac);
+                $target->mac_filter_list = array_values($macList); // reindex
+                $target->mac_filter_enabled = true; // ensure still enabled
+                $target->mac_filter_policy = $macFilterPolicy; // keep existing policy
 
-    $voucherResponse = curl_exec($ch);
-    $curlErrno2      = curl_errno($ch);
-    $curlError2      = curl_error($ch);
-    $httpCode2       = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+                $updatePayload = json_encode($target);
 
-    // logout (best-effort, ignore failures)
-    $ch = curl_init("$base/api/logout");
-    curl_setopt_array($ch, [
-        CURLOPT_POST           => true,
-        CURLOPT_COOKIEFILE     => $cookieFile,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_SSL_VERIFYHOST => false,
-        CURLOPT_CONNECTTIMEOUT => 5,
-        CURLOPT_TIMEOUT        => 5,
-    ]);
-    curl_exec($ch);
-    curl_close($ch);
-    @unlink($cookieFile);
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, "$controllerUrl/api/s/$siteId/rest/wlanconf/$wlanId");
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $updatePayload);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                curl_setopt($ch, CURLOPT_COOKIEFILE, 'unifi_cookie.txt');
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                $updateResponse = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
 
-    if ($curlErrno2 !== 0) {
-        return [
-            'status'  => 'danger',
-            'message' => "Lost connection to \"$name\" while fetching vouchers ($curlError2).",
-        ];
-    }
+                $updateResult = json_decode($updateResponse);
 
-    if ($httpCode2 !== 200) {
-        return [
-            'status'  => 'danger',
-            'message' => "Failed to fetch vouchers from \"$name\" (HTTP $httpCode2).",
-        ];
+                if ($updateResult && $updateResult->meta->rc === "ok" && $httpCode === 200) {
+                    array_push($response["status"],"success");
+                    array_push($response["message"],"✅ MAC $client_mac successfully added to SSID '$ssid' filter list.");
+                    continue;
+                } else {
+                    array_push($response["status"],"danger");
+                    array_push($response["message"],"⚠ Failed to update MAC filter list.");
+                    continue;
+                }
+            }
+            echo json_encode($response);
+        }
     }
 
-    $decoded = json_decode($voucherResponse, true);
 
-    if (json_last_error() !== JSON_ERROR_NONE || !isset($decoded['data'])) {
-        return [
-            'status'  => 'danger',
-            'message' => "Unexpected response format from \"$name\".",
-        ];
+
+    session_start();
+    header('Content-Type: application/json');
+    include("../../exeptionhandler.php");
+    include("../../includes.php");
+    $data = json_decode(file_get_contents('php://input'), true);
+    $unifi_config = json_decode(file_get_contents("../../assets/files/unifi-mac.config.json"));
+
+    $wifi = new Wifi;
+    $ssid = DB::find($wifi,$data["mac_ssid"]);
+
+    $mac = new MAC_Address;
+    if($data["g_id"]){
+        $mac->gid = $data["g_id"];
+        $mac->uid = "_*";
+        $mac->wid = $ssid[0]["id"];
+        $mac->mac = $data["mac_address"] ? $data["mac_address"] : "-";
+        $mac->name = $data["mac_name"] ? $data["mac_name"] : "-";
+        $mac->device = $data["mac_device"] ? $data["mac_device"] : "-";
+        $mac->project = $data["mac_project"] ? $data["mac_project"] : "-";
+        $mac->location = $data["mac_location"] ? $data["mac_location"] : "-";
+        $mac->remarks = $data["mac_remarks"] ? $data["mac_remarks"] : "-";
+
+        if (preg_match('/^([0-9a-f]{2}:){5}[0-9a-f]{2}$/', $data["mac_address"])) {
+            $bol = true;
+            $mac_temp = DB::where($mac,"wid","=",$ssid[0]["id"]);
+            foreach ($mac_temp as $mt) {
+                if($mt["mac"] == $data["mac_address"]){
+                    $bol = false;
+                }
+            }
+            if($bol){
+                DB::save($mac);
+            }
+
+            $user = new User;
+            $user = DB::where($user,"name","=",$data["mac_register_by"])[0];
+
+            $log = new Logs;
+            $log->gid = $data["g_id"];
+            $log->uid = $user["id"];
+            $log->log = $user["name"]." has registered a MAC \"".$data["mac_address"]."\" to \"".$ssid[0]["name"]."\".";
+            DB::save($log);
+        }
+
+        
     }
-
-    // --- Shape the voucher list down to what the front end needs ---
-    $vouchers = array_map(function ($v) {
-        return [
-            'id'          => $v['_id']         ?? null,
-            'code'        => $v['code']         ?? null,
-            'note'        => $v['note']         ?? '',
-            'duration'    => $v['duration']     ?? null,  // minutes
-            'quota'       => $v['quota']        ?? null,  // 0 = multi-use, 1 = single-use
-            'used'        => $v['used']         ?? 0,     // times used
-            'create_time' => $v['create_time']  ?? null,
-            'status'      => $v['status']       ?? null,  // e.g. VALID_ONE, USED_MULTIPLE, EXPIRED
-        ];
-    }, $decoded['data']);
-
-    // No vouchers found isn't an error, but it's worth flagging as "info" rather than "success"
-    if (count($vouchers) === 0) {
-        return [
-            'status'   => 'info',
-            'message'  => "No vouchers found for \"$name\".",
-            'vouchers' => [],
-        ];
-    }
-
-    return [
-        'status'   => 'success',
-        'message'  => count($vouchers) . " voucher(s) found for \"$name\".",
-        'vouchers' => $vouchers,
-    ];
-}
-
-/**
- * Sends a JSON response and terminates.
- *
- * @param string $status  one of: success, warning, danger, info
- */
-function respond(string $status, string $message, string $controller = '', array $vouchers = []): void
-{
-    echo json_encode([
-        'status'     => $status,
-        'message'    => $message,
-        'controller' => $controller,
-        'vouchers'   => $vouchers,
-    ]);
-    exit;
-}
+    UNIFI_MAC_REGISTER::register($unifi_config,$ssid[0]["name"],$data["mac_address"]);
+?>

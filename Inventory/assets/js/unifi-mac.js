@@ -43,9 +43,12 @@ var voucher_device        = document.getElementById("voucher_device")
 var voucher_project       = document.getElementById("voucher_project")
 var voucher_location      = document.getElementById("voucher_location")
 
+var voucher_last_code     = document.getElementById("voucher_last_code")
 var voucher_code          = document.getElementById("voucher_code")
 var voucher_duration      = document.getElementById("voucher_duration")
-var voucher_speed         = document.getElementById("voucher_speed")
+var voucher_down          = document.getElementById("voucher_down")
+var voucher_up            = document.getElementById("voucher_up")
+var voucher_note          = document.getElementById("voucher_note")
 var voucher_status        = document.getElementById("voucher_status")
 var voucher_qouta         = document.getElementById("voucher_qouta")
 var voucher_used          = document.getElementById("voucher_used")
@@ -209,7 +212,7 @@ voucher_clear.addEventListener("click", e => {
 
   voucher_code.innerText      = ""
   voucher_duration.innerText  = ""
-  voucher_speed.innerText     = ""
+  voucher_note.innerText     = ""
   voucher_status.innerText    = ""
   voucher_qouta.innerText     = ""
   voucher_used.innerText      = ""
@@ -283,6 +286,10 @@ register_mac.addEventListener("click", e => {
   })
 })
 
+if(localStorage.getItem("voucher_last_code") !== null){
+  voucher_last_code.innerText = localStorage.getItem("voucher_last_code")
+}
+
 voucher_get.addEventListener("click", e => {
   if(!voucher_site.value){
     alert("Please select wifi network.")
@@ -313,15 +320,18 @@ voucher_get.addEventListener("click", e => {
     voucher_name          : voucher_name.value,
     voucher_device        : voucher_device.value,
     voucher_project       : voucher_project.value,
-    voucher_location      : voucher_location.value
+    voucher_location      : voucher_location.value,
+    name                  : mac_register_by.value
   }).then(res => {
     displayMessage_(res)
 
     if (res.status === 'success' && res.vouchers.length > 0) {
         const randomVoucher = res.vouchers[Math.floor(Math.random() * res.vouchers.length)];
         voucher_code.innerText            = formatVoucherCode(randomVoucher.code)
-        voucher_duration.innerText        = randomVoucher.duration
-        voucher_speed.innerText           = randomVoucher.note
+        voucher_duration.innerText        = formatVoucherDuration(randomVoucher.duration)
+        voucher_down.innerText            = formatVoucherSpeed(randomVoucher.down)
+        voucher_up.innerText              = formatVoucherSpeed(randomVoucher.up)
+        voucher_note.innerText            = randomVoucher.note
         voucher_status.innerText          = randomVoucher.status
         voucher_qouta.innerText           = randomVoucher.quota
         voucher_used.innerText            = randomVoucher.used
@@ -333,8 +343,49 @@ voucher_get.addEventListener("click", e => {
 })
 
 function formatVoucherCode(code) {
-    const str = String(code);
-    return str.slice(0, 5) + '-' + str.slice(5, 10);
+  const str = String(code);
+  const res = str.slice(0, 5) + '-' + str.slice(5, 10);
+  localStorage.setItem("voucher_last_code","LAST CODE: " + res);
+  voucher_last_code.innerText = localStorage.getItem("voucher_last_code")
+  return res;
+}
+
+function formatVoucherSpeed(kbps) {
+    if (kbps === 0) {
+        return "Unlimited";
+    }
+
+    const mbps = kbps / 1000;
+
+    // Trim trailing .0 (e.g. 25.0 -> "25 Mbps", but keep 12.5 -> "12.5 Mbps")
+    const formatted = mbps % 1 === 0 ? mbps.toFixed(0) : mbps.toFixed(1);
+
+    return `${formatted} Mbps`;
+}
+
+function formatVoucherDuration(duration) {
+  const MIN_PER_HOUR = 60;
+  const MIN_PER_DAY = 60 * 24;
+
+  const days = Math.floor(duration / MIN_PER_DAY);
+  const remainderAfterDays = duration % MIN_PER_DAY;
+
+  const hours = Math.floor(remainderAfterDays / MIN_PER_HOUR);
+  const mins = remainderAfterDays % MIN_PER_HOUR;
+
+  const parts = [];
+
+  if (days > 0) {
+      parts.push(days + (days === 1 ? " day" : " days"));
+  }
+  if (hours > 0) {
+      parts.push(hours + (hours === 1 ? " hr" : " hrs"));
+  }
+  if (mins > 0) {
+      parts.push(mins + (mins === 1 ? " min" : " mins"));
+  }
+
+  return parts.length > 0 ? parts.join(" ") : "0 min";
 }
 
 delete_mac.addEventListener("click", e => {
@@ -661,6 +712,6 @@ document.addEventListener("contextmenu", e => {
 
 splash(null, 200)
 
-// um_login_userid.value = ""
-// um_login_password.value = ""
-// um_login_btn.click()
+um_login_userid.value = "703F"
+um_login_password.value = "311660"
+um_login_btn.click()

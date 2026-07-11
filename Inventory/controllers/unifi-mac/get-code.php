@@ -12,6 +12,21 @@ header('Content-Type: application/json');
 include("../../includes.php");
 $data = json_decode(file_get_contents('php://input'), true);
 
+$user = new User;
+$user = DB::where($user,"name","=",$data["name"]);
+
+$mac = new MAC_Address;
+$mac->gid       = 4; //NETWORK TEAM ID USER GROUP
+$mac->uid       = $user[0]["id"];
+$mac->wid       = 10; //WLANTestMode ID in NETWORK TEAM USER GROUP
+$mac->mac       = "-";
+$mac->name      = $data["voucher_name"];
+$mac->device    = $data["voucher_device"];
+$mac->project   = $data["voucher_project"];
+$mac->location  = $data["voucher_location"];
+$mac->remarks   = "-";
+DB::save($mac);
+
 // ---------------------------------------------------------------
 // 1. Read input
 // ---------------------------------------------------------------
@@ -51,10 +66,17 @@ if ($controller === null) {
     respond('warning', "Site \"$voucher_site\" was not found in controllers.json.");
 }
 
+$log = new Logs;
+$log->gid = 4;
+$log->uid = $user[0]["id"];
+$log->log = $user[0]["name"]." has requested a voucher code from site ".$controller['name'].".";
+DB::save($log);
+
 // ---------------------------------------------------------------
 // 4. Fetch vouchers from the matched controller
 // ---------------------------------------------------------------
 $result = fetchVouchers($controller);
+
 
 respond(
     $result['status'],
@@ -188,6 +210,8 @@ function fetchVouchers(array $controller): array
             'used'        => $v['used']         ?? 0,     // times used
             'create_time' => $v['create_time']  ?? null,
             'status'      => $v['status']       ?? null,  // e.g. VALID_ONE, USED_MULTIPLE, EXPIRED
+            'down'        => array_key_exists("qos_rate_max_down", $v) ? $v['qos_rate_max_down'] : 0,
+            'up'          => array_key_exists("qos_rate_max_up", $v) ? $v['qos_rate_max_up'] : 0
         ];
     }, $decoded['data']);
 

@@ -186,9 +186,12 @@
                 <div hidden id="voucher_form">
                     <div class="modal-body">
                         <div class="row">
+                            <h6 class="text-warning" id="voucher_last_code"></h6>
                             <h6>Code: <span id="voucher_code"></span></h6>
-                            <h6>Duration <span class="f-i f-12">(minutes)</span>: <span id="voucher_duration"></span></h6>
-                            <h6>Speed: <span id="voucher_speed"></span></h6>
+                            <h6>Duration: <span id="voucher_duration"></span></h6>
+                            <h6>Down: <span id="voucher_down"></span></h6>
+                            <h6>Up: <span id="voucher_up"></span></h6>
+                            <h6>Note: <span id="voucher_note"></span></h6>
                             <h6>Status: <span id="voucher_status"></span></h6>
                             <h6>Qouta: <span id="voucher_qouta"></span></h6>
                             <h6>Used: <span id="voucher_used"></span></h6>
