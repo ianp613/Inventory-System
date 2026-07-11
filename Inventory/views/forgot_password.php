@@ -72,7 +72,6 @@
   <script src="../assets/js/sole.js"></script>
   <script src="../assets/js/ipf.js"></script>
   <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
-  <script src="../assets/js/sole.js"></script>
   <script src="../assets/js/forgot_password.js"></script>
   <script src="../assets/js/script.js"></script>
   <script src="../assets/js/modal_alert.js"></script>
