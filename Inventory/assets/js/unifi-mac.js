@@ -712,6 +712,6 @@ document.addEventListener("contextmenu", e => {
 
 splash(null, 200)
 
-um_login_userid.value = "703F"
-um_login_password.value = "311660"
-um_login_btn.click()
+// um_login_userid.value = ""
+// um_login_password.value = ""
+// um_login_btn.click()
