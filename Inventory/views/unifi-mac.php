@@ -7,7 +7,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>UNIFI MAC</title>
-        <link rel="shortcut icon" href="../assets/img/logo-ico.png" type="image/x-icon">
+        <link rel="shortcut icon" href="../assets/img/logo-icore-ico.png" type="image/x-icon">
         <link rel="stylesheet" href="../assets/fontawesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="../assets/css/datatables/datatables.min.css">
         <link rel="stylesheet" href="../assets/css/bootstrap/bootstrap.min.css">
@@ -283,7 +283,7 @@
             <div class="modal-footer">
                 <button id="um_login_btn" class="btn btn-secondary w-100"><span class="fa fa-sign-in"></span> LOGIN</button>
             </div>
-            <h6 class="text-center mb-0 mt-2 f-12 f-i fw-bold">Intergrated with Inventory System Credentials</h6>
+            <h6 class="text-center mb-0 mt-2 f-12 f-i fw-bold">Intergrated with DDC LEYTE ICORE Credentials</h6>
             <p class="text-center mt-0 f-12 f-i">Unifi MAC v.1.1</p>
         </div>
         <style>

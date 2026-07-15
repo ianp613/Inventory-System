@@ -856,6 +856,7 @@ input::placeholder, textarea::placeholder{
     border-radius: 100%;
     font-weight: bold;
     position: relative;
+    margin-top: 7px;
 }
 .remembered_user_notification_counter{
     background-color: #dc3545;

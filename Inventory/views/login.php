@@ -13,8 +13,8 @@
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/theme/Default.css">
     <link rel="stylesheet" href="../assets/fontawesome/css/font-awesome.min.css">
-    <title>Inventory System</title>
-    <link rel="shortcut icon" href="../assets/img/logo-ico.png" type="image/x-icon">
+    <title>DDC LEYTE ICORE</title>
+    <link rel="shortcut icon" href="../assets/img/logo-icore-ico.png" type="image/x-icon">
 </head>
   <body class="login" id="login">
     <div class="card-cover"></div>
@@ -27,7 +27,7 @@
             <div class="shape theme-shape theme-shape-dark"></div>
             <div class="card-body">
               <div class="row justify-content-center align-items-center">
-                <img src="../assets/img/fposi-logo.png" style="width: 250px;" alt="fposi-logo.png">
+                <img src="../assets/img/LEYTE-ICORE.png" style="width: 250px;" alt="fposi-logo.png">
               </div>
                 <div class="mb-3">
                   <label for="userid" class="form-label">User ID</label>
@@ -43,7 +43,9 @@
                 <label  for="remember_me" class="mb-2">Remember me until this site close.</label>
 
                 <button id="login_btn" type="submit" class="btn btn-dark w-100"><span class="fa fa-sign-in"></span> Login</button>
-                <div class="w-100 text-center mt-3"><a class="text-light" style="text-decoration: none;" href="forgot_password.php">Forgot password?</a></div>
+                <div class="w-100 text-center mt-4 mb-4"><a class="text-light" style="text-decoration: none;" href="forgot_password.php">Forgot password?</a></div>
+                <hr class="m-">
+                <h6 class="f-12 f-i text-center w-100 p-3">Integrated Control Resource & Equipment System v1.0</h6>
             </div>
           </div>
           <div hidden id="remembered_user_container" class="mt-3 p-1 pt-2 rounded-3 theme-login">

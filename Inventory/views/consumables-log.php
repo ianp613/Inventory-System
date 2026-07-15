@@ -7,7 +7,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Inventory System</title>
-        <link rel="shortcut icon" href="../assets/img/logo-ico.png" type="image/x-icon">
+        <link rel="shortcut icon" href="../assets/img/logo-icore-ico.png" type="image/x-icon">
         <link rel="stylesheet" href="../assets/fontawesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="../assets/css/datatables/datatables.min.css">
         <link rel="stylesheet" href="../assets/css/bootstrap/bootstrap.min.css">
@@ -20,7 +20,7 @@
         <div class="w-100 d-flex justify-content-center">
             <div class="theme-card theme-card-dark wd-550 p-4 mt-4">
                 <div class="d-flex w-100 mt-4">
-                    <img class="wd-90 ht-80 me-3" style="margin-top: -25px;" src="../../assets/img/fposi-logo.png" alt="" srcset="">
+                    <img class="wd-90 ht-70 me-3 mb-2" style="margin-top: -20px;" src="../../assets/img/LEYTE-ICORE.png" alt="" srcset="">
 
                     <div>
                         <h5 class="text-secondary mb-0 d-flex fw-bolder" id="g_name_display"></h5>

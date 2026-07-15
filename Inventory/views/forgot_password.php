@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/theme/Default.css">
         <link rel="stylesheet" href="../assets/fontawesome/css/font-awesome.min.css">
-    <title>Inventory System - Account Recovery</title>
-    <link rel="shortcut icon" href="../assets/img/logo-ico.png" type="image/x-icon">
+    <title>DDC LEYTE ICORE - ACCOUNT RECOVERY</title>
+    <link rel="shortcut icon" href="../assets/img/logo-icore-ico.png" type="image/x-icon">
 </head>
   <body class="login" id="forgot_password">
     <div class="card-cover"></div>
@@ -21,7 +21,7 @@
             <div class="shape"></div>
             <div class="card-body">
               <div class="row justify-content-center align-items-center">
-                <img src="../assets/img/fposi-logo.png" style="width: 250px;" alt="fposi-logo.png">
+                <img src="../assets/img/LEYTE-ICORE.png" style="width: 250px; margin-bottom: 10px;" alt="fposi-logo.png">
               </div>
               <h5 class="card-title text-center mb-3">Account Recovery</h5>
 

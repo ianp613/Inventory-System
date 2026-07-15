@@ -21,8 +21,8 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Inventory System</title>
-        <link rel="shortcut icon" href="../assets/img/logo-ico.png" type="image/x-icon">
+        <title>DDC LEYTE ICORE</title>
+        <link rel="shortcut icon" href="../assets/img/logo-icore-ico.png" type="image/x-icon">
         <link rel="stylesheet" href="../assets/fontawesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="../assets/css/datatables/datatables.min.css">
         <link rel="stylesheet" href="../assets/css/bootstrap/bootstrap.min.css">
@@ -38,7 +38,7 @@
             </canvas>
             <nav class="text-white sidebar p-3 theme-sidebar theme-sidebar-dark" id="sidebar">
                 <div class="d-flex justify-content-center align-items-center bg-light p-2 rounded theme-sidebar-img theme-sidebar-img-dark">
-                    <img id="sidebar_logo" src="../../assets/img/fposi-logo.png" style="width: 150px;">
+                    <img id="sidebar_logo" src="../../assets/img/LEYTE-ICORE.png" style="width: 150px;">
                 </div>
                 <ul class="nav theme-nav-item theme-nav-item-dark flex-column">
                     <li class="nav-item mt-3">
