@@ -98,7 +98,7 @@
   
   <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
   <script src="../assets/js/modal_alert.js"></script>
-  <script src="../assets/js/login.js"></script>
+  <script src="../assets/js/login.js?v=<?= filemtime('../assets/js/login.js') ?>"></script>
   <script src="../assets/js/script.js"></script>
   <script src="../assets/js/theme.js"></script>
 </html>
