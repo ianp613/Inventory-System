@@ -1,6 +1,7 @@
 if(document.getElementById("login")){
     
     document.getElementById("unifi_mac_external").addEventListener("click", () => {
+        console.log(window.origin)
         window.open(`${window.origin}/views/unifi-mac.php`, '_blank');
     })
 
