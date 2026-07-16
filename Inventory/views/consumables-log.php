@@ -6,7 +6,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Inventory System</title>
+        <title>DDC LEYTE ICORE</title>
         <link rel="shortcut icon" href="../assets/img/logo-icore-ico.png" type="image/x-icon">
         <link rel="stylesheet" href="../assets/fontawesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="../assets/css/datatables/datatables.min.css">
@@ -79,16 +79,16 @@
             </div>
         </div>
         <h6 class="copyright f-10 text-secondary"></h6>
-        <script src="../assets/js/sole.js"></script>
-        <script src="../assets/js/ipf.js"></script>
+        <script src="../assets/js/sole.js?v=<?= filemtime('../assets/js/sole.js') ?>"></script>
+        <script src="../assets/js/ipf.js?v=<?= filemtime('../assets/js/ipf.js') ?>"></script>
         <script src="../assets/js/jquery/jquery-3.7.1.js"></script>
         <script src="../assets/js/popper/popper.min.js"></script>
         <script src="../assets/js/datatables/datatables.min.js"></script>
         <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
-        <script src="../assets/js/sole.splash/splash.js"></script>
+        <script src="../assets/js/sole.splash/splash.js?v=<?= filemtime('../assets/js/sole.splash/splash.js') ?>"></script>
         <script src="../assets/js/quagga/quagga.min.js"></script>
-        <script src="../assets/js/script.js"></script>
-        <script src="../assets/js/consumables_log.js"></script>
-        <script src="../assets/js/modal_alert.js"></script>
+        <script src="../assets/js/script.js?v=<?= filemtime('../assets/js/script.js') ?>"></script>
+        <script src="../assets/js/consumables_log.js?v=<?= filemtime('../assets/js/consumables_log.js') ?>"></script>
+        <script src="../assets/js/modal_alert.js?v=<?= filemtime('../assets/js/modal_alert.js') ?>"></script>
     </body>
 </html>

@@ -270,35 +270,35 @@
         <?php include("modals/accounts.php"); ?>
         <?php include("modals/logs.php"); ?>
         <?php include("modals/artisanry.php"); ?>
-        <script src="../assets/js/sole.js"></script>
-        <script src="../assets/js/ipf.js"></script>
+        <script src="../assets/js/sole.js?v=<?= filemtime('../assets/js/sole.js') ?>"></script>
+        <script src="../assets/js/ipf.js?v=<?= filemtime('../assets/js/ipf.js') ?>"></script>
 
-        <script src="../../assets/js/sweetalert2/sweetalert2.all.min.js"></script>
-        <script src="../../assets/js/sole.swal.js"></script>
+        <script src="../assets/js/sweetalert2/sweetalert2.all.min.js"></script>
+        <script src="../assets/js/sole.swal.js?v=<?= filemtime('../assets/js/sole.swal.js') ?>"></script>
 
         <script src="../assets/js/jquery/jquery-3.7.1.js"></script>
         <script src="../assets/js/popper/popper.min.js"></script>
         <script src="../assets/js/datatables/datatables.min.js"></script>
         <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
-        <script src="../assets/js/sole.splash/splash.js"></script>
+        <script src="../assets/js/sole.splash/splash.js?v=<?= filemtime('../assets/js/sole.splash/splash.js') ?>"></script>
         <script src="../assets/js/html5-qrcode/html5-qrcode.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="../assets/js/script.js"></script>
-        <script src="../assets/js/theme.js"></script>
-        <script src="../assets/js/dates.js"></script>
-        <script src="../assets/js/dashboard.js"></script>
-        <script src="../assets/js/equipments.js"></script>
-        <script src="../assets/js/consumables.js"></script>
-        <script src="../assets/js/ipaddress.js"></script>
-        <script src="../assets/js/mac.js"></script>
-        <script src="../assets/js/terminals.js"></script>
-        <script src="../assets/js/cctv.js"></script>
-        <script src="../assets/js/routers.js"></script>
-        <script src="../assets/js/isp.js"></script>
-        <script src="../assets/js/accounts.js"></script>
-        <script src="../assets/js/activity_log.js"></script>
-        <script src="../assets/js/artisanry.js"></script>
-        <script src="../assets/js/colorpicker.js"></script>
-        <script src="../assets/js/modal_alert.js"></script>
+        <script src="../assets/js/script.js?v=<?= filemtime('../assets/js/script.js') ?>"></script>
+        <script src="../assets/js/theme.js?v=<?= filemtime('../assets/js/theme.js') ?>"></script>
+        <script src="../assets/js/dates.js?v=<?= filemtime('../assets/js/dates.js') ?>"></script>
+        <script src="../assets/js/dashboard.js?v=<?= filemtime('../assets/js/dashboard.js') ?>"></script>
+        <script src="../assets/js/equipments.js?v=<?= filemtime('../assets/js/equipments.js') ?>"></script>
+        <script src="../assets/js/consumables.js?v=<?= filemtime('../assets/js/consumables.js') ?>"></script>
+        <script src="../assets/js/ipaddress.js?v=<?= filemtime('../assets/js/ipaddress.js') ?>"></script>
+        <script src="../assets/js/mac.js?v=<?= filemtime('../assets/js/mac.js') ?>"></script>
+        <script src="../assets/js/terminals.js?v=<?= filemtime('../assets/js/terminals.js') ?>"></script>
+        <script src="../assets/js/cctv.js?v=<?= filemtime('../assets/js/cctv.js') ?>"></script>
+        <script src="../assets/js/routers.js?v=<?= filemtime('../assets/js/routers.js') ?>"></script>
+        <script src="../assets/js/isp.js?v=<?= filemtime('../assets/js/isp.js') ?>"></script>
+        <script src="../assets/js/accounts.js?v=<?= filemtime('../assets/js/accounts.js') ?>"></script>
+        <script src="../assets/js/activity_log.js?v=<?= filemtime('../assets/js/activity_log.js') ?>"></script>
+        <script src="../assets/js/artisanry.js?v=<?= filemtime('../assets/js/artisanry.js') ?>"></script>
+        <script src="../assets/js/colorpicker.js?v=<?= filemtime('../assets/js/colorpicker.js') ?>"></script>
+        <script src="../assets/js/modal_alert.js?v=<?= filemtime('../assets/js/modal_alert.js') ?>"></script>
     </body>
 </html>

@@ -306,8 +306,8 @@
         <h6 class="copyright f-10 text-secondary"></h6>
         <script src="../assets/js/jquery/jquery-3.7.1.js"></script>
         <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
-        <script src="../assets/js/sole.js"></script>
-        <script src="../assets/js/modal_alert.js"></script>
-        <script src="../assets/js/unifi-mac.js"></script>
+        <script src="../assets/js/sole.js?v=<?= filemtime('../assets/js/sole.js') ?>"></script>
+        <script src="../assets/js/modal_alert.js?v=<?= filemtime('../assets/js/modal_alert.js') ?>"></script>
+        <script src="../assets/js/unifi-mac.js?v=<?= filemtime('../assets/js/unifi-mac.js') ?>"></script>
     </body>
 </html>

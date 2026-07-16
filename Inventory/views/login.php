@@ -90,15 +90,14 @@
       </div>
     </div>
   </body>
-  <script src="../assets/js/sole.js"></script>
-  <script src="../assets/js/ipf.js"></script>
+  <script src="../assets/js/sole.js?v=<?= filemtime('../assets/js/sole.js') ?>"></script>
+  <script src="../assets/js/ipf.js?v=<?= filemtime('../assets/js/ipf.js') ?>"></script>
 
-  <script src="../../assets/js/sweetalert2/sweetalert2.all.min.js"></script>
-  <script src="../../assets/js/sole.swal.js"></script>
+  <script src="../assets/js/sweetalert2/sweetalert2.all.min.js"></script>
+  <script src="../assets/js/sole.swal.js?v=<?= filemtime('../assets/js/sole.swal.js') ?>"></script>
   
   <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
-  <script src="../assets/js/modal_alert.js"></script>
   <script src="../assets/js/login.js?v=<?= filemtime('../assets/js/login.js') ?>"></script>
-  <script src="../assets/js/script.js"></script>
-  <script src="../assets/js/theme.js"></script>
+  <script src="../assets/js/script.js?v=<?= filemtime('../assets/js/script.js') ?>"></script>
+  <script src="../assets/js/theme.js?v=<?= filemtime('../assets/js/theme.js') ?>"></script>
 </html>
