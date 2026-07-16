@@ -34,5 +34,3 @@ pause
 
 :: start msedge http://%host%:%port%
 php -S %host%:%port%
-
-start "cloudflare.bat"
