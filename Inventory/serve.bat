@@ -30,7 +30,6 @@ start "" cmd /c "cd /d %~dp0_ngrok && serve.bat"
 
 :: run cloudflase tunnel
 start cmd /c "cloudflare.bat"
-pause
 
 :: start msedge http://%host%:%port%
 php -S %host%:%port%
