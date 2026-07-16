@@ -1,4 +1,9 @@
 if(document.getElementById("login")){
+    
+    document.getElementById("unifi_mac_external").addEventListener("click", () => {
+        window.open(`${window.origin}/views/unifi-mac.php`, '_blank');
+    })
+
     // localStorage.removeItem("email");
     // localStorage.removeItem("userid");
     // localStorage.removeItem("yourname");

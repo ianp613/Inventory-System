@@ -1062,24 +1062,33 @@ if(localStorage.getItem("login_admin") !== null){
     }
 
     if(action === 'delete'){
-      Swal.fire({
-        title: `Delete ${a.fname} ${a.lname}?`,
-        text: 'This action is permanent and cannot be undone.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        confirmButtonText: 'Delete',
-        customClass: { popup:'my-custom-popup', actions:'my-right-buttons' }
-      }).then(result => {
-        if(!result.isConfirmed) return;
-        sole.post("../../controllers/powerguard/administrator/delete_account.php", {
-          admin_id: localStorage.getItem("userid_admin"),
-          user_id:  id
-        }).then(res => {
-          ss.toast(res.title, res.type, res.message, null, "#16201d");
-          if(res.status) loadAccounts();
-        });
-      });
+      sole.post("../../controllers/powerguard/administrator/find_user_account.php", {
+        user_id : id
+      }).then(res => {
+        let text = "This action is permanent and cannot be undone."
+        if(res.status){
+          text = res.privileges == "supervisor" ? `All departments assigned to ${a.fname} ${a.lname} will become vacant. You can reassign a new supervisor, but please note that deleting this account is permanent and cannot be undone. ` : `All workstations claimed by ${a.fname} ${a.lname} will be marked as unclaimed. Other technicians can now claim them, or you can assign the workstations yourself. Please note that this action is permanent and cannot be undone.`
+        }
+        Swal.fire({
+          title: `Delete ${a.fname} ${a.lname}?`,
+          text: text,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Delete',
+          customClass: { popup:'my-custom-popup', actions:'my-right-buttons' }
+        }).then(result => {
+          if(!result.isConfirmed) return;
+          sole.post("../../controllers/powerguard/administrator/delete_account.php", {
+            admin_id: localStorage.getItem("userid_admin"),
+            user_id:  id
+          }).then(res => {
+            ss.toast(res.title, res.type, res.message, null, "#16201d");
+            if(res.status) loadAccounts();
+          });
+        });  
+      })
+
     }
   });
 
