@@ -3,44 +3,12 @@
      * Copyright © PID 2021
      * DB PHP script is for database management
      * This is a script from Sole PHP Framework v4.0
-     *
-     * --------------------------------------------------------------------------------
-     * FIXES APPLIED (performance + security), logic otherwise unchanged:
-     * 1. Singleton PDO connection (DB::conn()) reused across all calls instead of
-     *    opening a brand new connection on every single method call. This was the
-     *    main cause of slow load times on servers (each new MySQL connection can be
-     *    expensive, especially with DNS/reverse-lookup or network latency).
-     * 2. All values (not table/column identifiers) are now passed as bound
-     *    parameters ("?") via PDO prepare/execute instead of being concatenated
-     *    directly into the SQL string, which closes SQL-injection holes.
-     * --------------------------------------------------------------------------------
      */
     class DB{
         public static $DB_HOST = "localhost";
         public static $DB_DATABASE = "inventory_system";
         public static $DB_USERNAME = "root";
         public static $DB_PASSWORD = "";
-        public static $br = "";
-
-        /**
-         * --------------------------------------------------------------------------------
-         * Shared / Singleton Connection
-         * --------------------------------------------------------------------------------
-         */
-        private static $DB_CONN = null;
-
-        public static function conn(){
-            if(self::$DB_CONN === null){
-                try{
-                    self::$DB_CONN = new PDO('mysql:host='.self::$DB_HOST.';dbname='.self::$DB_DATABASE, self::$DB_USERNAME, self::$DB_PASSWORD);
-                    self::$DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                }catch(PDOException $e){
-                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
-                }
-            }
-            return self::$DB_CONN;
-        }
-
         /**
          * --------------------------------------------------------------------------------
          * Read Table Data
@@ -48,7 +16,12 @@
          */
         public static function all($data,$on=null,$or=null){
             try{
-                $DB_CONN = DB::conn();
+                try{
+                    $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }catch(PDOException $e){
+                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
+                }
                 $table = $data->table;
                 $fillable = [];
                 if($on && $or){
@@ -67,33 +40,34 @@
         }
         public static function where($data,$col,$op,$val,$on=null,$or=null){
             try{
-                $DB_CONN = DB::conn();
+                try{
+                    $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }catch(PDOException $e){
+                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
+                }
                 $table = $data->table;
                 $fillable = [];
                 if(strtoupper($op) == "LIKE"){
                     if($on && $or){
-                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op ? ORDER BY `$table`.`$on` ".strtoupper($or));     
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '%$val%' ORDER BY `$table`.`$on` ".strtoupper($or));     
                     }else{
-                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op ?");
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '%$val%'");
                     }   
-                    $SQL->execute(["%$val%"]);
                 }elseif(strtoupper($op) == "IN"){
-                    // $val is expected to already be a parenthesized list e.g. "(1,2,3)",
-                    // same as before - kept as-is to not change behavior/signature.
                     if ($on && $or) {
                         $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` IN $val ORDER BY `$table`.`$on` ".strtoupper($or));
                     } else {
                         $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` IN $val");
                     }  
-                    $SQL->execute();
                 }else{
                     if($on && $or){
-                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op ? ORDER BY `$table`.`$on` ".strtoupper($or));
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' ORDER BY `$table`.`$on` ".strtoupper($or));
                     }else{
-                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op ?");
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val'");
                     } 
-                    $SQL->execute([$val]);
                 }
+                $SQL->execute();
                 $fillable = $SQL->fetchAll(PDO::FETCH_ASSOC);
                 return $fillable;    
             }catch(Exception $e){
@@ -104,48 +78,46 @@
         }
         public static function where2($data,$col,$op,$val,$col2,$op2,$val2,$on=null,$or=null){
             try{
-                $DB_CONN = DB::conn();
+                try{
+                    $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }catch(PDOException $e){
+                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
+                }
                 $table = $data->table;
                 $fillable = [];
-                $bindValues = [];
                 if(strtoupper($op) == "LIKE" && strtoupper($op2) == "LIKE"){
                     if($on && $or){
-                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op ? AND `$col2` $op2 ? ORDER BY `$table`.`$on` ".strtoupper($or));     
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '%$val%' AND `$col2` $op2 '%$val2%' ORDER BY `$table`.`$on` ".strtoupper($or));     
                     }else{
-                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op ? AND `$col2` $op2 ?");
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '%$val%' AND `$col2` $op2 '%$val2%'");
                     }   
-                    $bindValues = ["%$val%", "%$val2%"];
                 }elseif(strtoupper($op) == "LIKE" && $op2 == "="){
                     if($on && $or){
-                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op ? AND `$col2` $op2 ? ORDER BY `$table`.`$on` ".strtoupper($or));     
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '%$val%' AND `$col2` $op2 '$val2' ORDER BY `$table`.`$on` ".strtoupper($or));     
                     }else{
-                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op ? AND `$col2` $op2 ?");
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '%$val%' AND `$col2` $op2 '$val2'");
                     }
-                    $bindValues = ["%$val%", $val2];
                 }elseif($op == "=" && strtoupper($op2) == "LIKE"){
                     if($on && $or){
-                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op ? AND `$col2` $op2 ? ORDER BY `$table`.`$on` ".strtoupper($or));     
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' AND `$col2` $op2 '%$val2%' ORDER BY `$table`.`$on` ".strtoupper($or));     
                     }else{
-                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op ? AND `$col2` $op2 ?");
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' AND `$col2` $op2 '%$val2%'");
                     }
-                    $bindValues = [$val, "%$val2%"];
                 }elseif (strtoupper($op2) == "IN") {
-                    // $val2 is expected to already be a parenthesized list, kept as-is.
                     if ($on && $or) {
-                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op ? AND `$col2` IN $val2 ORDER BY `$table`.`$on` ".strtoupper($or));
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' AND `$col2` IN $val2 ORDER BY `$table`.`$on` ".strtoupper($or));
                     } else {
-                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op ? AND `$col2` IN $val2");
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' AND `$col2` IN $val2");
                     }
-                    $bindValues = [$val];
                 }else{
                     if($on && $or){
-                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op ? AND `$col2` $op2 ? ORDER BY `$table`.`$on` ".strtoupper($or));
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' AND `$col2` $op2 '$val2' ORDER BY `$table`.`$on` ".strtoupper($or));
                     }else{
-                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op ? AND `$col2` $op2 ?");
+                        $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` $op '$val' AND `$col2` $op2 '$val2'");
                     } 
-                    $bindValues = [$val, $val2];
                 }
-                $SQL->execute($bindValues);
+                $SQL->execute();
                 $fillable = $SQL->fetchAll(PDO::FETCH_ASSOC);
                 return $fillable;    
             }catch(Exception $e){
@@ -156,11 +128,16 @@
         }
         public static function find($data,$row){
             try{
-                $DB_CONN = DB::conn();
+                try{
+                    $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }catch(PDOException $e){
+                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
+                }
                 $table = $data->table;
                 
-                $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `id` = ?");
-                $SQL->execute([$row]);
+                $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `id` = '$row'");
+                $SQL->execute();
                 $fillable = $SQL->fetchAll(PDO::FETCH_ASSOC);
                 return $fillable; 
             }catch(Exception $e){
@@ -178,35 +155,43 @@
         public static function save($data){
             $saveerror = false;
             $savemessage = "";
-            $insertId = null;
+            $insertId = null; // <-- ADDED
             try{
-                $DB_CONN = DB::conn();
+                try{
+                    $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }catch(PDOException $e){
+                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
+                }
+                $fillable = [];
                 $table = $data->table;
-                $columns = [];
-                $placeholders = [];
-                $bindValues = [];
+                $columns = "";
+                $values = "";
+                $temp = "";
                 
                 for ($i=0; $i <= count($data->fillable)-1; $i++) {
-                    $temp = $data->fillable[$i];
-                    $columns[] = "`".$temp."`";
-                    $placeholders[] = "?";
-                    $bindValues[] = $data->$temp;
-
-                    if($data->$temp == ""){
-                        $saveerror = true;
-                        if($i == count($data->fillable)-1){
-                            $savemessage .= "Column ".$temp." doesn't have a default value".DB::$br; 
-                        }else{
-                            $savemessage .= "Column ".$temp." doesn't have a default value, ".DB::$br; 
+                    if($i == count($data->fillable)-1){
+                        $columns .= "`".$data->fillable[$i]."`";
+                        $temp = $data->fillable[$i];
+                        $values .= "'".$data->$temp."'";
+                        if($data->$temp == ""){
+                            $saveerror = true;
+                            $savemessage .= "Column ".$data->fillable[$i]." doesn't have a default value".DB::$br; 
+                        }
+                    }else{
+                        $columns .= "`".$data->fillable[$i]."`,";
+                        $temp = $data->fillable[$i];
+                        $values .= "'".$data->$temp."',";
+                        if($data->$temp == ""){
+                            $saveerror = true;
+                            $savemessage .= "Column ".$data->fillable[$i]." doesn't have a default value, ".DB::$br; 
                         }
                     }
                 }
                 if(!$saveerror){
-                    $columnsStr = implode(",", $columns);
-                    $placeholdersStr = implode(",", $placeholders);
-                    $SQL = $DB_CONN->prepare("INSERT INTO `$table` ($columnsStr) VALUES ($placeholdersStr)");
-                    $SQL->execute($bindValues);
-                    $insertId = $DB_CONN->lastInsertId();
+                    $SQL = "INSERT INTO `$table` ($columns) VALUES ($values)";
+                    $DB_CONN->exec($SQL);
+                    $insertId = $DB_CONN->lastInsertId(); // <-- ADDED
                 }else{
                     echo $savemessage;
                 } 
@@ -215,7 +200,7 @@
                 $_SESSION["soleexceptionerror"] = $e;
                 exception_handler(0,$e->getMessage(),$e->getFile(),$e->getLine());
             }
-            return $insertId;
+            return $insertId; // <-- ADDED
         }
         /**
          * --------------------------------------------------------------------------------
@@ -224,6 +209,12 @@
          */
         public static function prepare($data, $row){
             try{
+                try{
+                    $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }catch(PDOException $e){
+                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
+                }
                 $get = DB::find($data, $row);
                 if($get != ""){
                     if(count($get) > 0){
@@ -261,31 +252,36 @@
             $saveerror = false;
             $savemessage = "";
             try{
-                $DB_CONN = DB::conn();
+                try{
+                    $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }catch(PDOException $e){
+                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
+                }
                 $table = $data->table;
                 $id = $data->id;
+                $set = "";
                 if($data->stats){
-                    $setParts = [];
-                    $bindValues = [];
                     for ($i=0; $i <= count($data->fillable)-1; $i++) {
-                        $temp = $data->fillable[$i];
-                        $setParts[] = "`".$temp."` = ?";
-                        $bindValues[] = $data->$temp;
-
-                        if($data->$temp == ""){
-                            $saveerror = true;
-                            if($i == count($data->fillable)-1){
-                                $savemessage .= "Column ".$temp." doesn't have a default value".DB::$br; 
-                            }else{
-                                $savemessage .= "Column ".$temp." doesn't have a default value, ".DB::$br; 
+                        if($i == count($data->fillable)-1){
+                            $temp = $data->fillable[$i];
+                            $set .= "`".$data->fillable[$i]."`"." = "."'".$data->$temp."'";
+                            if($data->$temp == ""){
+                                $saveerror = true;
+                                $savemessage .= "Column ".$data->fillable[$i]." doesn't have a default value".DB::$br; 
+                            }
+                        }else{
+                            $temp = $data->fillable[$i];
+                            $set .= "`".$data->fillable[$i]."`"." = "."'".$data->$temp."',"; 
+                            if($data->$temp == ""){
+                                $saveerror = true;
+                                $savemessage .= "Column ".$data->fillable[$i]." doesn't have a default value, ".DB::$br; 
                             }
                         }
                     }
                     if(!$saveerror){
-                        $setStr = implode(",", $setParts);
-                        $bindValues[] = $id;
-                        $SQL = $DB_CONN->prepare("UPDATE `$table` SET $setStr WHERE `id` = ?");
-                        $SQL->execute($bindValues);
+                        $SQL = "UPDATE `$table` SET $set WHERE `id` = '$id'";
+                        $DB_CONN->exec($SQL);
                     }else{
                         echo $savemessage;
                     }     
@@ -310,10 +306,16 @@
          */
         public static function delete($data, $row){
             try{
-                $DB_CONN = DB::conn();
+                try{
+                    $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }catch(PDOException $e){
+                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
+                }
                 $table = $data->table;
-                $SQL = $DB_CONN->prepare("DELETE from `$table` WHERE `$table`.`id` = ?");
-		        $SQL->execute([$row]);
+                $id = $row;
+                $SQL = $DB_CONN->prepare("DELETE from `$table` WHERE `$table`.`id`='$id'");
+		        $SQL->execute();
             }catch(Exception $e){
                 echo "Delete error: ".$e->getMessage().DB::$br;
                 $_SESSION["soleexceptionerror"] = $e;
@@ -327,7 +329,12 @@
          */
         public static function wipe($data){
             try{
-                $DB_CONN = DB::conn();
+                try{
+                    $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }catch(PDOException $e){
+                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
+                }
                 $table = $data->table;
                 $SQL = $DB_CONN->prepare("TRUNCATE `$table`");
 		        $SQL->execute();
@@ -344,14 +351,23 @@
          */
         public static function auth($data,$a,$b){
             try{
-                $DB_CONN = DB::conn();
+                try{
+                    $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }catch(PDOException $e){
+                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
+                }
                 $table = $data->table;
                 $fillable = [];
                 $bool = false;
 
+                // This line is not case-sensitive
+                // $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `username` = '$a' AND `password` = '$b'");
+
                 // This line is case-sensitive
-                $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE BINARY `username` = ? AND BINARY `password` = ?");
-                $SQL->execute([$a, $b]);
+                $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE BINARY `username` = '$a' AND BINARY `password` = '$b'");
+                
+                $SQL->execute();
 
                 $fillable = $SQL->fetchAll(PDO::FETCH_ASSOC);
                 if($fillable){
@@ -374,12 +390,17 @@
          */
         public static function validate($data,$col,$val){
             try{
-                $DB_CONN = DB::conn();
+                try{
+                    $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }catch(PDOException $e){
+                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
+                }
                 $table = $data->table;
                 $fillable = [];
                 $bool = false;
-                $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` = ?");
-                $SQL->execute([$val]);
+                $SQL = $DB_CONN->prepare("SELECT * FROM `$table` WHERE `$col` = '$val'");
+                $SQL->execute();
                 $fillable = $SQL->fetchAll(PDO::FETCH_ASSOC);
                 if($fillable){
                     $bool = false;
@@ -402,9 +423,16 @@
             try {
                 $filename = DB::$DB_DATABASE."_".uniqid();
                 date_default_timezone_set('Asia/Manila');
-
-                $DB_CONN = DB::conn();
-                if ($DB_CONN === null) {
+                // Establish database connection
+                try {
+                    $DB_CONN = new PDO(
+                        'mysql:host=' . DB::$DB_HOST . ';dbname=' . DB::$DB_DATABASE,
+                        DB::$DB_USERNAME,
+                        DB::$DB_PASSWORD
+                    );
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                } catch (PDOException $e) {
+                    echo "Database Connection Failed: " . $e->getMessage() . "<br>";
                     return false;
                 }
 
@@ -461,7 +489,12 @@
 
         public static function sql($data,$sql){
             try{
-                $DB_CONN = DB::conn();
+                try{
+                    $DB_CONN = new PDO( 'mysql:host='.DB::$DB_HOST.';dbname='.DB::$DB_DATABASE, DB::$DB_USERNAME, DB::$DB_PASSWORD);
+                    $DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }catch(PDOException $e){
+                    echo "Database Connection Failed: " . $e->getMessage()."<br>";
+                }
                 $table = $data->table;
                 $sql = str_replace("sql_table",$table,$sql);
                 $DB_CONN->exec($sql);
@@ -471,5 +504,6 @@
                 exception_handler(0,$e->getMessage(),$e->getFile(),$e->getLine());
             }
         }
+        public static $br = "";
     }
 ?>
