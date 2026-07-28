@@ -3,7 +3,7 @@
     header('Content-Type: application/json');
     include("../../includes.php");
 
-    $cache_key = "icore_entry:all";
+    $cache_key = "icore_entry:all".($_SESSION["g_id"] ? $_SESSION["g_id"] : "");
     $cache_data = $redis->get($cache_key);
 
     if($cache_data !== null){
