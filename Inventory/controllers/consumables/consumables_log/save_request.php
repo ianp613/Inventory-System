@@ -4,6 +4,13 @@
     include("../../../includes.php");
     $data = json_decode(file_get_contents('php://input'), true);
 
+    // Invalidate every cached variant for this group (group view + all personal views)
+    $g_id = $data["gid"] ?? "";
+    $keys = $redis->keys("icore_consumable_request:{$g_id}:*");
+    foreach ($keys as $key) {
+        $redis->del($key);
+    }
+
     $response = [
         "status" => false,
         "message" => "Something went wrong."

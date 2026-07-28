@@ -33,6 +33,17 @@
             }
 
             DB::delete($consumable,$data["id"]);
+
+            $g_id = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+            $redis->del("icore_consumable:all" . $g_id);
+            $redis->del("icore_consumable_log:page" . $g_id);
+            $redis->del("icore_consumable_log:dashboard" . $g_id);
+
+            $keys = $redis->keys("icore_consumable_request:{$g_id}:*");
+            foreach ($keys as $key) {
+                $redis->del($key);
+            }
+
             $response = [
                 "status" => true,
                 "type" => "info",

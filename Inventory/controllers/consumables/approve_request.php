@@ -43,6 +43,12 @@
                 $request->status = "Approved";
                 DB::update($request);
 
+                $g_id = $request->gid ?? "";
+                $keys = $redis->keys("icore_consumable_request:{$g_id}:*");
+                foreach ($keys as $key) {
+                    $redis->del($key);
+                }
+
                 $response["status"] = true;
                 $response["type"] = "success";
                 $response["message"] = "Request has been approved.";

@@ -24,6 +24,10 @@
             DB::delete($consumable_log,$clog["id"]);
         }
 
+        $g_id = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+        $redis->del("icore_consumable_log:page" . $g_id);
+        $redis->del("icore_consumable_log:dashboard" . $g_id);
+
         $response = [
             "status" => true,
             "type" => "info",

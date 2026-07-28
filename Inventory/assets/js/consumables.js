@@ -348,10 +348,10 @@ if(document.getElementById("consumables")){
     function get_consumables_logs() {
         sole.get("../../controllers/consumables/get_consumables_logs.php")
         .then(res => {
-            consumables_logsTable.clear();
+            consumables_logsTable.clear().draw();
             var datas = []
             var ids = []
-            res.logs.forEach(log => {
+            res.consumables_log.forEach(log => {
                 res.users.forEach(user => {
                     if(log.uid == user.id){
                         !ids.includes(user.id) ? ids.push(user.id) : null
@@ -360,7 +360,7 @@ if(document.getElementById("consumables")){
                 })
             });
 
-            res.logs.forEach(log => {
+            res.consumables_log.forEach(log => {
                 if(!ids.includes(parseInt(log.uid))){
                     datas.push([log.id,"Others",log.cid,log.quantity_deduction,log.remarks,log.date + " " + log.time])
                 }
@@ -391,7 +391,7 @@ if(document.getElementById("consumables")){
         sole.post("../../controllers/consumables/get_consumables_requests.php",{
             type : "group"
         }).then(res => {
-            consumables_RequestsOthersTable.clear();
+            consumables_RequestsOthersTable.clear().draw();
             var datas = []
             var ids = []
 
@@ -479,7 +479,7 @@ if(document.getElementById("consumables")){
         sole.post("../../controllers/consumables/get_consumables_requests.php",{
             type : "user"
         }).then(res => {
-            consumables_RequestsTable.clear();
+            consumables_RequestsTable.clear().draw();
             var datas = []
             var ids = []
 
@@ -978,7 +978,7 @@ if(document.getElementById("consumables")){
     })
 
     function loadConsumables(res){
-        consumablesTable.clear();
+        consumablesTable.clear().draw();
         res.consumables.forEach(e => {
             consumablesTable.row.add([
                 e["id"],

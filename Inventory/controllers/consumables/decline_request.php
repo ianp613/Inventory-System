@@ -23,6 +23,12 @@
             $request->declined_remarks = $data["remarks"];
             DB::update($request);
 
+            $g_id = $_SESSION["g_id"] ?? "";
+            $keys = $redis->keys("icore_consumable_request:{$g_id}:*");
+            foreach ($keys as $key) {
+                $redis->del($key);
+            }
+
             $response["status"] = true;
             $response["type"] = "info";
             $response["message"] = "Request has been declined.";    

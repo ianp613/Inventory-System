@@ -38,6 +38,11 @@
                     DB::save($log);
                 }
 
+                $g_id = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+                $redis->del("icore_consumable:all" . $g_id);
+                $redis->del("icore_consumable_log:page" . $g_id);
+                $redis->del("icore_consumable_log:dashboard" . $g_id);
+
                 $response = [
                     "status" => true,
                     "type" => "success",
