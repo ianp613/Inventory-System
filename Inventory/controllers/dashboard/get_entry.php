@@ -3,6 +3,14 @@
     header('Content-Type: application/json');
     include("../../includes.php");
 
+    $cache_key = "icore_entry:all";
+    $cache_data = $redis->get($cache_key);
+
+    if($cache_data !== null){
+        echo $cache_data;
+        exit;
+    }
+
     $ipInfo = file_get_contents("https://ipinfo.io/json");
     $data = json_decode($ipInfo, true);
 
@@ -22,6 +30,8 @@
         "region" => $data["region"],
         "city" => $data["city"]
     ];
+
+    $redis->setex($cache_key, 300, json_encode($response));
 
     echo json_encode($response);
 ?>

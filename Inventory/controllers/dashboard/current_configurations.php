@@ -2,6 +2,14 @@
     header('Content-Type: application/json');
     include("../../includes.php");
 
+    $cache_key = "icore_current_configuration:all";
+    $cache_data = $redis->get($cache_key);
+
+    if($cache_data !== null){
+        echo $cache_data;
+        exit;
+    }
+
     $isp = new ISP;
     $router = new Routers;
     $ip_network = new IP_Network;
@@ -44,5 +52,6 @@
         "routers" => $config_router
     ];
 
+    $redis->setex($cache_key, 300, json_encode($response));
     echo json_encode($response);
 ?>

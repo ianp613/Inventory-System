@@ -42,6 +42,7 @@ class ComposerStaticInit51523e44be62acdf602b9438d59bebf4
             'Psr\\SimpleCache\\' => 16,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Http\\Client\\' => 16,
+            'Predis\\' => 7,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
             'PHPMailer\\PHPMailer\\' => 20,
         ),
@@ -142,6 +143,10 @@ class ComposerStaticInit51523e44be62acdf602b9438d59bebf4
         'Psr\\Http\\Client\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
+        ),
+        'Predis\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/predis/predis/src',
         ),
         'PhpOffice\\PhpSpreadsheet\\' =>
         array (

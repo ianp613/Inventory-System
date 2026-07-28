@@ -375,3 +375,7 @@ Acts as a maintenance/action-items list
 
 2026-51914
 2026-51923
+
+composer require predis/predis
+wsl --install
+wsl --install -d Ubuntu
