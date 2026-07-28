@@ -4,6 +4,9 @@
     include("../includes.php");
     $data = json_decode(file_get_contents('php://input'), true);
 
+    $cache_key = "icore_setting".$_SESSION["userid"];
+    $redis->del($cache_key);
+
     $setting = new Settings;
     if($data["type"] == "sound"){
         $sound = DB::prepare($setting,$data["id"]);
