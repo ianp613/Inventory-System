@@ -34,27 +34,6 @@ if(document.getElementById("dashboard")){
     sole.get("../../controllers/dashboard/get_entry.php")
     .then(res => load_unit_counts(res))
 
-    sole.get("https://ipinfo.io/json")
-    .then(res => {
-        // var asn_isp = res.
-        const [asn, ...ispParts] = res.org.split(" ");
-        const isp = ispParts.join(" ");
-
-        var wmi_ip = document.getElementById("wmi_ip")
-        var wmi_isp = document.getElementById("wmi_isp")
-        var wmi_asn = document.getElementById("wmi_asn")
-        var wmi_city = document.getElementById("wmi_city")
-        var wmi_region = document.getElementById("wmi_region")
-        var wmi_country = document.getElementById("wmi_country")
-        
-        wmi_ip.innerHTML = wmi_ip.innerHTML + " " + res.ip
-        wmi_isp.innerHTML = wmi_isp.innerHTML + " " + isp
-        wmi_asn.innerHTML = wmi_asn.innerHTML + " " + asn
-        wmi_city.innerHTML = wmi_city.innerHTML + " " + res.city
-        wmi_region.innerHTML = wmi_region.innerHTML + " " + res.region
-        wmi_country.innerHTML = wmi_country.innerHTML + " " + res.country
-    })
-
 
     sole.get("../../controllers/dashboard/current_configurations.php")
     .then(res => {
@@ -208,7 +187,7 @@ if(document.getElementById("dashboard")){
                 addDataset(cons.description,sdot)
             });
             insertDaily(getYear(),getMonth())
-        }, 1000);
+        }, 2000);
     }
 
     function insertDaily(year, month){
@@ -671,6 +650,28 @@ if(document.getElementById("dashboard")){
         localStorage.removeItem("login_")
         localStorage.removeItem("login__")
     }
+
+
+    sole.get("https://ipinfo.io/json")
+    .then(res => {
+        // var asn_isp = res.
+        const [asn, ...ispParts] = res.org.split(" ");
+        const isp = ispParts.join(" ");
+
+        var wmi_ip = document.getElementById("wmi_ip")
+        var wmi_isp = document.getElementById("wmi_isp")
+        var wmi_asn = document.getElementById("wmi_asn")
+        var wmi_city = document.getElementById("wmi_city")
+        var wmi_region = document.getElementById("wmi_region")
+        var wmi_country = document.getElementById("wmi_country")
+        
+        wmi_ip.innerHTML = wmi_ip.innerHTML + " " + res.ip
+        wmi_isp.innerHTML = wmi_isp.innerHTML + " " + isp
+        wmi_asn.innerHTML = wmi_asn.innerHTML + " " + asn
+        wmi_city.innerHTML = wmi_city.innerHTML + " " + res.city
+        wmi_region.innerHTML = wmi_region.innerHTML + " " + res.region
+        wmi_country.innerHTML = wmi_country.innerHTML + " " + res.country
+    })
 }
 
 
