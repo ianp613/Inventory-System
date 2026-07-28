@@ -2,6 +2,7 @@
     header('Content-Type: application/json');
     session_start();
     include("../includes.php");
+    $redis->flushall();
     // Get the POST data
     $data = json_decode(file_get_contents('php://input'), true);
 
