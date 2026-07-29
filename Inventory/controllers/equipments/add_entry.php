@@ -40,6 +40,10 @@
                     DB::save($log);
                 }
 
+                $g_id = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+                $redis->del("icore_entry:all" . $g_id);
+                $redis->del("icore_entry:eid" . $data["eid"]);
+
                 $response = [
                     "status" => true,
                     "type" => "success",

@@ -14,6 +14,8 @@
                 $equipment_name_temp = $equipment->name;
                 $equipment->name = $data["name"];
                 DB::update($equipment);
+                $g_id = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+                $redis->del("icore_equipment:all" . $g_id);
 
                 if($equipment_name_temp != $data["name"]){
                     $log = new Logs;

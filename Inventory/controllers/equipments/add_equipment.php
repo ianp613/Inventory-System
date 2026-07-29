@@ -21,6 +21,8 @@
                 $equipment->uid = $data["uid"];
                 $equipment->name = $data["name"];
                 DB::save($equipment);
+                $g_id = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+                $redis->del("icore_equipment:all" . $g_id);
                 
                 $log = new Logs;
                 $log->gid = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
