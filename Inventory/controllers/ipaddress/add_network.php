@@ -60,10 +60,14 @@
 
                 $ip_address = new IP_Address;
                 DB::sql($ip_address,$sql);
+
+                $g_id = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+                $redis->del("icore_network:all" . $g_id);
+                $redis->del("icore_ip:nid" . $nid);
             }else{
                 $response = [
-                    "status" => true,
-                    "type" => "success",
+                    "status" => false,
+                    "type" => "error",
                     "size" => null,
                     "message" => "Error creating IP addresses."
                 ]; 

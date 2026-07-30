@@ -19,6 +19,8 @@
         $user_temp = DB::prepare($user,$data["id"]);
         $user_temp->password = Data::encrypt("12345");
         DB::update($user_temp);
+
+        invalidate_user_group_caches($redis);
         
         $response = [
             "status" => true,

@@ -145,6 +145,9 @@
                 $user->c_authority = $data["privilege"] != "User" ? "true" : "false";
 
                 DB::update($user2);
+
+                invalidate_user_group_caches($redis);
+
                 $response = [
                     "status" => true,
                     "type" => "success",
@@ -170,6 +173,9 @@
             $user2->privileges = $data["privilege"];
             $user->c_authority = $data["privilege"] != "User" ? "true" : "false";
             DB::update($user2);
+
+            invalidate_user_group_caches($redis);
+
                 $response = [
                 "status" => true,
                 "type" => "success",

@@ -52,8 +52,7 @@
             }
 
             $g_id = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
-            $redis->del("icore_current_configuration:all");
-            $redis->del("icore_isp_router:all" . $g_id);
+            invalidate_isp_router_caches($redis, $g_id);
 
             $response = [
                 "status" => true,

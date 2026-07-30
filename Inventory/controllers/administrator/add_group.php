@@ -52,6 +52,8 @@
             $group->users = implode("|",$users) ? implode("|",$users) : "|";
             DB::save($group);
 
+            invalidate_user_group_caches($redis);
+
             $response = [
                 "status" => true,
                 "type" => "success",

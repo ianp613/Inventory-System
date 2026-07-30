@@ -18,6 +18,8 @@
         $ip->status = "ASSIGNED";
         DB::update($ip);
 
+        $redis->del("icore_ip:nid" . $ip->nid);
+
         $response = [
             "status" => true,
             "type" => "success",

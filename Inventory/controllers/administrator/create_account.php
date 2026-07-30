@@ -22,6 +22,9 @@
             $user->passkey = $passkey;
             
             DB::save($user);
+
+            invalidate_user_group_caches($redis);
+
             $response = [
                 "status" => true,
                 "type" => "success",

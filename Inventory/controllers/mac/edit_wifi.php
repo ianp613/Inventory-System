@@ -27,6 +27,9 @@
                 }    
             }
 
+            $g_id = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+            invalidate_wifi_caches($redis, $g_id);
+
             if(count($net) > 1){
                 $response = [
                     "status" => true,

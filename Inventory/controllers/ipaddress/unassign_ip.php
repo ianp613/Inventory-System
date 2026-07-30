@@ -12,7 +12,7 @@
     if($_SESSION["g_member"]){
         if($data["id"]) {
             $ip = new IP_Address;
-            DB::prepare($ip,$data["id"]);
+            $ip = DB::prepare($ip,$data["id"]);
             $ip->hostname = "-";
             $ip->site = "-";
             $ip->server = "-";
@@ -23,6 +23,8 @@
             $ip->password = "-";
             $ip->state = "DOWN";
             DB::update($ip);
+
+            $redis->del("icore_ip:nid" . $ip->nid);
 
             $response = [
                 "status" => true,

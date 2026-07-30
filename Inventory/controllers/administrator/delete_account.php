@@ -45,7 +45,14 @@
     if($data) {
         $user = new User;
         DB::delete($user,$data["id"]);
-        
+
+        invalidate_user_group_caches($redis);
+
+        $keys = $redis->keys("icore_consumable_request:*");
+        foreach ($keys as $key) {
+            $redis->del($key);
+        }
+
         $response = [
             "status" => true,
             "type" => "info",

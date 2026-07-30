@@ -17,6 +17,7 @@
     $post_it->recipient = $data["recipient"];
     $post_it->message = $data["message"];
     DB::save($post_it);
+    $redis->del("icore_post_it:all");
 
     echo json_encode($response);
 ?>

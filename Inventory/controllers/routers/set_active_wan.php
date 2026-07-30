@@ -61,8 +61,10 @@
                     } 
                 }
             }
+
+            $g_id = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+            invalidate_isp_router_caches($redis, $g_id);
                 
-            
             $router = DB::find($router,$data["id"])[0];
             
             $wan1 = [];

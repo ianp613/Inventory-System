@@ -43,6 +43,10 @@
                     $_SESSION["log"] = $log->log;
                     DB::save($log);
                 }
+
+                $g_id = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+                invalidate_isp_router_caches($redis, $g_id);
+
                 $response = [
                     "status" => true,
                     "type" => "info",

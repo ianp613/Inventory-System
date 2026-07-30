@@ -150,6 +150,12 @@
                         $_SESSION["log"] = $log->log;
                         DB::save($log);
                     }  
+
+                    $g_id = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+                    invalidate_isp_router_caches($redis, $g_id);
+                    $redis->del("icore_network:all" . $g_id);
+                    $redis->del("icore_ip:nid" . $nid);
+
                     $response = [
                         "status" => true,
                         "type" => "success",
@@ -192,6 +198,3 @@
         ];
         echo json_encode($response);     
     }
-    
-
-    

@@ -26,6 +26,10 @@
             $network_temp = DB::find($network,$data["id"]);
             DB::delete($network,$data["id"]);
 
+            $g_id = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+            $redis->del("icore_network:all" . $g_id);
+            $redis->del("icore_ip:nid" . $data["id"]);
+
             $response = [
                 "status" => true,
                 "type" => "info",

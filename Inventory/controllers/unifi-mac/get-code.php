@@ -27,6 +27,8 @@ $mac->location  = $data["voucher_location"];
 $mac->remarks   = "-";
 DB::save($mac);
 
+invalidate_mac_caches($redis, 4);
+
 // ---------------------------------------------------------------
 // 1. Read input
 // ---------------------------------------------------------------
@@ -215,7 +217,6 @@ function fetchVouchers(array $controller): array
         ];
     }, $decoded['data']);
 
-    // No vouchers found isn't an error, but it's worth flagging as "info" rather than "success"
     if (count($vouchers) === 0) {
         return [
             'status'   => 'info',

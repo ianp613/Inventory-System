@@ -52,6 +52,9 @@
                 //     DB::save($log);
                 // }
 
+                $g_id = $_SESSION["g_id"] ? $_SESSION["g_id"] : "_*";
+                invalidate_mac_caches($redis, $g_id);
+
                 $response = [
                     "status" => true,
                     "type" => "success",
