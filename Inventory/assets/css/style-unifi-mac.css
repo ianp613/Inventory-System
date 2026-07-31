@@ -425,7 +425,7 @@ select.form-control{
 /* ==========================================================================
    Login overlay
    ========================================================================== */
-.um-login{ filter: blur(0x) brightness(0.55) saturate(0.9); pointer-events: none; }
+.um-login{ filter: blur(6px) brightness(0.55) saturate(0.9); pointer-events: none; }
 
 #um_login_card{
   position: fixed !important;
