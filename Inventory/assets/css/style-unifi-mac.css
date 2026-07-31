@@ -56,7 +56,6 @@ html[data-umx-theme="light"]{
 /* -- Reset / base -- */
 #um_login, #um_login *{
   box-sizing: border-box;
-  font-family: var(--umx-font-body);
 }
 
 body:has(#um_login){
@@ -101,7 +100,6 @@ body:has(#um_login){
   width: 30px;
   height: 30px;
   object-fit: contain;
-  filter: brightness(0) invert(1);
 }
 
 .umx-title-block{ min-width: 0; }
@@ -427,7 +425,7 @@ select.form-control{
 /* ==========================================================================
    Login overlay
    ========================================================================== */
-.um-login{ filter: blur(6px) brightness(0.55) saturate(0.9); pointer-events: none; }
+.um-login{ filter: blur(0x) brightness(0.55) saturate(0.9); pointer-events: none; }
 
 #um_login_card{
   position: fixed !important;
@@ -505,7 +503,7 @@ select.form-control{
   font-size: 10.5px !important;
   letter-spacing: .04em;
 }
-#um_login_card p.text-center{ color: var(--umx-text-faint) !important; }
+#um_login_card p.text-center{ color: var(--umx-text-faint) !important; font-size: 12px; }
 
 /* ==========================================================================
    Copyright
@@ -541,4 +539,10 @@ select.form-control{
 #um_login textarea:focus-visible{
   outline: 2px solid var(--umx-accent);
   outline-offset: 2px;
+}
+
+.spinner-border{
+    width: 15px;
+    height: 15px;
+    margin-top: 2px;
 }

@@ -26,7 +26,7 @@
 
                 <div class="umx-header">
                     <div class="umx-mark">
-                        <img src="../../assets/img/unifi.jpg" alt="">
+                        <img src="../../assets/img/unifi.png" alt="">
                     </div>
                     <div class="umx-title-block">
                         <p class="umx-eyebrow"><span class="umx-pulse"></span> WIFI TEAM &middot; DDC LEYTE ICORE</p>
@@ -236,7 +236,7 @@
                             <div class="d-flex wd-500 justify-content-end">
                                 <button id="voucher_clear" type="button" class="btn btn-secondary btn-sm rounded-pill wd-120 me-1"><span class="fa fa-remove"></span> Clear</button>
                                 <button id="voucher_get" type="button" class="btn btn-success btn-sm rounded-pill wd-120 me-1"><span class="fa fa-key"></span> Get Code</button>
-                                <button hidden disabled id="voucher_get_loading" type="button" class="btn btn-danger btn-sm rounded-pill"><div class="spinner-border wd-15 ht-15" role="status"></div> Loading</button>
+                                <button hidden disabled id="voucher_get_loading" type="button" class="btn btn-success btn-sm rounded-pill"><div class="spinner-border wd-15 ht-15" role="status"></div> Loading</button>
                             </div>
                         </div>
                     </div>

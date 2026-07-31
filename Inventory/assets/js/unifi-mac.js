@@ -626,7 +626,7 @@ function GetLocations(){
 function splash(message, seconds) {
   // Create splash element
   const splashScreen                = document.createElement("div");
-  const bs5_spinner                 = "<div class=\"spinner-border text-dark ht-70 wd-70 me-5\" role=\"status\"></div>"
+  const bs5_spinner                 = "<div class=\"spinner-border text-dark me-5\" style=\"width: 70px; height: 70px;\" role=\"status\"></div>"
   splashScreen.innerHTML            = bs5_spinner
   splashScreen.id                   = "splash";
   splashScreen.style.position       = "fixed";
