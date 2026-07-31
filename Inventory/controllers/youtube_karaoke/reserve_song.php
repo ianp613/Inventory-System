@@ -10,6 +10,8 @@
     $yk_reserved->yk_singer = $data["singer"];
     DB::save($yk_reserved);
 
+    $redis->del("icore_yk_reserved:" . $data["id"]);
+
     $response = [
         "status" => true,
         "type" => "success",
@@ -17,3 +19,4 @@
     ];
 
     echo json_encode($response);
+?>

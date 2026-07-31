@@ -11,8 +11,8 @@
             <tr class="tr_exclude">
                 <td class="text-start">ID</td>
                 <td class="text-start" style="width: 70%;">Logs</td>
-                <td class="text-start">Date & Time</td>
-                <td class="text-start" style="width: 50px;">Action</td>
+                <td class="text-start" style="width: 20%; !important">Date & Time</td>
+                <td class="text-start" style="width: 10%; !important">Action</td>
             </tr>
         </thead>
         <tbody>
