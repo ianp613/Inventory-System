@@ -432,7 +432,7 @@ password_mac.addEventListener("click", e => {
 
 um_login_btn.addEventListener("click", e => {
   if(!um_login_userid.value || !um_login_password.value){
-    alert("Please input User ID and Password.")
+    bs5.toast("warning","<span class=\"text-dark\">Please input User ID and Password.<span>")
     return
   }
   sole.post("../controllers/unifi-mac/login.php", {
@@ -443,9 +443,9 @@ um_login_btn.addEventListener("click", e => {
       um_login_card.hidden = true
       um_login.classList.remove("um-login")
       mac_register_by.value = res.user[0]["name"]
-      alert(res.message + res.user[0]["name"])
+      bs5.toast(res.type,res.message + res.user[0]["name"])
     }else{
-      alert(res.message)
+      bs5.toast(res.type,res.message)
     }
   })
 })
@@ -502,32 +502,79 @@ function loadLastMAC(){
   }
 }
 
-/* --------------------------------------------------------------------
-   Theme handling — rewritten to toggle a single data-attribute on
-   <html>. All actual styling lives in unifi-mac-pro.css, so this no
-   longer needs to walk the DOM setting inline styles element-by-element.
-   -------------------------------------------------------------------- */
 function setTheme(){
   if(localStorage.getItem("unifi_mac_theme") === null){
     localStorage.setItem("unifi_mac_theme",default_theme)
     theme.value = default_theme
   }else{
     theme.value = localStorage.getItem("unifi_mac_theme")
+    if(localStorage.getItem("unifi_mac_theme") == "dark"){
+      if(!document.body.classList.contains("dark")){
+        document.body.classList.remove("light")
+        document.body.classList.add("dark")
+      }
+    }
+    if(localStorage.getItem("unifi_mac_theme") == "light"){
+      if(!document.body.classList.contains("light")){
+        document.body.classList.remove("dark")
+        document.body.classList.add("light")
+      }
+    }
   }
 }
+
 
 function loadTheme(){
-  var current = localStorage.getItem("unifi_mac_theme") || default_theme
-  document.documentElement.setAttribute("data-umx-theme", current)
-  if(current === "dark"){
-    document.body.classList.remove("light")
-    document.body.classList.add("dark")
+  if(document.body.classList.contains("dark")){
+    document.body.classList.add("bg-dark")
+    document.body.classList.add("text-light")
+    document.getElementsByTagName("h5")[0].classList.add("text-light")
+    document.getElementsByTagName("img")[0].style = "border: solid 2px white; margin-top: -23px;"
+    document.getElementsByTagName("textarea")[0].classList.add("text-light")
+    document.getElementsByTagName("textarea")[0].classList.add("bg-dark")
+    var inps = document.getElementsByTagName("input")
+    for (let i = 0; i < inps.length; i++) {
+      inps[i].classList.add("bg-dark")
+      inps[i].classList.add("text-light")
+    }
+
+    var sels = document.getElementsByTagName("select")
+    for (let i = 0; i < sels.length; i++) {
+      sels[i].classList.add("bg-dark")
+      sels[i].classList.add("text-light")
+    }
+
+    var btns = document.getElementsByTagName("button")
+    for (let i = 0; i < btns.length; i++) {
+      btns[i].style = "border: solid 2px white;"
+      btns[i].style = "border: solid 2px white;"
+    }
   }else{
-    document.body.classList.remove("dark")
-    document.body.classList.add("light")
+    document.body.classList.remove("bg-dark")
+    document.body.classList.remove("text-light")
+    document.getElementsByTagName("h5")[0].classList.remove("text-light")
+    document.getElementsByTagName("img")[0].style = "margin-top: -23px;"
+    document.getElementsByTagName("textarea")[0].classList.remove("text-light")
+    document.getElementsByTagName("textarea")[0].classList.remove("bg-dark")
+    var inps = document.getElementsByTagName("input")
+    for (let i = 0; i < inps.length; i++) {
+      inps[i].classList.remove("bg-dark")
+      inps[i].classList.remove("text-light")
+    }
+
+    var sels = document.getElementsByTagName("select")
+    for (let i = 0; i < sels.length; i++) {
+      sels[i].classList.remove("bg-dark")
+      sels[i].classList.remove("text-light")
+    }
+
+    var btns = document.getElementsByTagName("button")
+    for (let i = 0; i < btns.length; i++) {
+      btns[i].removeAttribute("style")
+      btns[i].removeAttribute("style")
+    }
   }
 }
-
 
 GetWifi()
 GetLocations()
