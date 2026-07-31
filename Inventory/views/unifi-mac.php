@@ -17,7 +17,7 @@
         <link rel="stylesheet" href="../assets/fontawesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="../assets/css/bootstrap/bootstrap.min.css">
         <link rel="stylesheet" href="../assets/css/sole.splash/splash.css">
-        <link rel="stylesheet" href="../assets/css/style-unifi-mac.css">
+        <link rel="stylesheet" href="../assets/css/style-unifi-mac.css?v=<?= filemtime('../assets/css/style-unifi-mac.css') ?>">
     </head>
     <body class="dark">
 
