@@ -435,7 +435,7 @@ select.form-control{
   bottom: auto !important;
   transform: translate(-50%, -50%) !important;
   margin: 0 !important;
-  z-index: 2000;
+  z-index: 2;
   font-family: var(--umx-font-body);
   background: var(--umx-surface) !important;
   border: 1px solid var(--umx-border);
@@ -545,4 +545,9 @@ select.form-control{
     width: 15px;
     height: 15px;
     margin-top: 2px;
+}
+
+::selection {
+  background-color: var(--umx-accent); /* highlight color */
+  color: #ffffff; /* text color while selected */
 }

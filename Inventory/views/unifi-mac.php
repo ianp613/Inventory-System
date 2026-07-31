@@ -65,7 +65,7 @@
                             </div>
                             <div class="row mt-2">
                                 <div class="col-md-6 umx-field">
-                                    <label for="mac_name" class="mb-2">Name</label>
+                                    <label for="mac_name" class="mb-2">Full Name</label>
                                     <input required type="text" name="" id="mac_name" class="form-control" placeholder="Full name">
                                 </div>
                                 <div class="col-md-6 umx-field">
@@ -201,7 +201,7 @@
                             </div>
                             <div class="row mt-2">
                                 <div class="col-md-6 umx-field">
-                                    <label for="voucher_name" class="mb-2">Name</label>
+                                    <label for="voucher_name" class="mb-2">Full Name</label>
                                     <input required type="text" name="" id="voucher_name" class="form-control" placeholder="Full name">
                                 </div>
                                 <div class="col-md-6 umx-field">
@@ -270,7 +270,10 @@
         <script src="../assets/js/jquery/jquery-3.7.1.js"></script>
         <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
         <script src="../assets/js/sole.js?v=<?= filemtime('../assets/js/sole.js') ?>"></script>
+        <script src="../assets/js/sweetalert2/sweetalert2.all.min.js"></script>
+        <script src="../assets/js/sole.swal.js?v=<?= filemtime('../assets/js/sole.swal.js') ?>"></script>
         <script src="../assets/js/modal_alert.js?v=<?= filemtime('../assets/js/modal_alert.js') ?>"></script>
         <script src="../assets/js/unifi-mac.js?v=<?= filemtime('../assets/js/unifi-mac.js') ?>"></script>
+
     </body>
 </html>
