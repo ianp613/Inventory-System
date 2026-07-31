@@ -262,7 +262,7 @@
                 <button id="um_login_btn" class="btn btn-secondary w-100"><span class="fa fa-sign-in"></span> LOGIN</button>
             </div>
             <h6 class="text-center mb-0 mt-2 f-12 f-i fw-bold">Intergrated with DDC LEYTE ICORE Credentials</h6>
-            <p class="text-center mt-0 f-12 f-i">Unifi MAC v.1.1</p>
+            <p class="text-center mt-0 f-12 f-i">Unifi MAC v.1.2</p>
         </div>
 
         <h6 class="copyright f-10 text-secondary"></h6>

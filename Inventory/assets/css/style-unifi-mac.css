@@ -161,7 +161,7 @@ body:has(#um_login){
    unifi-mac.js's classList toggling keeps working unmodified)
    ========================================================================== */
 .modal-body.umx-tabbar{
-  padding: 14px 14px 0 14px;
+  padding: 14px 14px 0 15px;
   background: var(--umx-surface);
 }
 
