@@ -233,7 +233,7 @@ delete_clear_btn.addEventListener("click", e => {
 
 register_mac.addEventListener("click", e => {
   if(!mac_address.value){
-    ss.toast(null, "warning", "Please input MAC address.", null, "#f0a83c");
+    ss.toast("Please input MAC address.", "warning", null, null, "#f0a83c");
     return
   }else{
     if(sessionStorage.getItem("last_mac_address") !== null){
@@ -243,32 +243,32 @@ register_mac.addEventListener("click", e => {
     }
   }
   if(!mac_ssid.value){
-    ss.toast(null, "warning", "Please select Wifi SSID.", null, "#f0a83c");
+    ss.toast("Please select Wifi SSID.", "warning", null, null, "#f0a83c");
     return
   }
   if(!mac_name.value){
-    ss.toast(null, "warning", "Please input a proper or full name.", null, "#f0a83c");
+    ss.toast("Please input a proper or full name.", "warning", null, null, "#f0a83c");
     return
   }else{
     if(mac_name.value.split(" ").length <= 2){
-      ss.toast(null, "warning", "Please input a proper or full name.", null, "#f0a83c");
+      ss.toast("Please input a proper or full name.", "warning", null, null, "#f0a83c");
       return
     }
   }
   if(!mac_device.value){
-    ss.toast(null, "warning", "Please select device.", null, "#f0a83c");
+    ss.toast("Please select device.", "warning", null, null, "#f0a83c");
     return
   }
   if(!mac_project.value){
-    ss.toast(null, "warning", "Please select project.", null, "#f0a83c");
+    ss.toast("Please select project.", "warning", null, null, "#f0a83c");
     return
   }
   if(!mac_project.value){
-    ss.toast(null, "warning", "Please select location.", null, "#f0a83c");
+    ss.toast("Please select location.", "warning", null, null, "#f0a83c");
     return
   }
   if(!mac_register_by.value){
-    ss.toast(null, "warning", "Please select registered by.", null, "#f0a83c");
+    ss.toast("Please select registered by.", "warning", null, null, "#f0a83c");
     return
   }
 
@@ -299,28 +299,28 @@ if(localStorage.getItem("voucher_last_code") !== null){
 
 voucher_get.addEventListener("click", e => {
   if(!voucher_site.value){
-    ss.toast(null, "warning", "Please select wifi network.", null, "#f0a83c");
+    ss.toast("Please select wifi network.", "warning", null, null, "#f0a83c");
     return    
   }
   if(!voucher_name.value){
-    ss.toast(null, "warning", "Please input a proper or full name.", null, "#f0a83c");
+    ss.toast("Please input a proper or full name.", "warning", null, null, "#f0a83c");
     return
   }else{
     if(voucher_name.value.split(" ").length <= 2){
-      ss.toast(null, "warning", "Please input a proper or full name.", null, "#f0a83c");
+      ss.toast("Please input a proper or full name.", "warning", null, null, "#f0a83c");
       return
     }
   }
   if(!voucher_device.value){
-    ss.toast(null, "warning", "Please select device.", null, "#f0a83c");
+    ss.toast("Please select device.", "warning", null, null, "#f0a83c");
     return
   }
   if(!voucher_project.value){
-    ss.toast(null, "warning", "Please select project.", null, "#f0a83c");
+    ss.toast("Please select project.", "warning", null, null, "#f0a83c");
     return
   }
   if(!voucher_location.value){
-    ss.toast(null, "warning", "Please select location.", null, "#f0a83c");
+    ss.toast("Please select location.", "warning", null, null, "#f0a83c");
     return
   }
 
@@ -402,11 +402,11 @@ function formatVoucherDuration(duration) {
 
 delete_mac.addEventListener("click", e => {
   if(!delete_mac_address.value){
-    ss.toast(null, "warning", "Please input MAC address.", null, "#f0a83c");
+    ss.toast("Please input MAC address.", "warning", null, null, "#f0a83c");
     return
   }
   if(!delete_mac_ssid.value){
-    ss.toast(null, "warning", "Please select Wifi SSID.", null, "#f0a83c");
+    ss.toast("Please select Wifi SSID.", "warning", null, null, "#f0a83c");
     return
   }
   delete_mac.hidden           = true
@@ -426,7 +426,7 @@ delete_mac.addEventListener("click", e => {
 
 password_mac.addEventListener("click", e => {
   if(!password_mac_ssid.value){
-    ss.toast(null, "warning", "Please select Wifi SSID.", null, "#f0a83c");
+    ss.toast("Please select Wifi SSID.", "warning", null, null, "#f0a83c");
     return
   }
 
@@ -444,7 +444,7 @@ password_mac.addEventListener("click", e => {
 
 um_login_btn.addEventListener("click", e => {
   if(!um_login_userid.value || !um_login_password.value){
-    ss.toast(null, "warning", "Please input User ID and Password.", null, "#f0a83c");
+    ss.toast("Please input User ID and Password.", "warning", null, null, "#f0a83c");
     return
   }
   sole.post("../controllers/unifi-mac/login.php", {
@@ -455,9 +455,9 @@ um_login_btn.addEventListener("click", e => {
       um_login_card.hidden = true
       um_login.classList.remove("um-login")
       mac_register_by.value = res.user[0]["name"]
-      ss.toast(null, "success", res.message + res.user[0]["name"], null, "#f0a83c");
+      ss.toast(res.message + res.user[0]["name"], "success", null, null, "#f0a83c");
     }else{
-      ss.toast(null, "warning", res.message, null, "#f0a83c");
+      ss.toast(res.message, "warning", null, null, "#f0a83c");
     }
   })
 })
