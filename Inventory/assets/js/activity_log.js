@@ -73,8 +73,9 @@ if(document.getElementById("logs")){
         sole.post("../../controllers/logs/delete_logs.php",{
             uid: this.getAttribute("uid")
         }).then(res => {
-            bs5.toast("info","Logs has been cleared.")
+            ss.toast("Logs has been cleared.","info",null,null,"#212529")
             loadLogs(this.getAttribute("uid"))
+            clear_log_modal.hide()
         })
     })
     
@@ -107,7 +108,7 @@ if(document.getElementById("logs")){
         if(e.target.classList.contains('delete_log_row')) {
             sole.post("../../controllers/logs/delete_log.php",{
                 id: e.target.getAttribute("l-id")
-            }).then(res => bs5.toast(res.type,res.message))
+            }).then(res => ss.toast(res.message,res.type,null,null,"#212529"))
             loadLogs(select_log.value)
         }
     })

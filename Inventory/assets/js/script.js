@@ -89,13 +89,12 @@ if(document.getElementById("sidebar")){
                         // localStorage.clear();
                         location.reload();
                     }, 2000);
-                    bs5.toast(res.type,res.message,res.size)
-                }else{
-                    bs5.toast(res.type,res.message,res.size)
                 }
+                operate_as_modal.hide()
+                ss.toast(res.message,res.type,null,null,"#212529")
             })
         }else{
-            bs5.toast("warning","Please select group.")
+            ss.toast("Please select group.","warning",null,null,"#212529")
         }
     })
     
@@ -108,10 +107,9 @@ if(document.getElementById("sidebar")){
                     // localStorage.clear();
                     location.reload();
                 }, 2000);
-                bs5.toast(res.type,res.message,res.size)
-            }else{
-                bs5.toast(res.type,res.message,res.size)
             }
+            operate_as_modal.hide()
+            ss.toast(res.message,res.type,null,null,"#212529")
         })
     })
 
@@ -151,7 +149,7 @@ if(document.getElementById("sidebar")){
                 localStorage.setItem("g_name",res.group[0].group_name)
             }
             if(document.getElementById("dashboard")){
-                !localStorage.getItem("email") ? alert("Your account doesn’t have an email address associated with it. Please add one to enhance your account’s security.") : null
+                !localStorage.getItem("email") ? ss.toast("Your account doesn’t have an email address associated with it. Please add one to enhance your account’s security.","info",null,null,"#212529") : null
             }
             document.getElementById("userDropdown").innerHTML = "<div class=\"d-flex gray-2\" style=\"margin-top: 10px;\"><span class=\"fa fa-user-circle-o me-2 mt-2 f-20\"></span> <div>" + res.user[0]["name"] + "<br><p class=\"f-10\" style=\"margin-top: -4px;\"> Account: " + (res.user[0]["privileges"] == "Assistant Technician" ? "Technician" : res.user[0]["privileges"]) + "</p></div></div>"
 
@@ -198,7 +196,7 @@ if(document.getElementById("sidebar")){
                 password : localStorage.getItem("password")
             }).then(res => {
                 if(res){
-                    alert("Your account password is set to the default setting. For security reasons, please update your password.")
+                    ss.toast("Your account password is set to the default setting. For security reasons, please update your password.","warning",null,"I Understand","#212529")
                     account_email.value = localStorage.getItem("email") != "-" ? localStorage.getItem("email") : "";
                     passkey_field.hidden = true
                     account_cancel_btn.hidden = true
@@ -308,10 +306,10 @@ if(document.getElementById("sidebar")){
                 })
                 .then(res => exportAssist(res))
             }else{
-                alert("PLEASE INPUT ACCOUNT PASSWORD")
+                ss.toast("PLEASE INPUT ACCOUNT PASSWORD","error",null,null,"#212529")
             }
         }else{
-            bs5.toast("warning","Something went wrong, try again.")
+            ss.toast("Something went wrong, try again.","warning",res.size)
         }
     }
 
@@ -319,8 +317,9 @@ if(document.getElementById("sidebar")){
         if(res.status){
             sole.get("../controllers/db_export.php")
             .then(res => exportAssistDownload(res))
+            ss.toast(res.message,res.type,null,null,"#212529")
         }else{
-            alert(res.message)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }
     }
 
@@ -339,7 +338,7 @@ if(document.getElementById("sidebar")){
                 link.click();
                 document.body.removeChild(link);
             })
-            .catch(error => bs5.toast("error", "Export Failed: " + error));
+            .catch(error => ss.toast("Export Failed: " + error,"error",null,null,"#212529"));
 
             settings_modal.show()
             confirm_export_modal.hide()
@@ -349,7 +348,7 @@ if(document.getElementById("sidebar")){
                 sole.post("../../controllers/clear_temp.php").then(res => console.log(res));
             }, 5000);
         }else{
-            alert("EXPORT ERROR")
+            ss.toast("EXPORT ERROR","error",null,null,"#212529")
         }
     }
 
@@ -425,16 +424,17 @@ if(document.getElementById("sidebar")){
         if(account_email.value){
             var bol = regex.test(account_email.value)
             if(!bol){
-                alert("Please input a valid email.")
+                ss.toast("Please input a valid email.","warning",null,null,"#212529")
+                return
             }
         }
         bol = account_new_password.value
             ? account_confirm_password.value
                 ? account_new_password.value !== account_confirm_password.value
-                ? (alert("Password did not match."), false)
+                ? (ss.toast("Password did not match.","warning",null,null,"#212529"), false)
                 : true
-                : (alert("Please confirm new password."), false)
-            : (alert("Please enter a new password."), false);
+                : (ss.toast("Please confirm new password.","warning",null,null,"#212529"), false)
+            : (ss.toast("Please enter a new password.","warning",null,null,"#212529"), false);
 
         if(bol){
             sole.post("../../controllers/update_account.php",{
@@ -442,7 +442,7 @@ if(document.getElementById("sidebar")){
                 email: account_email.value,
                 password: account_new_password.value
             }).then(res => {
-                bs5.toast(res.type,res.message,res.size)
+                ss.toast(res.message,res.type,null,null,"#212529")
                 if(res.status){
                     localStorage.setItem("password",account_new_password.value)
                     localStorage.setItem("email",account_email.value)
@@ -450,6 +450,7 @@ if(document.getElementById("sidebar")){
                     account_new_password.value = ""
                     account_confirm_password.value = ""
                     account_cancel_btn.hidden = false
+                    account_edit_modal.hide()
                 }
             })
         }
