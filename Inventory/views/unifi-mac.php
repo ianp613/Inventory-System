@@ -6,7 +6,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>UNIFI MAC</title>
+        <title>Unifi MAC Console</title>
         <link rel="shortcut icon" href="../assets/img/logo-icore-ico.png" type="image/x-icon">
 
         <!-- Type system: Space Grotesk (display) / Inter (body) / JetBrains Mono (technical data) -->
