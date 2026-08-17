@@ -48,13 +48,13 @@
                     $mail->Port = 587;
 
                     // Email details
-                    $mail->setFrom('wifiteaminventory@gmail.com', 'Inventory System');
-                    $mail->Subject = 'Account Recovery';
+                    $mail->setFrom('wifiteaminventory@gmail.com', 'DDC Leyte ICORE');
+                    $mail->Subject = 'DDC Leyte ICORE | Account Recovery';
                     $mail->isHTML(true); 
                     $mail->Body = '<div style="width: 100%; color: #332D2D;">'.
                     '<div style="position: absolute; left: 50%; transform: translateX(-50%); width: 500px;">'.
                     '<div style="border-radius: 10px; display: flex; padding-top: 5px; padding-bottom: 5px; padding-left: 20px; background-color: #168897; color: white;">'.
-                    '<img src="cid:logoimg" style="max-width: 80px; margin-bottom:10px; margin-right: 20px;">'.
+                    '<img src="cid:logoimg" style="max-width: 70px; max-height: 50px; margin-top:10px; margin-right: 20px;">'.
                     '<h2 style="margin-top: 25px;">ACCOUNT RECOVERY CODE</h2>'.
                     '</div>'.
                     '<h3>This code was sent to your email for help getting back into your Account:</h3>'.

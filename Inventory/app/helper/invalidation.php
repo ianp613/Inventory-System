@@ -37,4 +37,8 @@
             $redis->del($key);
         }
     }
+
+    function invalidate_user_cache($redis, $user_id) {
+        $redis->del("icore_user:" . $user_id);
+    }
 ?>

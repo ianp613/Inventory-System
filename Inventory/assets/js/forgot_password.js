@@ -29,7 +29,7 @@ if(document.getElementById("forgot_password")){
                 userid: userid.value
             }).then(res => validateResponse(res,"get_code"))
         }else{
-            bs5.toast("warning","Please input user ID or Email.")
+            ss.toast("Please input user ID or Email.","warning",null,null,"#212529")
         }
     })
 
@@ -54,23 +54,23 @@ if(document.getElementById("forgot_password")){
                                 sending_state.setAttribute("hidden","true")
                                 ready_state.removeAttribute("hidden")
 
-                                bs5.toast(res.type,res.message,res.size) 
+                                ss.toast(res.message,res.type,null,null,"#212529")
                                 setTimeout(() => {
                                     window.location.replace("login.php");
-                                }, 2000);  
+                                }, 3000);  
                             }else{
-                                bs5.toast("error","Code is invalid.")    
+                                ss.toast("Code is invalid.","error",null,null,"#212529")
                             }
                         }
                     )
                 }else{
-                    bs5.toast("warning","Passwords didn't match.")
+                    ss.toast("Passwords didn't match.","warning",null,null,"#212529")
                 }
             }else{
-                bs5.toast("warning","Please input passwords.")
+                ss.toast("Please input password.","warning",null,null,"#212529")
             }
         }else{
-            bs5.toast("warning","Code can't be empty.")
+            ss.toast("Code can't be empty.","warning",null,null,"#212529")
         }
     })
 
@@ -91,9 +91,7 @@ if(document.getElementById("forgot_password")){
             sending_state.setAttribute("hidden","true")
             ready_state.removeAttribute("hidden")
             
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#212529")
         }
     }
-
-
 }

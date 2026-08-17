@@ -69,7 +69,9 @@
     </div>
     <h6 class="copyright-1 f-10 text-secondary"><i>Copyright 2025 @ Wifi Team</i></h6>
   </body>
+  <script src="../assets/js/sweetalert2/sweetalert2.all.min.js"></script>
   <script src="../assets/js/sole.js?v=<?= filemtime('../assets/js/sole.js') ?>"></script>
+  <script src="../assets/js/sole.swal.js?v=<?= filemtime('../assets/js/sole.swal.js') ?>"></script>
   <script src="../assets/js/ipf.js?v=<?= filemtime('../assets/js/ipf.js') ?>"></script>
   <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
   <script src="../assets/js/forgot_password.js?v=<?= filemtime('../assets/js/forgot_password.js') ?>"></script>

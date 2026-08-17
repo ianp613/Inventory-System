@@ -2,15 +2,19 @@
     header('Content-Type: application/json');
     session_start();
     include("../includes.php");
+
     // Get the POST data
     $data = json_decode(file_get_contents('php://input'), true);
 
     if($data) {
         $user = new User;
-        $user = DB::prepare($user,$data["id"]);
+        $user = DB::prepare($user, $data["id"]);
         $user->email = $data["email"] ? $data["email"] : "-";
         $user->password = Data::encrypt($data["password"]);
         DB::update($user);
+
+        invalidate_user_cache($redis, $data["id"]);
+
         $response = [
             "status" => true,
             "type" => "success",

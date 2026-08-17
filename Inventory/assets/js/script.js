@@ -451,6 +451,9 @@ if(document.getElementById("sidebar")){
                     account_confirm_password.value = ""
                     account_cancel_btn.hidden = false
                     account_edit_modal.hide()
+                    sole.get("../controllers/validate_auth.php").then(res => {
+                        validateAuth(res);
+                    })
                 }
             })
         }
