@@ -1,0 +1,654 @@
+/* ==========================================================================
+   FILE BROWSER — Console Design System
+   Built on the app's existing accent language (#185FA5 blue, folder tan,
+   success green, error red) rather than introducing a new palette.
+   Loaded last in <head> so it wins ties against the shared style.css.
+   ========================================================================== */
+
+:root{
+  --fb-bg:            #f5f6f8;
+  --fb-surface:        #ffffff;
+  --fb-surface-alt:    #f7f8fa;
+  --fb-border:         #e5e7eb;
+  --fb-border-soft:    #edeef1;
+
+  --fb-text:           #14161c;
+  --fb-text-dim:       #6b7280;
+  --fb-text-faint:     #9aa0ab;
+
+  --fb-accent:         #185FA5;
+  --fb-accent-dark:    #0C447C;
+  --fb-accent-soft:    #E6F1FB;
+
+  --fb-folder-soft:    #FAEEDA;
+  --fb-folder-ink:     #8a6a2f;
+
+  --fb-success:        #3B6D11;
+  --fb-success-soft:   #EAF3DE;
+  --fb-danger:         #A32D2D;
+  --fb-danger-soft:    #FCEBEB;
+  --fb-warning:        #8a6a2f;
+  --fb-warning-soft:   #F1EFE8;
+
+  --fb-radius-sm:      8px;
+  --fb-radius-md:      12px;
+  --fb-radius-lg:      16px;
+  --fb-shadow-card:    0 20px 44px -22px rgba(20,22,28,0.18), 0 2px 6px rgba(20,22,28,0.06);
+  --fb-shadow-pop:     0 16px 36px -14px rgba(20,22,28,0.25);
+
+  --fb-font-body:      'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --fb-font-mono:      'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+}
+
+#ff_login, #ff_login_card, #ff_user_container{
+  font-family: var(--fb-font-body);
+}
+#ff_login *, #ff_login_card *, #ff_user_container *{
+  box-sizing: border-box;
+}
+
+body:has(#ff_login){
+  background: var(--fb-bg) !important;
+}
+
+#ff_login{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 28px 20px 90px 20px !important;
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+#ff_login > .d-flex.justify-content-between.w-100.mt-4{
+  align-items: center;
+  margin-top: 4px !important;
+  margin-bottom: 4px;
+}
+
+#browser_icon{
+  width: 46px !important;
+  height: 46px !important;
+  margin-top: 0 !important;
+  border-radius: 12px;
+  background: var(--fb-surface);
+  border: 1px solid var(--fb-border);
+  padding: 6px;
+  object-fit: contain;
+}
+
+#ff_login h5{ margin: 0 !important; padding: 0 !important; }
+
+#ff_login h5.m-0.p-0.fw-bold{
+  font-family: var(--fb-font-body);
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--fb-text);
+  letter-spacing: -0.01em;
+}
+#ff_login h5.m-0.p-0.fw-bold .fa{ color: var(--fb-accent); margin-right: 4px; }
+
+#ff_login h5.f-i.m-0.p-0.f-15{
+  font-style: normal !important;
+  font-weight: 500;
+  font-size: 12px !important;
+  color: var(--fb-text-faint);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-top: 2px !important;
+}
+#ff_login h5.f-i.m-0.p-0.f-15 .fa{ color: var(--fb-text-faint); margin-right: 4px; }
+
+#ff_login hr{ border-color: var(--fb-border-soft); opacity: 1; margin: 14px 0 !important; }
+
+/* ==========================================================================
+   Breadcrumb / toolbar row
+   ========================================================================== */
+#ff_login > .d-flex.w-100:not(.mt-4){
+  align-items: center;
+  gap: 4px;
+  background: var(--fb-surface);
+  border: 1px solid var(--fb-border);
+  border-radius: var(--fb-radius-md);
+  padding: 8px 12px;
+}
+
+#ff_login > .d-flex.w-100 > .fa-desktop{
+  color: var(--fb-accent) !important;
+  font-size: 14px;
+  margin-right: 2px;
+}
+
+#root_folder,
+#navigation_container a.navigate-folder{
+  font-family: var(--fb-font-body) !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  color: var(--fb-accent) !important;
+  text-decoration: none !important;
+  padding: 5px 8px !important;
+  border-radius: var(--fb-radius-sm) !important;
+  background: transparent !important;
+  border: none !important;
+  margin-top: 7px;
+
+}
+a.navigate-folder{
+}
+#root_folder:hover,
+#navigation_container a.navigate-folder:not(.disabled):hover{
+  background: var(--fb-accent-soft) !important;
+}
+#navigation_container a.navigate-folder.disabled{
+  color: var(--fb-text) !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+#navigation_container .separator{
+  color: var(--fb-text-faint);
+  margin: 0 1px;
+  align-self: center;
+}
+
+#ellipsis_btn:not([hidden]){
+  color: var(--fb-text-dim) !important;
+  width: 32px; height: 32px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--fb-radius-sm) !important;
+  background: transparent;
+}
+#ellipsis_btn:hover{ background: var(--fb-surface-alt); color: var(--fb-text); }
+
+#ff_select_cancel:not([hidden]){
+  color: var(--fb-text-dim);
+  cursor: pointer;
+  width: 32px; height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--fb-radius-sm);
+}
+#ff_select_cancel:hover{ background: var(--fb-danger-soft); color: var(--fb-danger); }
+
+/* ==========================================================================
+   File / folder list
+   ========================================================================== */
+#file_folder_container{
+  margin: 14px 0 0 0 !important;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ff-content{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background: var(--fb-surface) !important;
+  border: 1px solid var(--fb-border) !important;
+  border-radius: var(--fb-radius-md) !important;
+  padding: 9px 14px !important;
+  margin: 0 !important;
+  transition: background .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+
+.ff-content:hover{
+  border-color: #d7dbe2 !important;
+  box-shadow: 0 2px 8px -4px rgba(20,22,28,0.12);
+}
+
+/* Selectable state: whole row is a click target once select-mode is on */
+.ff-select-mode .ff-content{ cursor: pointer; }
+.ff-content.ff-row-selected{
+  background: var(--fb-accent-soft) !important;
+  border-color: var(--fb-accent) !important;
+}
+
+.ff-content.selected-disabled{
+  opacity: .45;
+  pointer-events: none;
+}
+
+.ff-content .folder.folder-subparent.d-flex,
+.ff-content > div:first-child{
+  align-items: center !important;
+  margin-top: 0 !important;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ff-content h6{
+  margin: 0 !important;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--fb-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 46vw;
+}
+
+.ff-content .q-icon{
+  background: var(--fb-folder-soft);
+  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0 !important;
+  font-size: 15px !important;
+  flex-shrink: 0;
+}
+
+.ff-content img{
+  border-radius: 6px;
+}
+
+/* Checkbox — larger, styled hit target, sits left of the icon */
+.ff-select{
+  width: 17px !important;
+  height: 17px !important;
+  margin: 0 10px 0 0 !important;
+  accent-color: var(--fb-accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ff-content .btn.btn-sm.btn-secondary.border-light{
+  font-family: var(--fb-font-mono) !important;
+  font-size: 11px !important;
+  font-weight: 500;
+  color: var(--fb-text-dim) !important;
+  background: var(--fb-surface-alt) !important;
+  border: 1px solid var(--fb-border) !important;
+  border-radius: 999px !important;
+  padding: 3px 10px !important;
+  margin: 0 !important;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Selection action bars (ff-options / copy / move)
+   ========================================================================== */
+.ff-options:not([hidden]),
+.ff-options-copy:not([hidden]),
+.ff-options-move:not([hidden]){
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 22px !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  align-items: center;
+  gap: 4px;
+  background: #1a1d24 !important;
+  border-radius: 999px !important;
+  padding: 6px !important;
+  box-shadow: var(--fb-shadow-pop);
+  z-index: 1500;
+}
+
+.ff-options > div,
+.ff-options-copy > div,
+.ff-options-move > div{
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #f2f3f5;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .12s ease;
+}
+.ff-options > div:hover,
+.ff-options-copy > div:hover,
+.ff-options-move > div:hover{ background: rgba(255,255,255,0.12); }
+
+.ff-options > div.ff-option-disabled{
+  opacity: .35;
+  pointer-events: none;
+}
+
+#ff_option_delete{ color: #ff9b9b !important; }
+#ff_option_copy_paste, #ff_option_move_paste{ background: var(--fb-accent); }
+#ff_option_copy_paste:hover, #ff_option_move_paste:hover{ background: var(--fb-accent-dark) !important; }
+
+.ff-options-copy .fa-clipboard,
+.ff-options-move .fa-clipboard{ color: #fff; }
+
+/* ==========================================================================
+   User badge (bottom-left)
+   ========================================================================== */
+#ff_user_container{
+  background: #1a1d24 !important;
+  border-radius: var(--fb-radius-md) var(--fb-radius-md) 0 0 !important;
+  padding: 10px 16px !important;
+  box-shadow: var(--fb-shadow-pop);
+  z-index: 1400;
+}
+#ff_user_container h6{
+  font-family: var(--fb-font-mono);
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: .02em;
+  color: #d3d6dc !important;
+  margin: 0 !important;
+}
+
+/* ==========================================================================
+   Login card — fixed & centered, robust against the base stylesheet
+   ========================================================================== */
+#ff_login_card{
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  z-index: 1000 !important;
+  width: min(360px, 90vw);
+  max-height: 90vh;
+  background: var(--fb-surface) !important;
+  border: 1px solid var(--fb-border);
+  border-radius: var(--fb-radius-lg) !important;
+  box-shadow: var(--fb-shadow-card);
+  padding: 0 0 20px 0 !important;
+  color: var(--fb-text);
+  height: auto;
+}
+
+#ff_login_card .modal-header{
+  border: none !important;
+  padding: 24px 24px 12px 24px !important;
+}
+#ff_login_card .modal-header h6{
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--fb-text);
+  margin: 0;
+}
+#ff_login_card .modal-body{
+  padding: 4px 24px 8px 24px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#ff_login_card .form-control{
+  background: var(--fb-surface-alt) !important;
+  border: 1px solid var(--fb-border) !important;
+  border-radius: var(--fb-radius-sm) !important;
+  padding: 11px 14px !important;
+  font-size: 14px;
+  color: var(--fb-text);
+}
+#ff_login_card .form-control:focus{
+  outline: none;
+  border-color: var(--fb-accent) !important;
+  box-shadow: 0 0 0 3px rgba(24,95,165,0.15) !important;
+}
+#ff_login_card .modal-footer{ border: none !important; padding: 12px 24px 4px 24px !important; }
+#ff_login_card .btn{
+  width: 100%;
+  background: var(--fb-accent) !important;
+  border: none !important;
+  color: #fff !important;
+  border-radius: var(--fb-radius-sm) !important;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 11px !important;
+}
+#ff_login_card .btn:hover{ background: var(--fb-accent-dark) !important; }
+#ff_login_card h6.text-center{
+  color: var(--fb-text-faint) !important;
+  font-family: var(--fb-font-mono);
+  font-size: 10.5px !important;
+  letter-spacing: .03em;
+}
+#ff_login_card p.text-center{ color: var(--fb-text-faint) !important; }
+
+.ff-login #file_folder_container,
+.ff-login > .d-flex,
+.ff-login hr{ filter: blur(6px) saturate(.85); pointer-events: none; user-select: none; }
+
+/* ==========================================================================
+   Generic Bootstrap modal reskin (covers modals/file-browser.php contents
+   even without seeing its markup — standard bootstrap classes only)
+   ========================================================================== */
+.modal-content{
+  border: 1px solid var(--fb-border) !important;
+  border-radius: var(--fb-radius-lg) !important;
+  box-shadow: var(--fb-shadow-card) !important;
+}
+.modal-header{
+  border-bottom: 1px solid var(--fb-border-soft) !important;
+  padding: 18px 22px !important;
+}
+.modal-header .modal-title{
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--fb-text);
+}
+.modal-body{ padding: 20px 22px !important; }
+.modal-footer{
+  border-top: 1px solid var(--fb-border-soft) !important;
+  padding: 14px 22px !important;
+}
+.modal .form-control{
+  background: var(--fb-surface-alt) !important;
+  border: 1px solid var(--fb-border) !important;
+  border-radius: var(--fb-radius-sm) !important;
+  padding: 10px 13px !important;
+}
+.modal .form-control:focus{
+  outline: none;
+  border-color: var(--fb-accent) !important;
+  box-shadow: 0 0 0 3px rgba(24,95,165,0.15) !important;
+}
+.modal .btn-primary{ background: var(--fb-accent) !important; border-color: var(--fb-accent) !important; }
+.modal .btn-primary:hover{ background: var(--fb-accent-dark) !important; }
+.modal .btn-danger{ background: var(--fb-danger) !important; border-color: var(--fb-danger) !important; }
+.modal .btn-secondary{ background: var(--fb-surface-alt) !important; color: var(--fb-text) !important; border-color: var(--fb-border) !important; }
+.modal .btn{ border-radius: var(--fb-radius-sm) !important; font-weight: 500; font-size: 13.5px; }
+
+/* ==========================================================================
+   Ellipsis menu (context menu list)
+   ========================================================================== */
+.ff-menu{ display: flex; flex-direction: column; gap: 2px; }
+
+.ff-menu-item:not([hidden]){
+  display: flex !important;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  background: transparent !important;
+  border: none !important;
+  text-align: left;
+  padding: 11px 12px !important;
+  border-radius: var(--fb-radius-sm) !important;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fb-text) !important;
+  margin: 0 !important;
+}
+.ff-menu-item:hover{ background: var(--fb-surface-alt) !important; }
+.ff-menu-item .fa{ width: 18px; text-align: center; color: var(--fb-text-dim); font-size: 14px; }
+
+.ff-menu-item-danger{ color: var(--fb-danger) !important; }
+.ff-menu-item-danger .fa{ color: var(--fb-danger); }
+.ff-menu-item-danger:hover{ background: var(--fb-danger-soft) !important; }
+
+.ff-menu-divider{
+  height: 1px;
+  background: var(--fb-border-soft);
+  margin: 6px 4px;
+}
+
+/* ==========================================================================
+   Rename / New Folder — small utility dialogs
+   ========================================================================== */
+.ff-modal-title{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fb-text);
+  margin: 0 0 12px 0 !important;
+}
+.ff-modal-title .fa{ color: var(--fb-accent); }
+
+/* ==========================================================================
+   Delete confirmation
+   ========================================================================== */
+.ff-modal-confirm{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  padding: 6px 4px 2px 4px;
+}
+.ff-modal-icon{
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+}
+.ff-modal-icon-danger{ background: var(--fb-danger-soft); color: var(--fb-danger); }
+.ff-modal-confirm h6{ font-size: 14px; font-weight: 500; color: var(--fb-text); margin: 0 !important; line-height: 1.5; }
+.ff-modal-confirm h6 #item_count{ font-weight: 700; }
+
+/* ==========================================================================
+   Upload modal — avoid double padding/double-card chrome since .card_upload
+   is nested inside .modal-body here
+   ========================================================================== */
+#ff_upload .modal-body{ padding: 0 !important; }
+#ff_upload .card_upload{
+  border: none;
+  box-shadow: none;
+  max-width: none;
+  padding: 1.75rem;
+}
+#ff_upload .btn-close{
+  opacity: .55;
+  box-shadow: none !important;
+}
+#ff_upload .btn-close:hover{ opacity: .9; }
+
+/* ==========================================================================
+   Upload drop-zone / queue — refresh of the existing file-browser.css rules
+   using the same tokens, in case those upload elements share this stylesheet
+   ========================================================================== */
+.card_upload{
+  background: var(--fb-surface);
+  border-radius: var(--fb-radius-lg);
+  border: 1px solid var(--fb-border);
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 620px;
+}
+.drop-zone{
+  border: 1.5px dashed #c7cbd3;
+  border-radius: var(--fb-radius-md);
+  background: var(--fb-surface-alt);
+  padding: 2.25rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.drop-zone.dragover{ border-color: var(--fb-accent); background: var(--fb-accent-soft); }
+.drop-zone .icon{ font-size: 32px; margin-bottom: 8px; }
+.drop-zone .label{ font-size: 14px; font-weight: 600; color: var(--fb-text); }
+.drop-zone .sub{ font-size: 12.5px; color: var(--fb-text-faint); margin-top: 3px; }
+
+.btn_upload-row{ display: flex; gap: 10px; margin-top: 1.1rem; }
+.btn_upload{
+  flex: 1;
+  padding: 9px 0;
+  border-radius: var(--fb-radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--fb-border);
+  background: var(--fb-surface);
+  color: var(--fb-text);
+  transition: background .15s;
+}
+.btn_upload:hover{ background: var(--fb-surface-alt); }
+.btn_upload.primary_upload{ background: var(--fb-accent); color: #fff; border-color: var(--fb-accent); }
+.btn_upload.primary_upload:hover{ background: var(--fb-accent-dark); }
+.btn_upload.primary_upload:disabled{ background: #b8d3e9; border-color: #b8d3e9; cursor: not-allowed; }
+
+.queue{ margin-top: 1.1rem; display: flex; flex-direction: column; gap: 6px; max-height: 260px; overflow-y: auto; }
+.queue-item{
+  display: flex; align-items: center; gap: 10px;
+  background: var(--fb-surface); border: 1px solid var(--fb-border-soft);
+  border-radius: var(--fb-radius-sm); padding: 8px 12px;
+}
+.q-icon{ width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.q-icon.folder{ background: var(--fb-folder-soft); }
+.q-icon.file{ background: var(--fb-accent-soft); }
+.q-info{ flex: 1; min-width: 0; }
+.q-name{ font-size: 13px; font-weight: 500; color: var(--fb-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-meta{ font-size: 11px; color: var(--fb-text-faint); margin-top: 2px; font-family: var(--fb-font-mono); }
+.q-progress{ height: 4px; background: var(--fb-border-soft); border-radius: 2px; overflow: hidden; margin-top: 5px; }
+.q-bar{ height: 100%; width: 0; border-radius: 2px; transition: width .3s; background: var(--fb-accent); }
+.q-bar.done{ background: var(--fb-success); }
+.q-bar.error{ background: var(--fb-danger); }
+.q-remove{ font-size: 17px; cursor: pointer; color: var(--fb-text-faint); background: none; border: none; padding: 2px 6px; border-radius: 4px; }
+.q-remove:hover{ background: var(--fb-surface-alt); color: var(--fb-text); }
+
+.badge{ font-size: 10.5px; padding: 3px 10px; border-radius: 20px; font-weight: 600; flex-shrink: 0; }
+.badge.pending{ background: var(--fb-warning-soft); color: var(--fb-warning); }
+.badge.uploading{ background: var(--fb-accent-soft); color: var(--fb-accent); }
+.badge.done{ background: var(--fb-success-soft); color: var(--fb-success); }
+.badge.error{ background: var(--fb-danger-soft); color: var(--fb-danger); }
+
+.summary{ font-size: 12.5px; color: var(--fb-text-faint); margin-top: 10px; text-align: right; font-family: var(--fb-font-mono); }
+
+.log{
+  margin-top: 1.1rem; font-size: 11.5px; font-family: var(--fb-font-mono);
+  background: var(--fb-surface-alt); border: 1px solid var(--fb-border-soft);
+  border-radius: var(--fb-radius-sm); padding: 10px 12px; max-height: 150px; overflow-y: auto; display: none;
+}
+.log.visible{ display: block; }
+.log-line{ margin-bottom: 3px; color: var(--fb-text-dim); }
+.log-line.ok{ color: var(--fb-success); }
+.log-line.err{ color: var(--fb-danger); }
+
+/* ==========================================================================
+   Copyright
+   ========================================================================== */
+.copyright{
+  position: fixed;
+  right: 16px;
+  bottom: 12px;
+  color: var(--fb-text-faint) !important;
+  font-family: var(--fb-font-mono);
+  font-size: 10px;
+  letter-spacing: .03em;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 640px){
+  #ff_login{ padding: 18px 12px 90px 12px !important; }
+  .ff-content h6{ max-width: 40vw; }
+  .ff-options, .ff-options-copy, .ff-options-move{
+    left: 12px !important; right: 12px !important; transform: none !important;
+    justify-content: space-between; width: auto;
+  }
+  .ff-options > div, .ff-options-copy > div, .ff-options-move > div{ padding: 8px 10px; font-size: 12px; }
+}

@@ -379,6 +379,7 @@ Acts as a maintenance/action-items list
 composer require predis/predis
 wsl --install
 wsl --install -d Ubuntu
+wsl -d Ubuntu
 
 sudo apt update
 sudo apt install redis-server

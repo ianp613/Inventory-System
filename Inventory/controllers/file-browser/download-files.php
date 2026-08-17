@@ -6,20 +6,18 @@
     ini_set('error_log', __DIR__ . '/error.log');
     error_reporting(E_ALL);
 
-    // Clean any output buffer
     while (ob_get_level()) ob_end_clean();
 
-    // Parse input first
-    $data = json_decode(file_get_contents('php://input'), true);
+    $raw = file_get_contents('php://input');
+    $data = json_decode($raw, true);
 
     if (!$data || !isset($data['folder'], $data['targets']) || empty($data['targets'])) {
         http_response_code(400);
         exit('Invalid input');
     }
 
-    // Auth and config
     $conf = null;
-    if ($_SESSION["ff_privileges"] != false) {
+    if (isset($_SESSION["ff_privileges"]) && $_SESSION["ff_privileges"] != false) {
         if ($_SESSION["ff_privileges"] == "Administrator") {
             $conf = json_decode(file_get_contents("../../file-browser.conf"));
         } else {
@@ -40,7 +38,6 @@
         exit('Access denied');
     }
 
-    // Create folder if needed (with recursive flag)
     $folderPath = $conf->location . $data["folder"];
     if (!is_dir($folderPath)) {
         mkdir($folderPath, 0755, true);
@@ -52,25 +49,51 @@
 
     set_time_limit(0);
 
-    // Resolve base folder
     $baseDir = realpath($folderPath);
     if (!$baseDir) {
         http_response_code(400);
         exit('Invalid folder');
     }
 
-    $zip = new ZipStream(
-        outputName: 'files.zip',
-        sendHttpHeaders: true
-    );
+    $resolved = [];
+    foreach ($data['targets'] as $item) {
+        $normalized = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $item);
+        $target = $baseDir . DIRECTORY_SEPARATOR . $normalized;
+        $realTarget = realpath($target);
 
-    /**
-     * Add files/folders to ZIP while preserving structure relative to a reference point
-     * 
-     * @param ZipStream $zip
-     * @param string $path - Full absolute path to the file/folder
-     * @param string $zipBasePath - The path prefix to use inside the ZIP
-     */
+        if ($realTarget === false) continue;
+
+        $normBase = rtrim($baseDir, DIRECTORY_SEPARATOR);
+        $normReal = rtrim($realTarget, DIRECTORY_SEPARATOR);
+
+        if (strpos($normReal, $normBase) === 0) {
+            $resolved[] = ['name' => $normalized, 'path' => $realTarget];
+        }
+    }
+
+    if (empty($resolved)) {
+        http_response_code(400);
+        exit('No valid targets');
+    }
+
+    // Single real file -> stream directly, no zip
+    if (count($resolved) === 1 && is_file($resolved[0]['path'])) {
+        $file = $resolved[0]['path'];
+        $filename = basename($file);
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-Length: ' . filesize($file));
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Pragma: public');
+
+        readfile($file);
+        exit;
+    }
+
+    // --- Multiple items or a folder: build the zip to a temp file first ---
     function addToZip(ZipStream $zip, string $path, string $zipBasePath): void
     {
         if (is_dir($path)) {
@@ -79,11 +102,8 @@
                 addToZip($zip, $path . DIRECTORY_SEPARATOR . $item, $zipBasePath . DIRECTORY_SEPARATOR . $item);
             }
         } else {
-            // Normalize path separators for ZIP (always use forward slashes)
             $localName = str_replace('\\', '/', $zipBasePath);
-            // Remove leading slash if present
             $localName = ltrim($localName, '/');
-            
             $zip->addFileFromPath(
                 fileName: $localName,
                 path: $path
@@ -91,18 +111,51 @@
         }
     }
 
-    // Add selected files/folders
-    foreach ($data['targets'] as $item) {
-        // Normalize separators
-        $item = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $item);
-        $target = $baseDir . DIRECTORY_SEPARATOR . $item;
-        $realTarget = realpath($target);
-        
-        // Security check: ensure target is within base directory
-        if ($realTarget && strpos($realTarget, $baseDir) === 0) {
-            // Use the item name as the ZIP base path to preserve the folder name
-            addToZip($zip, $realTarget, $item);
-        }
+    $tmpZipPath = tempnam(sys_get_temp_dir(), 'ffzip_');
+    $tmpHandle = fopen($tmpZipPath, 'w+b');
+
+    if (!$tmpHandle) {
+        http_response_code(500);
+        error_log('[download] failed to open temp file for zip: ' . $tmpZipPath);
+        exit('Could not create archive');
+    }
+
+    // sendHttpHeaders: false — we control headers ourselves once the file is complete
+    $zip = new ZipStream(
+        outputStream: $tmpHandle,
+        sendHttpHeaders: false
+    );
+
+    foreach ($resolved as $t) {
+        addToZip($zip, $t['path'], $t['name']);
     }
 
     $zip->finish();
+    fclose($tmpHandle);
+
+    $zipSize = filesize($tmpZipPath);
+    error_log('[download] temp zip built at ' . $tmpZipPath . ' | size: ' . $zipSize);
+
+    if (!$zipSize) {
+        error_log('[download] temp zip is 0 bytes, aborting');
+        @unlink($tmpZipPath);
+        http_response_code(500);
+        exit('Archive build failed');
+    }
+
+    // Pick a sensible download name
+    $downloadName = ($data['folder'] === '/' || $data['folder'] === '')
+        ? preg_replace('/\.zip$/i', '', basename(rtrim($conf->root_name, '/'))) . '.zip'
+        : preg_replace('/\.zip$/i', '', basename(rtrim($data['folder'], '/'))) . '.zip';
+
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/zip');
+    header('Content-Disposition: attachment; filename="' . $downloadName . '"');
+    header('Content-Transfer-Encoding: binary');
+    header('Content-Length: ' . $zipSize);
+    header('Cache-Control: no-cache, must-revalidate');
+    header('Pragma: public');
+
+    readfile($tmpZipPath);
+    @unlink($tmpZipPath);
+    exit;

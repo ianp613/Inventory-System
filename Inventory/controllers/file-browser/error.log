@@ -16,3 +16,155 @@ Stack trace:
 #0 E:\Systems\Inventory-System\Inventory\controllers\file-browser\download-files.php(105): addToZip(Object(ZipStream\ZipStream), 'E:\\Personal\\lab...', 'E:\\Personal\\lab...')
 #1 {main}
   thrown in E:\Systems\Inventory-System\Inventory\controllers\file-browser\download-files.php on line 75
+[17-Aug-2026 04:08:24 Europe/Berlin] [download] raw input: {"folder":"/","targets":["PL TABLE"]}
+[17-Aug-2026 04:08:24 Europe/Berlin] [download] conf->location: E:/InvSys_Wifi Team
+[17-Aug-2026 04:08:24 Europe/Berlin] [download] data folder: /
+[17-Aug-2026 04:08:24 Europe/Berlin] [download] folderPath: E:/InvSys_Wifi Team/
+[17-Aug-2026 04:08:24 Europe/Berlin] [download] baseDir realpath: 'E:\\InvSys_Wifi Team'
+[17-Aug-2026 04:08:24 Europe/Berlin] [download] target item: PL TABLE | built path: E:\InvSys_Wifi Team\PL TABLE | realpath: 'E:\\InvSys_Wifi Team\\PL TABLE'
+[17-Aug-2026 04:08:24 Europe/Berlin] [download] resolved count: 1
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] raw input: {"folder":"/","targets":["PL TABLE"]}
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] ZipStream version check - class: ReflectionClass
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] resolved OK: E:\InvSys_Wifi Team\PL TABLE | is_dir=yes | is_file=no
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] scanning dir: E:\InvSys_Wifi Team\PL TABLE | items found: 11 | Reason for Major Device Downtime.xlsx, ddc_pulse.sql, evsu_pulse _1_.sql, evsu_pulse.sql, pl_attachment.sql, pl_checklist_item.sql, pl_comment.sql, pl_department.sql, pl_project.sql, pl_task.sql, pl_user.sql
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] added file to zip: PL TABLE/Reason for Major Device Downtime.xlsx from E:\InvSys_Wifi Team\PL TABLE\Reason for Major Device Downtime.xlsx
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] added file to zip: PL TABLE/ddc_pulse.sql from E:\InvSys_Wifi Team\PL TABLE\ddc_pulse.sql
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] added file to zip: PL TABLE/evsu_pulse _1_.sql from E:\InvSys_Wifi Team\PL TABLE\evsu_pulse _1_.sql
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] added file to zip: PL TABLE/evsu_pulse.sql from E:\InvSys_Wifi Team\PL TABLE\evsu_pulse.sql
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] added file to zip: PL TABLE/pl_attachment.sql from E:\InvSys_Wifi Team\PL TABLE\pl_attachment.sql
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] added file to zip: PL TABLE/pl_checklist_item.sql from E:\InvSys_Wifi Team\PL TABLE\pl_checklist_item.sql
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] added file to zip: PL TABLE/pl_comment.sql from E:\InvSys_Wifi Team\PL TABLE\pl_comment.sql
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] added file to zip: PL TABLE/pl_department.sql from E:\InvSys_Wifi Team\PL TABLE\pl_department.sql
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] added file to zip: PL TABLE/pl_project.sql from E:\InvSys_Wifi Team\PL TABLE\pl_project.sql
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] added file to zip: PL TABLE/pl_task.sql from E:\InvSys_Wifi Team\PL TABLE\pl_task.sql
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] added file to zip: PL TABLE/pl_user.sql from E:\InvSys_Wifi Team\PL TABLE\pl_user.sql
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] total files added to zip: 11
+[17-Aug-2026 04:09:58 Europe/Berlin] [download] zip->finish() completed
+[17-Aug-2026 04:13:28 Europe/Berlin] [download] raw input: {"folder":"/","targets":["PL TABLE"]}
+[17-Aug-2026 04:13:28 Europe/Berlin] PHP Warning:  Undefined array key "ff_privileges" in E:\Systems\Inventory-System\Inventory\controllers\file-browser\download-files.php on line 22
+[17-Aug-2026 04:15:34 Europe/Berlin] [download] session_id: h2r1fpco73sin862r080ium3na
+[17-Aug-2026 04:15:34 Europe/Berlin] [download] full session: array (
+  'ff_userid' => 45,
+  'ff_name' => 'Dumdum, Paul Ian A.',
+  'ff_auth' => true,
+  'ff_g_member' => true,
+  'ff_g_name' => 'Wifi Team',
+  'ff_g_id' => 1,
+  'ff_privileges' => 'User',
+)
+[17-Aug-2026 04:15:34 Europe/Berlin] [download] cookie header present: h2r1fpco73sin862r080ium3na
+[17-Aug-2026 04:15:34 Europe/Berlin] [download] ZipStream version check - class: ReflectionClass
+[17-Aug-2026 04:15:34 Europe/Berlin] [download] resolved OK: E:\InvSys_Wifi Team\image _1_.png | is_dir=no | is_file=yes
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] session_id: h2r1fpco73sin862r080ium3na
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] full session: array (
+  'ff_userid' => 45,
+  'ff_name' => 'Dumdum, Paul Ian A.',
+  'ff_auth' => true,
+  'ff_g_member' => true,
+  'ff_g_name' => 'Wifi Team',
+  'ff_g_id' => 1,
+  'ff_privileges' => 'User',
+)
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] cookie header present: h2r1fpco73sin862r080ium3na
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] ZipStream version check - class: ReflectionClass
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] resolved OK: E:\InvSys_Wifi Team\PL TABLE | is_dir=yes | is_file=no
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] scanning dir: E:\InvSys_Wifi Team\PL TABLE | items found: 11 | Reason for Major Device Downtime.xlsx, ddc_pulse.sql, evsu_pulse _1_.sql, evsu_pulse.sql, pl_attachment.sql, pl_checklist_item.sql, pl_comment.sql, pl_department.sql, pl_project.sql, pl_task.sql, pl_user.sql
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] added file to zip: PL TABLE/Reason for Major Device Downtime.xlsx from E:\InvSys_Wifi Team\PL TABLE\Reason for Major Device Downtime.xlsx
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] added file to zip: PL TABLE/ddc_pulse.sql from E:\InvSys_Wifi Team\PL TABLE\ddc_pulse.sql
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] added file to zip: PL TABLE/evsu_pulse _1_.sql from E:\InvSys_Wifi Team\PL TABLE\evsu_pulse _1_.sql
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] added file to zip: PL TABLE/evsu_pulse.sql from E:\InvSys_Wifi Team\PL TABLE\evsu_pulse.sql
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] added file to zip: PL TABLE/pl_attachment.sql from E:\InvSys_Wifi Team\PL TABLE\pl_attachment.sql
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] added file to zip: PL TABLE/pl_checklist_item.sql from E:\InvSys_Wifi Team\PL TABLE\pl_checklist_item.sql
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] added file to zip: PL TABLE/pl_comment.sql from E:\InvSys_Wifi Team\PL TABLE\pl_comment.sql
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] added file to zip: PL TABLE/pl_department.sql from E:\InvSys_Wifi Team\PL TABLE\pl_department.sql
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] added file to zip: PL TABLE/pl_project.sql from E:\InvSys_Wifi Team\PL TABLE\pl_project.sql
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] added file to zip: PL TABLE/pl_task.sql from E:\InvSys_Wifi Team\PL TABLE\pl_task.sql
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] added file to zip: PL TABLE/pl_user.sql from E:\InvSys_Wifi Team\PL TABLE\pl_user.sql
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] total files added to zip: 11
+[17-Aug-2026 04:15:53 Europe/Berlin] [download] zip->finish() completed
+[17-Aug-2026 04:16:16 Europe/Berlin] [download] session_id: h2r1fpco73sin862r080ium3na
+[17-Aug-2026 04:16:16 Europe/Berlin] [download] full session: array (
+  'ff_userid' => 45,
+  'ff_name' => 'Dumdum, Paul Ian A.',
+  'ff_auth' => true,
+  'ff_g_member' => true,
+  'ff_g_name' => 'Wifi Team',
+  'ff_g_id' => 1,
+  'ff_privileges' => 'User',
+)
+[17-Aug-2026 04:16:16 Europe/Berlin] [download] cookie header present: h2r1fpco73sin862r080ium3na
+[17-Aug-2026 04:16:16 Europe/Berlin] [download] ZipStream version check - class: ReflectionClass
+[17-Aug-2026 04:16:16 Europe/Berlin] [download] resolved OK: E:\InvSys_Wifi Team\PL TABLE\Reason for Major Device Downtime.xlsx | is_dir=no | is_file=yes
+[17-Aug-2026 04:16:38 Europe/Berlin] [download] session_id: h2r1fpco73sin862r080ium3na
+[17-Aug-2026 04:16:38 Europe/Berlin] [download] full session: array (
+  'ff_userid' => 45,
+  'ff_name' => 'Dumdum, Paul Ian A.',
+  'ff_auth' => true,
+  'ff_g_member' => true,
+  'ff_g_name' => 'Wifi Team',
+  'ff_g_id' => 1,
+  'ff_privileges' => 'User',
+)
+[17-Aug-2026 04:16:38 Europe/Berlin] [download] cookie header present: h2r1fpco73sin862r080ium3na
+[17-Aug-2026 04:16:38 Europe/Berlin] [download] ZipStream version check - class: ReflectionClass
+[17-Aug-2026 04:16:38 Europe/Berlin] [download] resolved OK: E:\InvSys_Wifi Team\PL TABLE\evsu_pulse _1_.sql | is_dir=no | is_file=yes
+[17-Aug-2026 04:16:38 Europe/Berlin] [download] resolved OK: E:\InvSys_Wifi Team\PL TABLE\evsu_pulse.sql | is_dir=no | is_file=yes
+[17-Aug-2026 04:16:38 Europe/Berlin] [download] added file to zip: evsu_pulse _1_.sql from E:\InvSys_Wifi Team\PL TABLE\evsu_pulse _1_.sql
+[17-Aug-2026 04:16:38 Europe/Berlin] [download] added file to zip: evsu_pulse.sql from E:\InvSys_Wifi Team\PL TABLE\evsu_pulse.sql
+[17-Aug-2026 04:16:38 Europe/Berlin] [download] total files added to zip: 2
+[17-Aug-2026 04:16:38 Europe/Berlin] [download] zip->finish() completed
+[17-Aug-2026 04:19:40 Europe/Berlin] [download] session_id: h2r1fpco73sin862r080ium3na
+[17-Aug-2026 04:19:40 Europe/Berlin] [download] full session: array (
+  'ff_userid' => 45,
+  'ff_name' => 'Dumdum, Paul Ian A.',
+  'ff_auth' => true,
+  'ff_g_member' => true,
+  'ff_g_name' => 'Wifi Team',
+  'ff_g_id' => 1,
+  'ff_privileges' => 'User',
+)
+[17-Aug-2026 04:19:40 Europe/Berlin] [download] cookie header present: h2r1fpco73sin862r080ium3na
+[17-Aug-2026 04:19:40 Europe/Berlin] [download] ZipStream version check - class: ReflectionClass
+[17-Aug-2026 04:19:40 Europe/Berlin] [download] resolved OK: E:\InvSys_Wifi Team\PL TABLE\ddc_pulse.sql | is_dir=no | is_file=yes
+[17-Aug-2026 04:19:40 Europe/Berlin] [download] resolved OK: E:\InvSys_Wifi Team\PL TABLE\evsu_pulse _1_.sql | is_dir=no | is_file=yes
+[17-Aug-2026 04:19:40 Europe/Berlin] [download] added file to zip: ddc_pulse.sql from E:\InvSys_Wifi Team\PL TABLE\ddc_pulse.sql
+[17-Aug-2026 04:19:40 Europe/Berlin] [download] added file to zip: evsu_pulse _1_.sql from E:\InvSys_Wifi Team\PL TABLE\evsu_pulse _1_.sql
+[17-Aug-2026 04:19:40 Europe/Berlin] [download] total files added to zip: 2
+[17-Aug-2026 04:19:40 Europe/Berlin] [download] zip->finish() completed
+[17-Aug-2026 04:19:52 Europe/Berlin] [download] session_id: h2r1fpco73sin862r080ium3na
+[17-Aug-2026 04:19:52 Europe/Berlin] [download] full session: array (
+  'ff_userid' => 45,
+  'ff_name' => 'Dumdum, Paul Ian A.',
+  'ff_auth' => true,
+  'ff_g_member' => true,
+  'ff_g_name' => 'Wifi Team',
+  'ff_g_id' => 1,
+  'ff_privileges' => 'User',
+)
+[17-Aug-2026 04:19:52 Europe/Berlin] [download] cookie header present: h2r1fpco73sin862r080ium3na
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] ZipStream version check - class: ReflectionClass
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] resolved OK: E:\InvSys_Wifi Team\PL TABLE | is_dir=yes | is_file=no
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] scanning dir: E:\InvSys_Wifi Team\PL TABLE | items found: 11 | Reason for Major Device Downtime.xlsx, ddc_pulse.sql, evsu_pulse _1_.sql, evsu_pulse.sql, pl_attachment.sql, pl_checklist_item.sql, pl_comment.sql, pl_department.sql, pl_project.sql, pl_task.sql, pl_user.sql
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] added file to zip: PL TABLE/Reason for Major Device Downtime.xlsx from E:\InvSys_Wifi Team\PL TABLE\Reason for Major Device Downtime.xlsx
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] added file to zip: PL TABLE/ddc_pulse.sql from E:\InvSys_Wifi Team\PL TABLE\ddc_pulse.sql
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] added file to zip: PL TABLE/evsu_pulse _1_.sql from E:\InvSys_Wifi Team\PL TABLE\evsu_pulse _1_.sql
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] added file to zip: PL TABLE/evsu_pulse.sql from E:\InvSys_Wifi Team\PL TABLE\evsu_pulse.sql
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] added file to zip: PL TABLE/pl_attachment.sql from E:\InvSys_Wifi Team\PL TABLE\pl_attachment.sql
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] added file to zip: PL TABLE/pl_checklist_item.sql from E:\InvSys_Wifi Team\PL TABLE\pl_checklist_item.sql
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] added file to zip: PL TABLE/pl_comment.sql from E:\InvSys_Wifi Team\PL TABLE\pl_comment.sql
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] added file to zip: PL TABLE/pl_department.sql from E:\InvSys_Wifi Team\PL TABLE\pl_department.sql
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] added file to zip: PL TABLE/pl_project.sql from E:\InvSys_Wifi Team\PL TABLE\pl_project.sql
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] added file to zip: PL TABLE/pl_task.sql from E:\InvSys_Wifi Team\PL TABLE\pl_task.sql
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] added file to zip: PL TABLE/pl_user.sql from E:\InvSys_Wifi Team\PL TABLE\pl_user.sql
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] total files added to zip: 11
+[17-Aug-2026 04:19:53 Europe/Berlin] [download] zip->finish() completed
+[17-Aug-2026 04:21:23 Europe/Berlin] [download] temp zip built at C:\Users\admin\AppData\Local\Temp\ffz1077.tmp | size: 19163
+[17-Aug-2026 04:25:05 Europe/Berlin] [download] temp zip built at C:\Users\admin\AppData\Local\Temp\ffz76A6.tmp | size: 19163
+[17-Aug-2026 04:26:21 Europe/Berlin] [download] temp zip built at C:\Users\admin\AppData\Local\Temp\ffz9E9C.tmp | size: 19163
+[17-Aug-2026 04:27:49 Europe/Berlin] [download] temp zip built at C:\Users\admin\AppData\Local\Temp\ffzF6EA.tmp | size: 19163
+[17-Aug-2026 04:27:58 Europe/Berlin] [download] temp zip built at C:\Users\admin\AppData\Local\Temp\ffz17B1.tmp | size: 19163
+[17-Aug-2026 04:28:11 Europe/Berlin] [download] temp zip built at C:\Users\admin\AppData\Local\Temp\ffz4B36.tmp | size: 19163
+[17-Aug-2026 04:29:51 Europe/Berlin] [download] temp zip built at C:\Users\admin\AppData\Local\Temp\ffzD0BE.tmp | size: 19163
+[17-Aug-2026 04:31:21 Europe/Berlin] [download] temp zip built at C:\Users\admin\AppData\Local\Temp\ffz3197.tmp | size: 19163
+[17-Aug-2026 04:35:29 Europe/Berlin] [download] temp zip built at C:\Users\admin\AppData\Local\Temp\ffzFBDE.tmp | size: 19163
+[17-Aug-2026 04:46:51 Europe/Berlin] [download] temp zip built at C:\Users\admin\AppData\Local\Temp\ffzF57E.tmp | size: 19163

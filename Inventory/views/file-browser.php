@@ -8,6 +8,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>File Browser</title>
         <link rel="shortcut icon" href="../assets/img/logo-icore-ico.png" type="image/x-icon">
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
         <link rel="stylesheet" href="../assets/fontawesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="../assets/css/datatables/datatables.min.css">
         <link rel="stylesheet" href="../assets/css/bootstrap/bootstrap.min.css">
@@ -15,6 +20,9 @@
         <link rel="stylesheet" href="../assets/css/colorpicker.css">
         <link rel="stylesheet" href="../assets/css/file-browser.css">
         <link rel="stylesheet" href="../assets/css/style.css">
+
+        <!-- Page-scoped design system: loaded last so it wins the cascade -->
+        <link rel="stylesheet" href="../assets/css/file-browser-pro.css">
     </head>
     <body class="light">
         <div id="ff_login" class="w-100 p-3">
@@ -87,30 +95,16 @@
                 <button id="ff_login_btn" class="btn btn-secondary w-100"><span class="fa fa-sign-in"></span> LOGIN</button>
             </div>
             <h6 class="text-center mb-0 mt-2 f-12 f-i fw-bold">Intergrated with DDC LEYTE ICORE Credentials</h6>
-            <p class="text-center mt-0 f-12 f-i">File Browser v.1</p>
+            <p class="text-center mt-0 f-12 f-i">File Browser v2</p>
         </div>
         <div hidden  id="ff_user_container" class="position-fixed bottom-0 ms-1 bg-dark text-light pt-2 ps-3 pe-3" style="border-top-left-radius: 10px; border-top-right-radius: 10px;">
             <h6 class="fw-bolder" id="ff_user">User: -------------------------</h6>
         </div>
 
-        <style>
-            .modal-content{
-                border-radius: 15px !important;
-                padding: 5px;
-                padding-top: 15px;
-                background-color: #ffffffd7 !important;
-            }
-            .modal-content input, .modal-content select, .modal-content textarea, .modal-content button{
-                border-radius: 20px;
-            }
-
-            .modal-content button{
-                padding-left: 10px;
-                padding-right: 10px;
-            }
-        </style>
         <h6 class="copyright f-10 text-secondary"></h6>
+        <script src="../assets/js/sweetalert2/sweetalert2.all.min.js"></script>
         <script src="../assets/js/sole.js?v=<?= filemtime('../assets/js/sole.js') ?>"></script>
+        <script src="../assets/js/sole.swal.js?v=<?= filemtime('../assets/js/sole.swal.js') ?>"></script>
         <script src="../assets/js/ipf.js?v=<?= filemtime('../assets/js/ipf.js') ?>"></script>
         <script src="../assets/js/jquery/jquery-3.7.1.js"></script>
         <script src="../assets/js/bootstrap/bootstrap.min.js"></script>

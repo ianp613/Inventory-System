@@ -143,6 +143,8 @@ function scanFolder(){
                 )
             }
         });
+
+        syncRowHighlights()
     })
 }
 
@@ -170,38 +172,69 @@ file_folder_container.addEventListener("dblclick", e => {
     }
 })
 
+/* --------------------------------------------------------------------
+   Selection — clicking anywhere on a row now selects it, not just the
+   checkbox. Only active while selection mode is on (checkboxes visible).
+   -------------------------------------------------------------------- */
 file_folder_container.addEventListener("click", e => {
-    if(e.target.classList.contains("ff-select")){
-        var ff_name = e.target.getAttribute("ff-name")
-        if(e.target.checked){
-            if(!selections.includes(ff_name)){
-                selections.push(ff_name)
-            }
-        }else{
-            if(selections.includes(ff_name)){
-                selections = selections.filter(selection => selection !== ff_name);
-            }
+    if(!selections_) return
+
+    var row = e.target.closest(".ff-content")
+    if(!row) return
+
+    var cb = row.querySelector(".ff-select")
+    if(!cb || cb.hidden) return
+
+    // If the checkbox itself was clicked, the browser already flipped
+    // `checked` for us. Otherwise we flip it manually.
+    if(e.target !== cb){
+        cb.checked = !cb.checked
+    }
+
+    var ff_name = cb.getAttribute("ff-name")
+    if(cb.checked){
+        if(!selections.includes(ff_name)){
+            selections.push(ff_name)
         }
-        
-        if(selections.length){
-            if(selections.length == 1){
-                ff_option_copy.classList.remove("ff-option-disabled")
-                ff_option_move.classList.remove("ff-option-disabled")
-                ff_option_rename.classList.remove("ff-option-disabled")
-                ff_option_delete.classList.remove("ff-option-disabled")
-                ff_option_download.classList.remove("ff-option-disabled")
-            }else{
-                ff_option_rename.classList.add("ff-option-disabled")
-            }
-        }else{
-            ff_option_copy.classList.add("ff-option-disabled")
-            ff_option_move.classList.add("ff-option-disabled")
-            ff_option_rename.classList.add("ff-option-disabled")
-            ff_option_delete.classList.add("ff-option-disabled")
-            ff_option_download.classList.add("ff-option-disabled")
+    }else{
+        if(selections.includes(ff_name)){
+            selections = selections.filter(selection => selection !== ff_name);
         }
     }
+
+    row.classList.toggle("ff-row-selected", cb.checked)
+
+    if(selections.length){
+        if(selections.length == 1){
+            ff_option_copy.classList.remove("ff-option-disabled")
+            ff_option_move.classList.remove("ff-option-disabled")
+            ff_option_rename.classList.remove("ff-option-disabled")
+            ff_option_delete.classList.remove("ff-option-disabled")
+            ff_option_download.classList.remove("ff-option-disabled")
+        }else{
+            ff_option_rename.classList.add("ff-option-disabled")
+        }
+    }else{
+        ff_option_copy.classList.add("ff-option-disabled")
+        ff_option_move.classList.add("ff-option-disabled")
+        ff_option_rename.classList.add("ff-option-disabled")
+        ff_option_delete.classList.add("ff-option-disabled")
+        ff_option_download.classList.add("ff-option-disabled")
+    }
 })
+
+// Keeps the highlighted-row state in sync with `selections` after a re-render
+function syncRowHighlights(){
+    var rows = file_folder_container.querySelectorAll(".ff-content")
+    rows.forEach(row => {
+        var cb = row.querySelector(".ff-select")
+        if(cb && selections.includes(cb.getAttribute("ff-name"))){
+            row.classList.add("ff-row-selected")
+        }else{
+            row.classList.remove("ff-row-selected")
+        }
+    })
+}
 
 navigation_container.addEventListener("click", e => {
     if(e.target.classList.contains("navigate-folder")){
@@ -231,6 +264,7 @@ ff_select_btn.addEventListener("click", e => {
     for (let i = 0; i < ff_content.length; i++) {
         ff_content[i].hidden = false
     }
+    file_folder_container.classList.add("ff-select-mode")
     ellipsis_btn.hidden = true
     ff_select_cancel.hidden = false
     ff_options.hidden = false
@@ -250,6 +284,7 @@ ff_select_cancel.addEventListener("click", e => {
     for (let i = 0; i < ff_content.length; i++) {
         ff_content[i].hidden = true
     }
+    file_folder_container.classList.remove("ff-select-mode")
     ellipsis_btn.hidden = false
     ff_select_cancel.hidden = true
     ff_options.hidden = true
@@ -269,7 +304,7 @@ ff_option_rename.addEventListener("click", e => {
         ff_rename.show()
         preventMenu = true
     }else{
-        bs5.toast("error","Something went wrong, please try again.","lg",false)
+        ss.toast("Something went wrong, please try again.","error",null,null,"#0C447C")
     }
 })
 
@@ -286,13 +321,24 @@ ff_option_download.addEventListener("click", e => {
     ff_option_download.classList.add("ff-option-disabled")
     fetch("../../controllers/file-browser/download-files.php", {
         method: "POST",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify({
             folder: localStorage.getItem("folder"),
             targets: selections
         })
     })
-    .then(res => res.blob())
+    .then(res => {
+        console.log("download response status:", res.status);
+        console.log("download response headers Content-Length:", res.headers.get("Content-Length"));
+        console.log("download response headers Content-Type:", res.headers.get("Content-Type"));
+        return res.blob();
+    })
     .then(blob => {
+        console.log("received blob size:", blob.size, "type:", blob.type);
+
         ff_option_download_download.hidden = false
         ff_option_download_spinner.hidden = true
         ff_option_download.classList.remove("ff-option-disabled")
@@ -301,13 +347,17 @@ ff_option_download.addEventListener("click", e => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = localStorage.getItem("folder") == "/" ? root_folder.innerText : localStorage.getItem("folder").split("/").filter(Boolean).pop() + ".zip";
+
+        var base = localStorage.getItem("folder") == "/"
+            ? root_folder.innerText
+            : localStorage.getItem("folder").split("/").filter(Boolean).pop();
+
+        a.download = base.replace(/\.zip$/i, "") + ".zip";
         a.click();
 
         URL.revokeObjectURL(url);
     });
 })
-
 ff_option_copy.addEventListener("click", e => {
     source = localStorage.getItem("folder")
     scanFolder()
@@ -453,7 +503,8 @@ ff_rename_save.addEventListener("click", e => {
             ff_rename.hide()
             scanFolder()
         }else{
-            bs5.toast(res.type,res.message)
+            ss.toast(res.message,res.type,null,null,"#0C447C")
+
         }
     })
     preventMenu = false
@@ -474,7 +525,7 @@ ff_new_folder_create.addEventListener("click", e => {
             ff_new_folder_input.value = ""
             scanFolder()
         }else{
-            bs5.toast(res.type,res.message)
+            ss.toast(res.message,res.type,null,null,"#0C447C")
         }
     })
     preventMenu = false
@@ -489,7 +540,7 @@ ff_delete_proceed.addEventListener("click", e => {
             ff_delete.hide()
             scanFolder()
         }else{
-            bs5.toast(res.type,res.message)
+            ss.toast(res.message,res.type,null,null,"#0C447C")
         }
     })
     preventMenu = false
@@ -509,6 +560,7 @@ function cancelSelection(){
     for (let i = 0; i < ff_content.length; i++) {
         ff_content[i].checked = false
     }
+    syncRowHighlights()
     ff_option_copy.classList.add("ff-option-disabled")
     ff_option_move.classList.add("ff-option-disabled")
     ff_option_rename.classList.add("ff-option-disabled")
@@ -533,7 +585,7 @@ function logoutContextMenu(){
 
 ff_login_btn.addEventListener("click", e => {
     if(!ff_login_userid.value || !ff_login_password.value){
-        bs5.toast("warning","Please input User ID and Password.")
+        ss.toast("Please input User ID and Password.","warning",null,null,"#0C447C")
         ff_login_userid.focus()
         return
     }
@@ -544,14 +596,14 @@ ff_login_btn.addEventListener("click", e => {
     }).then(res => {
         if(res.status){
             localStorage.setItem("ff_user",res.user[0]["name"])
-            bs5.toast(res.type,res.message + " " + res.user[0]["name"])
+            ss.toast(res.message + " " + res.user[0]["name"],res.type,null,null,"#0C447C")
             ff_login_userid.value = ""
             ff_login_password.value = ""
             ff_login_card.hidden = true
             ff_login.classList.remove("ff-login")
             checkAuthentication()
         }else{
-            bs5.toast(res.type,res.message,res.size)
+            ss.toast(res.message,res.type,null,null,"#0C447C")
         }
     })
 })
