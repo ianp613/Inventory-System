@@ -22,7 +22,7 @@
     ]; 
 
     $mail->addEmbeddedImage(
-        '../assets/img/fposi-logo.png', // path to image
+        '../assets/img/LEYTE-ICORE.png', // path to image
         'logoimg',             // CID (unique ID)
         'logo.png'             // optional name
     );
