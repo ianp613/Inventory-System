@@ -22,7 +22,7 @@
         <link rel="stylesheet" href="../assets/css/style.css">
 
         <!-- Page-scoped design system: loaded last so it wins the cascade -->
-        <link rel="stylesheet" href="../assets/css/file-browser-pro.css">
+        <link rel="stylesheet" href="../assets/css/file-browser-pro.css?v=<?= filemtime('../assets/css/file-browser-pro.css') ?>">
     </head>
     <body class="light">
         <div id="ff_login" class="w-100 p-3">
@@ -85,7 +85,7 @@
         </div>
         <div hidden id="ff_login_card" class="ff-login-card">
             <div class="modal-header pt-3 pb-2">
-                <h6>LOGIN TO YOUR ACCOUNT</h6>
+                <h6>LOGIN TO FILE BROWSER</h6>
             </div>
             <div class="modal-body">
                 <input id="ff_login_userid" type="text" name="" id="" class="form-control mb-2" placeholder="User ID">
@@ -94,8 +94,8 @@
             <div class="modal-footer">
                 <button id="ff_login_btn" class="btn btn-secondary w-100"><span class="fa fa-sign-in"></span> LOGIN</button>
             </div>
-            <h6 class="text-center mb-0 mt-2 f-12 f-i fw-bold">Intergrated with DDC LEYTE ICORE Credentials</h6>
-            <p class="text-center mt-0 f-12 f-i">File Browser v2</p>
+            <h6 class="text-center mb-0 mt-2 f-12 fw-bold">Intergrated with DDC LEYTE ICORE Credentials</h6>
+            <p class="text-center mt-0 f-12">File Browser v1.2</p>
         </div>
         <div hidden  id="ff_user_container" class="position-fixed bottom-0 ms-1 bg-dark text-light pt-2 ps-3 pe-3" style="border-top-left-radius: 10px; border-top-right-radius: 10px;">
             <h6 class="fw-bolder" id="ff_user">User: -------------------------</h6>

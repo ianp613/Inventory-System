@@ -133,8 +133,6 @@ body:has(#ff_login){
   margin-top: 7px;
 
 }
-a.navigate-folder{
-}
 #root_folder:hover,
 #navigation_container a.navigate-folder:not(.disabled):hover{
   background: var(--fb-accent-soft) !important;
@@ -410,7 +408,7 @@ a.navigate-folder{
   color: var(--fb-text-faint) !important;
   font-family: var(--fb-font-mono);
   font-size: 10.5px !important;
-  letter-spacing: .03em;
+  letter-spacing: .04em;
 }
 #ff_login_card p.text-center{ color: var(--fb-text-faint) !important; }
 
@@ -633,10 +631,10 @@ a.navigate-folder{
 .copyright{
   position: fixed;
   right: 16px;
-  bottom: 12px;
+  bottom: 5px;
   color: var(--fb-text-faint) !important;
   font-family: var(--fb-font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: .03em;
 }
 

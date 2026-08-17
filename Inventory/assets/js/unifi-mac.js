@@ -59,6 +59,8 @@ var um_login_userid       = document.getElementById("um_login_userid")
 var um_login_password     = document.getElementById("um_login_password")
 var um_login_btn          = document.getElementById("um_login_btn")
 
+um_login_userid.focus()
+
 
 var theme               = document.getElementById("theme")
 var Building            = []
