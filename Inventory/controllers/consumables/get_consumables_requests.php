@@ -5,18 +5,18 @@
 
     $data = json_decode(file_get_contents('php://input'), true);
 
-    $key_suffix = ($_SESSION["g_id"] ?? "") . ":" . ($data["type"] ?? "personal");
-    if ($data["type"] !== "group" || $_SESSION["c_authority"] !== "true") {
-        $key_suffix .= ":" . $_SESSION["userid"]; // personal view is per-user
-    }
-    $cache_key = "icore_consumable_request:" . $key_suffix;
+    // $key_suffix = ($_SESSION["g_id"] ?? "") . ":" . ($data["type"] ?? "personal");
+    // if ($data["type"] !== "group" || $_SESSION["c_authority"] !== "true") {
+    //     $key_suffix .= ":" . $_SESSION["userid"]; // personal view is per-user
+    // }
+    // $cache_key = "icore_consumable_request:" . $key_suffix;
 
-    $cache_data = $redis->get($cache_key);
+    // $cache_data = $redis->get($cache_key);
 
-    if ($cache_data !== null) {
-        echo $cache_data;
-        exit;
-    }
+    // if ($cache_data !== null) {
+    //     echo $cache_data;
+    //     exit;
+    // }
 
     $request = new Consumable_Request;
 
@@ -49,6 +49,6 @@
         ];
     }
 
-    $redis->setex($cache_key, 300, json_encode($response));
+    // $redis->setex($cache_key, 300, json_encode($response));
     echo json_encode($response);
 ?>
