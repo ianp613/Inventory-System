@@ -712,6 +712,21 @@
     color: var(--lnu-navy-deep);
   }
 
+  .home-credit{
+    margin: 1.8rem 0 0.3rem;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: rgba(253,248,238,0.6);
+  }
+
+  .home-copyright{
+    margin: 0;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(253,248,238,0.4);
+  }
+
   /* Hide the app chrome while the full-screen Home view is active */
   body.home-mode header,
   body.home-mode nav.tabs,
@@ -759,6 +774,8 @@
     <h2 class="home-title">Aretē</h2>
     <p class="home-tagline">Wisdom on values, from philosophers across time</p>
     <button class="btn" id="goBrowseBtn">Browse quotes</button>
+    <p class="home-credit" id="homeDevCredit"></p>
+    <p class="home-copyright" id="homeCopyright"></p>
   </main>
 </section>
 
@@ -1480,6 +1497,10 @@
       avatar.style.backgroundImage = "none";
       avatar.textContent = initials(aboutInfo.developerName);
     }
+
+    document.getElementById('homeDevCredit').textContent = `Developed by ${aboutInfo.developerName}`;
+    document.getElementById('homeCopyright').textContent =
+      `© ${aboutInfo.copyrightYear} ${aboutInfo.copyrightHolder}. All rights reserved.`;
   }
 
   // ---------------------------------------------------------
