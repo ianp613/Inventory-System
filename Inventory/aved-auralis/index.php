@@ -627,20 +627,20 @@
           <div>
             <div class="about-dev-label">Developed by</div>
             <div class="about-dev-name">Liezel A. Dumdum</div>
-            <div class="about-dev-role">BS Values Education Student</div>
+            <div class="about-dev-role">BSED Values Education Student</div>
           </div>
         </div>
       </div>
 
       <div class="about-section">
         <h3>Submitted To</h3>
-        <p>This project was developed and submitted as a course requirement for Values Education, under the guidance of [Instructor's Name], College of Education, Leyte Normal University, Tacloban City.</p>
+        <p>This project was developed and submitted as a course requirement for VED 110 — Information Technology and Human Development, under the guidance of Ms. Karlvie Nadine Capisinio, College of Education, Leyte Normal University, Tacloban City.</p>
       </div>
 
       <div class="about-footer">
         Copyright &copy; 2026 Liezel A. Dumdum. All rights reserved. Weather data is drawn from the public Open-Meteo API; this project's design, code, and compilation are original work created for academic submission.
       </div>
-      <div class="about-tagline">AVED AURALIS &middot; a student project for Values Education</div>
+      <div class="about-tagline">AVED AURALIS &middot; a student project for VED 110 — Information Technology and Human Development</div>
     </div>
   </div>
 </div>
