@@ -447,7 +447,6 @@
   .about-close:hover{ color: var(--ink); background: rgba(28, 39, 96, 0.14); }
   .about-section{
     background: var(--panel);
-    border-left: 4px solid var(--amber);
     border-radius: 8px;
     padding: 20px 22px;
     margin: 18px;
