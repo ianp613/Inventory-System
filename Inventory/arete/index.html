@@ -872,7 +872,7 @@
   </main>
 </section>
 
-<footer class="site-footer">Aretē &middot; a student project for VED 110 — Information Technology and Human Development</footer>
+<!-- <footer class="site-footer">Aretē &middot; a student project for VED 110 — Information Technology and Human Development</footer> -->
 
 <script>
   // ---------------------------------------------------------
@@ -1469,12 +1469,12 @@
   // ---------------------------------------------------------
   const aboutInfo = {
     description: "Aretē is a values-education app that brings together quotes on wisdom, justice, courage, temperance, compassion, and integrity from philosophers across history. It lets you browse quotes by value, explore each philosopher's body of work, revisit a new quote every day, and test what you've learned through two word games.",
-    developerName: "Nelson Labnotin",
+    developerName: "Nelson D. Labnotin",
     developerRole: "BSED Values Education Student",
     photoUrl: "",
     submission: "This project was developed and submitted as a course requirement for VED 110 — Information Technology and Human Development, under the guidance of Ms. Karlvie Nadine Capisinio, College of Education, Leyte Normal University, Tacloban City.",
     copyrightYear: "2026",
-    copyrightHolder: "Nelson Labnotin"
+    copyrightHolder: "Nelson D. Labnotin"
   };
 
   function initials(name){
@@ -1487,7 +1487,8 @@
     document.getElementById('aboutDevRole').textContent = aboutInfo.developerRole;
     document.getElementById('aboutSubmission').textContent = aboutInfo.submission;
     document.getElementById('aboutCopyright').textContent =
-      `© ${aboutInfo.copyrightYear} ${aboutInfo.copyrightHolder}. All rights reserved. Quotes are drawn from the public record and remain the intellectual heritage of their original authors; this project's design, code, and compilation are original work created for academic submission.`;
+      // `© ${aboutInfo.copyrightYear} ${aboutInfo.copyrightHolder}. All rights reserved. Quotes are drawn from the public record and remain the intellectual heritage of their original authors; this project's design, code, and compilation are original work created for academic submission.`;
+      `Quotes are from the public record and remain the intellectual heritage of their original authors; this project's design, code, and compilation are original work created for academic submission.`;
 
     const avatar = document.getElementById('aboutAvatar');
     if (aboutInfo.photoUrl){
