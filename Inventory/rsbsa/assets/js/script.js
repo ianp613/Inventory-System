@@ -672,7 +672,9 @@
     }
 
     /* columns: registrations per month, last 12 months (current month in amber) */
+    var lastMonths = null;
     function renderMonths(rows) {
+      lastMonths = rows;
       var box = document.getElementById('month-chart');
       if (!rows || !rows.length) { box.innerHTML = '<p class="empty">No data yet.</p>'; return; }
       var max = 0, sum = 0;
@@ -680,7 +682,7 @@
       if (sum === 0) { box.innerHTML = '<p class="empty">No registrations in the last 12 months.</p>'; return; }
       var step = max <= 5 ? 1 : (max <= 10 ? 2 : (max <= 25 ? 5 : (max <= 50 ? 10 : (max <= 100 ? 20 : Math.pow(10, Math.floor(Math.log(max) / Math.LN10)))))); 
       var top = Math.ceil(max / step) * step;
-      var W = 760, H = 240, L = 40, Rt = 10, T = 22, B = 34, cw = (W - L - Rt) / rows.length, bw = Math.min(40, cw * 0.62);
+      var W = Math.max(box.clientWidth || 760, 480), H = 230, L = 34, Rt = 8, T = 20, B = 28, cw = (W - L - Rt) / rows.length, bw = Math.min(34, cw * 0.55);
       function y(v) { return T + (H - T - B) * (1 - v / top); }
       var g = '', cols = '';
       for (var v = 0; v <= top; v += step) {
@@ -691,9 +693,9 @@
         cols += '<rect class="col' + (i === rows.length - 1 ? ' now' : '') + '" x="' + x.toFixed(1) + '" y="' + y(r.farmers).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"><title>' +
           Util.esc(r.label) + ': ' + r.farmers + ' registered</title></rect>';
         if (r.farmers > 0) cols += '<text class="val" x="' + cx.toFixed(1) + '" y="' + (y(r.farmers) - 5).toFixed(1) + '">' + r.farmers + '</text>';
-        cols += '<text class="mon" x="' + cx.toFixed(1) + '" y="' + (H - 12) + '">' + Util.esc(r.label.replace(/ \d{2}(\d{2})$/, " '$1")) + '</text>';
+        cols += '<text class="mon" x="' + cx.toFixed(1) + '" y="' + (H - 9) + '">' + Util.esc(r.label.replace(/ \d{2}(\d{2})$/, " '$1")) + '</text>';
       });
-      box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Farmers registered per month, last 12 months: ' + sum + ' in total">' + g + cols + '</svg>';
+      box.innerHTML = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Farmers registered per month, last 12 months: ' + sum + ' in total">' + g + cols + '</svg>';
       box.scrollLeft = box.scrollWidth;   // on a narrow screen, show the latest months first
     }
 
@@ -729,6 +731,9 @@
         })
         .then(function () { refreshBtn.disabled = false; });
     }
+
+    var rz = null;
+    window.addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { if (lastMonths) renderMonths(lastMonths); }, 150); });
 
     Auth.requireLogin().then(function (ok) {
       if (!ok) return;
