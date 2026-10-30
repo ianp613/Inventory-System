@@ -15,8 +15,14 @@ if ($lot === '') {
     ok(['registered' => false, 'spouse_conflict' => false]);
 }
 
+// the same lot number in another barangay is a different piece of land, so the farm barangay is needed to check
+$barangay = clean_str($_GET['barangay'] ?? '');
+if ($barangay === '') {
+    ok(['registered' => false, 'spouse_conflict' => false, 'needs_barangay' => true]);
+}
+
 $farmerId = (int) ($_GET['farmer_id'] ?? 0);
-$holders = lot_holders($lot, clean_str($_GET['barangay'] ?? ''), $farmerId > 0 ? $farmerId : null);
+$holders = lot_holders($lot, $barangay, $farmerId > 0 ? $farmerId : null);
 
 if (!$holders) {
     ok(['registered' => false, 'spouse_conflict' => false]);

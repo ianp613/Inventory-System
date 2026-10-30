@@ -1203,6 +1203,8 @@
         }
         text += ' Supporting documents are required, and the record will be flagged as a duplication.';
         setNotice(card, 'warn', text);
+      } else if (d.needs_barangay) {
+        setNotice(card, 'info', 'Enter the farm Barangay so the system can check whether this lot is already registered.');
       } else {
         setNotice(card, null);
       }
