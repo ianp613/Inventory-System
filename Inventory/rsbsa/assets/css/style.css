@@ -615,7 +615,7 @@ td.empty, .bars .empty { text-align: center; color: var(--gray-600); padding: 18
 
 .data-table td { vertical-align: middle; }
 .data-table tbody tr:hover { background: var(--gray-100); }
-.data-table .name-link { font-weight: 600; padding-left: 0; text-align: left; }
+.data-table .name-link { font-weight: 600; padding-left: 12px; padding-right: 12px; text-align: left; }
 .data-table td.actions { text-align: right; }
 
 .sort {
