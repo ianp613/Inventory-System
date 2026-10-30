@@ -29,8 +29,23 @@
       SESSION: 'session.php',         // GET -> {data: {authenticated, user}}
       DASHBOARD: 'dashboard.php',     // GET -> summary figures (see Pages.dashboard)
       FARMERS: 'farmers.php',         // GET -> paged farmer list (see Pages.farmers)
+      DUPLICATES: 'duplicates.php',   // GET -> duplicate flags (see Pages.duplicates)
+      UPDATE_DUPLICATE: 'update_duplicate.php', // POST -> resolve / reopen / save remarks
+      EXPORT: 'export.php',           // GET -> downloads a report file (see Pages.reports)
+      DELETE_FARMER: 'delete_farmer.php',       // POST {id} -> deletes a farmer, parcels and attached files
+      UPDATE_PROFILE: 'update_profile.php',     // POST {name} -> changes the logged-in user's display name
+      CHANGE_PASSWORD: 'change_password.php',   // POST {current_password, new_password}
       CHECK_LOT: 'check_lot.php',     // GET -> duplicate / remaining-area check (see Pages.register)
       GET_FARMER: 'get_farmer.php',   // GET ?id=  -> one farmer record for updating
+      ACTIVITY: 'activity.php',                 // GET -> activity log (see Pages.activity)
+      LOG_EVENT: 'log_event.php',               // POST {event} -> records a browser-only action (printing, settings)
+      PARCEL_HISTORY: 'parcel_history.php',     // GET ?parcel_id= -> history of one parcel
+      BACKUP_LIST: 'backup_list.php',           // GET -> saved backups + automatic backup settings
+      BACKUP_CREATE: 'backup_create.php',       // POST -> make a backup now
+      BACKUP_DOWNLOAD: 'backup_download.php',   // GET ?name= -> download a saved backup
+      BACKUP_DELETE: 'backup_delete.php',       // POST {name}
+      BACKUP_SETTINGS: 'backup_settings.php',   // POST {auto, frequency, keep}
+      BACKUP_RESTORE: 'backup_restore.php',     // POST multipart {password, name | file}
       SAVE_FARMER: 'save_farmer.php'  // POST multipart -> create or update a farmer
     },
     DASHBOARD_URL: 'dashboard.php',  // where to go after a successful login
@@ -61,7 +76,7 @@
     var init = {
       method: options.method || 'GET',
       credentials: 'same-origin',
-      headers: { 'Accept': 'application/json' },
+      headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
       signal: controller.signal
     };
 
@@ -107,7 +122,49 @@
   var Api = {
     get: function (endpoint) { return request(endpoint); },
     post: function (endpoint, body, timeout) { return request(endpoint, { method: 'POST', body: body || {}, timeout: timeout }); },
-    request: request
+    request: request,
+
+    /** Download a file from PHP. Resolves { blob, name }. JSON responses are treated as errors. */
+    download: function (endpoint, fallbackName) {
+      return fetch(buildUrl(endpoint), { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(function (res) {
+          var type = res.headers.get('Content-Type') || '';
+          if (!res.ok || type.indexOf('application/json') !== -1) {
+            return res.text().then(function (text) {
+              var json = null;
+              try { json = text ? JSON.parse(text) : null; } catch (e) { /* not JSON */ }
+              var err = new Error((json && json.message) || 'Download failed (' + res.status + ').');
+              err.status = res.status;
+              err.errors = (json && json.errors) || {};
+              throw err;
+            });
+          }
+          var cd = res.headers.get('Content-Disposition') || '';
+          var m = /filename\*?=(?:UTF-8'')?"?([^";]+)"?/i.exec(cd);
+          var name = m ? decodeURIComponent(m[1]) : (fallbackName || 'download');
+          return res.blob().then(function (blob) { return { blob: blob, name: name }; });
+        })
+        .catch(function (err) {
+          if (!('status' in err)) {
+            err.message = 'Cannot reach the server. Check your connection.';
+            err.status = 0;
+            err.errors = {};
+          }
+          throw err;
+        });
+    },
+
+    /** Hand a blob to the browser as a download. */
+    saveFile: function (blob, name) {
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
   };
 
   /* =====================================================================
@@ -135,8 +192,8 @@
         });
     },
 
-    logout: function () {
-      return Api.post(CONFIG.ENDPOINTS.LOGOUT)
+    logout: function (reason) {
+      return Api.post(CONFIG.ENDPOINTS.LOGOUT, reason ? { reason: reason } : {})
         .catch(function () { /* leave anyway */ })
         .then(function () {
           clearUser();
@@ -158,7 +215,6 @@
     /** Call on protected pages: redirects to the login page when not logged in. */
     requireLogin: function () {
       return Auth.check().then(function (ok) {
-        return ok
         if (!ok) window.location.replace(CONFIG.LOGIN_URL);
         return ok;
       });
@@ -198,6 +254,9 @@
       alertBox.hidden = true;
       alertBox.textContent = '';
     }
+
+    var flashMsg = Flash.take();   // e.g. "You were logged out because the system was not used for a while."
+    if (flashMsg) showAlert(flashMsg, 'success');
 
     function setFieldError(input, message) {
       var field = input.closest('.field');
@@ -309,6 +368,10 @@
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     },
+    /** Tell the server about something done only in the browser (for the activity log). Never blocks or fails the action. */
+    logEvent: function (data) {
+      try { Api.post(CONFIG.ENDPOINTS.LOG_EVENT, data).catch(function () {}); } catch (e) { /* ignore */ }
+    },
     int: function (n) { return Number(n || 0).toLocaleString('en-PH'); },
     ha: function (n) {
       return Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -320,6 +383,169 @@
       return d.toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' });
     }
   };
+
+  /** Confirmation window (works on every page). Resolves true when the admin confirms. */
+  var Ui = {
+    confirm: function (opts) {
+      opts = opts || {};
+      return new Promise(function (resolve) {
+        var dlg = document.createElement('dialog');
+        dlg.className = 'modal modal-sm';
+        dlg.setAttribute('aria-label', opts.title || 'Confirm');
+        dlg.innerHTML =
+          '<header class="modal-head"><h2>' + Util.esc(opts.title || 'Are you sure?') + '</h2></header>' +
+          '<div class="modal-body">' + (opts.lines || []).map(function (l, i) {
+            return '<p class="' + (i === 0 && opts.lines.length > 1 ? 'confirm-lead' : '') + '">' + Util.esc(l) + '</p>';
+          }).join('') + '</div>' +
+          '<footer class="modal-foot">' +
+            '<button type="button" class="btn-outline" data-r="0">Cancel</button>' +
+            '<button type="button" class="' + (opts.danger ? 'btn-danger' : 'btn-solid') + '" data-r="1">' +
+              Util.esc(opts.confirmText || 'OK') + '</button>' +
+          '</footer>';
+        document.body.appendChild(dlg);
+
+        var done = false;
+        function finish(value) {
+          if (done) return;
+          done = true;
+          try { dlg.close(); } catch (e) { /* already closed */ }
+          dlg.remove();
+          resolve(value);
+        }
+        dlg.addEventListener('click', function (e) {
+          var b = e.target.closest('[data-r]');
+          if (b) finish(b.getAttribute('data-r') === '1');
+          else if (e.target === dlg) finish(false);   // click on the backdrop
+        });
+        dlg.addEventListener('cancel', function (e) { e.preventDefault(); finish(false); });  // Esc key
+        dlg.showModal();
+        dlg.querySelector('[data-r="0"]').focus();    // the safe choice is focused first
+      });
+    }
+  };
+
+  /** A one-time message that survives a page change (for example "record deleted"). */
+  var Flash = {
+    set: function (message) { try { sessionStorage.setItem('rsbsa_flash', message); } catch (e) {} },
+    take: function () {
+      try {
+        var m = sessionStorage.getItem('rsbsa_flash');
+        sessionStorage.removeItem('rsbsa_flash');
+        return m;
+      } catch (e) { return null; }
+    }
+  };
+
+  /* ---------- Settings: theme + auto-logout ----------
+   * Saved in this browser (localStorage "rsbsa_settings") because the system is used offline on one computer:
+   *   { theme: "default" | "dark", autoLogout: true|false, autoLogoutMinutes: 15 }
+   * The inline script in each page <head> applies the theme before the page is drawn.
+   */
+  var Settings = (function () {
+    var KEY = 'rsbsa_settings';
+    var ACTIVE_KEY = 'rsbsa_last_active';     // shared by all open tabs so one busy tab keeps the others logged in
+    var MINUTES = [1, 2, 5, 10, 15, 30, 60];
+    var WARN_SECONDS = 30;
+
+    function read() {
+      try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; }
+    }
+    function write(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { /* storage unavailable */ } }
+
+    function get() {
+      var s = read();
+      var m = Number(s.autoLogoutMinutes);
+      return {
+        theme: s.theme === 'dark' ? 'dark' : 'default',
+        autoLogout: s.autoLogout === true,
+        autoLogoutMinutes: MINUTES.indexOf(m) !== -1 ? m : 15
+      };
+    }
+    function set(patch) {
+      var s = get();
+      Object.keys(patch).forEach(function (k) { s[k] = patch[k]; });
+      write(s);
+      applyTheme();
+      return s;
+    }
+    function applyTheme() {
+      var root = document.documentElement;
+      if (get().theme === 'dark') root.setAttribute('data-theme', 'dark'); else root.removeAttribute('data-theme');
+    }
+
+    /* ----- idle watcher (admin pages only) ----- */
+    var started = false, warnDlg = null, tick = null, lastWrite = 0;
+
+    function now() { return Date.now(); }
+    function touch(force) {
+      if (warnDlg) return;                      // while the warning is open only its buttons count
+      var t = now();
+      if (!force && t - lastWrite < 1000) return;
+      lastWrite = t;
+      try { localStorage.setItem(ACTIVE_KEY, String(t)); } catch (e) {}
+    }
+    function lastActive() {
+      try { return Number(localStorage.getItem(ACTIVE_KEY)) || now(); } catch (e) { return now(); }
+    }
+
+    function closeWarning() {
+      if (!warnDlg) return;
+      try { warnDlg.close(); } catch (e) {}
+      warnDlg.remove();
+      warnDlg = null;
+    }
+    function doLogout() {
+      closeWarning();
+      clearInterval(tick);
+      Flash.set('You were logged out because the system was not used for a while.');
+      Auth.logout('inactivity');
+    }
+    function showWarning(secondsLeft) {
+      if (!warnDlg) {
+        warnDlg = document.createElement('dialog');
+        warnDlg.className = 'modal modal-sm idle-warning';
+        warnDlg.innerHTML =
+          '<div class="modal-body"><h2 class="modal-title">Still there?</h2>' +
+          '<p>You will be logged out in <strong data-s>' + secondsLeft + '</strong> seconds because the system has not been used.</p></div>' +
+          '<footer class="modal-foot"><button type="button" class="btn-outline" data-r="0">Log out now</button>' +
+          '<button type="button" class="btn-solid" data-r="1">Stay logged in</button></footer>';
+        warnDlg.addEventListener('cancel', function (e) { e.preventDefault(); });
+        warnDlg.addEventListener('click', function (e) {
+          var b = e.target.closest('[data-r]');
+          if (!b) return;
+          if (b.getAttribute('data-r') === '1') { closeWarning(); touch(true); } else { doLogout(); }
+        });
+        document.body.appendChild(warnDlg);
+        warnDlg.showModal();
+        warnDlg.querySelector('[data-r="1"]').focus();
+      }
+      var el = warnDlg.querySelector('[data-s]');
+      if (el) el.textContent = secondsLeft;
+    }
+
+    function check() {
+      var s = get();
+      if (!s.autoLogout) { closeWarning(); return; }
+      var limit = s.autoLogoutMinutes * 60;
+      var idle = (now() - lastActive()) / 1000;
+      if (warnDlg && idle < limit - WARN_SECONDS) { closeWarning(); return; }   // another tab was used
+      if (idle >= limit) { doLogout(); return; }
+      if (idle >= limit - WARN_SECONDS) showWarning(Math.max(1, Math.ceil(limit - idle)));
+    }
+
+    function startIdleWatch() {
+      if (started) return;
+      started = true;
+      touch(true);
+      ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'wheel', 'input'].forEach(function (ev) {
+        window.addEventListener(ev, function () { touch(false); }, { passive: true, capture: true });
+      });
+      tick = setInterval(check, 1000);
+    }
+
+    return { get: get, set: set, applyTheme: applyTheme, startIdleWatch: startIdleWatch, MINUTES: MINUTES, _check: check };
+  })();
+  Settings.applyTheme();
 
   /** Sidebar, top bar and logout: call once on every admin page. */
   var Shell = {
@@ -349,10 +575,19 @@
       menuBtn.addEventListener('click', function () { setMenu(!sidebar.classList.contains('open')); });
       scrim.addEventListener('click', function () { setMenu(false); });
 
+      Settings.startIdleWatch();
+
       // logout
       logoutBtn.addEventListener('click', function () {
-        logoutBtn.disabled = true;
-        Auth.logout();
+        Ui.confirm({
+          title: 'Log out?',
+          lines: ['Do you want to log out of the system?', 'Anything you have not saved will be lost.'],
+          confirmText: 'Log Out'
+        }).then(function (yes) {
+          if (!yes) return;
+          logoutBtn.disabled = true;
+          Auth.logout();
+        });
       });
     }
   };
@@ -365,6 +600,7 @@
    *     "totals": { "farmers": 0, "parcels": 0, "total_area_ha": 0, "duplicate_flags": 0 },
    *     "by_commodity": [ { "commodity": "Rice", "farmers": 0, "area_ha": 0 } ],
    *     "by_barangay":  [ { "barangay": "Capirawan", "farmers": 0, "area_ha": 0 } ],
+   *     "by_month":     [ { "month": "2026-10", "label": "Oct 2026", "farmers": 0 } ],   (last 12 months, oldest first)
    *     "recent_updates": [
    *       { "rsbsa_no": "", "name": "", "barangay": "", "total_area_ha": 0, "date_updated": "YYYY-MM-DD HH:MM:SS" }
    *     ]
@@ -392,31 +628,73 @@
       setText('stat-duplicates', Util.int(t.duplicate_flags));
     }
 
+    var SVGNS = 'http://www.w3.org/2000/svg';
+
+    /* donut: share of the total active area per commodity (colors c1..c7 from the stylesheet) */
     function renderCommodity(rows) {
-      var box = document.getElementById('commodity-list');
+      var box = document.getElementById('commodity-chart');
+      rows = (rows || []).filter(function (r) { return Number(r.area_ha) > 0 || Number(r.farmers) > 0; });
+      var total = 0;
+      rows.forEach(function (r) { total += Number(r.area_ha) || 0; });
+      if (!rows.length || total <= 0) { box.innerHTML = '<p class="empty">No data yet.</p>'; return; }
+
+      var R = 56, C = 2 * Math.PI * R, offset = 0, arcs = '', items = '';
+      rows.forEach(function (r, i) {
+        var share = (Number(r.area_ha) || 0) / total, len = share * C, col = 'var(--c' + ((i % 7) + 1) + ')';
+        if (len > 0) {
+          arcs += '<circle cx="85" cy="85" r="' + R + '" stroke="' + col + '" stroke-dasharray="' + len.toFixed(2) + ' ' + (C - len).toFixed(2) +
+            '" stroke-dashoffset="' + (-offset).toFixed(2) + '" transform="rotate(-90 85 85)"><title>' + Util.esc(r.commodity) + ': ' + Util.ha(r.area_ha) + ' ha</title></circle>';
+          offset += len;
+        }
+        items += '<li><span class="sw" style="background:' + col + '"></span><span class="nm">' + Util.esc(r.commodity) + '</span>' +
+          '<span class="vl">' + Util.ha(r.area_ha) + ' ha &middot; ' + Math.round(share * 100) + '%</span></li>';
+      });
+      box.innerHTML =
+        '<svg class="donut" viewBox="0 0 170 170" role="img" aria-label="Share of total active area by commodity">' +
+        '<circle class="donut-bg" cx="85" cy="85" r="' + R + '"/>' + arcs +
+        '<text class="donut-num" x="85" y="86">' + Util.ha(total) + '</text><text class="donut-cap" x="85" y="102">hectares</text></svg>' +
+        '<ul class="legend">' + items + '</ul>';
+    }
+
+    /* horizontal bars: farmers per barangay (top 10) */
+    function renderBarangay(rows) {
+      var box = document.getElementById('barangay-chart');
       if (!rows || !rows.length) { box.innerHTML = '<p class="empty">No data yet.</p>'; return; }
-
       var max = 0;
-      rows.forEach(function (r) { max = Math.max(max, Number(r.area_ha) || 0); });
-
+      rows.forEach(function (r) { max = Math.max(max, Number(r.farmers) || 0); });
       box.innerHTML = rows.map(function (r) {
-        var pct = max > 0 ? Math.round((Number(r.area_ha) || 0) / max * 100) : 0;
+        var pct = max > 0 ? Math.round((Number(r.farmers) || 0) / max * 100) : 0;
         return '<div class="bar-row">' +
-          '<div class="bar-row-head"><span>' + Util.esc(r.commodity) + '</span>' +
-          '<span>' + Util.ha(r.area_ha) + ' ha &middot; ' + Util.int(r.farmers) + ' farmers</span></div>' +
-          '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
-          '</div>';
+          '<div class="bar-row-head"><span>' + Util.esc(r.barangay || '(no barangay)') + '</span>' +
+          '<span>' + Util.int(r.farmers) + (Number(r.farmers) === 1 ? ' farmer' : ' farmers') + ' &middot; ' + Util.ha(r.area_ha) + ' ha</span></div>' +
+          '<div class="bar-track"><div class="bar-fill alt" style="width:' + pct + '%"></div></div></div>';
       }).join('');
     }
 
-    function renderBarangay(rows) {
-      var body = document.getElementById('barangay-body');
-      if (!rows || !rows.length) { body.innerHTML = '<tr><td colspan="3" class="empty">No data yet.</td></tr>'; return; }
-      body.innerHTML = rows.map(function (r) {
-        return '<tr><td>' + Util.esc(r.barangay) + '</td>' +
-          '<td class="num">' + Util.int(r.farmers) + '</td>' +
-          '<td class="num">' + Util.ha(r.area_ha) + '</td></tr>';
-      }).join('');
+    /* columns: registrations per month, last 12 months (current month in amber) */
+    function renderMonths(rows) {
+      var box = document.getElementById('month-chart');
+      if (!rows || !rows.length) { box.innerHTML = '<p class="empty">No data yet.</p>'; return; }
+      var max = 0, sum = 0;
+      rows.forEach(function (r) { max = Math.max(max, r.farmers); sum += r.farmers; });
+      if (sum === 0) { box.innerHTML = '<p class="empty">No registrations in the last 12 months.</p>'; return; }
+      var step = max <= 5 ? 1 : (max <= 10 ? 2 : (max <= 25 ? 5 : (max <= 50 ? 10 : (max <= 100 ? 20 : Math.pow(10, Math.floor(Math.log(max) / Math.LN10)))))); 
+      var top = Math.ceil(max / step) * step;
+      var W = 760, H = 240, L = 40, Rt = 10, T = 22, B = 34, cw = (W - L - Rt) / rows.length, bw = Math.min(40, cw * 0.62);
+      function y(v) { return T + (H - T - B) * (1 - v / top); }
+      var g = '', cols = '';
+      for (var v = 0; v <= top; v += step) {
+        g += '<line class="grid" x1="' + L + '" x2="' + (W - Rt) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text class="yl" x="' + (L - 6) + '" y="' + (y(v) + 4) + '">' + v + '</text>';
+      }
+      rows.forEach(function (r, i) {
+        var x = L + cw * i + (cw - bw) / 2, h = (H - T - B) * (r.farmers / top), cx = L + cw * i + cw / 2;
+        cols += '<rect class="col' + (i === rows.length - 1 ? ' now' : '') + '" x="' + x.toFixed(1) + '" y="' + y(r.farmers).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"><title>' +
+          Util.esc(r.label) + ': ' + r.farmers + ' registered</title></rect>';
+        if (r.farmers > 0) cols += '<text class="val" x="' + cx.toFixed(1) + '" y="' + (y(r.farmers) - 5).toFixed(1) + '">' + r.farmers + '</text>';
+        cols += '<text class="mon" x="' + cx.toFixed(1) + '" y="' + (H - 12) + '">' + Util.esc(r.label.replace(/ \d{2}(\d{2})$/, " '$1")) + '</text>';
+      });
+      box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Farmers registered per month, last 12 months: ' + sum + ' in total">' + g + cols + '</svg>';
+      box.scrollLeft = box.scrollWidth;   // on a narrow screen, show the latest months first
     }
 
     function renderRecent(rows) {
@@ -441,6 +719,7 @@
           renderTotals(d.totals);
           renderCommodity(d.by_commodity);
           renderBarangay(d.by_barangay);
+          renderMonths(d.by_month);
           renderRecent(d.recent_updates);
           lastUpdated.textContent = 'Updated ' + new Date().toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' });
         })
@@ -458,6 +737,138 @@
       load();
     });
   };
+
+  /* ---------- Parcel history window (used by register.php and farmers.php) ----------
+   * GET api/parcel_history.php?parcel_id=
+   *   -> { success, data: { parcel: {...}, farmer: { name, rsbsa_no },
+   *        entries: [ { changed_at, event, changes: [ { label, old, new } ], snapshot: {...} } ] } }   (newest first)
+   * Print: the page prints the timeline only. Export: api/export.php?report=parcel_history&parcel_id=&format=xlsx|csv
+   */
+  var ParcelHistory = (function () {
+    var dlg = null, body = null, current = null;
+
+    function ensure() {
+      if (dlg) return;
+      dlg = document.createElement('dialog');
+      dlg.className = 'modal';
+      dlg.id = 'history-dialog';
+      dlg.innerHTML =
+        '<header class="modal-head"><h2>Parcel History</h2>' +
+        '<button type="button" class="modal-close" data-h="close" aria-label="Close">&times;</button></header>' +
+        '<div class="modal-body" data-h="body"></div>' +
+        '<footer class="modal-foot">' +
+        '<button type="button" class="btn-outline" data-h="print" disabled>Print</button>' +
+        '<button type="button" class="btn-outline" data-h="xlsx" disabled>Export Excel</button>' +
+        '<button type="button" class="btn-outline" data-h="csv" disabled>Export CSV</button>' +
+        '<span class="spacer"></span>' +
+        '<button type="button" class="btn-solid" data-h="close">Close</button></footer>';
+      document.body.appendChild(dlg);
+      body = dlg.querySelector('[data-h="body"]');
+
+      dlg.addEventListener('click', function (e) {
+        var t = e.target.closest('[data-h]');
+        if (!t) return;
+        var act = t.getAttribute('data-h');
+        if (act === 'close') dlg.close();
+        else if (act === 'print') print();
+        else if (act === 'xlsx' || act === 'csv') download(act, t);
+      });
+      window.addEventListener('afterprint', function () { document.body.classList.remove('print-history-mode'); });
+    }
+
+    function label(v) { return v === '' || v === null || v === undefined ? '(blank)' : String(v); }
+
+    function stamp(v) {
+      if (!v) return '';
+      var d = new Date(String(v).replace(' ', 'T'));
+      if (isNaN(d.getTime())) return String(v);
+      return d.toLocaleString('en-PH', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    }
+
+    function render(h) {
+      var p = h.parcel || {}, f = h.farmer || {};
+      var html = '<div class="hist-head"><strong>' + Util.esc(f.name || '') + '</strong>' +
+        '<span class="muted"> ' + Util.esc(f.rsbsa_no || '') + '</span>' +
+        '<div class="muted">Lot ' + Util.esc(p.cadastral_lot_no || '') + (p.barangay ? ', ' + Util.esc(p.barangay) : '') +
+        ' &middot; ' + Util.esc(p.commodity || '') + ' &middot; now: ' +
+        Util.esc(p.parcel_status === 'Inactive' ? 'In-active' : p.parcel_status || '') + '</div></div>';
+      var entries = h.entries || [];
+      if (!entries.length) return html + '<p class="muted">No history recorded for this parcel.</p>';
+
+      html += '<ol class="hist-list">';
+      entries.forEach(function (e) {
+        var s = e.snapshot || {};
+        html += '<li class="hist-item"><div class="hist-when"><strong>' + Util.esc(e.event) + '</strong> &middot; ' +
+          Util.esc(stamp(e.changed_at)) + '</div>';
+        if (e.changes && e.changes.length) {
+          html += '<table class="hist-table"><thead><tr><th>Field</th><th>Previous</th><th>New</th></tr></thead><tbody>' +
+            e.changes.map(function (c) {
+              return '<tr><td>' + Util.esc(c.label) + '</td><td>' + Util.esc(label(c.old)) + '</td><td>' + Util.esc(label(c.new)) + '</td></tr>';
+            }).join('') + '</tbody></table>';
+        } else {
+          html += '<p class="muted">' + (e.event === 'Registered' ? 'Parcel registered.' : 'Record as it was when history started.') + '</p>';
+        }
+        html += '<p class="hist-snap">Then: Lot ' + Util.esc(s.cadastral_lot_no || '') + ' &middot; Declarant ' + Util.esc(s.tax_declarant || '') +
+          ' &middot; ' + Util.esc(s.parcel_status === 'Inactive' ? 'In-active' : s.parcel_status || '') +
+          (s.area_ha !== undefined ? ' &middot; ' + Util.ha(s.area_ha) + ' ha' : '') +
+          (s.farming_role ? ' &middot; ' + Util.esc(s.farming_role) : '') + '</p></li>';
+      });
+      return html + '</ol>';
+    }
+
+    function setButtons(on) {
+      qsa('[data-h="print"], [data-h="xlsx"], [data-h="csv"]').forEach(function (b) { b.disabled = !on; });
+    }
+    function qsa(sel) { return Array.prototype.slice.call(dlg.querySelectorAll(sel)); }
+
+    function print() {
+      if (!current) return;
+      var host = document.getElementById('history-print');
+      if (!host) {
+        host = document.createElement('div');
+        host.id = 'history-print';
+        document.body.appendChild(host);
+      }
+      host.innerHTML = '<img class="print-seal" src="assets/img/palo-seal.png" alt=""><h1 class="pf-title">Palo RSBSA - Parcel History</h1>' + render(current) +
+        '<p class="muted">Printed ' + Util.esc(new Date().toLocaleString('en-PH')) + '</p>';
+      document.body.classList.add('print-history-mode');
+      Util.logEvent({ event: 'print_history', parcel_id: current.parcel.id });
+      window.print();
+    }
+
+    function download(format, btn) {
+      if (!current) return;
+      var text = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Preparing...';
+      var stampName = new Date().toISOString().slice(0, 10);
+      Api.download(CONFIG.ENDPOINTS.EXPORT + '?report=parcel_history&parcel_id=' + encodeURIComponent(current.parcel.id) + '&format=' + format,
+        'rsbsa-parcel-history-' + stampName + '.' + format)
+        .then(function (file) { Api.saveFile(file.blob, file.name); })
+        .catch(function (err) { body.insertAdjacentHTML('afterbegin', '<p class="alert error">' + Util.esc(err.message) + '</p>'); })
+        .then(function () { btn.disabled = false; btn.textContent = text; });
+    }
+
+    return {
+      open: function (parcelId) {
+        ensure();
+        current = null;
+        setButtons(false);
+        body.innerHTML = '<p class="muted">Loading...</p>';
+        if (!dlg.open) dlg.showModal();
+        return Api.get(CONFIG.ENDPOINTS.PARCEL_HISTORY + '?parcel_id=' + encodeURIComponent(parcelId))
+          .then(function (res) {
+            current = res.data;
+            body.innerHTML = render(current);
+            setButtons(true);
+          })
+          .catch(function (err) {
+            if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+            body.innerHTML = '<p class="alert error">' + Util.esc(err.message) + '</p>';
+          });
+      }
+    };
+  })();
 
   /* ---------- Register / update farmer (register.php) ----------
    * register.php            -> new record
@@ -477,6 +888,8 @@
    *
    * POST api/save_farmer.php (multipart/form-data)
    *   payload                 JSON string (shape below)
+   *   photo                   2x2 picture (required for a new farmer; on update only to replace it)
+   *   valid_id_file           scan / photo of the valid ID (same rule)
    *   tax_declaration_{i}     file for parcel i (only if a new file was chosen)
    *   supporting_docs_{i}[]   files for parcel i (only when the lot is a duplicate)
    *   -> { success, message, data: { id, rsbsa_no, flagged: bool } }
@@ -485,13 +898,15 @@
    * payload = {
    *   id, rsbsa_no, surname, first_name, middle_name, suffix, birth_date, valid_id_type, valid_id_no,
    *   address: { zone_sitio, barangay, municipality, province },
-   *   spouse: { surname, first_name, middle_name } | null, spouse_separated, is_married_woman, maiden_name,
-   *   children: [ "name", ... ], association,
+   *   civil_status: Single | Married | Widowed | Separated | Annulled,
+   *   spouse: { surname, first_name, middle_name } | null, is_married_woman, maiden_name,
+   *   children: [ "name", ... ],
    *   parcels: [ { id, cadastral_lot_no, area_ha, tax_declared_area_ha, cultivated_area_ha,
    *                location: { zone_sitio, barangay, municipality, province },
    *                commodity, crop_areas: { rice, vegetable, root_crops, banana, coconut, fruit_bearing } | null,
    *                livestock: [ { type, heads } ] | null, fish_size | null,
-   *                farming_role, tax_declarant, duplicate_flag, keep_existing_tax_file } ]
+   *                farming_role, tax_declarant, association, parcel_status: Active | Inactive | Deceased,
+   *                duplicate_flag, keep_existing_tax_file } ]
    * }
    * When updating, parcels that are missing from the payload were removed by the admin.
    */
@@ -613,6 +1028,8 @@
       var loc = p.location || {};
       var crops = p.crop_areas || {};
       card.dataset.parcelId = p.id || '';
+      var hb = card.querySelector('[data-act="parcel-history"]');
+      if (hb) hb.hidden = !p.id;
       setVal(card, 'cadastral_lot_no', p.cadastral_lot_no);
       setVal(card, 'area_ha', p.area_ha);
       setVal(card, 'tax_declared_area_ha', p.tax_declared_area_ha);
@@ -625,12 +1042,17 @@
       setVal(card, 'fish_size', p.fish_size);
       setVal(card, 'farming_role', p.farming_role);
       setVal(card, 'tax_declarant', p.tax_declarant);
+      setVal(card, 'association', p.association);
+      setVal(card, 'parcel_status', p.parcel_status || 'Active');
+      syncParcelStatus(card);
       CROP_KEYS.forEach(function (k) { setVal(card, 'crop_' + k, crops[k]); });
       (p.livestock || []).forEach(function (a) { addAnimalRow(card, a.type, a.heads); });
       if (p.tax_file_name) {
         card.dataset.existingFile = p.tax_file_name;
         var note = card.querySelector('[data-role="existing-file"]');
-        note.textContent = 'Current file: ' + p.tax_file_name + '. Choose a new file only to replace it.';
+        var link = p.tax_file_url && !/^\s*(javascript|data|vbscript):/i.test(p.tax_file_url)
+          ? ' (<a href="' + Util.esc(p.tax_file_url) + '" target="_blank" rel="noopener">open</a>)' : '';
+        note.innerHTML = 'Current file: ' + Util.esc(p.tax_file_name) + link + '. Choose a new file only to replace it.';
         note.hidden = false;
       }
     }
@@ -663,18 +1085,52 @@
     function updateTotals() {
       var total = 0, cultivated = 0;
       var cards = parcelCards();
+      var inactive = 0;
       cards.forEach(function (c) {
+        // Inactive / Deceased parcels are kept on record but not counted
+        if (val(c, 'parcel_status') && val(c, 'parcel_status') !== 'Active') { inactive++; return; }
         total += num(c, 'area_ha') || 0;
         cultivated += num(c, 'cultivated_area_ha') || 0;
       });
-      $('sum-parcels').textContent = cards.length;
+      $('sum-parcels').textContent = cards.length + (inactive ? ' (' + inactive + ' not counted)' : '');
       $('sum-area').textContent = Util.ha(total);
       $('sum-cultivated').textContent = Util.ha(cultivated);
     }
 
     /* ---------- family toggles ---------- */
     function syncFamily() {
+      var cs = val(form, 'civil_status');
       $('maiden-group').hidden = !checked(form, 'is_married_woman');
+      $('spouse-group').hidden = cs === 'Single';
+      $('spouse-hint').hidden = cs === 'Single' || cs === 'Married' || cs === '';
+    }
+
+    function syncParcelStatus(card) {
+      var st = val(card, 'parcel_status') || 'Active';
+      var hint = card.querySelector('[data-role="status-hint"]');
+      card.classList.toggle('parcel-off', st !== 'Active');
+      if (hint) {
+        hint.textContent = st === 'Active'
+          ? 'Active parcels are counted in the farmer\'s total area.'
+          : 'This parcel is kept on record but its area is NOT counted in the farmer\'s total area.';
+      }
+    }
+
+    /* ---------- 2x2 picture preview ---------- */
+    function showPhoto(src) {
+      var img = $('photo-preview');
+      if (src) { img.src = src; }
+      img.hidden = !src;
+      $('photo-empty').hidden = !!src;
+    }
+
+    function existingFileNote(role, name, url) {
+      var note = form.querySelector('[data-role="' + role + '"]');
+      if (!name) { note.hidden = true; return; }
+      var link = url && !/^\s*(javascript|data|vbscript):/i.test(url)
+        ? ' (<a href="' + Util.esc(url) + '" target="_blank" rel="noopener">open</a>)' : '';
+      note.innerHTML = 'Current file: ' + Util.esc(name) + link + '. Choose a new file only to replace it.';
+      note.hidden = false;
     }
 
     /* ---------- duplicate lot check (server decides, form shows the result) ---------- */
@@ -700,6 +1156,7 @@
         barangay: val(card, 'loc_barangay'),
         surname: val(form, 'surname'),
         first_name: val(form, 'first_name'),
+        civil_status: val(form, 'civil_status'),
         spouse_surname: val(form, 'spouse_surname'),
         spouse_first_name: val(form, 'spouse_first_name')
       };
@@ -751,9 +1208,10 @@
       var files = Array.prototype.slice.call(input.files || []);
       for (var i = 0; i < files.length; i++) {
         var ext = files[i].name.split('.').pop().toLowerCase();
-        if (ALLOWED_EXT.indexOf(ext) === -1) {
+        var imageOnly = input.getAttribute('data-f') === 'photo';
+        if (ALLOWED_EXT.indexOf(ext) === -1 || (imageOnly && ext === 'pdf')) {
           input.value = '';
-          setInvalid(input, 'Only PDF, JPG or PNG files are allowed.');
+          setInvalid(input, imageOnly ? 'Only JPG or PNG pictures are allowed.' : 'Only PDF, JPG or PNG files are allowed.');
           return false;
         }
         if (files[i].size > CONFIG.MAX_UPLOAD_MB * 1024 * 1024) {
@@ -778,6 +1236,12 @@
       ['surname', 'first_name', 'valid_id_type', 'valid_id_no', 'addr_barangay', 'addr_municipality', 'addr_province']
         .forEach(function (n) { req(form, n); });
 
+      req(form, 'civil_status', 'Select the civil status.');
+      if (!editId) {
+        if (!fld(form, 'photo').files.length) bad(fld(form, 'photo'), 'Attach the 2x2 picture.');
+        if (!fld(form, 'valid_id_file').files.length) bad(fld(form, 'valid_id_file'), 'Attach the valid ID.');
+      }
+
       var dobEl = fld(form, 'birth_date');
       if (!dobEl.value) {
         bad(dobEl, 'Date of birth is required.');
@@ -787,7 +1251,8 @@
       }
 
       // family
-      var spouseAny = val(form, 'spouse_surname') || val(form, 'spouse_first_name') || val(form, 'spouse_middle_name');
+      var spouseAny = val(form, 'civil_status') !== 'Single' &&
+        (val(form, 'spouse_surname') || val(form, 'spouse_first_name') || val(form, 'spouse_middle_name'));
       if (spouseAny) {
         req(form, 'spouse_surname', 'Spouse surname is required.');
         req(form, 'spouse_first_name', 'Spouse first name is required.');
@@ -880,6 +1345,7 @@
         area_ha: round4(num(card, 'area_ha') || 0),
         tax_declared_area_ha: round4(num(card, 'tax_declared_area_ha') || 0),
         cultivated_area_ha: round4(num(card, 'cultivated_area_ha') || 0),
+        parcel_status: val(card, 'parcel_status') || 'Active',
         location: {
           zone_sitio: val(card, 'loc_zone_sitio'),
           barangay: val(card, 'loc_barangay'),
@@ -892,6 +1358,7 @@
         fish_size: null,
         farming_role: val(card, 'farming_role'),
         tax_declarant: val(card, 'tax_declarant'),
+        association: val(card, 'association'),
         duplicate_flag: card.dataset.duplicate === '1',
         keep_existing_tax_file: !!card.dataset.existingFile && !fld(card, 'tax_file').files.length
       };
@@ -910,7 +1377,8 @@
     }
 
     function buildFormData() {
-      var spouseAny = val(form, 'spouse_surname') || val(form, 'spouse_first_name') || val(form, 'spouse_middle_name');
+      var spouseAny = val(form, 'civil_status') !== 'Single' &&
+        (val(form, 'spouse_surname') || val(form, 'spouse_first_name') || val(form, 'spouse_middle_name'));
       var married = checked(form, 'is_married_woman');
 
       var payload = {
@@ -934,16 +1402,19 @@
           first_name: val(form, 'spouse_first_name'),
           middle_name: val(form, 'spouse_middle_name')
         } : null,
-        spouse_separated: checked(form, 'spouse_separated'),
+        civil_status: val(form, 'civil_status'),
         is_married_woman: married,
         maiden_name: married ? val(form, 'maiden_name') : '',
         children: qa('[data-f="child_name"]', childrenList).map(function (el) { return el.value.trim(); }),
-        association: val(form, 'association'),
         parcels: parcelCards().map(collectParcel)
       };
 
       var fd = new FormData();
       fd.append('payload', JSON.stringify(payload));
+      ['photo', 'valid_id_file'].forEach(function (n) {
+        var el = fld(form, n);
+        if (el.files.length) fd.append(n, el.files[0]);
+      });
       parcelCards().forEach(function (card, i) {
         var tf = fld(card, 'tax_file');
         if (tf.files.length) fd.append('tax_declaration_' + i, tf.files[0]);
@@ -997,6 +1468,7 @@
       childrenList.innerHTML = '';
       parcelsList.innerHTML = '';
       addParcel();
+      showPhoto(null);
       syncFamily();
       $('date-updated').value = Util.date(new Date().toISOString());
       updateTotals();
@@ -1056,6 +1528,12 @@
       var card = t.closest('.parcel-card');
 
       if (name === 'is_married_woman') syncFamily();
+      if (name === 'civil_status') { syncFamily(); parcelCards().forEach(scheduleLotCheck); }
+      if (card && name === 'parcel_status') { syncParcelStatus(card); updateTotals(); }
+      if (name === 'photo') {
+        if (checkFiles(t) && t.files.length) showPhoto(URL.createObjectURL(t.files[0]));
+        return;
+      }
       if (t.type === 'file') checkFiles(t);
       if (card && name === 'commodity') updateGroups(card);
       if (card && (name === 'cadastral_lot_no' || name === 'loc_barangay')) scheduleLotCheck(card);
@@ -1097,12 +1575,27 @@
         var c = addParcel();
         c.scrollIntoView({ behavior: 'smooth', block: 'start' });
         dirty = true;
+      } else if (act === 'parcel-history') {
+        if (card.dataset.parcelId) ParcelHistory.open(card.dataset.parcelId);
       } else if (act === 'remove-parcel') {
-        if (parcelCards().length > 1 && window.confirm('Remove this parcel?')) {
-          card.remove();
-          renumber();
-          updateTotals();
-          dirty = true;
+        if (parcelCards().length > 1) {
+          var saved = !!card.dataset.parcelId;   // already stored in the database
+          var label = 'Parcel ' + card.querySelector('.parcel-no').textContent +
+            (val(card, 'cadastral_lot_no') ? ' (Lot ' + val(card, 'cadastral_lot_no') + ')' : '');
+          Ui.confirm({
+            title: 'Remove this parcel?',
+            danger: true,
+            confirmText: 'Remove parcel',
+            lines: saved
+              ? [label, 'The parcel and its attached files (tax declaration and any supporting documents) will be permanently deleted when you click Save Changes.']
+              : [label, 'This parcel has not been saved yet and will simply be removed from the form.']
+          }).then(function (yes) {
+            if (!yes) return;
+            card.remove();
+            renumber();
+            updateTotals();
+            dirty = true;
+          });
         }
       } else if (act === 'add-animal') {
         addAnimalRow(card);
@@ -1112,6 +1605,37 @@
       } else if (act === 'copy-address') {
         copyAddress(card);
       }
+    });
+
+    $('delete-btn').addEventListener('click', function () {
+      var name = [val(form, 'surname'), [val(form, 'first_name'), val(form, 'middle_name'), val(form, 'suffix')].filter(Boolean).join(' ')]
+        .filter(Boolean).join(', ');
+      var n = qa('.parcel-card', parcelsList).filter(function (c) { return !!c.dataset.parcelId; }).length;
+      Ui.confirm({
+        title: 'Delete this farmer?',
+        danger: true,
+        confirmText: 'Delete permanently',
+        lines: [
+          name || 'This farmer',
+          'The farmer record' + (n ? ', ' + n + ' parcel(s)' : '') +
+            ' and all attached files (tax declarations and supporting documents) will be permanently deleted. Unsaved changes on this form are discarded.',
+          'This cannot be undone.'
+        ]
+      }).then(function (yes) {
+        if (!yes) return;
+        $('delete-btn').disabled = true;
+        Api.post(CONFIG.ENDPOINTS.DELETE_FARMER, { id: editId })
+          .then(function (res) {
+            dirty = false;
+            Flash.set(res.message || 'Farmer deleted.');
+            window.location.replace(CONFIG.FARMERS_URL);
+          })
+          .catch(function (err) {
+            if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+            $('delete-btn').disabled = false;
+            showAlert(err.message);
+          });
+      });
     });
 
     $('cancel-btn').addEventListener('click', function () {
@@ -1128,8 +1652,14 @@
     /* ---------- update mode: load the existing record ---------- */
     function loadFarmer() {
       $('page-title').textContent = 'Update Farmer Record';
+      $('delete-btn').hidden = false;
+      var parcelHint = $('sec-parcels').closest('section').querySelector('.hint');
+      parcelHint.textContent += ' To remove a parcel use its Remove Parcel button; its attached files are deleted when you save.' +
+        ' A farmer needs at least one parcel; to remove everything use Delete Farmer.';
       document.title = 'Update Farmer | Palo RSBSA';
       saveBtn.querySelector('.btn-text').textContent = 'Save Changes';
+      $('photo-req').hidden = true;
+      $('idfile-req').hidden = true;
       showAlert('Loading record...', 'success');
 
       Api.get(CONFIG.ENDPOINTS.GET_FARMER + '?id=' + encodeURIComponent(editId))
@@ -1138,7 +1668,7 @@
           var a = f.address || {};
           var s = f.spouse || {};
 
-          ['rsbsa_no', 'surname', 'first_name', 'middle_name', 'suffix', 'birth_date', 'valid_id_type', 'valid_id_no', 'maiden_name', 'association']
+          ['rsbsa_no', 'surname', 'first_name', 'middle_name', 'suffix', 'birth_date', 'valid_id_type', 'valid_id_no', 'maiden_name']
             .forEach(function (n) { setVal(form, n, f[n]); });
           setVal(form, 'addr_zone_sitio', a.zone_sitio);
           setVal(form, 'addr_barangay', a.barangay);
@@ -1147,9 +1677,12 @@
           setVal(form, 'spouse_surname', s.surname);
           setVal(form, 'spouse_first_name', s.first_name);
           setVal(form, 'spouse_middle_name', s.middle_name);
-          fld(form, 'spouse_separated').checked = !!f.spouse_separated;
+          setVal(form, 'civil_status', f.civil_status);
           fld(form, 'is_married_woman').checked = !!f.is_married_woman;
           syncFamily();
+          showPhoto(f.photo_url);
+          existingFileNote('existing-photo', f.photo_name, f.photo_url);
+          existingFileNote('existing-idfile', f.valid_id_file_name, f.valid_id_file_url);
 
           (f.children || []).forEach(addChild);
           parcelsList.innerHTML = '';
@@ -1264,7 +1797,9 @@
           '<td>' + Util.esc(Util.date(r.date_updated)) + '</td>' +
           '<td class="actions">' +
             '<button type="button" class="link-btn" data-view="' + Util.esc(r.id) + '">View</button>' +
-            '<a class="link-btn" href="register.php?id=' + id + '">Edit</a></td>' +
+            '<a class="link-btn" href="register.php?id=' + id + '">Edit</a>' +
+            '<button type="button" class="link-danger" data-delete="' + Util.esc(r.id) + '" data-name="' + Util.esc(r.name) +
+              '" data-parcels="' + Util.esc(r.parcels) + '">Delete</button></td>' +
           '</tr>';
       }).join('');
     }
@@ -1329,6 +1864,10 @@
     /* ---------- details window ---------- */
     var dialog = $('view-dialog');
     var viewBody = $('view-body');
+    viewBody.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-history]');
+      if (b) ParcelHistory.open(b.getAttribute('data-history'));
+    });
 
     function row(label, value) {
       return '<div><dt>' + Util.esc(label) + '</dt><dd>' + (value ? Util.esc(value) : '&ndash;') + '</dd></div>';
@@ -1341,8 +1880,17 @@
 
     function detailHtml(f) {
       var s = f.spouse || {};
-      var html = '<h3 class="detail-title">Basic Information</h3><dl class="detail-grid">' +
+      var photo = safeUrl(f.photo_url);
+      var idUrl = safeUrl(f.valid_id_file_url);
+      var html = '<div class="profile-head">' +
+        (photo ? '<img class="profile-photo" src="' + Util.esc(photo) + '" alt="2x2 picture">' : '<div class="profile-photo none">No photo</div>') +
+        '<div><h3 class="profile-name">' + Util.esc(fullName(f.surname, f.first_name, f.middle_name, f.suffix)) + '</h3>' +
+        '<p class="muted">' + Util.esc(f.rsbsa_no || '') + (f.civil_status ? ' &middot; ' + Util.esc(f.civil_status) : '') + '</p>' +
+        (idUrl ? '<p><a href="' + Util.esc(idUrl) + '" target="_blank" rel="noopener">Open valid ID (' + Util.esc(f.valid_id_file_name || 'file') + ')</a></p>' : '<p class="muted">No valid ID file attached.</p>') +
+        '</div></div>';
+      html += '<h3 class="detail-title">Basic Information</h3><dl class="detail-grid">' +
         row('Registration Number', f.rsbsa_no) +
+        row('Civil Status', f.civil_status) +
         row('Name', fullName(f.surname, f.first_name, f.middle_name, f.suffix)) +
         row('Date of Birth', Util.date(f.birth_date)) +
         row('Valid ID', [f.valid_id_type, f.valid_id_no].filter(Boolean).join(' - ')) +
@@ -1351,20 +1899,22 @@
 
       html += '<h3 class="detail-title">Family Background</h3><dl class="detail-grid">' +
         row('Spouse', fullName(s.surname, s.first_name, s.middle_name)) +
-        row('Separated from spouse', f.spouse_separated ? 'Yes' : (f.spouse ? 'No' : '')) +
         row('Mother Maiden Name', f.is_married_woman ? f.maiden_name : '') +
         row('Children', (f.children || []).join('; ')) +
         '</dl>';
 
-      html += '<h3 class="detail-title">Association</h3><dl class="detail-grid">' +
-        row('Name of Association', f.association) +
+      html += '<h3 class="detail-title">Record</h3><dl class="detail-grid">' +
         row('Date Updated', Util.date(f.date_updated)) +
         '</dl>';
 
       var total = 0;
       var parcels = f.parcels || [];
-      parcels.forEach(function (p) { total += Number(p.area_ha) || 0; });
-      html += '<h3 class="detail-title">Parcels (' + parcels.length + ' &middot; ' + Util.ha(total) + ' ha total)</h3>';
+      var notCounted = 0;
+      parcels.forEach(function (p) {
+        if (p.parcel_status && p.parcel_status !== 'Active') notCounted++; else total += Number(p.area_ha) || 0;
+      });
+      html += '<h3 class="detail-title">Parcels (' + parcels.length + ' &middot; ' + Util.ha(total) + ' ha total' +
+        (notCounted ? ', ' + notCounted + ' not counted' : '') + ')</h3>';
 
       parcels.forEach(function (p, i) {
         var crops = [];
@@ -1376,7 +1926,10 @@
         var url = safeUrl(p.tax_file_url);
 
         html += '<div class="detail-parcel"><h4>Parcel ' + (i + 1) +
+          (p.id ? ' <button type="button" class="link-btn" data-history="' + Util.esc(p.id) + '">History</button>' : '') +
+          (p.parcel_status && p.parcel_status !== 'Active' ? '<span class="badge off">' + (p.parcel_status === 'Inactive' ? 'In-active' : 'Deceased') + '</span>' : '') +
           (p.duplicate_flag ? '<span class="badge">Duplicate</span>' : '') + '</h4><dl class="detail-grid">' +
+          row('Parcel Remark', p.parcel_status === 'Inactive' ? 'In-active (area not counted)' : p.parcel_status === 'Deceased' ? 'Deceased (area not counted)' : 'Active') +
           row('Cadastral Lot No.', p.cadastral_lot_no) +
           row('Area (ha)', Util.ha(p.area_ha)) +
           row('Area per Tax Declaration (ha)', Util.ha(p.tax_declared_area_ha)) +
@@ -1388,6 +1941,7 @@
           (p.fish_size ? row('Fish Cage / Pond Size', p.fish_size) : '') +
           row('Farming Status', p.farming_role) +
           row('Tax Declarant / Owner', p.tax_declarant) +
+          row('Name of Association', p.association) +
           '</dl>' +
           (url ? '<p><a href="' + Util.esc(url) + '" target="_blank" rel="noopener">Open tax declaration</a></p>' : '') +
           '</div>';
@@ -1396,7 +1950,11 @@
       return html;
     }
 
+    var viewing = null;   // the record shown in the details window
+
     function openView(id) {
+      viewing = { id: id, name: '', parcels: 0 };
+      $('view-delete').disabled = true;
       $('view-title').textContent = 'Farmer Record';
       $('view-edit').href = 'register.php?id=' + encodeURIComponent(id);
       viewBody.innerHTML = '<p class="muted">Loading...</p>';
@@ -1407,6 +1965,8 @@
           var f = (res.data && res.data.farmer) || {};
           $('view-title').textContent = fullName(f.surname, f.first_name, f.middle_name, f.suffix) || 'Farmer Record';
           viewBody.innerHTML = detailHtml(f);
+          viewing = { id: id, name: fullName(f.surname, f.first_name, f.middle_name, f.suffix), parcels: (f.parcels || []).length };
+          $('view-delete').disabled = false;
         })
         .catch(function (err) {
           if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
@@ -1457,9 +2017,60 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
+    function showOk(msg) {
+      alertBox.textContent = msg;
+      alertBox.className = 'alert success';
+      alertBox.hidden = false;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /** Ask first, then delete the farmer, the parcels and every attached file. */
+    function deleteFarmer(id, name, parcels) {
+      Ui.confirm({
+        title: 'Delete this farmer?',
+        danger: true,
+        confirmText: 'Delete permanently',
+        lines: [
+          name || 'This farmer',
+          'The farmer record' + (parcels ? ', ' + parcels + ' parcel(s)' : '') +
+            ' and all attached files (tax declarations and supporting documents) will be permanently deleted.',
+          'This cannot be undone.'
+        ]
+      }).then(function (yes) {
+        if (!yes) return;
+        alertBox.hidden = true;
+        Api.post(CONFIG.ENDPOINTS.DELETE_FARMER, { id: id })
+          .then(function (res) {
+            var d = res.data || {};
+            var msg = res.message || 'Farmer deleted.';
+            if (d.orphaned_flags > 0) {
+              msg += ' ' + d.orphaned_flags + ' duplicate flag(s) of other farmers named this farmer as the registered owner; review them on the Duplicate Flags page.';
+            }
+            if (dialog.open) dialog.close();
+            showOk(msg);
+            load();
+          })
+          .catch(function (err) {
+            if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+            if (dialog.open) dialog.close();
+            showError(err.message);
+            load();
+          });
+      });
+    }
+
     body.addEventListener('click', function (e) {
+      var d = e.target.closest('[data-delete]');
+      if (d) {
+        deleteFarmer(d.getAttribute('data-delete'), d.getAttribute('data-name'), Number(d.getAttribute('data-parcels')) || 0);
+        return;
+      }
       var b = e.target.closest('[data-view]');
       if (b) openView(b.getAttribute('data-view'));
+    });
+
+    $('view-delete').addEventListener('click', function () {
+      if (viewing) deleteFarmer(viewing.id, viewing.name, viewing.parcels);
     });
 
     $('view-close').addEventListener('click', function () { dialog.close(); });
@@ -1470,19 +2081,999 @@
     Auth.requireLogin().then(function (ok) {
       if (!ok) return;
       Shell.init('farmers');
+      var flash = Flash.take();
+      if (flash) showOk(flash);
       load();
     });
   };
 
-  /* ---------- Add the next pages here, for example ----------
-  Pages.duplicates = function () { ... Shell.init('duplicates'); ... };
-  Pages.reports    = function () { ... Shell.init('reports'); ... };
-  ------------------------------------------------------------ */
+  /* ---------- Duplicate flags (duplicates.php) ----------
+   * A flag is created by save_farmer.php when a parcel is saved with duplicate_flag = true.
+   *
+   * GET api/duplicates.php?status=open|resolved|all&q=&page=1&per_page=25
+   *   -> { success, data: {
+   *          rows: [ { id, lot_no, barangay,
+   *                    farmer_id, farmer_name, farmer_rsbsa_no,                 // the farmer who was flagged
+   *                    registered_to: "Dela Cruz, Pedro", registered_farmer_id, // the farmer already holding the lot
+   *                    area_ha, tax_declared_area_ha,
+   *                    status: "open" | "resolved", remarks, flagged_at, resolved_at,
+   *                    documents: [ { name, url } ] } ],
+   *          total, page, per_page,
+   *          counts: { open: 0, resolved: 0 } } }
+   *
+   * POST api/update_duplicate.php  (JSON) { id, status: "open" | "resolved", remarks }
+   *   -> { success, message }       Validation errors: HTTP 422 { errors: { remarks: "..." } }
+   */
+  Pages.duplicates = function () {
+    var state = { status: 'open', page: 1, per_page: 25 };
+    var token = 0;
+    var searchTimer = null;
+    var rowsById = {};
+    var current = null; // the flag open in the review window
+
+    function $(id) { return document.getElementById(id); }
+    var alertBox = $('dup-alert');
+    var body = $('dup-body');
+    var dialog = $('review-dialog');
+
+    function showAlert(msg, type) {
+      alertBox.textContent = msg;
+      alertBox.className = 'alert ' + (type || 'error');
+      alertBox.hidden = false;
+    }
+
+    function safeUrl(u) { return u && !/^\s*(javascript|data|vbscript):/i.test(u) ? u : ''; }
+    function short(text, n) { text = String(text || ''); return text.length > n ? text.slice(0, n - 1) + '...' : text; }
+
+    function statusBadge(s) {
+      return s === 'resolved' ? '<span class="badge ok">Resolved</span>' : '<span class="badge open">Open</span>';
+    }
+
+    /* ---------- list ---------- */
+    function query() {
+      var q = { status: state.status, q: $('d-q').value.trim(), page: state.page, per_page: state.per_page };
+      return Object.keys(q).map(function (k) { return k + '=' + encodeURIComponent(q[k]); }).join('&');
+    }
+
+    function renderRows(rows) {
+      rowsById = {};
+      if (!rows || !rows.length) {
+        body.innerHTML = '<tr><td colspan="10" class="empty">No duplicate flags found.</td></tr>';
+        return;
+      }
+      body.innerHTML = rows.map(function (r) {
+        rowsById[r.id] = r;
+        var docs = (r.documents || []).length;
+        return '<tr>' +
+          '<td>' + Util.esc(r.lot_no) + '</td>' +
+          '<td>' + Util.esc(r.barangay) + '</td>' +
+          '<td>' + Util.esc(r.farmer_name) +
+            (docs ? '<span class="doc-count">' + docs + ' document' + (docs > 1 ? 's' : '') + '</span>' : '<span class="doc-count">No documents</span>') + '</td>' +
+          '<td>' + Util.esc(r.registered_to) + '</td>' +
+          '<td class="num">' + Util.ha(r.area_ha) + '</td>' +
+          '<td class="num">' + Util.ha(r.tax_declared_area_ha) + '</td>' +
+          '<td>' + Util.esc(Util.date(r.flagged_at)) + '</td>' +
+          '<td>' + statusBadge(r.status) + '</td>' +
+          '<td class="remarks-cell">' + Util.esc(short(r.remarks, 80)) + '</td>' +
+          '<td class="actions no-print"><button type="button" class="link-btn" data-review="' + Util.esc(r.id) + '">Review</button></td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    function renderPagination(total) {
+      var nav = $('pagination');
+      var pages = Math.max(1, Math.ceil(total / state.per_page));
+      if (pages <= 1) { nav.innerHTML = ''; return; }
+      var start = Math.max(1, state.page - 2);
+      var end = Math.min(pages, start + 4);
+      start = Math.max(1, end - 4);
+
+      var html = '<button type="button" data-page="' + (state.page - 1) + '"' + (state.page <= 1 ? ' disabled' : '') + '>Prev</button>';
+      if (start > 1) html += '<button type="button" data-page="1">1</button>' + (start > 2 ? '<span class="muted">...</span>' : '');
+      for (var p = start; p <= end; p++) {
+        html += '<button type="button" data-page="' + p + '"' + (p === state.page ? ' class="current" aria-current="page"' : '') + '>' + p + '</button>';
+      }
+      if (end < pages) html += (end < pages - 1 ? '<span class="muted">...</span>' : '') + '<button type="button" data-page="' + pages + '">' + pages + '</button>';
+      html += '<button type="button" data-page="' + (state.page + 1) + '"' + (state.page >= pages ? ' disabled' : '') + '>Next</button>';
+      nav.innerHTML = html;
+    }
+
+    function load() {
+      var mine = ++token;
+      Api.get(CONFIG.ENDPOINTS.DUPLICATES + '?' + query())
+        .then(function (res) {
+          if (mine !== token) return;
+          var d = res.data || {};
+          var total = Number(d.total) || 0;
+          var pages = Math.max(1, Math.ceil(total / state.per_page));
+          if (state.page > pages) { state.page = pages; load(); return; }
+
+          var c = d.counts || {};
+          $('count-open').textContent = Util.int(c.open);
+          $('count-resolved').textContent = Util.int(c.resolved);
+
+          renderRows(d.rows);
+          renderPagination(total);
+
+          var label = { open: 'Open', resolved: 'Resolved', all: 'All' }[state.status];
+          $('result-info').textContent = total ? Util.int(total) + ' flag' + (total > 1 ? 's' : '') : 'No flags';
+          $('print-meta').textContent = label + ' flags · ' + Util.int(total) + ' record(s) · Printed ' +
+            new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+        })
+        .catch(function (err) {
+          if (mine !== token) return;
+          if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+          body.innerHTML = '<tr><td colspan="10" class="empty">Could not load the flags.</td></tr>';
+          $('result-info').textContent = '';
+          showAlert(err.message);
+        });
+    }
+
+    function reload() { state.page = 1; load(); }
+
+    /* ---------- review window ---------- */
+    function infoRow(label, value) {
+      return '<div><dt>' + Util.esc(label) + '</dt><dd>' + (value ? value : '&ndash;') + '</dd></div>';
+    }
+
+    function openReview(id) {
+      var r = rowsById[id];
+      if (!r) return;
+      current = r;
+
+      $('review-alert').hidden = true;
+      $('review-remarks-error').textContent = '';
+      $('review-remarks').closest('.field').classList.remove('invalid');
+      $('review-title').textContent = 'Duplicate Flag: Lot ' + r.lot_no;
+
+      var farmerLink = r.farmer_id
+        ? '<a href="register.php?id=' + encodeURIComponent(r.farmer_id) + '">' + Util.esc(r.farmer_name) + '</a>'
+        : Util.esc(r.farmer_name);
+      var ownerLink = r.registered_farmer_id
+        ? '<a href="register.php?id=' + encodeURIComponent(r.registered_farmer_id) + '">' + Util.esc(r.registered_to) + '</a>'
+        : Util.esc(r.registered_to);
+
+      $('review-info').innerHTML = '<dl class="detail-grid">' +
+        infoRow('Cadastral Lot No.', Util.esc(r.lot_no)) +
+        infoRow('Barangay', Util.esc(r.barangay)) +
+        infoRow('Flagged Farmer', farmerLink) +
+        infoRow('RSBSA No. of Flagged Farmer', Util.esc(r.farmer_rsbsa_no)) +
+        infoRow('Already Registered To', ownerLink) +
+        infoRow('Area Applied (ha)', Util.ha(r.area_ha)) +
+        infoRow('Area per Tax Declaration (ha)', Util.ha(r.tax_declared_area_ha)) +
+        infoRow('Flagged On', Util.esc(Util.date(r.flagged_at))) +
+        infoRow('Status', statusBadge(r.status)) +
+        (r.status === 'resolved' ? infoRow('Resolved On', Util.esc(Util.date(r.resolved_at))) : '') +
+        '</dl>';
+
+      var docs = (r.documents || []).filter(function (d) { return safeUrl(d.url); });
+      $('review-docs').innerHTML = docs.length
+        ? '<ul class="doc-list">' + docs.map(function (d) {
+            return '<li><a href="' + Util.esc(safeUrl(d.url)) + '" target="_blank" rel="noopener">' + Util.esc(d.name || 'Document') + '</a></li>';
+          }).join('') + '</ul>'
+        : '<p class="muted">No supporting documents were attached.</p>';
+
+      $('review-remarks').value = r.remarks || '';
+      $('review-toggle').textContent = r.status === 'resolved' ? 'Reopen Flag' : 'Mark as Resolved';
+      $('review-toggle').className = r.status === 'resolved' ? 'btn-outline' : 'btn-solid';
+
+      if (!dialog.open) dialog.showModal();
+    }
+
+    function submitReview(newStatus) {
+      var remarks = $('review-remarks').value.trim();
+      var field = $('review-remarks').closest('.field');
+      field.classList.remove('invalid');
+      $('review-remarks-error').textContent = '';
+      $('review-alert').hidden = true;
+
+      if (newStatus === 'resolved' && !remarks) {
+        field.classList.add('invalid');
+        $('review-remarks-error').textContent = 'Enter your remarks before resolving this flag.';
+        $('review-remarks').focus();
+        return;
+      }
+
+      var buttons = [$('review-save'), $('review-toggle')];
+      buttons.forEach(function (b) { b.disabled = true; });
+
+      Api.post(CONFIG.ENDPOINTS.UPDATE_DUPLICATE, { id: current.id, status: newStatus, remarks: remarks })
+        .then(function (res) {
+          dialog.close();
+          showAlert(res.message || 'Flag updated.', 'success');
+          load();
+        })
+        .catch(function (err) {
+          if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+          if (err.errors && err.errors.remarks) {
+            field.classList.add('invalid');
+            $('review-remarks-error').textContent = err.errors.remarks;
+          }
+          var box = $('review-alert');
+          box.textContent = err.message;
+          box.className = 'alert error';
+          box.hidden = false;
+        })
+        .then(function () { buttons.forEach(function (b) { b.disabled = false; }); });
+    }
+
+    /* ---------- events ---------- */
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (tab) {
+      tab.addEventListener('click', function () {
+        Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
+          var on = t === tab;
+          t.classList.toggle('active', on);
+          t.setAttribute('aria-selected', String(on));
+        });
+        state.status = tab.getAttribute('data-status');
+        reload();
+      });
+    });
+
+    $('d-q').addEventListener('input', function () {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(reload, 350);
+    });
+
+    $('per-page').addEventListener('change', function () {
+      state.per_page = Number(this.value) || 25;
+      reload();
+    });
+
+    $('pagination').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-page]');
+      if (!b || b.disabled) return;
+      state.page = Number(b.getAttribute('data-page')) || 1;
+      load();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    body.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-review]');
+      if (b) openReview(b.getAttribute('data-review'));
+    });
+
+    $('review-close').addEventListener('click', function () { dialog.close(); });
+    $('review-cancel').addEventListener('click', function () { dialog.close(); });
+    dialog.addEventListener('click', function (e) { if (e.target === dialog) dialog.close(); });
+
+    $('review-save').addEventListener('click', function () { submitReview(current.status); });
+    $('review-toggle').addEventListener('click', function () {
+      submitReview(current.status === 'resolved' ? 'open' : 'resolved');
+    });
+
+    $('print-btn').addEventListener('click', function () {
+      Util.logEvent({ event: 'print_duplicates', detail: $('print-meta').textContent });
+      window.print();
+    });
+
+    /* ---------- start ---------- */
+    Auth.requireLogin().then(function (ok) {
+      if (!ok) return;
+      Shell.init('duplicates');
+      load();
+    });
+  };
+
+  /* ---------- Reports & export (reports.php) ----------
+   * GET api/export.php?report=farmers|duplicates&format=xlsx|csv&...filters
+   *   farmers    filters: commodity, role, barangay, updated_from (YYYY-MM-DD), updated_to
+   *   duplicates filters: status = all | open | resolved
+   *   Success: send the file with  Content-Type  and  Content-Disposition: attachment; filename="..."
+   *   Failure: send JSON { success:false, message } with an error status code (the page shows the message).
+   *
+   * The printable registration form is built in the browser from api/get_farmer.php
+   * and api/farmers.php?q= (the farmer search), so it needs no extra endpoint.
+   */
+  Pages.reports = function () {
+    var selected = null;
+    var searchTimer = null;
+    var searchToken = 0;
+
+    function $(id) { return document.getElementById(id); }
+    var alertBox = $('rep-alert');
+
+    function showAlert(msg, type) {
+      alertBox.textContent = msg;
+      alertBox.className = 'alert ' + (type || 'error');
+      alertBox.hidden = false;
+      alertBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function qs(obj) {
+      return Object.keys(obj).map(function (k) { return k + '=' + encodeURIComponent(obj[k]); }).join('&');
+    }
+
+    function fullName(surname, first, middle, suffix) {
+      var rest = [first, middle, suffix].filter(Boolean).join(' ');
+      return [surname, rest].filter(Boolean).join(', ');
+    }
+
+    function placeText(a) {
+      a = a || {};
+      return [a.zone_sitio, a.barangay, a.municipality, a.province].filter(Boolean).join(', ');
+    }
+
+    /* ---------- downloads ---------- */
+    function runDownload(btn) {
+      var report = btn.getAttribute('data-report');
+      var format = btn.getAttribute('data-format');
+      var params = { report: report, format: format };
+
+      alertBox.hidden = true;
+      $('r-range-error').textContent = '';
+      $('r-to').closest('.field').classList.remove('invalid');
+
+      if (report === 'farmers') {
+        params.commodity = $('r-commodity').value;
+        params.role = $('r-role').value;
+        params.barangay = $('r-barangay').value;
+        params.updated_from = $('r-from').value;
+        params.updated_to = $('r-to').value;
+
+        if (params.updated_from && params.updated_to && params.updated_from > params.updated_to) {
+          $('r-to').closest('.field').classList.add('invalid');
+          $('r-range-error').textContent = 'The end date must be on or after the start date.';
+          return;
+        }
+      } else {
+        params.status = $('r-dup-status').value;
+      }
+
+      var label = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Preparing...';
+
+      var stamp = new Date().toISOString().slice(0, 10);
+      Api.download(CONFIG.ENDPOINTS.EXPORT + '?' + qs(params), 'rsbsa-' + report + '-' + stamp + '.' + format)
+        .then(function (file) {
+          Api.saveFile(file.blob, file.name);
+          showAlert('Download started: ' + file.name, 'success');
+        })
+        .catch(function (err) {
+          if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+          showAlert(err.message);
+        })
+        .then(function () { btn.disabled = false; btn.textContent = label; });
+    }
+
+    /* ---------- printable registration form ----------
+     * Same layout as the farmer profile (View window), without buttons or links.
+     * A blank form (no farmer) prints empty writing lines instead of values. */
+    function safeUrl(u) { return u && !/^\s*(javascript|data|vbscript):/i.test(u) ? u : ''; }
+    var CROP_LABELS = { rice: 'Rice', vegetable: 'Vegetable', root_crops: 'Root Crops', banana: 'Banana', coconut: 'Coconut', fruit_bearing: 'Fruit Bearing' };
+
+    function formHtml(f) {
+      var blank = !f;
+      f = f || {};
+      var a = f.address || {};
+      var s = f.spouse || {};
+      var parcels = f.parcels && f.parcels.length ? f.parcels : (blank ? [{}, {}] : [{}]);   // a blank form has 2 parcels to fill in
+
+      // one labelled value; an empty value is a dash on a filled form and a writing line on a blank one
+      function item(label, value) {
+        var has = value !== undefined && value !== null && value !== '';
+        return '<div><dt>' + Util.esc(label) + '</dt><dd' + (has ? '' : (blank ? ' class="pf-line"' : '')) + '>' +
+          (has ? Util.esc(value) : (blank ? '&nbsp;' : '&ndash;')) + '</dd></div>';
+      }
+      var statusText = function (st) { return st === 'Inactive' ? 'In-active' : (st || (blank ? '' : 'Active')); };
+      var pic = safeUrl(f.photo_url);
+
+      var html = '<div class="pf-header"><img class="pf-seal" src="assets/img/palo-seal.png" alt="">' +
+        '<h1 class="pf-title">Palo Registry System for Basic Sectors in Agriculture (RSBSA)</h1></div>' +
+        '<div class="profile-head">' +
+        (pic ? '<img class="profile-photo" src="' + Util.esc(pic) + '" alt="">' : '<div class="profile-photo none">2 x 2<br>photo</div>') +
+        '<div><h3 class="profile-name">' + (blank ? '&nbsp;' : Util.esc(fullName(f.surname, f.first_name, f.middle_name, f.suffix))) + '</h3>' +
+        '<p class="muted">' + Util.esc(f.rsbsa_no || '') + (f.civil_status ? ' &middot; ' + Util.esc(f.civil_status) : '') + '</p></div></div>';
+
+      html += '<h3 class="detail-title">Basic Information</h3><dl class="detail-grid">' +
+        item('Registration Number', f.rsbsa_no) +
+        item('Civil Status', f.civil_status) +
+        item('Name (Surname, First Name, Middle Name, Etc.)', blank ? '' : fullName(f.surname, f.first_name, f.middle_name, f.suffix)) +
+        item('Date of Birth', f.birth_date ? Util.date(f.birth_date) : '') +
+        item('Valid ID', [f.valid_id_type, f.valid_id_no].filter(Boolean).join(' - ')) +
+        item('Residential Address (Zone/Sitio, Brgy., Municipality, Province)', placeText(a)) +
+        '</dl>';
+
+      html += '<h3 class="detail-title">Family Background</h3><dl class="detail-grid">' +
+        item('Spouse', blank ? '' : fullName(s.surname, s.first_name, s.middle_name)) +
+        item('Mother Maiden Name (for married woman)', f.is_married_woman ? f.maiden_name : '') +
+        (blank
+          ? item('Name of Child 1', '') + item('Name of Child 2', '') + item('Name of Child 3', '')   // a blank form has 3 rows for children
+          : item('Children', (f.children || []).join('; '))) +
+        '</dl>';
+
+      html += '<h3 class="detail-title">Record</h3><dl class="detail-grid">' +
+        item('Date Updated', f.date_updated ? Util.date(f.date_updated) : '') +
+        '</dl>';
+
+      var total = 0;
+      parcels.forEach(function (p) { if (!p.parcel_status || p.parcel_status === 'Active') total += Number(p.area_ha) || 0; });
+      html += '<h3 class="detail-title">Parcels' + (blank ? '' : ' (' + parcels.length + ' &middot; ' + Util.ha(total) + ' ha total)') + '</h3>';
+
+      parcels.forEach(function (p, i) {
+        var crops = [];
+        Object.keys(p.crop_areas || {}).forEach(function (k) {
+          if (Number(p.crop_areas[k]) > 0) crops.push((CROP_LABELS[k] || k) + ': ' + Util.ha(p.crop_areas[k]) + ' ha');
+        });
+        var animals = (p.livestock || []).map(function (x) { return x.type + ': ' + Util.int(x.heads); });
+        var has = function (v) { return v !== undefined && v !== null && v !== ''; };
+
+        html += '<div class="detail-parcel"><h4>Parcel ' + (i + 1) + '</h4><dl class="detail-grid">' +
+          item('Parcel Remark', blank ? '' : (p.parcel_status === 'Inactive' ? 'In-active (area not counted)' : p.parcel_status === 'Deceased' ? 'Deceased (area not counted)' : 'Active')) +
+          item('Cadastral Lot No.', p.cadastral_lot_no) +
+          item('Area (ha)', has(p.area_ha) ? Util.ha(p.area_ha) : '') +
+          item('Area per Tax Declaration (ha)', has(p.tax_declared_area_ha) ? Util.ha(p.tax_declared_area_ha) : '') +
+          item('Actual Cultivated Area (ha)', has(p.cultivated_area_ha) ? Util.ha(p.cultivated_area_ha) : '') +
+          item('Farm Location (Zone/Sitio, Brgy., Municipality, Province)', placeText(p.location)) +
+          item('Sectoral Commodity (Rice, Vegetable, Root Crops, Banana, Coconut, Livestock, Fishery)', p.commodity) +
+          (blank || crops.length ? item('Area per Crop (Rice, Vegetable, Root Crops, Banana, Coconut, Fruit Bearing)', crops.join('; ')) : '') +
+          (blank || animals.length ? item('No. of Heads (Cow, Carabao, Sheep, Goat, Swine, Poultry, Etc.)', animals.join('; ')) : '') +
+          (blank || p.fish_size ? item('Size of Fish Cage / Fish Pond', p.fish_size) : '') +
+          item('Farming Status (Owner, Tenant, Leasee, Actual Tiller, Farm Worker)', p.farming_role) +
+          item('Name of Tax Declarant / Owner', p.tax_declarant) +
+          item('Name of Association (if applicable)', p.association) +
+          '</dl></div>';
+      });
+
+      return html;
+    }
+
+    function printForm(farmer) {
+      Util.logEvent(farmer && farmer.id ? { event: 'print_form', farmer_id: farmer.id } : { event: 'print_form' });
+      $('print-form').innerHTML = formHtml(farmer);
+      document.body.classList.add('print-form-mode');
+      window.print();
+    }
+    window.addEventListener('afterprint', function () { document.body.classList.remove('print-form-mode'); });
+
+    /* ---------- farmer search ---------- */
+    function renderPicks(rows) {
+      var list = $('pick-list');
+      list.hidden = false;
+      if (!rows || !rows.length) { list.innerHTML = '<li class="pick-empty">No farmers found.</li>'; return; }
+      list.innerHTML = rows.map(function (r) {
+        return '<li><button type="button" data-id="' + Util.esc(r.id) + '" data-name="' + Util.esc(r.name) + '">' +
+          Util.esc(r.name) + '<small>' + Util.esc(r.rsbsa_no) + (r.barangay ? ' · ' + Util.esc(r.barangay) : '') + '</small></button></li>';
+      }).join('');
+    }
+
+    function search() {
+      var term = $('r-search').value.trim();
+      if (term.length < 2) { $('pick-list').hidden = true; return; }
+
+      var mine = ++searchToken;
+      Api.get(CONFIG.ENDPOINTS.FARMERS + '?' + qs({ q: term, sort: 'name', dir: 'asc', page: 1, per_page: 8 }))
+        .then(function (res) { if (mine === searchToken) renderPicks((res.data || {}).rows); })
+        .catch(function (err) {
+          if (mine !== searchToken) return;
+          if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+          showAlert(err.message);
+        });
+    }
+
+    $('r-search').addEventListener('input', function () {
+      selected = null;
+      $('picked').hidden = true;
+      $('print-farmer').disabled = true;
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(search, 350);
+    });
+
+    $('pick-list').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-id]');
+      if (!b) return;
+      selected = { id: b.getAttribute('data-id'), name: b.getAttribute('data-name') };
+      $('pick-list').hidden = true;
+      $('r-search').value = selected.name;
+      $('picked').textContent = 'Selected: ' + selected.name;
+      $('picked').hidden = false;
+      $('print-farmer').disabled = false;
+    });
+
+    $('print-farmer').addEventListener('click', function () {
+      if (!selected) return;
+      var btn = this;
+      btn.disabled = true;
+      alertBox.hidden = true;
+
+      Api.get(CONFIG.ENDPOINTS.GET_FARMER + '?id=' + encodeURIComponent(selected.id))
+        .then(function (res) { printForm((res.data || {}).farmer); })
+        .catch(function (err) {
+          if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+          showAlert(err.message);
+        })
+        .then(function () { btn.disabled = !selected; });
+    });
+
+    $('print-blank').addEventListener('click', function () { printForm(null); });
+
+    /* ---------- downloads ---------- */
+    Array.prototype.forEach.call(document.querySelectorAll('[data-export]'), function (btn) {
+      btn.addEventListener('click', function () { runDownload(btn); });
+    });
+
+    /* ---------- start ---------- */
+    Auth.requireLogin().then(function (ok) {
+      if (!ok) return;
+      Shell.init('reports');
+
+      // fill the barangay filter from the farmers list endpoint
+      Api.get(CONFIG.ENDPOINTS.FARMERS + '?page=1&per_page=1')
+        .then(function (res) {
+          var list = (res.data || {}).barangays || [];
+          $('r-barangay').innerHTML = '<option value="">All</option>' + list.map(function (b) {
+            return '<option>' + Util.esc(b) + '</option>';
+          }).join('');
+        })
+        .catch(function () { /* the filter stays on "All" */ });
+    });
+  };
+
+  /* ---------- Settings (settings.php): change password, auto-logout, theme ----------
+   * POST api/change_password.php (JSON) { current_password, new_password }
+   *   -> { success, message }     422 { errors: { current_password | new_password } }, 429 after too many wrong attempts
+   */
+  Pages.settings = function () {
+    function $(id) { return document.getElementById(id); }
+    var form = $('pw-form');
+    var alertBox = $('pw-alert');
+    var submitBtn = $('pw-submit');
+    var inputs = { current_password: $('pw-current'), new_password: $('pw-new'), confirm: $('pw-confirm') };
+
+    function showAlert(msg, type) {
+      alertBox.textContent = msg;
+      alertBox.className = 'alert ' + (type || 'error');
+      alertBox.hidden = false;
+    }
+    function setError(name, msg) {
+      var field = inputs[name].closest('.field');
+      field.classList.toggle('invalid', !!msg);
+      field.querySelector('.field-error').textContent = msg || '';
+    }
+    function clearErrors() {
+      Object.keys(inputs).forEach(function (n) { setError(n, ''); });
+      alertBox.hidden = true;
+    }
+    function setLoading(on) {
+      submitBtn.disabled = on;
+      submitBtn.classList.toggle('loading', on);
+      submitBtn.querySelector('.btn-text').textContent = on ? 'Saving...' : 'Change Password';
+    }
+
+    $('pw-show').addEventListener('change', function () {
+      var type = this.checked ? 'text' : 'password';
+      Object.keys(inputs).forEach(function (n) { inputs[n].type = type; });
+    });
+    Object.keys(inputs).forEach(function (n) {
+      inputs[n].addEventListener('input', function () { setError(n, ''); });
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      clearErrors();
+
+      var current = inputs.current_password.value;
+      var next = inputs.new_password.value;
+      var confirm = inputs.confirm.value;
+      var bad = null;
+      function fail(name, msg) { setError(name, msg); if (!bad) bad = inputs[name]; }
+
+      if (!current) fail('current_password', 'Enter your current password.');
+      if (next.length < 8) fail('new_password', 'The new password must be at least 8 characters.');
+      else if (next.length > 72) fail('new_password', 'The new password must be 72 characters or fewer.');
+      else if (next === current) fail('new_password', 'The new password must be different from the current one.');
+      if (next !== confirm) fail('confirm', 'The two new passwords do not match.');
+      if (bad) { bad.focus(); return; }
+
+      setLoading(true);
+      Api.post(CONFIG.ENDPOINTS.CHANGE_PASSWORD, { current_password: current, new_password: next })
+        .then(function (res) {
+          form.reset();
+          Object.keys(inputs).forEach(function (n) { inputs[n].type = 'password'; });
+          showAlert((res.message || 'Password changed.') + ' Use the new password the next time you log in.', 'success');
+        })
+        .catch(function (err) {
+          if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+          var e = err.errors || {};
+          if (e.current_password) setError('current_password', e.current_password);
+          if (e.new_password) setError('new_password', e.new_password);
+          showAlert(err.message);
+          if (e.current_password) { inputs.current_password.value = ''; inputs.current_password.focus(); }
+        })
+        .then(function () { setLoading(false); });
+    });
+
+    Auth.requireLogin().then(function (ok) {
+      if (!ok) return;
+      Shell.init('settings');
+      showUser();
+    });
+
+    /* ----- your name ----- */
+    var nmForm = $('nm-form'), nmInput = $('nm-name'), nmAlert = $('nm-alert'), nmBtn = $('nm-submit');
+    function nmError(msg) {
+      var field = nmInput.closest('.field');
+      field.classList.toggle('invalid', !!msg);
+      field.querySelector('.field-error').textContent = msg || '';
+    }
+    function nmShow(msg, type) { nmAlert.textContent = msg; nmAlert.className = 'alert ' + (type || 'error'); nmAlert.hidden = false; }
+    function showUser() {
+      var u = Auth.getUser() || {};
+      nmInput.value = u.name || '';
+      $('nm-username').textContent = u.username || '-';
+    }
+    nmInput.addEventListener('input', function () { nmError(''); nmAlert.hidden = true; });
+    nmForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      nmError(''); nmAlert.hidden = true;
+      var name = nmInput.value.trim().replace(/\s+/g, ' ');
+      if (!name) { nmError('Enter your name.'); nmInput.focus(); return; }
+      if (name.length > 60) { nmError('The name must be 60 characters or fewer.'); nmInput.focus(); return; }
+      nmBtn.disabled = true; nmBtn.classList.add('loading');
+      Api.post(CONFIG.ENDPOINTS.UPDATE_PROFILE, { name: name })
+        .then(function (res) {
+          var user = (res.data && res.data.user) || {};
+          cacheUser(user);
+          nmInput.value = user.name || name;
+          var side = $('user-name');
+          if (side) side.textContent = user.name || name;
+          nmShow(res.message || 'Your name was changed.', 'success');
+        })
+        .catch(function (err) {
+          if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+          if (err.errors && err.errors.name) nmError(err.errors.name);
+          nmShow(err.message);
+        })
+        .then(function () { nmBtn.disabled = false; nmBtn.classList.remove('loading'); });
+    });
+
+    /* ----- auto-logout ----- */
+    var alOn = $('al-enabled'), alMin = $('al-minutes'), alStatus = $('al-status');
+    function showAutoLogout() {
+      var s = Settings.get();
+      alOn.checked = s.autoLogout;
+      alMin.value = String(s.autoLogoutMinutes);
+      alMin.disabled = !s.autoLogout;
+      alStatus.textContent = s.autoLogout
+        ? 'On: you will be logged out after ' + s.autoLogoutMinutes + ' minute' + (s.autoLogoutMinutes === 1 ? '' : 's') + ' without using the system.'
+        : 'Off: you stay logged in until you log out.';
+    }
+    function logAutoLogout() { var s = Settings.get(); Util.logEvent({ event: 'auto_logout', enabled: s.autoLogout, minutes: s.autoLogoutMinutes }); }
+    alOn.addEventListener('change', function () { Settings.set({ autoLogout: alOn.checked }); showAutoLogout(); logAutoLogout(); });
+    alMin.addEventListener('change', function () { Settings.set({ autoLogoutMinutes: Number(alMin.value) }); showAutoLogout(); logAutoLogout(); });
+    showAutoLogout();
+
+    /* ----- theme ----- */
+    var thStatus = $('th-status');
+    function showTheme() {
+      var t = Settings.get().theme;
+      Array.prototype.forEach.call(document.getElementsByName('theme'), function (r) { r.checked = r.value === t; });
+      thStatus.textContent = t === 'dark' ? 'Dark mode is on.' : 'Default theme is on.';
+    }
+    Array.prototype.forEach.call(document.getElementsByName('theme'), function (r) {
+      r.addEventListener('change', function () { if (r.checked) { Settings.set({ theme: r.value }); showTheme(); Util.logEvent({ event: 'theme', value: r.value }); } });
+    });
+    showTheme();
+
+    /* ----- backup & restore ----- */
+    var bkAlert = $('bk-alert'), bkBody = $('bk-body'), bkNow = $('bk-now');
+    function bkShow(msg, type) { bkAlert.textContent = msg; bkAlert.className = 'alert ' + (type || 'error'); bkAlert.hidden = false; }
+    function bkFail(err) {
+      if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+      bkShow(err.message);
+    }
+    function bkWhen(v) {
+      var d = new Date(String(v).replace(' ', 'T'));
+      return isNaN(d.getTime()) ? String(v || '') : d.toLocaleString('en-PH', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    }
+    var KIND_TEXT = { manual: 'Manual', auto: 'Automatic', 'before-restore': 'Safety copy (before a restore)' };
+
+    function bkRender(data) {
+      var settings = data.settings || {};
+      $('bk-auto').checked = !!settings.auto;
+      $('bk-freq').value = settings.frequency || 'daily';
+      $('bk-keep').value = String(settings.keep || 14);
+      $('bk-freq').disabled = $('bk-keep').disabled = !settings.auto;
+      $('bk-folder').textContent = data.folder ? 'Backups are saved in: ' + data.folder : '';
+      $('bk-limit').textContent = data.upload_limit_mb
+        ? 'This server accepts uploads up to ' + data.upload_limit_mb + ' MB. For a bigger backup, copy the file into the folder above and restore it from the list.'
+        : '';
+      if (!data.can_backup) {
+        bkShow(data.reason || 'Backup is not available.');
+        bkNow.disabled = $('bk-save').disabled = $('bk-restore-file').disabled = true;
+        bkBody.innerHTML = '<tr><td colspan="4" class="muted">Not available.</td></tr>';
+        return;
+      }
+      var rows = data.backups || [];
+      if (!rows.length) { bkBody.innerHTML = '<tr><td colspan="4" class="muted">No backups yet. Click Back Up Now.</td></tr>'; return; }
+      bkBody.innerHTML = rows.map(function (b) {
+        var n = Util.esc(b.name);
+        return '<tr data-name="' + n + '">' +
+          '<td>' + Util.esc(bkWhen(b.created_at)) + '</td>' +
+          '<td><span class="bk-kind">' + Util.esc(KIND_TEXT[b.kind] || b.kind) + '</span></td>' +
+          '<td>' + Util.esc(b.size_text) + '</td>' +
+          '<td><div class="bk-actions">' +
+            '<button type="button" class="btn-outline btn-sm" data-act="download">Download</button>' +
+            '<button type="button" class="btn-outline btn-sm" data-act="restore">Restore</button>' +
+            '<button type="button" class="btn-outline btn-sm" data-act="delete">Delete</button>' +
+          '</div></td></tr>';
+      }).join('');
+    }
+    function bkLoad() {
+      return Api.get(CONFIG.ENDPOINTS.BACKUP_LIST).then(function (res) { bkRender(res.data || {}); }).catch(bkFail);
+    }
+
+    function bkDownload(name) {
+      return Api.download(CONFIG.ENDPOINTS.BACKUP_DOWNLOAD + '?name=' + encodeURIComponent(name), name)
+        .then(function (f) { Api.saveFile(f.blob, f.name); });
+    }
+
+    bkNow.addEventListener('click', function () {
+      bkAlert.hidden = true;
+      bkNow.disabled = true; bkNow.classList.add('loading'); bkNow.querySelector('.btn-text').textContent = 'Backing up...';
+      Api.post(CONFIG.ENDPOINTS.BACKUP_CREATE, {}, 300000)
+        .then(function (res) {
+          var b = res.data.backup;
+          return bkDownload(b.name).then(function () {
+            bkShow('Backup created (' + b.size_text + ') and downloaded. A copy is also kept in the list below.', 'success');
+          });
+        })
+        .then(bkLoad)
+        .catch(bkFail)
+        .then(function () { bkNow.disabled = false; bkNow.classList.remove('loading'); bkNow.querySelector('.btn-text').textContent = 'Back Up Now'; });
+    });
+
+    $('bk-auto').addEventListener('change', function () { $('bk-freq').disabled = $('bk-keep').disabled = !this.checked; });
+    $('bk-save').addEventListener('click', function () {
+      bkAlert.hidden = true;
+      Api.post(CONFIG.ENDPOINTS.BACKUP_SETTINGS, { auto: $('bk-auto').checked, frequency: $('bk-freq').value, keep: Number($('bk-keep').value) })
+        .then(function (res) { bkShow(res.message || 'Saved.', 'success'); return bkLoad(); })
+        .catch(bkFail);
+    });
+
+    /** Asks for the password, then restores. source = { name } or { file }. */
+    function bkRestore(source, label) {
+      var dlg = document.createElement('dialog');
+      dlg.className = 'modal modal-sm';
+      dlg.setAttribute('aria-label', 'Restore backup');
+      dlg.innerHTML =
+        '<header class="modal-head"><h2>Restore this backup?</h2></header>' +
+        '<div class="modal-body">' +
+          '<p class="confirm-lead">' + Util.esc(label) + '</p>' +
+          '<p>This <strong>replaces all current farmers, parcels, history, logs, accounts and uploaded files</strong> with the ones in the backup. A safety copy of the current data is saved first. You will be logged out afterwards.</p>' +
+          '<label class="bk-pw"><span class="lbl">Enter your password to confirm</span><input type="password" id="bk-pw" autocomplete="current-password"></label>' +
+          '<small class="field-error" id="bk-pw-error"></small>' +
+        '</div>' +
+        '<footer class="modal-foot">' +
+          '<button type="button" class="btn-outline" data-r="0">Cancel</button>' +
+          '<button type="button" class="btn-danger" data-r="1">Restore</button>' +
+        '</footer>';
+      document.body.appendChild(dlg);
+      var pw = dlg.querySelector('#bk-pw'), err = dlg.querySelector('#bk-pw-error'), go = dlg.querySelector('[data-r="1"]'), busy = false;
+      function close() { try { dlg.close(); } catch (e) {} dlg.remove(); }
+      function run() {
+        if (busy) return;
+        if (!pw.value) { err.textContent = 'Enter your password.'; pw.focus(); return; }
+        busy = true; go.disabled = true; go.textContent = 'Restoring...'; err.textContent = '';
+        var fd = new FormData();
+        fd.append('password', pw.value);
+        if (source.file) fd.append('file', source.file); else fd.append('name', source.name);
+        Api.request(CONFIG.ENDPOINTS.BACKUP_RESTORE, { method: 'POST', body: fd, timeout: 600000 })
+          .then(function (res) {
+            Flash.set((res.message || 'The backup was restored.') + ' A copy of the previous data was saved as ' + res.data.safety + '.');
+            try { sessionStorage.removeItem(CONFIG.STORAGE_KEYS.USER); } catch (e) {}
+            window.location.replace(CONFIG.LOGIN_URL);
+          })
+          .catch(function (e) {
+            busy = false; go.disabled = false; go.textContent = 'Restore';
+            if (e.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+            err.textContent = (e.errors && e.errors.password) || e.message;
+            pw.focus();
+          });
+      }
+      dlg.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-r]');
+        if (b && b.getAttribute('data-r') === '1') run();
+        else if ((b && !busy) || e.target === dlg && !busy) close();
+      });
+      pw.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); run(); } });
+      dlg.addEventListener('cancel', function (e) { e.preventDefault(); if (!busy) close(); });
+      dlg.showModal();
+      pw.focus();
+    }
+
+    bkBody.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-act]');
+      if (!btn) return;
+      var tr = btn.closest('tr'), name = tr.getAttribute('data-name');
+      bkAlert.hidden = true;
+      if (btn.dataset.act === 'download') {
+        bkDownload(name).catch(bkFail);
+      } else if (btn.dataset.act === 'restore') {
+        bkRestore({ name: name }, name);
+      } else if (btn.dataset.act === 'delete') {
+        Ui.confirm({ title: 'Delete this backup?', lines: [name, 'The backup file will be removed from this computer. This cannot be undone.'], confirmText: 'Delete', danger: true })
+          .then(function (yes) {
+            if (!yes) return;
+            return Api.post(CONFIG.ENDPOINTS.BACKUP_DELETE, { name: name })
+              .then(function (res) { bkShow(res.message || 'Backup deleted.', 'success'); return bkLoad(); })
+              .catch(bkFail);
+          });
+      }
+    });
+
+    $('bk-restore-file').addEventListener('click', function () {
+      var f = $('bk-file').files[0], er = $('bk-file-error');
+      er.textContent = ''; bkAlert.hidden = true;
+      if (!f) { er.textContent = 'Choose a backup file first.'; return; }
+      if (!/\.zip$/i.test(f.name)) { er.textContent = 'The backup must be a .zip file.'; return; }
+      bkRestore({ file: f }, 'File: ' + f.name);
+    });
+
+    Auth.requireLogin().then(function (ok) { if (ok) bkLoad(); });
+  };
+
+  /* ---------- Activity logs (activity.php) ----------
+   * GET api/activity.php?q=&category=&user=&from=&to=&page=1&per_page=25
+   *   -> { data: { rows: [ { created_at, username, name, category, action, details, ip } ], total, categories: [], users: [ { username, name } ] } }
+   * Export: api/export.php?report=activity&format=xlsx|csv  (same filters)
+   */
+  Pages.activity = function () {
+    var state = { page: 1, per_page: 25 };
+    var token = 0, timer = null, filled = false;
+    function $(id) { return document.getElementById(id); }
+    var alertBox = $('act-alert');
+    var body = $('act-body');
+
+    function showAlert(msg, type) { alertBox.textContent = msg; alertBox.className = 'alert ' + (type || 'error'); alertBox.hidden = false; }
+
+    function filters() {
+      return {
+        q: $('a-q').value.trim(), category: $('a-category').value, user: $('a-user').value,
+        from: $('a-from').value, to: $('a-to').value
+      };
+    }
+    function qs(o) {
+      return Object.keys(o).filter(function (k) { return o[k] !== '' && o[k] !== null && o[k] !== undefined; })
+        .map(function (k) { return k + '=' + encodeURIComponent(o[k]); }).join('&');
+    }
+    function stamp(v) {
+      var d = new Date(String(v).replace(' ', 'T'));
+      return isNaN(d.getTime()) ? String(v || '') : d.toLocaleString('en-PH', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit' });
+    }
+
+    function fillOptions(d) {
+      var cat = $('a-category'), usr = $('a-user');
+      if (!filled) {
+        (d.categories || []).forEach(function (c) { cat.insertAdjacentHTML('beforeend', '<option>' + Util.esc(c) + '</option>'); });
+        filled = true;
+      }
+      var keep = usr.value;   // the user list grows as new people appear in the log
+      usr.innerHTML = '<option value="">All</option>' + (d.users || []).map(function (u) {
+        return '<option value="' + Util.esc(u.username) + '">' + Util.esc(u.name ? u.name + ' (' + u.username + ')' : u.username) + '</option>';
+      }).join('');
+      usr.value = keep;
+    }
+
+    function renderRows(rows) {
+      if (!rows || !rows.length) { body.innerHTML = '<tr><td colspan="6" class="empty">No activity found.</td></tr>'; return; }
+      body.innerHTML = rows.map(function (r) {
+        var who = r.name || r.username || '(unknown)';
+        return '<tr>' +
+          '<td>' + Util.esc(stamp(r.created_at)) + '</td>' +
+          '<td class="act-user">' + Util.esc(who) + (r.username && r.name ? '<small>' + Util.esc(r.username) + '</small>' : '') + '</td>' +
+          '<td><span class="badge cat cat-' + Util.esc(r.category) + '">' + Util.esc(r.category) + '</span></td>' +
+          '<td>' + Util.esc(r.action) + '</td>' +
+          '<td class="act-details">' + Util.esc(r.details) + '</td>' +
+          '<td>' + Util.esc(r.ip) + '</td></tr>';
+      }).join('');
+    }
+
+    function renderPagination(total) {
+      var nav = $('pagination');
+      var pages = Math.max(1, Math.ceil(total / state.per_page));
+      if (pages <= 1) { nav.innerHTML = ''; return; }
+      var start = Math.max(1, state.page - 2), end = Math.min(pages, start + 4);
+      start = Math.max(1, end - 4);
+      var html = '<button type="button" data-page="' + (state.page - 1) + '"' + (state.page <= 1 ? ' disabled' : '') + '>Prev</button>';
+      if (start > 1) html += '<button type="button" data-page="1">1</button>' + (start > 2 ? '<span class="muted">...</span>' : '');
+      for (var p = start; p <= end; p++) {
+        html += '<button type="button" data-page="' + p + '"' + (p === state.page ? ' class="current" aria-current="page"' : '') + '>' + p + '</button>';
+      }
+      if (end < pages) html += (end < pages - 1 ? '<span class="muted">...</span>' : '') + '<button type="button" data-page="' + pages + '">' + pages + '</button>';
+      html += '<button type="button" data-page="' + (state.page + 1) + '"' + (state.page >= pages ? ' disabled' : '') + '>Next</button>';
+      nav.innerHTML = html;
+    }
+
+    function rangeOk() {
+      var f = filters(), err = $('a-range-error');
+      err.textContent = '';
+      if (f.from && f.to && f.from > f.to) { err.textContent = 'The end date must be on or after the start date.'; return false; }
+      return true;
+    }
+
+    function load() {
+      if (!rangeOk()) return;
+      var mine = ++token;
+      var q = filters(); q.page = state.page; q.per_page = state.per_page;
+      Api.get(CONFIG.ENDPOINTS.ACTIVITY + '?' + qs(q))
+        .then(function (res) {
+          if (mine !== token) return;
+          var d = res.data || {}, total = Number(d.total) || 0;
+          var pages = Math.max(1, Math.ceil(total / state.per_page));
+          if (state.page > pages) { state.page = pages; load(); return; }
+          alertBox.hidden = true;
+          fillOptions(d);
+          renderRows(d.rows);
+          renderPagination(total);
+          $('result-info').textContent = total ? Util.int(total) + ' activit' + (total > 1 ? 'ies' : 'y') : 'No activity';
+          var f = filters();
+          var bits = [];
+          if (f.category) bits.push('Category: ' + f.category);
+          if (f.user) bits.push('User: ' + f.user);
+          if (f.from) bits.push('From ' + f.from);
+          if (f.to) bits.push('To ' + f.to);
+          if (f.q) bits.push('Search: ' + f.q);
+          $('print-meta').textContent = (bits.length ? bits.join(' | ') + ' · ' : 'All activity · ') + Util.int(total) + ' record(s) · Printed ' + new Date().toLocaleString('en-PH');
+        })
+        .catch(function (err) {
+          if (mine !== token) return;
+          if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+          body.innerHTML = '<tr><td colspan="6" class="empty">Could not load the activity log.</td></tr>';
+          showAlert(err.message);
+        });
+    }
+    function reload() { state.page = 1; load(); }
+
+    ['a-category', 'a-user', 'a-from', 'a-to'].forEach(function (id) { $(id).addEventListener('change', reload); });
+    $('a-q').addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(reload, 350); });
+    $('per-page').addEventListener('change', function () { state.per_page = Number(this.value); reload(); });
+    $('a-clear').addEventListener('click', function () {
+      ['a-q', 'a-category', 'a-user', 'a-from', 'a-to'].forEach(function (id) { $(id).value = ''; });
+      reload();
+    });
+    $('pagination').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-page]');
+      if (!b || b.disabled) return;
+      state.page = Number(b.getAttribute('data-page'));
+      load();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    function exportFile(format, btn) {
+      if (!rangeOk()) return;
+      var text = btn.textContent;
+      btn.disabled = true; btn.textContent = 'Preparing...';
+      var q = filters(); q.report = 'activity'; q.format = format;
+      Api.download(CONFIG.ENDPOINTS.EXPORT + '?' + qs(q), 'rsbsa-activity-log.' + format)
+        .then(function (file) { Api.saveFile(file.blob, file.name); showAlert('Download started: ' + file.name, 'success'); })
+        .catch(function (err) {
+          if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+          showAlert(err.message);
+        })
+        .then(function () { btn.disabled = false; btn.textContent = text; });
+    }
+    $('export-xlsx').addEventListener('click', function () { exportFile('xlsx', this); });
+    $('export-csv').addEventListener('click', function () { exportFile('csv', this); });
+    $('print-btn').addEventListener('click', function () {
+      Util.logEvent({ event: 'print_activity', detail: $('print-meta').textContent });
+      window.print();
+    });
+
+    Auth.requireLogin().then(function (ok) {
+      if (!ok) return;
+      Shell.init('activity');
+      load();
+    });
+  };
+
+  /* ---------- Add new pages above this line ---------- */
 
   /* =====================================================================
    * 5. Boot - pick the page from <body data-page="...">
    * ===================================================================== */
-  window.RSBSA = { CONFIG: CONFIG, Api: Api, Auth: Auth, Pages: Pages };
+  window.RSBSA = { CONFIG: CONFIG, Api: Api, Auth: Auth, Pages: Pages, Settings: Settings };
 
   document.addEventListener('DOMContentLoaded', function () {
     var page = document.body.getAttribute('data-page');

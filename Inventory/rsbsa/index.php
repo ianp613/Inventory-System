@@ -4,19 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Administrator Login | Palo RSBSA</title>
+  <link rel="icon" type="image/png" href="assets/img/palo-seal.png">
   <link rel="stylesheet" href="assets/css/style.css">
+  <script>try{var s=JSON.parse(localStorage.getItem("rsbsa_settings")||"{}");if(s.theme==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
 </head>
 <body class="login-page" data-page="login">
 
   <main class="login-card" aria-labelledby="login-title">
     <header class="login-header">
-      <div class="logo-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22V10"/>
-          <path d="M12 10C12 6 9 4 5 4c0 4 2 6 7 6z"/>
-          <path d="M12 14c0-3.5 2.5-5.5 7-5.5 0 3.5-2 5.5-7 5.5z"/>
-        </svg>
-      </div>
+      <img class="login-seal" src="assets/img/palo-seal.png" alt="Municipality of Palo official seal" width="96" height="96">
       <h1 id="login-title">Palo Registry System for Basic Sectors in Agriculture</h1>
       <p class="subtitle">(RSBSA) &middot; Administrator Login</p>
     </header>
