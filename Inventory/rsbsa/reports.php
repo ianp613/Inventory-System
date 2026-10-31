@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reports &amp; Export | Palo RSBSA</title>
   <link rel="icon" type="image/png" href="assets/img/palo-seal.png">
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css?v=<?= (int) @filemtime(__DIR__ . '/assets/css/style.css') ?>">
   <script>try{var s=JSON.parse(localStorage.getItem("rsbsa_settings")||"{}");if(s.theme==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
 </head>
 <body class="app-page" data-page="reports">
@@ -156,6 +156,6 @@
   <!-- Filled in by the script when printing a registration form -->
   <div id="print-form" class="print-form" aria-hidden="true"></div>
 
-  <script src="assets/js/script.js"></script>
+  <script src="assets/js/script.js?v=<?= (int) @filemtime(__DIR__ . '/assets/js/script.js') ?>"></script>
 </body>
 </html>
