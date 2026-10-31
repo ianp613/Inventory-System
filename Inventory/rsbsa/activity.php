@@ -50,6 +50,7 @@
           <button type="button" class="btn-outline" id="print-btn">Print</button>
           <button type="button" class="btn-outline" id="export-xlsx">Export Excel</button>
           <button type="button" class="btn-solid" id="export-csv">Export CSV</button>
+          <button type="button" class="btn-outline btn-danger-outline" id="clear-btn">Clear Logs</button>
         </div>
       </header>
 
@@ -65,7 +66,7 @@
 
         <p class="intro">
           Everything done in the system is recorded here with the user who did it: logins, farmer records, duplicate flags,
-          documents opened, reports exported, printing and account changes. The log can only be read; it cannot be edited or deleted.
+          documents opened, reports exported, printing and account changes. Entries cannot be edited; they can only be deleted with Clear Logs, which asks for your password and is itself recorded.
         </p>
 
         <section class="panel" aria-label="Activity log">

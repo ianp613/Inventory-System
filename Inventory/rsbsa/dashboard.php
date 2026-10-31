@@ -80,7 +80,11 @@
         <div class="grid-2">
           <!-- By commodity -->
           <section class="panel" aria-labelledby="commodity-title">
-            <h2 id="commodity-title">Area by Sectoral Commodity</h2>
+            <div class="panel-head">
+              <h2 id="commodity-title">Area by Sectoral Commodity</h2>
+              <label class="panel-filter"><span class="lbl">Barangay</span>
+                <select id="commodity-barangay" aria-label="Show commodities for one barangay"><option value="">All</option></select></label>
+            </div>
             <div id="commodity-chart" class="donut-wrap">
               <p class="empty">Loading...</p>
             </div>

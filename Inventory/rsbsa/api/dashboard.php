@@ -17,7 +17,10 @@ $totals = [
 
 // every commodity is listed, even with no records yet
 $byCommodity = array_fill_keys(COMMODITIES, ['farmers' => 0, 'area_ha' => 0.0]);
-foreach (q_all("SELECT commodity, COUNT(DISTINCT farmer_id) AS farmers, COALESCE(SUM(CASE WHEN parcel_status = 'Active' THEN area_ha ELSE 0 END), 0) AS area_ha FROM parcels GROUP BY commodity") as $r) {
+// optional ?barangay= limits the commodity chart to the parcels located in that barangay
+$onlyBarangay = clean_str($_GET['barangay'] ?? '');
+$sqlBrgy = $onlyBarangay !== '' ? ' WHERE LOWER(loc_barangay) = LOWER(?)' : '';
+foreach (q_all("SELECT commodity, COUNT(DISTINCT farmer_id) AS farmers, COALESCE(SUM(CASE WHEN parcel_status = 'Active' THEN area_ha ELSE 0 END), 0) AS area_ha FROM parcels$sqlBrgy GROUP BY commodity", $onlyBarangay !== '' ? [$onlyBarangay] : []) as $r) {
     $byCommodity[$r['commodity']] = ['farmers' => (int) $r['farmers'], 'area_ha' => ha($r['area_ha'])];
 }
 $commodityRows = [];
@@ -74,6 +77,8 @@ ok([
     'totals'         => $totals,
     'backup'         => ['auto' => backup_settings()['auto'], 'last_at' => $lastBackup['created_at'] ?? null, 'supported' => $lastBackup !== null || (backup_is_sqlite() && class_exists('ZipArchive'))],
     'by_commodity'   => $commodityRows,
+    'commodity_barangay' => $onlyBarangay,
+    'barangays'      => array_column(q_all("SELECT DISTINCT loc_barangay AS b FROM parcels WHERE loc_barangay <> '' ORDER BY loc_barangay"), 'b'),
     'by_barangay'    => $byBarangay,
     'by_month'       => array_values($byMonth),
     'recent_updates' => $recent,

@@ -101,6 +101,7 @@
           <div class="report-actions">
             <button type="button" class="btn-solid" data-export data-report="farmers" data-format="xlsx">Download Excel (.xlsx)</button>
             <button type="button" class="btn-outline" data-export data-report="farmers" data-format="csv">Download CSV</button>
+            <button type="button" class="btn-outline" data-preview data-report="farmers">Preview</button>
           </div>
         </section>
 
@@ -124,6 +125,7 @@
             <div class="report-actions">
               <button type="button" class="btn-solid" data-export data-report="duplicates" data-format="xlsx">Download Excel (.xlsx)</button>
               <button type="button" class="btn-outline" data-export data-report="duplicates" data-format="csv">Download CSV</button>
+              <button type="button" class="btn-outline" data-preview data-report="duplicates">Preview</button>
               <a class="btn-outline" href="duplicates.php">Open Duplicate Flags</a>
             </div>
           </section>

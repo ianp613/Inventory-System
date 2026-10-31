@@ -20,7 +20,7 @@ $format = $_GET['format'] ?? 'xlsx';
 if (!in_array($report, ['farmers', 'duplicates', 'parcel_history', 'activity'], true)) {
     fail(400, 'Unknown report.');
 }
-if (!in_array($format, ['xlsx', 'csv'], true)) {
+if (!in_array($format, ['xlsx', 'csv', 'json'], true)) {   // json = the on-screen preview
     fail(400, 'Unknown file format.');
 }
 
@@ -222,6 +222,20 @@ if ($report === 'farmers') {
         ];
     }
     $baseName = 'rsbsa-duplication-report';
+}
+
+if ($format === 'json') {
+    // preview: the same table that would be downloaded, first 100 rows only
+    $limit = 100;
+    log_activity('Report', 'Previewed ' . ['farmers' => 'farmer masterlist', 'duplicates' => 'duplication report', 'parcel_history' => 'parcel history', 'activity' => 'activity log'][$report], $subtitle);
+    ok([
+        'title'     => $title,
+        'subtitle'  => $subtitle,
+        'headers'   => $headers,
+        'rows'      => array_slice($rows, 0, $limit),
+        'total'     => count($rows),
+        'truncated' => count($rows) > $limit,
+    ]);
 }
 
 log_activity('Report', 'Exported ' . ['farmers' => 'farmer masterlist', 'duplicates' => 'duplication report', 'parcel_history' => 'parcel history', 'activity' => 'activity log'][$report],

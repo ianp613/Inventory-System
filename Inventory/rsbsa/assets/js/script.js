@@ -38,6 +38,7 @@
       CHECK_LOT: 'check_lot.php',     // GET -> duplicate / remaining-area check (see Pages.register)
       GET_FARMER: 'get_farmer.php',   // GET ?id=  -> one farmer record for updating
       ACTIVITY: 'activity.php',                 // GET -> activity log (see Pages.activity)
+      ACTIVITY_CLEAR: 'activity_clear.php',     // POST {period, mode, password, preview?} -> counts or deletes log entries
       LOG_EVENT: 'log_event.php',               // POST {event} -> records a browser-only action (printing, settings)
       PARCEL_HISTORY: 'parcel_history.php',     // GET ?parcel_id= -> history of one parcel
       BACKUP_LIST: 'backup_list.php',           // GET -> saved backups + automatic backup settings
@@ -630,17 +631,19 @@
 
     var SVGNS = 'http://www.w3.org/2000/svg';
 
+    var COMMODITY_ORDER = ['Rice', 'Vegetable', 'Root Crops', 'Banana', 'Coconut', 'Livestock', 'Fishery'];   // a commodity keeps its color when the barangay filter changes
+
     /* donut: share of the total active area per commodity (colors c1..c7 from the stylesheet) */
     function renderCommodity(rows) {
       var box = document.getElementById('commodity-chart');
       rows = (rows || []).filter(function (r) { return Number(r.area_ha) > 0 || Number(r.farmers) > 0; });
       var total = 0;
       rows.forEach(function (r) { total += Number(r.area_ha) || 0; });
-      if (!rows.length || total <= 0) { box.innerHTML = '<p class="empty">No data yet.</p>'; return; }
+      if (!rows.length || total <= 0) { box.innerHTML = '<p class="empty">' + (brgySel.value ? 'No active parcels in this barangay yet.' : 'No data yet.') + '</p>'; return; }
 
       var R = 56, C = 2 * Math.PI * R, offset = 0, arcs = '', items = '';
       rows.forEach(function (r, i) {
-        var share = (Number(r.area_ha) || 0) / total, len = share * C, col = 'var(--c' + ((i % 7) + 1) + ')';
+        var share = (Number(r.area_ha) || 0) / total, len = share * C, ci = COMMODITY_ORDER.indexOf(r.commodity), col = 'var(--c' + (((ci < 0 ? i : ci) % 7) + 1) + ')';
         if (len > 0) {
           arcs += '<circle cx="85" cy="85" r="' + R + '" stroke="' + col + '" stroke-dasharray="' + len.toFixed(2) + ' ' + (C - len).toFixed(2) +
             '" stroke-dashoffset="' + (-offset).toFixed(2) + '" transform="rotate(-90 85 85)"><title>' + Util.esc(r.commodity) + ': ' + Util.ha(r.area_ha) + ' ha</title></circle>';
@@ -711,13 +714,23 @@
       }).join('');
     }
 
+    var brgySel = document.getElementById('commodity-barangay');
+    function fillBarangays(list) {
+      var keep = brgySel.value;
+      brgySel.innerHTML = '<option value="">All</option>' + (list || []).map(function (b) {
+        return '<option value="' + Util.esc(b) + '">' + Util.esc(b) + '</option>';
+      }).join('');
+      brgySel.value = keep;
+    }
+
     function load() {
       refreshBtn.disabled = true;
       alertBox.hidden = true;
 
-      Api.get(CONFIG.ENDPOINTS.DASHBOARD)
+      Api.get(CONFIG.ENDPOINTS.DASHBOARD + (brgySel.value ? '?barangay=' + encodeURIComponent(brgySel.value) : ''))
         .then(function (res) {
           var d = res.data || {};
+          fillBarangays(d.barangays);
           renderTotals(d.totals);
           renderCommodity(d.by_commodity);
           renderBarangay(d.by_barangay);
@@ -739,6 +752,7 @@
       if (!ok) return;
       Shell.init('dashboard');
       refreshBtn.addEventListener('click', load);
+      brgySel.addEventListener('change', load);
       load();
     });
   };
@@ -2402,9 +2416,8 @@
     }
 
     /* ---------- downloads ---------- */
-    function runDownload(btn) {
-      var report = btn.getAttribute('data-report');
-      var format = btn.getAttribute('data-format');
+    /* the filters of a report as query parameters, or null (with a message shown) when they are not valid */
+    function reportParams(report, format) {
       var params = { report: report, format: format };
 
       alertBox.hidden = true;
@@ -2421,11 +2434,19 @@
         if (params.updated_from && params.updated_to && params.updated_from > params.updated_to) {
           $('r-to').closest('.field').classList.add('invalid');
           $('r-range-error').textContent = 'The end date must be on or after the start date.';
-          return;
+          return null;
         }
       } else {
         params.status = $('r-dup-status').value;
       }
+      return params;
+    }
+
+    function runDownload(btn) {
+      var report = btn.getAttribute('data-report');
+      var format = btn.getAttribute('data-format');
+      var params = reportParams(report, format);
+      if (!params) return;
 
       var label = btn.textContent;
       btn.disabled = true;
@@ -2436,6 +2457,68 @@
         .then(function (file) {
           Api.saveFile(file.blob, file.name);
           showAlert('Download started: ' + file.name, 'success');
+        })
+        .catch(function (err) {
+          if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+          showAlert(err.message);
+        })
+        .then(function () { btn.disabled = false; btn.textContent = label; });
+    }
+
+    /* ---------- preview ----------
+     * GET api/export.php?report=&format=json&...filters
+     *   -> { data: { title, subtitle, headers: [], rows: [[...]], total, truncated } }   (first 100 rows) */
+    var previewDlg = null;
+    function ensurePreview() {
+      if (previewDlg) return;
+      previewDlg = document.createElement('dialog');
+      previewDlg.className = 'modal preview-modal';
+      previewDlg.setAttribute('aria-label', 'Report preview');
+      previewDlg.innerHTML =
+        '<header class="modal-head"><h2 data-p="title">Preview</h2>' +
+        '<button type="button" class="modal-close" data-p="close" aria-label="Close">&times;</button></header>' +
+        '<div class="modal-body"><p class="muted" data-p="info"></p><div class="table-wrap preview-wrap" data-p="table"></div></div>' +
+        '<footer class="modal-foot">' +
+        '<button type="button" class="btn-solid" data-p="xlsx">Download Excel (.xlsx)</button>' +
+        '<button type="button" class="btn-outline" data-p="csv">Download CSV</button>' +
+        '<span class="spacer"></span>' +
+        '<button type="button" class="btn-outline" data-p="close">Close</button></footer>';
+      document.body.appendChild(previewDlg);
+      previewDlg.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('[data-p]') : null;
+        if (e.target === previewDlg || (t && t.getAttribute('data-p') === 'close')) { previewDlg.close(); return; }
+        if (t && (t.getAttribute('data-p') === 'xlsx' || t.getAttribute('data-p') === 'csv')) {
+          var b = document.querySelector('[data-export][data-report="' + previewDlg._report + '"][data-format="' + t.getAttribute('data-p') + '"]');
+          if (b) { previewDlg.close(); runDownload(b); }
+        }
+      });
+    }
+
+    function runPreview(btn) {
+      var report = btn.getAttribute('data-report');
+      var params = reportParams(report, 'json');
+      if (!params) return;
+      ensurePreview();
+      var label = btn.textContent;
+      btn.disabled = true; btn.textContent = 'Loading...';
+      Api.get(CONFIG.ENDPOINTS.EXPORT + '?' + qs(params))
+        .then(function (res) {
+          var d = res.data || {};
+          previewDlg._report = report;
+          previewDlg.querySelector('[data-p="title"]').textContent = 'Preview: ' + (d.title || 'Report');
+          previewDlg.querySelector('[data-p="info"]').textContent =
+            (d.subtitle || '') + (d.truncated ? ' | showing the first ' + (d.rows || []).length + ' of ' + Util.int(d.total) + ' rows. The download has all of them.' : '');
+          var rows = d.rows || [];
+          previewDlg.querySelector('[data-p="table"]').innerHTML = rows.length
+            ? '<table class="preview-table"><thead><tr><th class="num">#</th>' + (d.headers || []).map(function (h) { return '<th>' + Util.esc(h) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+              rows.map(function (r, i) {
+                return '<tr><td class="num">' + (i + 1) + '</td>' + r.map(function (c) { return '<td' + (typeof c === 'number' ? ' class="num"' : '') + '>' + Util.esc(c === null || c === undefined ? '' : String(c)) + '</td>'; }).join('') + '</tr>';
+              }).join('') + '</tbody></table>'
+            : '<p class="empty">No records match these filters.</p>';
+          previewDlg.querySelector('[data-p="xlsx"]').disabled = !rows.length;
+          previewDlg.querySelector('[data-p="csv"]').disabled = !rows.length;
+          if (!previewDlg.open) previewDlg.showModal();
+          previewDlg.querySelector('.modal-body').scrollTop = 0;
         })
         .catch(function (err) {
           if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
@@ -2598,6 +2681,9 @@
     /* ---------- downloads ---------- */
     Array.prototype.forEach.call(document.querySelectorAll('[data-export]'), function (btn) {
       btn.addEventListener('click', function () { runDownload(btn); });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-preview]'), function (btn) {
+      btn.addEventListener('click', function () { runPreview(btn); });
     });
 
     /* ---------- start ---------- */
@@ -3067,6 +3153,79 @@
       Util.logEvent({ event: 'print_activity', detail: $('print-meta').textContent });
       window.print();
     });
+
+    /* ----- clear logs: pick the entries, see how many, confirm with the password ----- */
+    function openClear() {
+      var dlg = document.createElement('dialog');
+      dlg.className = 'modal clear-modal';
+      dlg.setAttribute('aria-label', 'Clear activity logs');
+      dlg.innerHTML =
+        '<header class="modal-head"><h2>Clear Activity Logs</h2></header>' +
+        '<div class="modal-body">' +
+          '<p class="hint">Deleted log entries cannot be brought back. Use <strong>Export Excel</strong> or <strong>Export CSV</strong> first if you want a copy.</p>' +
+          '<div class="clear-row">' +
+            '<label><span class="lbl">Delete entries</span><select id="cl-mode">' +
+              '<option value="within">made within the last</option><option value="older">older than</option></select></label>' +
+            '<label><span class="lbl">Period</span><select id="cl-period">' +
+              '<option value="24h">24 hours</option><option value="7d">7 days</option><option value="30d">1 month (30 days)</option>' +
+              '<option value="1y">1 year</option><option value="all">All entries</option></select></label>' +
+          '</div>' +
+          '<p class="notice warn" id="cl-count">Counting...</p>' +
+          '<label class="bk-pw"><span class="lbl">Enter your password to confirm</span><input type="password" id="cl-pw" autocomplete="current-password"></label>' +
+          '<small class="field-error" id="cl-pw-error"></small>' +
+        '</div>' +
+        '<footer class="modal-foot"><button type="button" class="btn-outline" data-r="0">Cancel</button>' +
+        '<button type="button" class="btn-danger" data-r="1" disabled>Delete Entries</button></footer>';
+      document.body.appendChild(dlg);
+      var mode = dlg.querySelector('#cl-mode'), per = dlg.querySelector('#cl-period'), cnt = dlg.querySelector('#cl-count'),
+          pw = dlg.querySelector('#cl-pw'), err = dlg.querySelector('#cl-pw-error'), go = dlg.querySelector('[data-r="1"]'), busy = false, tok = 0, n = 0;
+      function close() { try { dlg.close(); } catch (e) {} dlg.remove(); }
+      function sel() { return { period: per.value, mode: mode.value }; }
+
+      function count() {
+        mode.disabled = per.value === 'all';
+        var t = ++tok; go.disabled = true; cnt.textContent = 'Counting...';
+        var body = sel(); body.preview = true;
+        Api.post(CONFIG.ENDPOINTS.ACTIVITY_CLEAR, body).then(function (res) {
+          if (t !== tok) return;
+          n = (res.data || {}).count || 0;
+          cnt.textContent = n === 0 ? 'No log entries match this selection.'
+            : n + (n === 1 ? ' log entry' : ' log entries') + ' will be deleted (' + (res.data.description || '') + ').';
+          go.disabled = n === 0;
+        }).catch(function (e) {
+          if (e.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+          cnt.textContent = e.message;
+        });
+      }
+      function run() {
+        if (busy || go.disabled) return;
+        if (!pw.value) { err.textContent = 'Enter your password.'; pw.focus(); return; }
+        busy = true; go.disabled = true; go.textContent = 'Deleting...'; err.textContent = '';
+        var body = sel(); body.password = pw.value;
+        Api.post(CONFIG.ENDPOINTS.ACTIVITY_CLEAR, body).then(function (res) {
+          close();
+          showAlert(res.message || 'The log entries were deleted.', 'success');
+          state.page = 1; load();
+        }).catch(function (e) {
+          busy = false; go.disabled = false; go.textContent = 'Delete Entries';
+          if (e.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+          err.textContent = (e.errors && e.errors.password) || e.message;
+          pw.focus();
+        });
+      }
+      mode.addEventListener('change', count);
+      per.addEventListener('change', count);
+      dlg.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-r]');
+        if (b && b.getAttribute('data-r') === '1') run();
+        else if ((b || e.target === dlg) && !busy) close();
+      });
+      pw.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); run(); } });
+      dlg.addEventListener('cancel', function (e) { e.preventDefault(); if (!busy) close(); });
+      dlg.showModal();
+      count();
+    }
+    $('clear-btn').addEventListener('click', openClear);
 
     Auth.requireLogin().then(function (ok) {
       if (!ok) return;
