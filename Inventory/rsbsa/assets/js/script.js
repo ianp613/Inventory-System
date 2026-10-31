@@ -458,6 +458,7 @@
       var m = Number(s.autoLogoutMinutes);
       return {
         theme: s.theme === 'dark' ? 'dark' : 'default',
+        chartAnimation: s.chartAnimation !== false,
         autoLogout: s.autoLogout === true,
         autoLogoutMinutes: MINUTES.indexOf(m) !== -1 ? m : 15
       };
@@ -471,7 +472,9 @@
     }
     function applyTheme() {
       var root = document.documentElement;
-      if (get().theme === 'dark') root.setAttribute('data-theme', 'dark'); else root.removeAttribute('data-theme');
+      var g = get();
+      if (g.theme === 'dark') root.setAttribute('data-theme', 'dark'); else root.removeAttribute('data-theme');
+      if (g.chartAnimation) root.removeAttribute('data-charts'); else root.setAttribute('data-charts', 'still');
     }
 
     /* ----- idle watcher (admin pages only) ----- */
@@ -649,7 +652,7 @@
             '" stroke-dashoffset="' + (-offset).toFixed(2) + '" transform="rotate(-90 85 85)"><title>' + Util.esc(r.commodity) + ': ' + Util.ha(r.area_ha) + ' ha</title></circle>';
           offset += len;
         }
-        items += '<li style="animation-delay:' + (0.25 + i * 0.07).toFixed(2) + 's"><span class="sw" style="background:' + col + '"></span><span class="nm">' + Util.esc(r.commodity) + '</span>' +
+        items += '<li style="animation-delay:' + (0.5 + i * 0.12).toFixed(2) + 's"><span class="sw" style="background:' + col + '"></span><span class="nm">' + Util.esc(r.commodity) + '</span>' +
           '<span class="vl">' + Util.ha(r.area_ha) + ' ha &middot; ' + Math.round(share * 100) + '%</span></li>';
       });
       box.innerHTML =
@@ -671,7 +674,7 @@
         return '<div class="bar-row">' +
           '<div class="bar-row-head"><span>' + Util.esc(r.barangay || '(no barangay)') + '</span>' +
           '<span>' + Util.int(r.farmers) + (Number(r.farmers) === 1 ? ' farmer' : ' farmers') + ' &middot; ' + Util.ha(r.area_ha) + ' ha</span></div>' +
-          '<div class="bar-track"><div class="bar-fill alt" data-w="' + pct + '" style="width:0;transition-delay:' + (i * 0.06).toFixed(2) + 's"></div></div></div>';
+          '<div class="bar-track"><div class="bar-fill alt" data-w="' + pct + '" style="width:0;transition-delay:' + (i * 0.09).toFixed(2) + 's"></div></div></div>';
       }).join('');
       setTimeout(function () {
         Array.prototype.forEach.call(box.querySelectorAll('.bar-fill[data-w]'), function (el) { el.style.width = el.getAttribute('data-w') + '%'; });
@@ -697,9 +700,9 @@
       }
       rows.forEach(function (r, i) {
         var x = L + cw * i + (cw - bw) / 2, h = (H - T - B) * (r.farmers / top), cx = L + cw * i + cw / 2;
-        cols += '<rect class="col' + (i === rows.length - 1 ? ' now' : '') + '" style="animation-delay:' + (i * 0.05).toFixed(2) + 's" x="' + x.toFixed(1) + '" y="' + y(r.farmers).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"><title>' +
+        cols += '<rect class="col' + (i === rows.length - 1 ? ' now' : '') + '" style="animation-delay:' + (i * 0.08).toFixed(2) + 's" x="' + x.toFixed(1) + '" y="' + y(r.farmers).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"><title>' +
           Util.esc(r.label) + ': ' + r.farmers + ' registered</title></rect>';
-        if (r.farmers > 0) cols += '<text class="val" style="animation-delay:' + (0.45 + i * 0.05).toFixed(2) + 's" x="' + cx.toFixed(1) + '" y="' + (y(r.farmers) - 5).toFixed(1) + '">' + r.farmers + '</text>';
+        if (r.farmers > 0) cols += '<text class="val" style="animation-delay:' + (0.9 + i * 0.08).toFixed(2) + 's" x="' + cx.toFixed(1) + '" y="' + (y(r.farmers) - 5).toFixed(1) + '">' + r.farmers + '</text>';
         cols += '<text class="mon" x="' + cx.toFixed(1) + '" y="' + (H - 9) + '">' + Util.esc(r.label.replace(/ \d{2}(\d{2})$/, " '$1")) + '</text>';
       });
       box.innerHTML = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Farmers registered per month, last 12 months: ' + sum + ' in total">' + g + cols + '</svg>';
@@ -2852,6 +2855,13 @@
       r.addEventListener('change', function () { if (r.checked) { Settings.set({ theme: r.value }); showTheme(); Util.logEvent({ event: 'theme', value: r.value }); } });
     });
     showTheme();
+
+    var chartAnim = $('th-anim');
+    chartAnim.checked = Settings.get().chartAnimation;
+    chartAnim.addEventListener('change', function () {
+      Settings.set({ chartAnimation: chartAnim.checked });
+      Util.logEvent({ event: 'chart_animation', value: chartAnim.checked ? 'on' : 'off' });
+    });
 
     /* ----- backup & restore ----- */
     var bkAlert = $('bk-alert'), bkBody = $('bk-body'), bkNow = $('bk-now');

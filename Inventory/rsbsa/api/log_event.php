@@ -34,6 +34,9 @@ switch ($event) {
     case 'theme':
         log_activity('Account', 'Changed theme', ($in['value'] ?? '') === 'dark' ? 'Dark mode.' : 'Default theme.');
         break;
+    case 'chart_animation':
+        log_activity('Account', 'Changed chart animation', ($in['value'] ?? '') === 'off' ? 'Off.' : 'On.');
+        break;
     case 'auto_logout':
         $on = !empty($in['enabled']);
         log_activity('Account', 'Changed auto-logout', $on ? 'On, after ' . (int) ($in['minutes'] ?? 0) . ' minute(s).' : 'Off.');

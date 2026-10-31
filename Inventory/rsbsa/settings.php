@@ -131,6 +131,7 @@
             <label class="theme-opt"><input type="radio" name="theme" value="dark"><span><strong>Dark mode</strong><small>Easier on the eyes in low light</small></span></label>
           </div>
           <p class="hint" id="th-status" role="status"></p>
+          <label class="check-line"><input type="checkbox" id="th-anim"> Animate the dashboard charts when the page opens</label>
         </section>
 
         <section class="panel account-card backup-card" aria-labelledby="bk-title">
