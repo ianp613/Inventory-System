@@ -91,8 +91,15 @@
                   <option value="">All</option>
                 </select></label>
             </div>
+            <div class="field">
+              <label><span class="lbl">Duplicate Flag</span>
+                <select id="f-flag">
+                  <option value="">All</option>
+                  <option value="open">Duplicate (open)</option>
+                  <option value="resolved">Resolved</option>
+                </select></label>
+            </div>
             <div class="filter-actions">
-              <label class="checkbox"><input type="checkbox" id="f-flagged"><span>Duplicates only</span></label>
               <button type="button" class="btn-outline btn-sm" id="f-reset">Reset</button>
             </div>
           </form>

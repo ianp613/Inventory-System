@@ -106,9 +106,11 @@ browser keeps its own choice. The server also ends sessions after 120 idle minut
   failed ones), logouts and auto-logouts, farmers registered / updated / deleted / opened, parcels added or removed
   and which fields changed, duplicate flags resolved or reopened, tax declarations / supporting documents / valid IDs
   opened, reports exported, forms and lists printed, and account or settings changes. Search and filter by
-  category, user and dates; print or export to Excel / CSV. The system has no way to edit or delete log rows, and
-  passwords are never written to it. Old rows keep the user's name as it was at the time. To archive or trim the
-  log, work on the database file directly (table `activity_log`) after making a backup.
+  category, user and dates; print or export to Excel / CSV. Log rows cannot be edited, and passwords are
+  never written to them. Old rows keep the user's name as it was at the time. **Clear Logs** deletes entries from the
+  last 24 hours / 7 days / 1 month / 1 year, entries older than those, or everything; it shows how many entries will be
+  deleted and asks for your password. The clearing itself (who, how many, which period) and wrong-password attempts are
+  recorded. Export the log first if you want to keep a copy.
 - Name of Association is saved per parcel.
 - Civil status: Single, Married, Widowed, Separated, Annulled. Spouse duplicate rules apply only to Married.
   Single hides the spouse section.

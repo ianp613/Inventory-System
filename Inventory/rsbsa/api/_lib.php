@@ -147,6 +147,7 @@ function load_farmer(int $id): ?array
             'association'          => $p['association'],
             'parcel_status'        => $p['parcel_status'],
             'duplicate_flag'       => (bool) $p['duplicate_flag'],
+            'flag_status'          => $p['duplicate_flag'] ? (q_val('SELECT status FROM duplicate_flags WHERE parcel_id = ? ORDER BY id DESC LIMIT 1', [$pid]) ?: 'open') : null,
             'tax_file_name'        => $p['tax_file_name'],
             'tax_file_url'         => $p['tax_file_path'] ? file_url('tax', $pid) : null,
         ];

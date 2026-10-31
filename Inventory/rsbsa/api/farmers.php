@@ -1,6 +1,6 @@
 <?php
 /**
- * GET ?q=&commodity=&role=&barangay=&flagged=0|1&sort=&dir=asc|desc&page=1&per_page=25
+ * GET ?q=&commodity=&role=&barangay=&flag=open|resolved&sort=&dir=asc|desc&page=1&per_page=25
  * -> { data: { rows, total, page, per_page, barangays } }
  */
 require __DIR__ . '/_bootstrap.php';
@@ -13,7 +13,10 @@ $q         = clean_str($_GET['q'] ?? '');
 $commodity = clean_str($_GET['commodity'] ?? '');
 $role      = clean_str($_GET['role'] ?? '');
 $barangay  = clean_str($_GET['barangay'] ?? '');
-$flagged   = ($_GET['flagged'] ?? '0') === '1';
+$flagFilter = clean_str($_GET['flag'] ?? '');            // '' = everyone, 'open', 'resolved'
+if (($_GET['flagged'] ?? '0') === '1' && $flagFilter === '') {
+    $flagFilter = 'open';                                // older callers: flagged=1 means open flags
+}
 $dir       = strtolower((string) ($_GET['dir'] ?? 'asc')) === 'desc' ? 'DESC' : 'ASC';
 [$page, $perPage] = page_params();
 
@@ -52,8 +55,9 @@ if (in_array($role, FARMING_ROLES, true)) {
     $parcelConds[] = 'p.farming_role = ?';
     $parcelArgs[] = $role;
 }
-if ($flagged) {
-    $parcelConds[] = 'p.duplicate_flag = 1';
+if ($flagFilter === 'open' || $flagFilter === 'resolved') {
+    $parcelConds[] = 'EXISTS (SELECT 1 FROM duplicate_flags d WHERE d.parcel_id = p.id AND d.status = ?)';
+    $parcelArgs[] = $flagFilter;
 }
 if ($parcelConds) {
     $where[] = 'EXISTS (SELECT 1 FROM parcels p WHERE p.farmer_id = f.id AND ' . implode(' AND ', $parcelConds) . ')';
@@ -74,7 +78,8 @@ $rows = q_all(
     "SELECT f.id, f.rsbsa_no, f.surname, f.first_name, f.middle_name, f.suffix, f.addr_barangay, f.updated_at,
             (SELECT COUNT(*) FROM parcels p WHERE p.farmer_id = f.id) AS parcel_count,
             (SELECT COALESCE(SUM(p.area_ha), 0) FROM parcels p WHERE p.farmer_id = f.id AND p.parcel_status = 'Active') AS total_area_ha,
-            (SELECT COUNT(*) FROM parcels p WHERE p.farmer_id = f.id AND p.duplicate_flag = 1) AS flagged_parcels
+            (SELECT COUNT(*) FROM duplicate_flags d WHERE d.farmer_id = f.id AND d.status = 'open') AS open_flags,
+            (SELECT COUNT(*) FROM duplicate_flags d WHERE d.farmer_id = f.id AND d.status = 'resolved') AS resolved_flags
        FROM farmers f
        $whereSql
       ORDER BY $orderBy
@@ -100,7 +105,8 @@ $out = array_map(fn($r) => [
     'parcels'       => (int) $r['parcel_count'],
     'total_area_ha' => ha($r['total_area_ha']),
     'date_updated'  => $r['updated_at'],
-    'flagged'       => (int) $r['flagged_parcels'] > 0,
+    'flagged'       => (int) $r['open_flags'] > 0,                       // an open duplicate flag
+    'flag_state'    => (int) $r['open_flags'] > 0 ? 'open' : ((int) $r['resolved_flags'] > 0 ? 'resolved' : null),
 ], $rows);
 
 // options for the barangay filter: residential and farm barangays

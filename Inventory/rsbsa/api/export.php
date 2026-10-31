@@ -81,7 +81,8 @@ if ($report === 'farmers') {
     $data = q_all(
         'SELECT f.*, p.id AS parcel_id, p.cadastral_lot_no, p.area_ha, p.tax_declared_area_ha, p.cultivated_area_ha,
                 p.loc_zone_sitio, p.loc_barangay, p.loc_municipality, p.loc_province, p.commodity, p.fish_size,
-                p.farming_role, p.tax_declarant, p.association AS parcel_association, p.parcel_status, p.duplicate_flag
+                p.farming_role, p.tax_declarant, p.association AS parcel_association, p.parcel_status, p.duplicate_flag,
+                (SELECT d.status FROM duplicate_flags d WHERE d.parcel_id = p.id ORDER BY d.id DESC LIMIT 1) AS flag_status
            FROM farmers f
            LEFT JOIN parcels p ON p.farmer_id = f.id
           ' . ($where ? 'WHERE ' . implode(' AND ', $where) : '') . '
@@ -142,7 +143,7 @@ if ($report === 'farmers') {
         foreach (CROP_KEYS as $key) {
             $row[] = $hasCrops ? ($crops[$pid][$key] ?? 0.0) : '';
         }
-        array_push($row, $pid ? $r['farming_role'] : '', $pid ? $r['tax_declarant'] : '', $pid ? $r['parcel_association'] : '', $pid ? $r['parcel_status'] : '', $pid && $r['duplicate_flag'] ? 'Yes' : '', $r['updated_at']);
+        array_push($row, $pid ? $r['farming_role'] : '', $pid ? $r['tax_declarant'] : '', $pid ? $r['parcel_association'] : '', $pid ? $r['parcel_status'] : '', $pid && $r['duplicate_flag'] ? (($r['flag_status'] ?? 'open') === 'resolved' ? 'Resolved' : 'Yes') : '', $r['updated_at']);
         $rows[] = $row;
     }
     $baseName = 'rsbsa-farmer-masterlist';

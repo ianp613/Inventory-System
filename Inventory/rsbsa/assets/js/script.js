@@ -649,12 +649,13 @@
             '" stroke-dashoffset="' + (-offset).toFixed(2) + '" transform="rotate(-90 85 85)"><title>' + Util.esc(r.commodity) + ': ' + Util.ha(r.area_ha) + ' ha</title></circle>';
           offset += len;
         }
-        items += '<li><span class="sw" style="background:' + col + '"></span><span class="nm">' + Util.esc(r.commodity) + '</span>' +
+        items += '<li style="animation-delay:' + (0.25 + i * 0.07).toFixed(2) + 's"><span class="sw" style="background:' + col + '"></span><span class="nm">' + Util.esc(r.commodity) + '</span>' +
           '<span class="vl">' + Util.ha(r.area_ha) + ' ha &middot; ' + Math.round(share * 100) + '%</span></li>';
       });
       box.innerHTML =
         '<svg class="donut" viewBox="0 0 170 170" role="img" aria-label="Share of total active area by commodity">' +
-        '<circle class="donut-bg" cx="85" cy="85" r="' + R + '"/>' + arcs +
+        '<defs><mask id="donut-sweep" maskUnits="userSpaceOnUse" x="0" y="0" width="170" height="170"><circle class="sweep" cx="85" cy="85" r="' + R + '" pathLength="100" transform="rotate(-90 85 85)"/></mask></defs>' +
+        '<circle class="donut-bg" cx="85" cy="85" r="' + R + '"/><g mask="url(#donut-sweep)">' + arcs + '</g>' +
         '<text class="donut-num" x="85" y="86">' + Util.ha(total) + '</text><text class="donut-cap" x="85" y="102">hectares</text></svg>' +
         '<ul class="legend">' + items + '</ul>';
     }
@@ -665,13 +666,16 @@
       if (!rows || !rows.length) { box.innerHTML = '<p class="empty">No data yet.</p>'; return; }
       var max = 0;
       rows.forEach(function (r) { max = Math.max(max, Number(r.farmers) || 0); });
-      box.innerHTML = rows.map(function (r) {
+      box.innerHTML = rows.map(function (r, i) {
         var pct = max > 0 ? Math.round((Number(r.farmers) || 0) / max * 100) : 0;
         return '<div class="bar-row">' +
           '<div class="bar-row-head"><span>' + Util.esc(r.barangay || '(no barangay)') + '</span>' +
           '<span>' + Util.int(r.farmers) + (Number(r.farmers) === 1 ? ' farmer' : ' farmers') + ' &middot; ' + Util.ha(r.area_ha) + ' ha</span></div>' +
-          '<div class="bar-track"><div class="bar-fill alt" style="width:' + pct + '%"></div></div></div>';
+          '<div class="bar-track"><div class="bar-fill alt" data-w="' + pct + '" style="width:0;transition-delay:' + (i * 0.06).toFixed(2) + 's"></div></div></div>';
       }).join('');
+      setTimeout(function () {
+        Array.prototype.forEach.call(box.querySelectorAll('.bar-fill[data-w]'), function (el) { el.style.width = el.getAttribute('data-w') + '%'; });
+      }, 40);
     }
 
     /* columns: registrations per month, last 12 months (current month in amber) */
@@ -693,9 +697,9 @@
       }
       rows.forEach(function (r, i) {
         var x = L + cw * i + (cw - bw) / 2, h = (H - T - B) * (r.farmers / top), cx = L + cw * i + cw / 2;
-        cols += '<rect class="col' + (i === rows.length - 1 ? ' now' : '') + '" x="' + x.toFixed(1) + '" y="' + y(r.farmers).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"><title>' +
+        cols += '<rect class="col' + (i === rows.length - 1 ? ' now' : '') + '" style="animation-delay:' + (i * 0.05).toFixed(2) + 's" x="' + x.toFixed(1) + '" y="' + y(r.farmers).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"><title>' +
           Util.esc(r.label) + ': ' + r.farmers + ' registered</title></rect>';
-        if (r.farmers > 0) cols += '<text class="val" x="' + cx.toFixed(1) + '" y="' + (y(r.farmers) - 5).toFixed(1) + '">' + r.farmers + '</text>';
+        if (r.farmers > 0) cols += '<text class="val" style="animation-delay:' + (0.45 + i * 0.05).toFixed(2) + 's" x="' + cx.toFixed(1) + '" y="' + (y(r.farmers) - 5).toFixed(1) + '">' + r.farmers + '</text>';
         cols += '<text class="mon" x="' + cx.toFixed(1) + '" y="' + (H - 9) + '">' + Util.esc(r.label.replace(/ \d{2}(\d{2})$/, " '$1")) + '</text>';
       });
       box.innerHTML = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Farmers registered per month, last 12 months: ' + sum + ' in total">' + g + cols + '</svg>';
@@ -1732,12 +1736,12 @@
   };
 
   /* ---------- Farmers list (farmers.php) ----------
-   * GET api/farmers.php?q=&commodity=&role=&barangay=&flagged=0|1&sort=&dir=asc|desc&page=1&per_page=25
+   * GET api/farmers.php?q=&commodity=&role=&barangay=&flag=open|resolved&sort=&dir=asc|desc&page=1&per_page=25
    *   sort is one of: rsbsa_no, name, total_area_ha, date_updated
    *   q should match name, RSBSA no., cadastral lot no. and barangay (farm or residential)
    *   -> { success, data: {
    *          rows: [ { id, rsbsa_no, name, barangay, commodities: ["Rice"], parcels: 2,
-   *                    total_area_ha: 4.85, date_updated: "YYYY-MM-DD HH:MM:SS", flagged: false } ],
+   *                    total_area_ha: 4.85, date_updated: "YYYY-MM-DD HH:MM:SS", flagged: false, flag_state: null | "open" | "resolved" } ],
    *          total: 120, page: 1, per_page: 25,
    *          barangays: ["Capirawan", "Libertad"]      // options for the barangay filter
    *        } }
@@ -1772,7 +1776,7 @@
         commodity: $('f-commodity').value,
         role: $('f-role').value,
         barangay: $('f-barangay').value,
-        flagged: $('f-flagged').checked ? 1 : 0,
+        flag: $('f-flag').value,
         sort: state.sort,
         dir: state.dir,
         page: state.page,
@@ -1810,7 +1814,7 @@
         return '<tr>' +
           '<td>' + Util.esc(r.rsbsa_no) + '</td>' +
           '<td><button type="button" class="link-btn name-link" data-view="' + Util.esc(r.id) + '">' + Util.esc(r.name) + '</button>' +
-            (r.flagged ? '<span class="badge">Duplicate</span>' : '') + '</td>' +
+            (r.flag_state === 'open' ? '<span class="badge">Duplicate</span>' : (r.flag_state === 'resolved' ? '<span class="badge ok">Resolved</span>' : '')) + '</td>' +
           '<td>' + Util.esc(r.barangay) + '</td>' +
           '<td>' + tags + '</td>' +
           '<td class="num">' + Util.int(r.parcels) + '</td>' +
@@ -1949,7 +1953,7 @@
         html += '<div class="detail-parcel"><h4>Parcel ' + (i + 1) +
           (p.id ? ' <button type="button" class="link-btn" data-history="' + Util.esc(p.id) + '">History</button>' : '') +
           (p.parcel_status && p.parcel_status !== 'Active' ? '<span class="badge off">' + (p.parcel_status === 'Inactive' ? 'In-active' : 'Deceased') + '</span>' : '') +
-          (p.duplicate_flag ? '<span class="badge">Duplicate</span>' : '') + '</h4><dl class="detail-grid">' +
+          (p.duplicate_flag ? (p.flag_status === 'resolved' ? '<span class="badge ok">Resolved</span>' : '<span class="badge">Duplicate</span>') : '') + '</h4><dl class="detail-grid">' +
           row('Parcel Remark', p.parcel_status === 'Inactive' ? 'In-active (area not counted)' : p.parcel_status === 'Deceased' ? 'Deceased (area not counted)' : 'Active') +
           row('Cadastral Lot No.', p.cadastral_lot_no) +
           row('Area (ha)', Util.ha(p.area_ha)) +
@@ -2000,7 +2004,7 @@
       clearTimeout(searchTimer);
       searchTimer = setTimeout(reload, 350);
     });
-    ['f-commodity', 'f-role', 'f-barangay', 'f-flagged'].forEach(function (id) {
+    ['f-commodity', 'f-role', 'f-barangay', 'f-flag'].forEach(function (id) {
       $(id).addEventListener('change', reload);
     });
     $('filter-form').addEventListener('submit', function (e) { e.preventDefault(); reload(); });
