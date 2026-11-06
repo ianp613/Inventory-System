@@ -299,7 +299,7 @@ foreach ($parcelsIn as $i => $p) {
         }
     } elseif ($n['commodity'] === 'Fishery') {
         $n['fish'] = $text($p['fish_size'] ?? '', "$k.fish_size", 60, true, 'Size of fish cage / pond');
-    } elseif ($n['commodity'] === 'Livestock') {
+    } elseif ($n['commodity'] === 'Animals') {
         $n['animals'] = [];
         $any = false;
         foreach (array_values(is_array($p['livestock'] ?? null) ? $p['livestock'] : []) as $a) {

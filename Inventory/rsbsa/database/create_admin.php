@@ -27,6 +27,11 @@ if (mb_strlen($password) < 8) {
     exit(1);
 }
 
+if (strcasecmp($username, SUPER_USERNAME) === 0) {
+    fwrite(STDERR, "The username \"" . SUPER_USERNAME . "\" is reserved for the super user. Choose another username.\n");
+    exit(1);
+}
+
 $hash = password_hash($password, PASSWORD_DEFAULT);
 $existing = q_one('SELECT id FROM admins WHERE LOWER(username) = LOWER(?)', [$username]);
 

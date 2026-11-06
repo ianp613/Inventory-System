@@ -8,7 +8,27 @@ CREATE TABLE IF NOT EXISTS admins (
   password_hash TEXT NOT NULL,
   name          TEXT NOT NULL DEFAULT 'Administrator',
   last_login    TEXT,
-  created_at    TEXT NOT NULL
+  created_at    TEXT NOT NULL,
+  is_active     INTEGER NOT NULL DEFAULT 1
+);
+
+-- Super user: manages the administrator accounts. One row; the default account is created by the program on first login.
+CREATE TABLE IF NOT EXISTS super_user (
+  id                  INTEGER PRIMARY KEY,
+  username            TEXT NOT NULL,
+  password_hash       TEXT NOT NULL,
+  password_changed_at TEXT,
+  last_login          TEXT
+);
+
+-- Super user log: what the super user did (only the super user can read it)
+CREATE TABLE IF NOT EXISTS super_log (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_at TEXT NOT NULL,
+  action     TEXT NOT NULL,
+  target     TEXT NOT NULL DEFAULT '',
+  details    TEXT NOT NULL DEFAULT '',
+  ip_address TEXT NOT NULL DEFAULT ''
 );
 
 -- Failed login attempts (rate limiting)
@@ -72,7 +92,7 @@ CREATE TABLE IF NOT EXISTS parcels (
   loc_barangay         TEXT NOT NULL,
   loc_municipality     TEXT NOT NULL,
   loc_province         TEXT NOT NULL,
-  commodity            TEXT NOT NULL CHECK (commodity IN ('Rice','Vegetable','Root Crops','Banana','Coconut','Livestock','Fishery')),
+  commodity            TEXT NOT NULL CHECK (commodity IN ('Rice','Vegetable','Root Crops','Banana','Coconut','Animals','Fishery')),
   fish_size            TEXT,
   farming_role         TEXT NOT NULL CHECK (farming_role IN ('Owner','Tenant','Leasee','Actual Tiller','Farm Worker')),
   tax_declarant        TEXT NOT NULL,
@@ -96,7 +116,7 @@ CREATE TABLE IF NOT EXISTS crop_areas (
   PRIMARY KEY (parcel_id, crop_key)
 );
 
--- No. of heads (Cow, Carabao, Sheep, Goat, Swine, Poultry, etc.)
+-- No. of heads (Carabao, Cattle, Swine, Goat, Sheep, Poultry, Dog)
 CREATE TABLE IF NOT EXISTS parcel_livestock (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   parcel_id   INTEGER NOT NULL REFERENCES parcels (id) ON DELETE CASCADE,

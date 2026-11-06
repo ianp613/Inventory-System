@@ -13,8 +13,29 @@ CREATE TABLE IF NOT EXISTS admins (
   name          VARCHAR(120) NOT NULL DEFAULT 'Administrator',
   last_login    DATETIME NULL,
   created_at    DATETIME NOT NULL,
+  is_active     TINYINT(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (id),
   UNIQUE KEY uq_admins_username (username)
+) ENGINE=InnoDB;
+
+-- Super user: manages the administrator accounts. One row; the default account is created by the program on first login.
+CREATE TABLE IF NOT EXISTS super_user (
+  id                  TINYINT UNSIGNED NOT NULL PRIMARY KEY,
+  username            VARCHAR(60)  NOT NULL,
+  password_hash       VARCHAR(255) NOT NULL,
+  password_changed_at DATETIME NULL,
+  last_login          DATETIME NULL
+) ENGINE=InnoDB;
+
+-- Super user log: what the super user did (only the super user can read it)
+CREATE TABLE IF NOT EXISTS super_log (
+  id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  created_at DATETIME NOT NULL,
+  action     VARCHAR(80)  NOT NULL,
+  target     VARCHAR(120) NOT NULL DEFAULT '',
+  details    VARCHAR(2000) NOT NULL DEFAULT '',
+  ip_address VARCHAR(64)  NOT NULL DEFAULT '',
+  KEY idx_super_log_created (created_at)
 ) ENGINE=InnoDB;
 
 -- Failed login attempts (rate limiting)
@@ -83,7 +104,7 @@ CREATE TABLE IF NOT EXISTS parcels (
   loc_barangay         VARCHAR(80) NOT NULL,
   loc_municipality     VARCHAR(80) NOT NULL,
   loc_province         VARCHAR(80) NOT NULL,
-  commodity            ENUM('Rice','Vegetable','Root Crops','Banana','Coconut','Livestock','Fishery') NOT NULL,
+  commodity            ENUM('Rice','Vegetable','Root Crops','Banana','Coconut','Animals','Fishery') NOT NULL,
   fish_size            VARCHAR(60) NULL,
   farming_role         ENUM('Owner','Tenant','Leasee','Actual Tiller','Farm Worker') NOT NULL,
   tax_declarant        VARCHAR(120) NOT NULL,

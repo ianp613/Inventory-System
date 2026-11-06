@@ -70,7 +70,7 @@
                   <option>Root Crops</option>
                   <option>Banana</option>
                   <option>Coconut</option>
-                  <option>Livestock</option>
+                  <option>Animals</option>
                   <option>Fishery</option>
                 </select></label>
             </div>

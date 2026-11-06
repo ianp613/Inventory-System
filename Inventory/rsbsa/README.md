@@ -83,6 +83,22 @@ browser keeps its own choice. The server also ends sessions after 120 idle minut
 
       php database/setup.php admin "NewPassword" "Full Name"
 
+### Super user
+
+A separate account that manages the administrator accounts. It uses the same login page.
+
+- Username: `rsbsa_super_user` (fixed, it cannot be changed). Default password: `RSBSA*2026!`.
+  **Change the default password** after the first login (My Account > Change your password).
+- It can add administrator accounts, change the name or username of an account, and reset an
+  administrator's password (it cannot open farmer records, reports or settings), and change its own password.
+- It can disable an administrator account (it cannot log in, and an open session ends with the next click)
+  and enable it again. Records of a disabled account are kept.
+- Nothing done as the super user is written to the administrators' Activity Logs. It has its own
+  **Activity Log** page (logins, failed logins, added/edited/disabled accounts, password resets) that only the
+  super user can read. That log and the super user password are not copied into backups or replaced by a restore.
+- If the super user password is lost, delete the one row of the `super_user` table
+  (`sqlite3 database/rsbsa.sqlite "DELETE FROM super_user"`); the default password is created again at the next login.
+
 ## Deleting
 
 - **Delete a farmer:** the Delete button on the Farmers list, or Delete Farmer on the Update page.

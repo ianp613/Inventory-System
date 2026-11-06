@@ -1,15 +1,17 @@
 <?php
 /**
- * GET ?report=farmers|duplicates|parcel_history&format=xlsx|csv&...filters
+ * GET ?report=farmers|duplicates|parcel_history|animals&format=xlsx|csv&...filters
  *   farmers    : commodity, role, barangay, updated_from (YYYY-MM-DD), updated_to (YYYY-MM-DD)
  *   duplicates : status = all | open | resolved
  *   parcel_history : parcel_id (history of one parcel)
+ *   animals    : barangay (empty = every barangay, one sheet each), as_of (YYYY-MM-DD) - the Animal Population Monitoring Form
  *   activity   : q, category, user, from, to (same filters as the Activity Logs page)
  * Sends the file as a download. Errors are JSON (the page shows the message).
  */
 require __DIR__ . '/_bootstrap.php';
 require __DIR__ . '/_lib.php';
 require __DIR__ . '/_xlsx.php';
+require __DIR__ . '/_animal_form.php';
 
 require_get();
 require_auth();
@@ -17,7 +19,7 @@ set_time_limit(120);
 
 $report = $_GET['report'] ?? '';
 $format = $_GET['format'] ?? 'xlsx';
-if (!in_array($report, ['farmers', 'duplicates', 'parcel_history', 'activity'], true)) {
+if (!in_array($report, ['farmers', 'duplicates', 'parcel_history', 'activity', 'animals'], true)) {
     fail(400, 'Unknown report.');
 }
 if (!in_array($format, ['xlsx', 'csv', 'json'], true)) {   // json = the on-screen preview
@@ -147,6 +149,40 @@ if ($report === 'farmers') {
         $rows[] = $row;
     }
     $baseName = 'rsbsa-farmer-masterlist';
+} elseif ($report === 'animals') {
+    $barangay = clean_str($_GET['barangay'] ?? '');
+    $asOfRaw = clean_str($_GET['as_of'] ?? '');
+    if ($asOfRaw !== '' && !valid_date($asOfRaw)) {
+        fail(422, 'Enter a valid "as of" date.');
+    }
+    $asOfDate = $asOfRaw !== '' ? DateTime::createFromFormat('!Y-m-d', $asOfRaw) : new DateTime('today');
+    $asOf = $asOfDate->format('F j, Y');
+
+    $blankForm = ($_GET['blank'] ?? '') === '1';
+    if ($blankForm) {
+        $asOf = $asOfRaw !== '' ? $asOf : '______________ ' . $asOfDate->format('Y');
+        $barangay = '';
+    }
+    $pop = $blankForm ? ['groups' => [], 'other_used' => false] : animal_population($barangay);
+    $title = 'Animal Population';
+    $headers = array_merge(['Municipality', 'Barangay', 'Name of Farmer/Owner'], array_column(ANIMAL_FORM_COLUMNS, 0), $pop['other_used'] ? ['Not specified (older entries)'] : []);
+    $widths = array_merge([16, 18, 30], array_fill(0, count(ANIMAL_FORM_COLUMNS), 14), $pop['other_used'] ? [28] : []);
+    $rows = [];
+    foreach ($pop['groups'] as $g) {
+        foreach ($g['farmers'] as $f) {
+            $row = [mb_strtoupper($g['municipality']), mb_strtoupper($g['barangay']), $f['name']];
+            foreach (ANIMAL_FORM_COLUMNS as [$type]) {
+                $n = $f['counts'][$type] ?? 0;
+                $row[] = $n > 0 ? $n : '';
+            }
+            if ($pop['other_used']) {
+                $row[] = $f['other'];
+            }
+            $rows[] = $row;
+        }
+    }
+    $subtitle = $blankForm ? 'Blank form' : 'As of ' . $asOf . ' | ' . ($barangay !== '' ? "Barangay: $barangay" : 'All barangays') . ' | ' . count($rows) . ' farmer(s) with animals | Active parcels only';
+    $baseName = $blankForm ? 'rsbsa-animal-population-blank-form' : 'rsbsa-animal-population';
 } elseif ($report === 'activity') {
     [$whereSql, $args, $filters] = activity_filters();
     $data = q_all("SELECT * FROM activity_log $whereSql ORDER BY created_at DESC, id DESC", $args);
@@ -228,7 +264,7 @@ if ($report === 'farmers') {
 if ($format === 'json') {
     // preview: the same table that would be downloaded, first 100 rows only
     $limit = 100;
-    log_activity('Report', 'Previewed ' . ['farmers' => 'farmer masterlist', 'duplicates' => 'duplication report', 'parcel_history' => 'parcel history', 'activity' => 'activity log'][$report], $subtitle);
+    log_activity('Report', 'Previewed ' . ['farmers' => 'farmer masterlist', 'duplicates' => 'duplication report', 'parcel_history' => 'parcel history', 'activity' => 'activity log', 'animals' => 'animal population'][$report], $subtitle);
     ok([
         'title'     => $title,
         'subtitle'  => $subtitle,
@@ -239,7 +275,7 @@ if ($format === 'json') {
     ]);
 }
 
-log_activity('Report', 'Exported ' . ['farmers' => 'farmer masterlist', 'duplicates' => 'duplication report', 'parcel_history' => 'parcel history', 'activity' => 'activity log'][$report],
+log_activity('Report', 'Exported ' . ['farmers' => 'farmer masterlist', 'duplicates' => 'duplication report', 'parcel_history' => 'parcel history', 'activity' => 'activity log', 'animals' => 'animal population'][$report],
     strtoupper($format) . ' file. ' . $subtitle);
 
 $stamp = date('Y-m-d');
@@ -270,6 +306,28 @@ if ($format === 'csv') {
         fputcsv($out, array_map($safe, $row));
     }
     fclose($out);
+    exit;
+}
+
+if ($report === 'animals') {
+    // the paper form: one sheet per barangay (a blank form when there is nothing to list)
+    $form = new AnimalFormXlsx();
+    $multiTown = count(array_unique(array_map(fn($g) => mb_strtolower($g['municipality']), $pop['groups']))) > 1;
+    foreach ($pop['groups'] as $g) {
+        $form->addForm($g['barangay'], $g['farmers'], $asOf, $pop['other_used'], $g['municipality'], $g['province'], 20,
+            $multiTown && $g['municipality'] !== '' ? $g['barangay'] . ' - ' . $g['municipality'] : $g['barangay']);
+    }
+    if (!$pop['groups']) {   // a blank form: nothing printed after Municipality / Barangay
+        $form->addForm('', [], $asOf, false, '', 'Leyte', $blankForm ? 25 : 20, 'Blank form');
+    }
+    $tmp = $form->save();
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $fileName . '"');
+    header('Content-Length: ' . filesize($tmp));
+    header('X-Content-Type-Options: nosniff');
+    header('Cache-Control: no-store');
+    readfile($tmp);
+    @unlink($tmp);
     exit;
 }
 

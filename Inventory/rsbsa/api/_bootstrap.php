@@ -169,6 +169,11 @@ function current_admin(): ?array
         destroy_session();
         return null;
     }
+    $state = q_one('SELECT is_active FROM admins WHERE id = ?', [(int) $_SESSION['admin_id']]);
+    if (!$state || !(int) $state['is_active']) {   // disabled (or removed) by the super user: the open session ends at once
+        destroy_session();
+        return null;
+    }
     $_SESSION['last_activity'] = time();
     return [
         'id'       => (int) $_SESSION['admin_id'],
@@ -186,6 +191,92 @@ function require_auth(): array
     }
     session_write_close();
     return $admin;
+}
+
+/* ---------------------------------------------------------------------
+ * Super user (manages the administrator accounts; separate from the administrators)
+ * The username is fixed in the program and cannot be changed. Only the password can be.
+ * Nothing the super user does is written to the activity log.
+ * ------------------------------------------------------------------- */
+const SUPER_USERNAME = 'rsbsa_super_user';
+const SUPER_DEFAULT_PASSWORD = 'RSBSA*2026!';
+
+/** Creates the super_user table and the default account when they do not exist yet. Safe to call any time. */
+function ensure_super_user(): array
+{
+    static $row = null;
+    if ($row !== null) {
+        return $row;
+    }
+    $pdo = db();
+    if ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite') {
+        $pdo->exec('CREATE TABLE IF NOT EXISTS super_user (id INTEGER PRIMARY KEY, username TEXT NOT NULL, password_hash TEXT NOT NULL, password_changed_at TEXT, last_login TEXT)');
+    } else {
+        $pdo->exec('CREATE TABLE IF NOT EXISTS super_user (id TINYINT UNSIGNED NOT NULL PRIMARY KEY, username VARCHAR(60) NOT NULL, password_hash VARCHAR(255) NOT NULL, password_changed_at DATETIME NULL, last_login DATETIME NULL) ENGINE=InnoDB');
+    }
+    if ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite') {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS super_log (id INTEGER PRIMARY KEY AUTOINCREMENT, created_at TEXT NOT NULL, action TEXT NOT NULL, target TEXT NOT NULL DEFAULT '', details TEXT NOT NULL DEFAULT '', ip_address TEXT NOT NULL DEFAULT '')");
+    } else {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS super_log (id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, created_at DATETIME NOT NULL, action VARCHAR(80) NOT NULL, target VARCHAR(120) NOT NULL DEFAULT '', details VARCHAR(2000) NOT NULL DEFAULT '', ip_address VARCHAR(64) NOT NULL DEFAULT '', KEY idx_super_log_created (created_at)) ENGINE=InnoDB");
+    }
+    $found = q_one('SELECT id, username, password_hash, password_changed_at, last_login FROM super_user WHERE id = 1');
+    if (!$found) {
+        try {
+            q('INSERT INTO super_user (id, username, password_hash) VALUES (1, ?, ?)', [SUPER_USERNAME, password_hash(SUPER_DEFAULT_PASSWORD, PASSWORD_DEFAULT)]);
+        } catch (Throwable $e) {
+            // another request created it at the same moment
+        }
+        $found = q_one('SELECT id, username, password_hash, password_changed_at, last_login FROM super_user WHERE id = 1');
+    }
+    if ($found && $found['username'] !== SUPER_USERNAME) {
+        q('UPDATE super_user SET username = ? WHERE id = 1', [SUPER_USERNAME]);   // an earlier version used another spelling
+        $found['username'] = SUPER_USERNAME;
+    }
+    return $row = $found;
+}
+
+/** The logged-in super user (from the session), or null. */
+function current_super(): ?array
+{
+    start_session();
+    if (empty($_SESSION['super_id'])) {
+        return null;
+    }
+    $idle = (int) cfg('session_idle_minutes', 120) * 60;
+    if (isset($_SESSION['last_activity']) && time() - (int) $_SESSION['last_activity'] > $idle) {
+        destroy_session();
+        return null;
+    }
+    $_SESSION['last_activity'] = time();
+    return ['id' => 0, 'username' => SUPER_USERNAME, 'name' => 'Super User', 'role' => 'super'];
+}
+
+/** Writes one line to the super user log (a separate table that only the super user can read). */
+function super_log(string $action, string $target = '', string $details = ''): void
+{
+    try {
+        ensure_super_user();
+        db_insert('super_log', [
+            'created_at' => now(),
+            'action'     => mb_substr($action, 0, 80),
+            'target'     => mb_substr($target, 0, 120),
+            'details'    => mb_substr($details, 0, 2000),
+            'ip_address' => PHP_SAPI === 'cli' ? 'local' : client_ip(),
+        ]);
+    } catch (Throwable $e) {
+        // a logging problem must never stop the action itself
+    }
+}
+
+/** Every super user endpoint calls this first. */
+function require_super(): array
+{
+    $su = current_super();
+    if (!$su) {
+        fail(401, 'Your session has expired. Please log in again.');
+    }
+    session_write_close();
+    return $su;
 }
 
 /* ---------------------------------------------------------------------
@@ -287,9 +378,19 @@ function db(): PDO
         $current = $driver === 'sqlite'
             ? (int) $pdo->query("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'activity_log'")->fetchColumn()
             : (int) $pdo->query("SHOW TABLES LIKE 'activity_log'")->rowCount();
+        if ($current && $driver === 'sqlite') {   // the commodity Livestock -> Animals change has not been applied yet
+            $current = strpos((string) $pdo->query("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'parcels'")->fetchColumn(), "'Livestock'") === false ? 1 : 0;
+        }
         if (!$current) {
             $pdo = null;
             fail(500, 'The database must be updated first. On the server run: php database/migrate.php');
+        }
+        // admins.is_active (the super user can disable an account) is added automatically the first time
+        $cols = $driver === 'sqlite'
+            ? array_column($pdo->query('PRAGMA table_info(admins)')->fetchAll(), 'name')
+            : array_column($pdo->query('SHOW COLUMNS FROM admins')->fetchAll(), 'Field');
+        if ($cols && !in_array('is_active', $cols, true)) {
+            $pdo->exec('ALTER TABLE admins ADD COLUMN is_active ' . ($driver === 'sqlite' ? 'INTEGER NOT NULL DEFAULT 1' : 'TINYINT(1) NOT NULL DEFAULT 1'));
         }
     }
     return $pdo;

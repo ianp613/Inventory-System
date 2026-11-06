@@ -99,6 +99,30 @@
           </section>
         </div>
 
+        <!-- Animal monitoring -->
+        <section class="panel" aria-labelledby="animal-title">
+          <div class="panel-head">
+            <h2 id="animal-title">Animal Monitoring <span class="muted">(heads on active Animals parcels)</span></h2>
+            <label class="panel-filter"><span class="lbl">Barangay</span>
+              <select id="animal-barangay" aria-label="Show animals for one barangay"><option value="">All</option></select></label>
+          </div>
+          <div id="animal-summary" class="animal-summary"></div>
+          <div id="animal-chart" class="bars animal-bars">
+            <p class="empty">Loading...</p>
+          </div>
+
+          <div class="panel-head trend-head">
+            <h3 id="trend-title">Animal Trend <span class="muted">(last 12 months)</span></h3>
+            <label class="panel-filter"><span class="lbl">Animal</span>
+              <select id="animal-group" aria-label="Show the trend for one kind of animal">
+                <option value="">All animals</option>
+                <option>Carabao</option><option>Cattle</option><option>Swine</option><option>Goat</option><option>Sheep</option><option>Poultry</option><option>Dog</option>
+              </select></label>
+          </div>
+          <div id="animal-trend" class="line-chart"><p class="empty">Loading...</p></div>
+          <p class="hint trend-note">Total heads on active Animals parcels, added up by the month each parcel was registered. If the heads of a parcel are edited later, the whole line changes with it.</p>
+        </section>
+
         <!-- Registrations per month -->
         <section class="panel" aria-labelledby="month-title">
           <h2 id="month-title">Registrations per Month <span class="muted">(last 12 months)</span></h2>

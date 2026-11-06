@@ -21,7 +21,7 @@ $byCommodity = array_fill_keys(COMMODITIES, ['farmers' => 0, 'area_ha' => 0.0]);
 $onlyBarangay = clean_str($_GET['barangay'] ?? '');
 $sqlBrgy = $onlyBarangay !== '' ? ' WHERE LOWER(loc_barangay) = LOWER(?)' : '';
 foreach (q_all("SELECT commodity, COUNT(DISTINCT farmer_id) AS farmers, COALESCE(SUM(CASE WHEN parcel_status = 'Active' THEN area_ha ELSE 0 END), 0) AS area_ha FROM parcels$sqlBrgy GROUP BY commodity", $onlyBarangay !== '' ? [$onlyBarangay] : []) as $r) {
-    $byCommodity[$r['commodity']] = ['farmers' => (int) $r['farmers'], 'area_ha' => ha($r['area_ha'])];
+    $byCommodity[$r['commodity'] === 'Livestock' ? 'Animals' : $r['commodity']] = ['farmers' => (int) $r['farmers'], 'area_ha' => ha($r['area_ha'])];
 }
 $commodityRows = [];
 foreach ($byCommodity as $name => $v) {
@@ -67,6 +67,86 @@ foreach (q_all('SELECT SUBSTR(created_at, 1, 7) AS m, COUNT(*) AS n FROM farmers
     }
 }
 
+// Animal Monitoring: heads on Active Animals parcels, per animal group; optional ?animal_barangay=
+$animalBarangay = clean_str($_GET['animal_barangay'] ?? '');
+$aWhere = "p.commodity = 'Animals' AND p.parcel_status = 'Active'" . ($animalBarangay !== '' ? ' AND LOWER(p.loc_barangay) = LOWER(?)' : '');
+$aArgs = $animalBarangay !== '' ? [$animalBarangay] : [];
+$typeToGroup = [];
+foreach (ANIMAL_CHART_GROUPS as $g => $types) {
+    foreach ($types as $t) {
+        $typeToGroup[$t] = $g;
+    }
+}
+$animalGroups = [];
+foreach (array_keys(ANIMAL_CHART_GROUPS) as $g) {
+    $animalGroups[$g] = ['group' => $g, 'heads' => 0, 'farmers' => [], 'parts' => []];
+}
+foreach (q_all("SELECT pl.animal_type AS t, p.farmer_id AS fid, SUM(pl.heads) AS heads
+                  FROM parcel_livestock pl JOIN parcels p ON p.id = pl.parcel_id
+                 WHERE $aWhere GROUP BY pl.animal_type, p.farmer_id", $aArgs) as $r) {
+    $g = $typeToGroup[$r['t']] ?? 'Other';
+    $n = (int) $r['heads'];
+    $animalGroups[$g]['heads'] += $n;
+    if ($n > 0) {
+        $animalGroups[$g]['farmers'][$r['fid']] = true;
+    }
+    $label = preg_replace('/^' . preg_quote($g, '/') . ' - /', '', (string) $r['t']);
+    if (!str_contains($r['t'], ' - ') && isset(ANIMAL_CHART_GROUPS[$g]) && in_array($r['t'], ['Carabao', 'Cow', 'Swine', 'Goat', 'Sheep', 'Poultry', 'Other'], true)) {
+        $label = $r['t'] === 'Other' ? 'Other' : $r['t'] . ' (not specified)';
+    }
+    $animalGroups[$g]['parts'][$label] = ($animalGroups[$g]['parts'][$label] ?? 0) + $n;
+}
+$allFarmers = [];
+$animalRows = [];
+foreach ($animalGroups as $g) {
+    $allFarmers += $g['farmers'];
+    $parts = [];
+    foreach ($g['parts'] as $label => $n) {
+        if ($n > 0) {
+            $parts[] = ['label' => $label, 'heads' => $n];
+        }
+    }
+    $animalRows[] = ['group' => $g['group'], 'heads' => $g['heads'], 'farmers' => count($g['farmers']), 'parts' => $parts];
+}
+// trend: heads on Active Animals parcels, added up month by month by when each parcel was registered (last 12 months)
+$trendGroups = array_keys(ANIMAL_CHART_GROUPS);
+$firstMonth = new DateTime('first day of this month 00:00:00');
+$firstMonth->modify('-11 months');
+$trend = [];
+$cursor = clone $firstMonth;
+for ($i = 0; $i < 12; $i++) {
+    $trend[$cursor->format('Y-m')] = ['month' => $cursor->format('Y-m'), 'label' => $cursor->format('M Y'), 'groups' => array_fill_keys($trendGroups, 0)];
+    $cursor->modify('+1 month');
+}
+$baseline = array_fill_keys($trendGroups, 0);   // heads on parcels registered before the 12 months
+$startKey = $firstMonth->format('Y-m');
+foreach (q_all("SELECT SUBSTR(p.created_at, 1, 7) AS m, pl.animal_type AS t, SUM(pl.heads) AS heads
+                  FROM parcel_livestock pl JOIN parcels p ON p.id = pl.parcel_id
+                 WHERE $aWhere GROUP BY SUBSTR(p.created_at, 1, 7), pl.animal_type", $aArgs) as $r) {
+    $g = $typeToGroup[$r['t']] ?? 'Other';
+    if ($r['m'] < $startKey) {
+        $baseline[$g] += (int) $r['heads'];
+    } elseif (isset($trend[$r['m']])) {
+        $trend[$r['m']]['groups'][$g] += (int) $r['heads'];
+    }
+}
+$running = $baseline;
+foreach ($trend as $k => $m) {
+    foreach ($trendGroups as $g) {
+        $running[$g] += $m['groups'][$g];
+    }
+    $trend[$k]['groups'] = $running;
+    $trend[$k]['total'] = array_sum($running);
+}
+
+$animals = [
+    'trend'       => array_values($trend),
+    'barangay'    => $animalBarangay,
+    'total_heads' => array_sum(array_column($animalRows, 'heads')),
+    'farmers'     => count($allFarmers),
+    'groups'      => $animalRows,
+];
+
 backup_auto_if_due();
 $lastBackup = null;
 if (backup_is_sqlite() && class_exists('ZipArchive')) {
@@ -79,6 +159,8 @@ ok([
     'by_commodity'   => $commodityRows,
     'commodity_barangay' => $onlyBarangay,
     'barangays'      => array_column(q_all("SELECT DISTINCT loc_barangay AS b FROM parcels WHERE loc_barangay <> '' ORDER BY loc_barangay"), 'b'),
+    'animals'        => $animals,
+    'animal_barangays' => array_column(q_all("SELECT DISTINCT loc_barangay AS b FROM parcels WHERE commodity = 'Animals' AND loc_barangay <> '' ORDER BY loc_barangay"), 'b'),
     'by_barangay'    => $byBarangay,
     'by_month'       => array_values($byMonth),
     'recent_updates' => $recent,

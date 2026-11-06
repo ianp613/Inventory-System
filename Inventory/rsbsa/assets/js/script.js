@@ -22,6 +22,16 @@
    * 1. CONFIG
    * ===================================================================== */
   var CONFIG = {
+    // animals of the Animals commodity, grouped as on the paper form (same list as ANIMAL_GROUPS in api/_lib.php)
+    ANIMAL_GROUPS: [
+      ['Carabao', ['Carabao - Male', 'Carabao - Female (Caracow)']],
+      ['Cattle (Baka)', ['Cattle - Male', 'Cattle - Female (Cow)']],
+      ['Swine (Baboy)', ['Swine - Boar (Male/Breeder)', 'Swine - Sow (Inahin)', 'Swine - Fatteners (Patabain)', 'Swine - Piglets (Biik)']],
+      ['Goat (Kanding)', ['Goat - Male', 'Goat - Female']],
+      ['Sheep (Karnero)', ['Sheep - Male', 'Sheep - Female']],
+      ['Poultry', ['Gamefowl (Pangsabong)', 'Chicken - Layer (Pang-itlog)', 'Chicken - Native/Improved (for Dressing/Meat)', 'Chicken - Broiler', 'Duck (Pato)', 'Turkey (Pabo)', 'Goose (Gansa)', 'Pigeon (Salapati)']],
+      ['Dog (Ayam)', ['Dog - Stray Male', 'Dog - Stray Female', 'Dog - Leashed Male', 'Dog - Leashed Female']],
+    ],
     API_BASE: 'api',                  // folder that holds your PHP endpoints
     ENDPOINTS: {
       LOGIN: 'login.php',             // POST {username, password}
@@ -35,6 +45,13 @@
       DELETE_FARMER: 'delete_farmer.php',       // POST {id} -> deletes a farmer, parcels and attached files
       UPDATE_PROFILE: 'update_profile.php',     // POST {name} -> changes the logged-in user's display name
       CHANGE_PASSWORD: 'change_password.php',   // POST {current_password, new_password}
+      SUPER_ACCOUNTS: 'super_accounts.php',               // GET -> administrator accounts (super user only)
+      SUPER_RENAME: 'super_rename.php',                   // POST {id, name, username}
+      SUPER_CREATE: 'super_create.php',                   // POST {username, name, password}
+      SUPER_SET_ACTIVE: 'super_set_active.php',           // POST {id, active}
+      SUPER_LOG: 'super_log.php',                         // GET ?page=&per_page=
+      SUPER_RESET_PASSWORD: 'super_reset_password.php',   // POST {id, new_password}
+      SUPER_CHANGE_PASSWORD: 'super_change_password.php', // POST {current_password, new_password}
       CHECK_LOT: 'check_lot.php',     // GET -> duplicate / remaining-area check (see Pages.register)
       GET_FARMER: 'get_farmer.php',   // GET ?id=  -> one farmer record for updating
       ACTIVITY: 'activity.php',                 // GET -> activity log (see Pages.activity)
@@ -50,6 +67,7 @@
       SAVE_FARMER: 'save_farmer.php'  // POST multipart -> create or update a farmer
     },
     DASHBOARD_URL: 'dashboard.php',  // where to go after a successful login
+    SUPER_URL: 'super.php',          // where the super user goes after logging in
     LOGIN_URL: 'index.php',
     STORAGE_KEYS: {
       REMEMBERED_USERNAME: 'rsbsa_remembered_username',
@@ -216,15 +234,30 @@
     /** Call on protected pages: redirects to the login page when not logged in. */
     requireLogin: function () {
       return Auth.check().then(function (ok) {
-        if (!ok) window.location.replace(CONFIG.LOGIN_URL);
-        return ok;
+        if (!ok) { window.location.replace(CONFIG.LOGIN_URL); return false; }
+        var u = Auth.getUser();
+        if (u && u.role === 'super') { window.location.replace(CONFIG.SUPER_URL); return false; }   // the super user has its own page
+        return true;
+      });
+    },
+
+    /** Call on the super user page: only the super user may stay. */
+    requireSuper: function () {
+      return Auth.check().then(function (ok) {
+        if (!ok) { window.location.replace(CONFIG.LOGIN_URL); return false; }
+        var u = Auth.getUser();
+        if (!u || u.role !== 'super') { window.location.replace(CONFIG.DASHBOARD_URL); return false; }
+        return true;
       });
     },
 
     /** Call on the login page: skips the form when already logged in. */
     redirectIfLoggedIn: function () {
       return Auth.check().then(function (ok) {
-        if (ok) window.location.replace(CONFIG.DASHBOARD_URL);
+        if (ok) {
+          var u = Auth.getUser();
+          window.location.replace(u && u.role === 'super' ? CONFIG.SUPER_URL : CONFIG.DASHBOARD_URL);
+        }
         return ok;
       });
     }
@@ -332,10 +365,11 @@
       setLoading(true);
 
       Auth.login(usernameInput.value.trim(), passwordInput.value)
-        .then(function () {
+        .then(function (res) {
           persistUsername();
           showAlert('Login successful. Redirecting...', 'success');
-          window.location.replace(CONFIG.DASHBOARD_URL);
+          var u = res && res.data && res.data.user;
+          window.location.replace(u && u.role === 'super' ? CONFIG.SUPER_URL : CONFIG.DASHBOARD_URL);
         })
         .catch(function (err) {
           setLoading(false);
@@ -374,6 +408,26 @@
       try { Api.post(CONFIG.ENDPOINTS.LOG_EVENT, data).catch(function () {}); } catch (e) { /* ignore */ }
     },
     int: function (n) { return Number(n || 0).toLocaleString('en-PH'); },
+    /**
+     * The "No. of Heads" list of an Animals parcel, grouped like the paper form, every animal on its own line.
+     * livestock: [{type, heads}] ; blank: empty writing lines instead of numbers (blank registration form).
+     */
+    animalList: function (livestock, blank) {
+      var heads = {}, listed = {};
+      (livestock || []).forEach(function (a) { heads[a.type] = (heads[a.type] || 0) + (Number(a.heads) || 0); });
+      function line(type) {
+        var has = !blank && heads[type] !== undefined;
+        return '<div class="al-row"><span>' + Util.esc(type) + '</span><b' + (blank ? ' class="al-blank"' : (has ? '' : ' class="al-none"')) + '>' +
+          (blank ? '&nbsp;' : (has ? Util.int(heads[type]) : '&ndash;')) + '</b></div>';
+      }
+      var html = CONFIG.ANIMAL_GROUPS.map(function (g) {
+        return '<div class="al-group"><div class="al-title">' + Util.esc(g[0]) + '</div>' + g[1].map(function (t) { listed[t] = true; return line(t); }).join('') + '</div>';
+      }).join('');
+      // entries saved with an older plain name (Cow, Swine, ...) have no line on the form
+      var other = Object.keys(heads).filter(function (t) { return !listed[t]; });
+      if (other.length) html += '<div class="al-group"><div class="al-title">Other (older entries)</div>' + other.map(line).join('') + '</div>';
+      return '<div class="animal-list">' + html + '</div>';
+    },
     ha: function (n) {
       return Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     },
@@ -634,7 +688,8 @@
 
     var SVGNS = 'http://www.w3.org/2000/svg';
 
-    var COMMODITY_ORDER = ['Rice', 'Vegetable', 'Root Crops', 'Banana', 'Coconut', 'Livestock', 'Fishery'];   // a commodity keeps its color when the barangay filter changes
+    var ANIMAL_GROUP_ORDER = ['Carabao', 'Cattle', 'Swine', 'Goat', 'Sheep', 'Poultry', 'Dog'];   // fixed colors per animal group
+    var COMMODITY_ORDER = ['Rice', 'Vegetable', 'Root Crops', 'Banana', 'Coconut', 'Animals', 'Fishery'];   // a commodity keeps its color when the barangay filter changes
 
     /* donut: share of the total active area per commodity (colors c1..c7 from the stylesheet) */
     function renderCommodity(rows) {
@@ -709,6 +764,67 @@
       box.scrollLeft = box.scrollWidth;   // on a narrow screen, show the latest months first
     }
 
+    /* animal monitoring: heads per animal group, with the breakdown under each bar */
+    function renderAnimals(a) {
+      var box = document.getElementById('animal-chart'), sum = document.getElementById('animal-summary');
+      a = a || {};
+      var rows = (a.groups || []).filter(function (r) { return Number(r.heads) > 0; });
+      sum.innerHTML = '<span><strong>' + Util.int(a.total_heads) + '</strong> head(s) in total</span><span><strong>' + Util.int(a.farmers) +
+        '</strong> farmer(s) with animals</span>';
+      if (!rows.length) {
+        box.innerHTML = '<p class="empty">' + (a.barangay ? 'No animals recorded in this barangay yet.' : 'No animals recorded yet. Choose the Animals commodity when registering a parcel.') + '</p>';
+        return;
+      }
+      var max = 0;
+      rows.forEach(function (r) { max = Math.max(max, Number(r.heads) || 0); });
+      box.innerHTML = rows.map(function (r, i) {
+        var ci = ANIMAL_GROUP_ORDER.indexOf(r.group), col = 'var(--c' + (((ci < 0 ? i : ci) % 7) + 1) + ')';
+        var pct = max > 0 ? Math.round((Number(r.heads) || 0) / max * 100) : 0;
+        var parts = (r.parts || []).map(function (p) { return Util.esc(p.label) + ' ' + Util.int(p.heads); }).join(' &middot; ');
+        return '<div class="bar-row">' +
+          '<div class="bar-row-head"><span>' + Util.esc(r.group) + '</span><span>' + Util.int(r.heads) + ' head(s) &middot; ' + Util.int(r.farmers) + (Number(r.farmers) === 1 ? ' farmer' : ' farmers') + '</span></div>' +
+          '<div class="bar-track"><div class="bar-fill alt" data-w="' + pct + '" style="width:0;background:' + col + ';transition-delay:' + (i * 0.09).toFixed(2) + 's"></div></div>' +
+          (parts ? '<div class="bar-parts">' + parts + '</div>' : '') + '</div>';
+      }).join('');
+      setTimeout(function () {
+        Array.prototype.forEach.call(box.querySelectorAll('.bar-fill[data-w]'), function (el) { el.style.width = el.getAttribute('data-w') + '%'; });
+      }, 40);
+    }
+
+    /* animal trend: line chart of the cumulative heads per month (all animals, or one group) */
+    var lastTrend = null;
+    function renderTrend(points) {
+      if (points) lastTrend = points;
+      points = lastTrend;
+      var box = document.getElementById('animal-trend');
+      var grp = document.getElementById('animal-group').value;
+      if (!points || !points.length) { box.innerHTML = '<p class="empty">No data yet.</p>'; return; }
+      var vals = points.map(function (p) { return grp ? Number(p.groups[grp]) || 0 : Number(p.total) || 0; });
+      var max = Math.max.apply(null, vals);
+      if (max <= 0) { box.innerHTML = '<p class="empty">No ' + (grp ? Util.esc(grp.toLowerCase()) : 'animals') + ' recorded yet' + (animalSel.value ? ' in this barangay' : '') + '.</p>'; return; }
+      var step = max <= 5 ? 1 : (max <= 10 ? 2 : (max <= 25 ? 5 : (max <= 50 ? 10 : (max <= 100 ? 20 : (max <= 250 ? 50 : (max <= 500 ? 100 : Math.pow(10, Math.floor(Math.log(max) / Math.LN10)))))))); 
+      var top = Math.ceil(max / step) * step;
+      var W = Math.max(box.clientWidth || 760, 480), H = 230, L = 40, Rt = 14, T = 28, B = 28, n = points.length, cw = (W - L - Rt) / n;
+      var ci = ANIMAL_GROUP_ORDER.indexOf(grp), col = grp ? 'var(--c' + (((ci < 0 ? 0 : ci) % 7) + 1) + ')' : 'var(--c1)';
+      function x(i) { return L + cw * i + cw / 2; }
+      function y(v) { return T + (H - T - B) * (1 - v / top); }
+      var g = '', pts = '', dots = '', labels = '';
+      for (var v = 0; v <= top; v += step) {
+        g += '<line class="grid" x1="' + L + '" x2="' + (W - Rt) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '"/><text class="yl" x="' + (L - 6) + '" y="' + (y(v) + 4).toFixed(1) + '">' + v + '</text>';
+      }
+      points.forEach(function (p, i) {
+        pts += (i ? ' L ' : 'M ') + x(i).toFixed(1) + ' ' + y(vals[i]).toFixed(1);
+        dots += '<circle class="dot' + (i === n - 1 ? ' now' : '') + '" style="animation-delay:' + (0.9 + i * 0.07).toFixed(2) + 's" cx="' + x(i).toFixed(1) + '" cy="' + y(vals[i]).toFixed(1) + '" r="4"><title>' +
+          Util.esc(p.label) + ': ' + Util.int(vals[i]) + ' head(s)</title></circle>';
+        labels += '<text class="mon" x="' + x(i).toFixed(1) + '" y="' + (H - 9) + '">' + Util.esc(p.label.replace(/ \d{2}(\d{2})$/, " '$1")) + '</text>';
+      });
+      var area = pts + ' L ' + x(n - 1).toFixed(1) + ' ' + y(0).toFixed(1) + ' L ' + x(0).toFixed(1) + ' ' + y(0).toFixed(1) + ' Z';
+      box.innerHTML = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Heads of ' + (grp ? Util.esc(grp.toLowerCase()) : 'all animals') + ' by month, now ' + Util.int(vals[n - 1]) + '" style="color:' + col + '">' +
+        g + '<path class="area" d="' + area + '"/><path class="line" d="' + pts + '" pathLength="1"/>' + dots +
+        '<text class="endv" x="' + x(n - 1).toFixed(1) + '" y="' + (y(vals[n - 1]) - 10).toFixed(1) + '">' + Util.int(vals[n - 1]) + '</text>' + labels + '</svg>';
+      box.scrollLeft = box.scrollWidth;
+    }
+
     function renderRecent(rows) {
       var body = document.getElementById('recent-body');
       if (!rows || !rows.length) { body.innerHTML = '<tr><td colspan="5" class="empty">No records yet.</td></tr>'; return; }
@@ -730,14 +846,29 @@
       brgySel.value = keep;
     }
 
+    var animalSel = document.getElementById('animal-barangay');
+    function fillAnimalBarangays(list) {
+      var keep = animalSel.value;
+      animalSel.innerHTML = '<option value="">All</option>' + (list || []).map(function (b) {
+        return '<option value="' + Util.esc(b) + '">' + Util.esc(b) + '</option>';
+      }).join('');
+      animalSel.value = keep;
+    }
+
     function load() {
       refreshBtn.disabled = true;
       alertBox.hidden = true;
 
-      Api.get(CONFIG.ENDPOINTS.DASHBOARD + (brgySel.value ? '?barangay=' + encodeURIComponent(brgySel.value) : ''))
+      var q = [];
+      if (brgySel.value) q.push('barangay=' + encodeURIComponent(brgySel.value));
+      if (animalSel.value) q.push('animal_barangay=' + encodeURIComponent(animalSel.value));
+      Api.get(CONFIG.ENDPOINTS.DASHBOARD + (q.length ? '?' + q.join('&') : ''))
         .then(function (res) {
           var d = res.data || {};
           fillBarangays(d.barangays);
+          fillAnimalBarangays(d.animal_barangays);
+          renderAnimals(d.animals);
+          renderTrend((d.animals || {}).trend);
           renderTotals(d.totals);
           renderCommodity(d.by_commodity);
           renderBarangay(d.by_barangay);
@@ -753,13 +884,15 @@
     }
 
     var rz = null;
-    window.addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { if (lastMonths) renderMonths(lastMonths); }, 150); });
+    window.addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { if (lastMonths) renderMonths(lastMonths); if (lastTrend) renderTrend(); }, 150); });
 
     Auth.requireLogin().then(function (ok) {
       if (!ok) return;
       Shell.init('dashboard');
       refreshBtn.addEventListener('click', load);
       brgySel.addEventListener('change', load);
+      animalSel.addEventListener('change', load);
+      document.getElementById('animal-group').addEventListener('change', function () { renderTrend(); });
       load();
     });
   };
@@ -939,7 +1072,7 @@
   Pages.register = function () {
     var CROP_COMMODITIES = ['Rice', 'Vegetable', 'Root Crops', 'Banana', 'Coconut'];
     var CROP_KEYS = ['rice', 'vegetable', 'root_crops', 'banana', 'coconut', 'fruit_bearing'];
-    var ANIMALS = ['Cow', 'Carabao', 'Sheep', 'Goat', 'Swine', 'Poultry', 'Other'];
+    var ANIMAL_GROUPS = CONFIG.ANIMAL_GROUPS;
     var ALLOWED_EXT = ['pdf', 'jpg', 'jpeg', 'png'];
 
     // server error keys that do not match a data-f name directly
@@ -959,7 +1092,28 @@
     function fld(root, name) { return root.querySelector('[data-f="' + name + '"]'); }
     function val(root, name) { var el = fld(root, name); return el ? String(el.value).trim() : ''; }
     function num(root, name) { var v = val(root, name); return v === '' ? null : Number(v); }
-    function setVal(root, name, v) { var el = fld(root, name); if (el && v !== null && v !== undefined) el.value = v; }
+    function setVal(root, name, v) {
+      var el = fld(root, name);
+      if (el && v !== null && v !== undefined) { el.value = v; if (el.classList.contains('brgy-other')) syncBrgy(el); }
+    }
+
+    /* Barangay: dropdown of Palo barangays, or "Other" = type it (the text input is the real field) */
+    var BRGY_OTHER = '__other';
+    function brgySelect(input) { return input.parentNode.querySelector('select.brgy-select'); }
+    // show the dropdown/text input that matches the text input's current value (used when data is loaded)
+    function syncBrgy(input) {
+      var sel = brgySelect(input);
+      if (!sel) return;
+      var v = input.value.trim().toLowerCase(), found = '';
+      Array.prototype.forEach.call(sel.options, function (o) { if (o.value && o.value !== BRGY_OTHER && o.value.toLowerCase() === v) found = o.value; });
+      if (found) { sel.value = found; input.value = found; input.hidden = true; }
+      else if (v) { sel.value = BRGY_OTHER; input.hidden = false; }
+      else { sel.value = ''; input.hidden = true; }
+    }
+    function syncAllBrgy() { Array.prototype.forEach.call(form.querySelectorAll('input.brgy-other'), syncBrgy); }
+    // a hidden input cannot be scrolled to or focused: use its dropdown instead
+    function focusTarget(el) { return el && el.hidden && el.classList.contains('brgy-other') ? (brgySelect(el) || el) : el; }
+
     function checked(root, name) { var el = fld(root, name); return !!(el && el.checked); }
     function round4(n) { return Math.round(n * 10000) / 10000; }
 
@@ -1028,9 +1182,16 @@
     }
 
     function addAnimalRow(card, type, heads) {
-      var opts = ANIMALS.map(function (a) {
-        return '<option' + (a === type ? ' selected' : '') + '>' + Util.esc(a) + '</option>';
+      var known = false;
+      var opts = ANIMAL_GROUPS.map(function (g) {
+        return '<optgroup label="' + Util.esc(g[0]) + '">' + g[1].map(function (a) {
+          if (a === type) known = true;
+          return '<option' + (a === type ? ' selected' : '') + '>' + Util.esc(a) + '</option>';
+        }).join('') + '</optgroup>';
       }).join('');
+      // records saved with an older plain name (Cow, Swine, ...) keep it until the administrator picks a more exact choice
+      if (type && !known) opts = '<option selected>' + Util.esc(type) + '</option>' + opts;
+      else if (!type) opts = '<option value="" selected disabled>Select animal...</option>' + opts;
       var row = document.createElement('div');
       row.className = 'inline-row animal-row';
       row.innerHTML =
@@ -1045,9 +1206,9 @@
     function updateGroups(card) {
       var c = val(card, 'commodity');
       card.querySelector('[data-group="crop"]').hidden = CROP_COMMODITIES.indexOf(c) === -1;
-      card.querySelector('[data-group="livestock"]').hidden = c !== 'Livestock';
+      card.querySelector('[data-group="livestock"]').hidden = c !== 'Animals';
       card.querySelector('[data-group="fishery"]').hidden = c !== 'Fishery';
-      if (c === 'Livestock' && !qa('.animal-row', card).length) addAnimalRow(card);
+      if (c === 'Animals' && !qa('.animal-row', card).length) addAnimalRow(card);
     }
 
     function fillParcel(card, p) {
@@ -1337,10 +1498,12 @@
           });
         }
         if (c === 'Fishery') req(card, 'fish_size', 'Enter the size of the fish cage / pond.');
-        if (c === 'Livestock') {
+        if (c === 'Animals') {
           var rows = qa('.animal-row', card);
           var any = false;
           rows.forEach(function (r) {
+            var t = fld(r, 'animal_type');
+            if (!t.value) bad(t, 'Choose the animal.');
             var h = fld(r, 'animal_heads');
             if (h.value === '' || Number(h.value) < 0 || Math.floor(Number(h.value)) !== Number(h.value)) {
               bad(h, 'Enter a whole number.');
@@ -1395,7 +1558,7 @@
         p.crop_areas = {};
         CROP_KEYS.forEach(function (k) { p.crop_areas[k] = round4(num(card, 'crop_' + k) || 0); });
       }
-      if (c === 'Livestock') {
+      if (c === 'Animals') {
         p.livestock = qa('.animal-row', card).map(function (r) {
           return { type: val(r, 'animal_type'), heads: Number(val(r, 'animal_heads')) || 0 };
         });
@@ -1483,6 +1646,7 @@
         }
       });
 
+      firstEl = focusTarget(firstEl);
       if (firstEl) {
         firstEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
         firstEl.focus({ preventScroll: true });
@@ -1493,6 +1657,7 @@
     /* ---------- submit ---------- */
     function resetForm() {
       form.reset();
+      syncAllBrgy();
       childrenList.innerHTML = '';
       parcelsList.innerHTML = '';
       addParcel();
@@ -1509,6 +1674,7 @@
       clearAllErrors();
 
       var first = validate();
+      first = focusTarget(first);
       if (first) {
         if (first !== form) {
           showAlert('Please fix the highlighted fields.');
@@ -1542,6 +1708,28 @@
     });
 
     /* ---------- events (delegated) ---------- */
+    function onBrgyPick(sel) {
+      var prefix = sel.getAttribute('data-brgy');            // addr | loc
+      var scope = prefix === 'loc' ? sel.closest('.parcel-card') : form;
+      var input = fld(scope, prefix + '_barangay');
+      if (sel.value === BRGY_OTHER) {                        // another municipality: everything is typed by hand
+        input.value = ''; input.hidden = false;
+        setVal(scope, prefix + '_municipality', '');
+        setVal(scope, prefix + '_province', '');
+        input.focus();
+      } else {
+        input.hidden = true;
+        input.value = sel.value;
+        if (sel.value) {                                     // a Palo barangay fills in the town and province
+          setVal(scope, prefix + '_municipality', 'Palo');
+          setVal(scope, prefix + '_province', 'Leyte');
+        }
+      }
+      [prefix + '_barangay', prefix + '_municipality', prefix + '_province'].forEach(function (n) { clearInvalid(fld(scope, n)); });
+      dirty = true;
+      if (prefix === 'loc') scheduleLotCheck(scope);
+    }
+
     form.addEventListener('input', function (e) {
       var t = e.target;
       clearInvalid(t);
@@ -1552,6 +1740,7 @@
 
     form.addEventListener('change', function (e) {
       var t = e.target;
+      if (t.classList && t.classList.contains('brgy-select')) { onBrgyPick(t); return; }
       var name = t.getAttribute('data-f');
       var card = t.closest('.parcel-card');
 
@@ -1950,7 +2139,6 @@
         Object.keys(p.crop_areas || {}).forEach(function (k) {
           if (Number(p.crop_areas[k]) > 0) crops.push((labels[k] || k) + ': ' + Util.ha(p.crop_areas[k]) + ' ha');
         });
-        var animals = (p.livestock || []).map(function (a) { return a.type + ': ' + Util.int(a.heads); });
         var url = safeUrl(p.tax_file_url);
 
         html += '<div class="detail-parcel"><h4>Parcel ' + (i + 1) +
@@ -1965,12 +2153,12 @@
           row('Farm Location', placeText(p.location)) +
           row('Sectoral Commodity', p.commodity) +
           (crops.length ? row('Area per Crop', crops.join('; ')) : '') +
-          (animals.length ? row('No. of Heads', animals.join('; ')) : '') +
           (p.fish_size ? row('Fish Cage / Pond Size', p.fish_size) : '') +
           row('Farming Status', p.farming_role) +
           row('Tax Declarant / Owner', p.tax_declarant) +
           row('Name of Association', p.association) +
           '</dl>' +
+          (p.commodity === 'Animals' ? '<div class="detail-heads"><h5>No. of Heads</h5>' + Util.animalList(p.livestock, false) + '</div>' : '') +
           (url ? '<p><a href="' + Util.esc(url) + '" target="_blank" rel="noopener">Open tax declaration</a></p>' : '') +
           '</div>';
       });
@@ -2426,8 +2614,15 @@
     /* the filters of a report as query parameters, or null (with a message shown) when they are not valid */
     function reportParams(report, format) {
       var params = { report: report, format: format };
+      if (report === 'animals_blank') {            // the empty form: no barangay, municipality or farmers
+        params = { report: 'animals', format: 'xlsx', blank: '1', as_of: $('r-an-asof').value };
+        alertBox.hidden = true;
+        return params;
+      }
 
       alertBox.hidden = true;
+      $('r-an-error').textContent = '';
+      $('r-an-asof').closest('.field').classList.remove('invalid');
       $('r-range-error').textContent = '';
       $('r-to').closest('.field').classList.remove('invalid');
 
@@ -2441,6 +2636,14 @@
         if (params.updated_from && params.updated_to && params.updated_from > params.updated_to) {
           $('r-to').closest('.field').classList.add('invalid');
           $('r-range-error').textContent = 'The end date must be on or after the start date.';
+          return null;
+        }
+      } else if (report === 'animals') {
+        params.barangay = $('r-an-barangay').value;
+        params.as_of = $('r-an-asof').value;
+        if (!params.as_of) {
+          $('r-an-asof').closest('.field').classList.add('invalid');
+          $('r-an-error').textContent = 'Choose the "as of" date.';
           return null;
         }
       } else {
@@ -2593,7 +2796,6 @@
         Object.keys(p.crop_areas || {}).forEach(function (k) {
           if (Number(p.crop_areas[k]) > 0) crops.push((CROP_LABELS[k] || k) + ': ' + Util.ha(p.crop_areas[k]) + ' ha');
         });
-        var animals = (p.livestock || []).map(function (x) { return x.type + ': ' + Util.int(x.heads); });
         var has = function (v) { return v !== undefined && v !== null && v !== ''; };
 
         html += '<div class="detail-parcel"><h4>Parcel ' + (i + 1) + '</h4><dl class="detail-grid">' +
@@ -2603,14 +2805,18 @@
           item('Area per Tax Declaration (ha)', has(p.tax_declared_area_ha) ? Util.ha(p.tax_declared_area_ha) : '') +
           item('Actual Cultivated Area (ha)', has(p.cultivated_area_ha) ? Util.ha(p.cultivated_area_ha) : '') +
           item('Farm Location (Zone/Sitio, Brgy., Municipality, Province)', placeText(p.location)) +
-          item('Sectoral Commodity (Rice, Vegetable, Root Crops, Banana, Coconut, Livestock, Fishery)', p.commodity) +
+          item('Sectoral Commodity (Rice, Vegetable, Root Crops, Banana, Coconut, Animals, Fishery)', p.commodity) +
           (blank || crops.length ? item('Area per Crop (Rice, Vegetable, Root Crops, Banana, Coconut, Fruit Bearing)', crops.join('; ')) : '') +
-          (blank || animals.length ? item('No. of Heads (Cow, Carabao, Sheep, Goat, Swine, Poultry, Etc.)', animals.join('; ')) : '') +
           (blank || p.fish_size ? item('Size of Fish Cage / Fish Pond', p.fish_size) : '') +
           item('Farming Status (Owner, Tenant, Leasee, Actual Tiller, Farm Worker)', p.farming_role) +
           item('Name of Tax Declarant / Owner', p.tax_declarant) +
           item('Name of Association (if applicable)', p.association) +
-          '</dl></div>';
+          '</dl>' +
+          (blank
+            ? '<div class="detail-heads"><h5>No. of Heads (Carabao, Cattle, Swine, Goat, Sheep, Poultry, Dog)</h5>' +
+              '<p class="al-note">Note: fill up the No. of Heads only if the Sectoral Commodity is Animals.</p>' + Util.animalList([], true) + '</div>'
+            : (p.commodity === 'Animals' ? '<div class="detail-heads"><h5>No. of Heads</h5>' + Util.animalList(p.livestock, false) + '</div>' : '')) +
+          '</div>';
       });
 
       return html;
@@ -2707,6 +2913,18 @@
           }).join('');
         })
         .catch(function () { /* the filter stays on "All" */ });
+
+      // Animal Population: today's date, and the barangays that have farm parcels
+      var now = new Date();
+      $('r-an-asof').value = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2);
+      Api.get(CONFIG.ENDPOINTS.DASHBOARD)
+        .then(function (res) {
+          var list = (res.data || {}).barangays || [];
+          $('r-an-barangay').innerHTML = '<option value="">All barangays</option>' + list.map(function (b) {
+            return '<option>' + Util.esc(b) + '</option>';
+          }).join('');
+        })
+        .catch(function () { /* stays on "All barangays" */ });
     });
   };
 
@@ -3244,6 +3462,377 @@
     Auth.requireLogin().then(function (ok) {
       if (!ok) return;
       Shell.init('activity');
+      load();
+    });
+  };
+
+  /* ---------- Super user page (super.php) ----------
+   * Only the super user (fixed username) can open it. It can change the name of an administrator account and reset its
+   * password, and change its own password. Nothing done here is written to the activity log. */
+  Pages.super = function () {
+    function $(id) { return document.getElementById(id); }
+    var accounts = [];
+    var headings = { accounts: 'Accounts', log: 'Activity Log', me: 'My Account' };
+
+    /* ----- tabs (left menu) ----- */
+    function showTab(name) {
+      if (!headings[name]) name = 'accounts';
+      $('tab-accounts').hidden = name !== 'accounts';
+      $('tab-log').hidden = name !== 'log';
+      $('tab-me').hidden = name !== 'me';
+      if (name === 'log') loadLog(1);
+      $('sp-heading').textContent = headings[name];
+      Array.prototype.forEach.call(document.querySelectorAll('.nav a[data-nav]'), function (a) {
+        a.classList.toggle('active', a.getAttribute('data-nav') === name);
+      });
+      try { history.replaceState(null, '', '#' + name); } catch (e) {}
+      $('sidebar').classList.remove('open');
+      $('scrim').hidden = true;
+      $('menu-btn').setAttribute('aria-expanded', 'false');
+    }
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest('a[data-nav], a[data-goto]');
+      if (!a) return;
+      e.preventDefault();
+      showTab(a.getAttribute('data-nav') || a.getAttribute('data-goto'));
+    });
+
+    /* ----- accounts table ----- */
+    var acAlert = $('ac-alert');
+    function acShow(msg, type) { acAlert.textContent = msg; acAlert.className = 'alert ' + (type || 'error'); acAlert.hidden = false; }
+
+    function when(v) {
+      if (!v) return 'Never';
+      var d = new Date(String(v).replace(' ', 'T'));
+      return isNaN(d.getTime()) ? String(v) : d.toLocaleString('en-PH', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    }
+
+    function render() {
+      var body = $('ac-body');
+      if (!accounts.length) { body.innerHTML = '<tr><td colspan="5" class="muted">No administrator accounts.</td></tr>'; return; }
+      body.innerHTML = accounts.map(function (a) {
+        var on = a.is_active !== false;
+        return '<tr data-id="' + a.id + '"' + (on ? '' : ' class="is-off"') + '>' +
+          '<td class="name-cell"><strong>' + Util.esc(a.name) + '</strong></td>' +
+          '<td>' + Util.esc(a.username) + '</td>' +
+          '<td>' + Util.esc(when(a.last_login)) + '</td>' +
+          '<td><span class="status-pill' + (on ? '' : ' off') + '">' + (on ? 'Active' : 'Disabled') + '</span></td>' +
+          '<td class="actions">' +
+            '<button type="button" class="btn-outline btn-sm" data-act="edit">Edit</button> ' +
+            '<button type="button" class="btn-outline btn-sm" data-act="reset">Reset password</button> ' +
+            '<button type="button" class="btn-outline btn-sm' + (on ? ' btn-warn' : '') + '" data-act="toggle">' + (on ? 'Disable' : 'Enable') + '</button>' +
+          '</td></tr>';
+      }).join('');
+    }
+
+    function load() {
+      return Api.get(CONFIG.ENDPOINTS.SUPER_ACCOUNTS).then(function (res) {
+        var d = res.data || {};
+        accounts = d.accounts || [];
+        render();
+        var dflt = !!(d.super && d.super.default_password);
+        $('ac-default').hidden = !dflt;
+        $('sp-default').hidden = !dflt;
+        if (d.super) { $('sp-username').value = d.super.username; $('sp-chip-name').textContent = d.super.username; }
+      }).catch(function (err) {
+        if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+        $('ac-body').innerHTML = '<tr><td colspan="5" class="muted">Could not load the accounts.</td></tr>';
+        acShow(err.message);
+      });
+    }
+
+    /* ----- small form window ----- */
+    function formDialog(opts) {
+      var dlg = document.createElement('dialog');
+      dlg.className = 'modal modal-sm';
+      dlg.setAttribute('aria-label', opts.title);
+      dlg.innerHTML =
+        '<form novalidate autocomplete="off">' +
+        '<header class="modal-head"><h2>' + Util.esc(opts.title) + '</h2></header>' +
+        '<div class="modal-body">' + opts.body + '<div class="alert error" data-alert role="alert" hidden></div></div>' +
+        '<footer class="modal-foot"><button type="button" class="btn-outline" data-x>Cancel</button>' +
+        '<button type="submit" class="btn-solid" data-ok>' + Util.esc(opts.confirmText) + '</button></footer></form>';
+      document.body.appendChild(dlg);
+      var form = dlg.querySelector('form'), okBtn = dlg.querySelector('[data-ok]'), box = dlg.querySelector('[data-alert]');
+      var busy = false;
+      function close() { try { dlg.close(); } catch (e) {} dlg.remove(); }
+      function setErr(name, msg) {
+        var input = dlg.querySelector('[name="' + name + '"]');
+        if (!input) return;
+        var f = input.closest('.field');
+        f.classList.toggle('invalid', !!msg);
+        f.querySelector('.field-error').textContent = msg || '';
+      }
+      var api = { dlg: dlg, setErr: setErr, input: function (n) { return dlg.querySelector('[name="' + n + '"]'); },
+        alert: function (m) { box.textContent = m; box.hidden = !m; } };
+      dlg.addEventListener('input', function (e) { if (e.target.name) setErr(e.target.name, ''); box.hidden = true; });
+      dlg.querySelector('[data-x]').addEventListener('click', function () { if (!busy) close(); });
+      dlg.addEventListener('cancel', function (e) { e.preventDefault(); if (!busy) close(); });
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (busy) return;
+        api.alert('');
+        var work = opts.submit(api);            // null when something is wrong (the message is already shown)
+        if (!work) return;
+        busy = true; okBtn.disabled = true;
+        work.then(function (res) { busy = false; close(); if (opts.done) opts.done(res); })
+          .catch(function (err) {
+            busy = false; okBtn.disabled = false;
+            if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+            Object.keys(err.errors || {}).forEach(function (n) { setErr(n, err.errors[n]); });
+            api.alert(err.message);
+          });
+      });
+      dlg.showModal();
+      if (opts.focus) { var f = dlg.querySelector('[name="' + opts.focus + '"]'); if (f) { f.focus(); if (f.select) f.select(); } }
+      return api;
+    }
+
+    function fieldHtml(label, name, extra, type, value) {
+      return '<div class="field"><label><span class="lbl">' + label + '</span>' +
+        '<input type="' + (type || 'text') + '" name="' + name + '"' + (extra || '') + (value !== undefined ? ' value="' + Util.esc(value) + '"' : '') + '></label>' +
+        '<small class="field-error"></small></div>';
+    }
+
+    var USERNAME_RULE = /^[A-Za-z0-9._-]{3,60}$/;
+    var USERNAME_MSG = 'Use 3 to 60 letters, numbers, dots, dashes or underscores (no spaces).';
+
+    function openEdit(a) {
+      formDialog({
+        title: 'Edit account',
+        confirmText: 'Save',
+        focus: 'name',
+        body:
+          fieldHtml('Name', 'name', ' maxlength="60" autocomplete="off"', 'text', a.name) +
+          fieldHtml('Username', 'username', ' maxlength="60" autocomplete="off" autocapitalize="off" spellcheck="false"', 'text', a.username) +
+          '<p class="hint">If you change the username, the person uses the new one the next time they log in.</p>',
+        submit: function (f) {
+          var name = f.input('name').value.trim().replace(/\s+/g, ' ');
+          var username = f.input('username').value.trim();
+          var bad = null;
+          function no(n, m) { f.setErr(n, m); if (!bad) bad = f.input(n); }
+          if (!name) no('name', 'Enter a name.');
+          else if (name.length > 60) no('name', 'The name must be 60 characters or fewer.');
+          if (username !== a.username && !USERNAME_RULE.test(username)) no('username', USERNAME_MSG);
+          if (bad) { bad.focus(); return null; }
+          return Api.post(CONFIG.ENDPOINTS.SUPER_RENAME, { id: a.id, name: name, username: username })
+            .then(function (res) { return res.data; });
+        },
+        done: function (d) {
+          var changedUser = d.username !== a.username;
+          a.name = d.name; a.username = d.username;
+          render();
+          acShow('The account was updated' + (changedUser ? '. The new username is "' + d.username + '".' : '.'), 'success');
+        }
+      });
+    }
+
+    function generatePassword() {
+      var up = 'ABCDEFGHJKLMNPQRSTUVWXYZ', lo = 'abcdefghijkmnopqrstuvwxyz', di = '23456789';
+      var all = up + lo + di;
+      function pick(set) { var b = new Uint32Array(1); crypto.getRandomValues(b); return set.charAt(b[0] % set.length); }
+      var out = [pick(up), pick(lo), pick(di)];
+      while (out.length < 12) out.push(pick(all));
+      for (var i = out.length - 1; i > 0; i--) {         // shuffle
+        var b = new Uint32Array(1); crypto.getRandomValues(b);
+        var j = b[0] % (i + 1), t = out[i]; out[i] = out[j]; out[j] = t;
+      }
+      return out.join('');
+    }
+
+    var PW_TOOLS =
+      '<div class="reset-tools"><button type="button" class="btn-outline btn-sm" data-gen>Generate a password</button>' +
+      '<label class="checkbox"><input type="checkbox" data-show><span>Show password</span></label></div>';
+
+    /** Wires the "Generate" button and "Show password" box of a dialog to its password field. */
+    function pwTools(api, field) {
+      var pwInput = api.input(field), show = api.dlg.querySelector('[data-show]');
+      show.addEventListener('change', function () { pwInput.type = show.checked ? 'text' : 'password'; });
+      api.dlg.querySelector('[data-gen]').addEventListener('click', function () {
+        pwInput.value = generatePassword();
+        pwInput.type = 'text'; show.checked = true;
+        api.setErr(field, '');
+        pwInput.focus(); pwInput.select();
+      });
+    }
+
+    function openReset(a) {
+      var api = formDialog({
+        title: 'Reset password',
+        confirmText: 'Reset Password',
+        focus: 'new_password',
+        body:
+          '<p class="confirm-lead">' + Util.esc(a.name) + ' <span class="muted">(' + Util.esc(a.username) + ')</span></p>' +
+          fieldHtml('New password', 'new_password', ' autocomplete="new-password"', 'password') + PW_TOOLS +
+          '<p class="hint">At least 8 characters. Tell the user the new password; they can change it in Settings after logging in.</p>',
+        submit: function (f) {
+          var pw = f.input('new_password').value;
+          if (pw.length < 8) { f.setErr('new_password', 'The new password must be at least 8 characters.'); f.input('new_password').focus(); return null; }
+          if (pw.length > 72) { f.setErr('new_password', 'The new password must be 72 characters or fewer.'); return null; }
+          return Api.post(CONFIG.ENDPOINTS.SUPER_RESET_PASSWORD, { id: a.id, new_password: pw });
+        },
+        done: function () {
+          acShow('The password of "' + a.username + '" was reset. Give them the new password.', 'success');
+        }
+      });
+      pwTools(api, 'new_password');
+    }
+
+    function openAdd() {
+      var api = formDialog({
+        title: 'Add administrator',
+        confirmText: 'Create Account',
+        focus: 'name',
+        body:
+          fieldHtml('Name', 'name', ' maxlength="60" autocomplete="off"', 'text') +
+          fieldHtml('Username', 'username', ' maxlength="60" autocomplete="off" autocapitalize="off" spellcheck="false"', 'text') +
+          fieldHtml('Password', 'password', ' autocomplete="new-password"', 'password') + PW_TOOLS +
+          '<p class="hint">Username: letters, numbers, dots, dashes and underscores. Password: at least 8 characters. Tell the person both; they can change the password in Settings.</p>',
+        submit: function (f) {
+          var name = f.input('name').value.trim().replace(/\s+/g, ' ');
+          var username = f.input('username').value.trim();
+          var pw = f.input('password').value;
+          var bad = null;
+          function no(n, m) { f.setErr(n, m); if (!bad) bad = f.input(n); }
+          if (!name) no('name', 'Enter a name.');
+          else if (name.length > 60) no('name', 'The name must be 60 characters or fewer.');
+          if (!USERNAME_RULE.test(username)) no('username', USERNAME_MSG);
+          if (pw.length < 8) no('password', 'The password must be at least 8 characters.');
+          else if (pw.length > 72) no('password', 'The password must be 72 characters or fewer.');
+          if (bad) { bad.focus(); return null; }
+          return Api.post(CONFIG.ENDPOINTS.SUPER_CREATE, { username: username, name: name, password: pw }).then(function (res) { return res.data; });
+        },
+        done: function (d) {
+          accounts.push(d);
+          render();
+          acShow('The account "' + d.username + '" was created. Give them the username and password.', 'success');
+        }
+      });
+      pwTools(api, 'password');
+    }
+    $('ac-add').addEventListener('click', function () { acAlert.hidden = true; openAdd(); });
+
+    /* ----- disable / enable ----- */
+    function setActive(a, on) {
+      return Api.post(CONFIG.ENDPOINTS.SUPER_SET_ACTIVE, { id: a.id, active: on }).then(function () {
+        a.is_active = on;
+        render();
+        acShow('The account "' + a.username + '" was ' + (on ? 'enabled. They can log in again.' : 'disabled. They can no longer log in.'), 'success');
+      }).catch(function (err) {
+        if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+        acShow(err.message);
+      });
+    }
+    function toggleActive(a) {
+      if (a.is_active === false) { setActive(a, true); return; }
+      formDialog({
+        title: 'Disable account',
+        confirmText: 'Disable Account',
+        body: '<p class="confirm-lead">' + Util.esc(a.name) + ' <span class="muted">(' + Util.esc(a.username) + ')</span></p>' +
+          '<p>This account will not be able to log in. If the person is logged in now, they are logged out with their next click. Their records are kept, and you can enable the account again at any time.</p>',
+        submit: function () { return Api.post(CONFIG.ENDPOINTS.SUPER_SET_ACTIVE, { id: a.id, active: false }); },
+        done: function () {
+          a.is_active = false; render();
+          acShow('The account "' + a.username + '" was disabled. They can no longer log in.', 'success');
+        }
+      });
+    }
+
+    /* ----- super user log ----- */
+    var logPage = 1;
+    function loadLog(page) {
+      logPage = page || 1;
+      Api.get(CONFIG.ENDPOINTS.SUPER_LOG + '?page=' + logPage + '&per_page=20').then(function (res) {
+        var d = res.data || {};
+        logPage = d.page || 1;
+        var rows = d.entries || [];
+        $('lg-alert').hidden = true;
+        $('lg-body').innerHTML = rows.length ? rows.map(function (r) {
+          return '<tr><td class="nowrap">' + Util.esc(when(r.created_at)) + '</td><td><strong>' + Util.esc(r.action) + '</strong></td>' +
+            '<td>' + Util.esc(r.target || '') + '</td><td>' + Util.esc(r.details || '') + '</td><td class="muted">' + Util.esc(r.ip_address || '') + '</td></tr>';
+        }).join('') : '<tr><td colspan="5" class="muted">Nothing has been recorded yet.</td></tr>';
+        $('lg-pager').hidden = (d.pages || 1) <= 1;
+        $('lg-info').textContent = 'Page ' + logPage + ' of ' + (d.pages || 1) + ' (' + (d.total || 0) + ' entries)';
+        $('lg-prev').disabled = logPage <= 1;
+        $('lg-next').disabled = logPage >= (d.pages || 1);
+      }).catch(function (err) {
+        if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+        $('lg-body').innerHTML = '<tr><td colspan="5" class="muted">Could not load the log.</td></tr>';
+        var box = $('lg-alert'); box.textContent = err.message; box.className = 'alert error'; box.hidden = false;
+      });
+    }
+    $('lg-prev').addEventListener('click', function () { loadLog(logPage - 1); });
+    $('lg-next').addEventListener('click', function () { loadLog(logPage + 1); });
+
+    $('ac-body').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-act]');
+      if (!b) return;
+      var tr = b.closest('tr');
+      var a = accounts.filter(function (x) { return String(x.id) === tr.getAttribute('data-id'); })[0];
+      if (!a) return;
+      acAlert.hidden = true;
+      var act = b.getAttribute('data-act');
+      if (act === 'edit') openEdit(a);
+      else if (act === 'reset') openReset(a);
+      else toggleActive(a);
+    });
+
+    /* ----- change my password ----- */
+    var form = $('pw-form'), alertBox = $('pw-alert'), submitBtn = $('pw-submit');
+    var inputs = { current_password: $('pw-current'), new_password: $('pw-new'), confirm: $('pw-confirm') };
+    function showAlert(msg, type) { alertBox.textContent = msg; alertBox.className = 'alert ' + (type || 'error'); alertBox.hidden = false; }
+    function setError(name, msg) {
+      var field = inputs[name].closest('.field');
+      field.classList.toggle('invalid', !!msg);
+      field.querySelector('.field-error').textContent = msg || '';
+    }
+    function setLoading(on) {
+      submitBtn.disabled = on;
+      submitBtn.classList.toggle('loading', on);
+      submitBtn.querySelector('.btn-text').textContent = on ? 'Saving...' : 'Change Password';
+    }
+    $('pw-show').addEventListener('change', function () {
+      var type = this.checked ? 'text' : 'password';
+      Object.keys(inputs).forEach(function (n) { inputs[n].type = type; });
+    });
+    Object.keys(inputs).forEach(function (n) { inputs[n].addEventListener('input', function () { setError(n, ''); }); });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      Object.keys(inputs).forEach(function (n) { setError(n, ''); });
+      alertBox.hidden = true;
+      var current = inputs.current_password.value, next = inputs.new_password.value, confirm = inputs.confirm.value, bad = null;
+      function fail(name, msg) { setError(name, msg); if (!bad) bad = inputs[name]; }
+      if (!current) fail('current_password', 'Enter your current password.');
+      if (next.length < 8) fail('new_password', 'The new password must be at least 8 characters.');
+      else if (next.length > 72) fail('new_password', 'The new password must be 72 characters or fewer.');
+      else if (next === current) fail('new_password', 'The new password must be different from the current one.');
+      if (next !== confirm) fail('confirm', 'The two new passwords do not match.');
+      if (bad) { bad.focus(); return; }
+
+      setLoading(true);
+      Api.post(CONFIG.ENDPOINTS.SUPER_CHANGE_PASSWORD, { current_password: current, new_password: next })
+        .then(function (res) {
+          form.reset();
+          Object.keys(inputs).forEach(function (n) { inputs[n].type = 'password'; });
+          $('sp-default').hidden = true;
+          $('ac-default').hidden = true;
+          showAlert((res.message || 'Password changed.') + ' Use the new password the next time you log in.', 'success');
+        })
+        .catch(function (err) {
+          if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+          var e = err.errors || {};
+          if (e.current_password) setError('current_password', e.current_password);
+          if (e.new_password) setError('new_password', e.new_password);
+          showAlert(err.message);
+          if (e.current_password) { inputs.current_password.value = ''; inputs.current_password.focus(); }
+        })
+        .then(function () { setLoading(false); });
+    });
+
+    Auth.requireSuper().then(function (ok) {
+      if (!ok) return;
+      Shell.init('accounts');
+      showTab((location.hash || '').replace('#', ''));
       load();
     });
   };

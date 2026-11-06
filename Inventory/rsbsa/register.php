@@ -1,3 +1,10 @@
+<?php
+// Barangays of Palo, Leyte (used by the Barangay dropdowns; "Other" lets the user type another place)
+$paloBarangays = ['Anahaway', 'Arado', 'Baras', 'Barayong', 'Buri', 'Cabarasan Daku', 'Cabarasan Guti', 'Campetik', 'Candahug', 'Cangumbang', 'Canhidoc', 'Capirawan', 'Castilla', 'Cavite East', 'Cavite West', 'Cogon', 'Gacao', 'Guindapunan', 'Libertad', 'Luntad', 'Naga-naga', 'Pawing', 'Salvacion', 'San Agustin', 'San Antonio', 'San Fernando', 'San Isidro', 'San Joaquin', 'San Jose', 'San Miguel', 'Santa Cruz', 'Tacuranga', 'Teraza'];
+$brgyOptions = '<option value="">Select barangay...</option>';
+foreach ($paloBarangays as $b) { $brgyOptions .= '<option>' . htmlspecialchars($b) . '</option>'; }
+$brgyOptions .= '<option value="__other">Other (type manually)...</option>';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -164,7 +171,8 @@
               </div>
               <div class="field">
                 <label><span class="lbl">Barangay <b class="req">*</b></span>
-                  <input type="text" data-f="addr_barangay" maxlength="80"></label>
+                  <select class="brgy-select" data-brgy="addr" aria-label="Barangay"><?= $brgyOptions ?></select>
+                  <input type="text" class="brgy-other" data-f="addr_barangay" maxlength="80" placeholder="Type the barangay name" hidden></label>
                 <small class="field-error"></small>
               </div>
               <div class="field">
@@ -344,7 +352,8 @@
         </div>
         <div class="field">
           <label><span class="lbl">Barangay <b class="req">*</b></span>
-            <input type="text" data-f="loc_barangay" maxlength="80"></label>
+            <select class="brgy-select" data-brgy="loc" aria-label="Barangay"><?= $brgyOptions ?></select>
+                  <input type="text" class="brgy-other" data-f="loc_barangay" maxlength="80" placeholder="Type the barangay name" hidden></label>
           <small class="field-error"></small>
         </div>
         <div class="field">
@@ -370,7 +379,7 @@
               <option>Root Crops</option>
               <option>Banana</option>
               <option>Coconut</option>
-              <option>Livestock</option>
+              <option>Animals</option>
               <option>Fishery</option>
             </select></label>
           <small class="field-error"></small>
@@ -390,9 +399,9 @@
         </div>
       </div>
 
-      <!-- Livestock: number of heads -->
+      <!-- Animals (livestock, poultry, dogs): number of heads -->
       <div data-group="livestock" hidden>
-        <h4 class="sub-title">No. of Heads (Cow, Carabao, Sheep, Goat, Swine, Poultry, etc.)</h4>
+        <h4 class="sub-title">No. of Heads (Carabao, Cattle, Swine, Goat, Sheep, Poultry, Dog)</h4>
         <div class="stack" data-list="animals"></div>
         <button type="button" class="btn-outline btn-sm" data-act="add-animal">+ Add Animal</button>
         <small class="field-error" data-err-group="livestock"></small>

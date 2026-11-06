@@ -66,7 +66,7 @@
                   <option>Root Crops</option>
                   <option>Banana</option>
                   <option>Coconut</option>
-                  <option>Livestock</option>
+                  <option>Animals</option>
                   <option>Fishery</option>
                 </select></label>
             </div>
@@ -102,6 +102,33 @@
             <button type="button" class="btn-solid" data-export data-report="farmers" data-format="xlsx">Download Excel (.xlsx)</button>
             <button type="button" class="btn-outline" data-export data-report="farmers" data-format="csv">Download CSV</button>
             <button type="button" class="btn-outline" data-preview data-report="farmers">Preview</button>
+          </div>
+        </section>
+
+        <!-- ===== Animal Population Monitoring Form ===== -->
+        <section class="panel" aria-labelledby="rep-animals-title">
+          <h2 id="rep-animals-title">Animal Population</h2>
+          <p class="hint">Animal Population Monitoring Form, one sheet per barangay, for farmers with an Animals parcel.</p>
+
+          <div class="form-grid cols-4 report-filters">
+            <div class="field">
+              <label><span class="lbl">Barangay</span>
+                <select id="r-an-barangay">
+                  <option value="">All barangays</option>
+                </select></label>
+            </div>
+            <div class="field">
+              <label><span class="lbl">As of</span>
+                <input type="date" id="r-an-asof"></label>
+              <small class="field-error" id="r-an-error"></small>
+            </div>
+          </div>
+
+          <div class="report-actions">
+            <button type="button" class="btn-solid" data-export data-report="animals" data-format="xlsx">Download Excel Form (.xlsx)</button>
+            <button type="button" class="btn-outline" data-export data-report="animals" data-format="csv">Download CSV</button>
+            <button type="button" class="btn-outline" data-preview data-report="animals">Preview</button>
+            <button type="button" class="btn-outline" data-export data-report="animals_blank" data-format="xlsx">Download Blank Form</button>
           </div>
         </section>
 

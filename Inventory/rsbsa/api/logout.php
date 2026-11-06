@@ -7,6 +7,8 @@ $reason = json_decode((string) file_get_contents('php://input'), true)['reason']
 if (current_admin()) {
     $auto = $reason === 'inactivity';
     log_activity('Login', $auto ? 'Logged out automatically' : 'Logged out', $auto ? 'No activity for the auto-logout time.' : '');
+} elseif (current_super()) {
+    super_log($reason === 'inactivity' ? 'Logged out automatically' : 'Logged out', SUPER_USERNAME);
 }
 destroy_session();
 ok([], 'Logged out.');

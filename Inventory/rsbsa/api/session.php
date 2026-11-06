@@ -1,9 +1,14 @@
 <?php
-/** GET -> { success, data: { authenticated: bool, user: {...} | null } }   (never an error when logged out) */
+/** GET -> { success, data: { authenticated: bool, user: {..., role: 'admin'|'super'} | null } }   (never an error when logged out) */
 require __DIR__ . '/_bootstrap.php';
 
 require_get();
-$admin = current_admin();
+$user = current_admin();
+if ($user) {
+    $user['role'] = 'admin';
+} else {
+    $user = current_super();
+}
 session_write_close();
 
-ok(['authenticated' => $admin !== null, 'user' => $admin]);
+ok(['authenticated' => $user !== null, 'user' => $user]);

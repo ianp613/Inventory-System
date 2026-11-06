@@ -137,6 +137,18 @@ function backup_create(string $kind): array
         // consistent snapshot even while the system is in use
         db()->exec('VACUUM INTO ' . db()->quote($tmpDb));
 
+        // the super user's password belongs to this installation: it is not copied into backups
+        $snap = new PDO('sqlite:' . $tmpDb);
+        $snap->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        if ($snap->query("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'super_user'")->fetchColumn()) {
+            $snap->exec('DELETE FROM super_user');
+        }
+        if ($snap->query("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'super_log'")->fetchColumn()) {
+            $snap->exec('DELETE FROM super_log');
+        }
+        $snap->exec('VACUUM');
+        $snap = null;
+
         $counts = [];
         foreach (['farmers', 'parcels', 'duplicate_flags', 'activity_log'] as $t) {
             $counts[$t] = (int) q_val("SELECT COUNT(*) FROM $t");
@@ -329,6 +341,9 @@ function backup_restore_from(string $zipPath): array
             $tables = array_column($pdo->query("SELECT name FROM main.sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'")->fetchAll(), 'name');
             $theirs = array_column($pdo->query("SELECT name FROM restored.sqlite_master WHERE type = 'table'")->fetchAll(), 'name');
             foreach ($tables as $t) {
+                if ($t === 'super_user' || $t === 'super_log') {
+                    continue;   // never replaced by a restore
+                }
                 $pdo->exec("DELETE FROM main.\"$t\"");
                 if (!in_array($t, $theirs, true)) {
                     continue;   // table added in a newer version: stays empty
@@ -338,7 +353,12 @@ function backup_restore_from(string $zipPath): array
                 $cols = array_values(array_intersect($mine, $them));
                 if ($cols) {
                     $list = '"' . implode('","', $cols) . '"';
-                    $pdo->exec("INSERT INTO main.\"$t\" ($list) SELECT $list FROM restored.\"$t\"");
+                    // backups made before the commodity was renamed still say "Livestock"
+                    $pick = implode(',', array_map(
+                        fn($c) => $t === 'parcels' && $c === 'commodity' ? "CASE WHEN \"commodity\" = 'Livestock' THEN 'Animals' ELSE \"commodity\" END" : '"' . $c . '"',
+                        $cols
+                    ));
+                    $pdo->exec("INSERT INTO main.\"$t\" ($list) SELECT $pick FROM restored.\"$t\"");
                 }
             }
             $fk = $pdo->query('PRAGMA main.foreign_key_check')->fetchAll();

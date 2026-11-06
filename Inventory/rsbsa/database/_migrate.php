@@ -15,6 +15,9 @@ function rsbsa_new_columns(): array
             'valid_id_path' => ['TEXT', 'VARCHAR(255) NULL'],
             'valid_id_name' => ['TEXT', 'VARCHAR(160) NULL'],
         ],
+        'admins' => [
+            'is_active' => ['INTEGER NOT NULL DEFAULT 1', 'TINYINT(1) NOT NULL DEFAULT 1'],
+        ],
         'parcels' => [
             'parcel_status' => [
                 "TEXT NOT NULL DEFAULT 'Active' CHECK (parcel_status IN ('Active','Inactive','Deceased'))",
@@ -41,6 +44,17 @@ function rsbsa_migrate(PDO $pdo): array
     if ($sqlite) {
         // creates any table that does not exist yet (existing tables and data are left alone)
         $pdo->exec((string) file_get_contents(__DIR__ . '/schema.sql'));
+    }
+
+    // the commodity "Livestock" is now "Animals" (it also covers poultry and dogs)
+    if (rsbsa_rename_livestock($pdo, $sqlite)) {
+        $done[] = 'renamed the commodity Livestock to Animals';
+    }
+
+    // spelling fix to match the paper form: "Caracao" -> "Caracow"
+    if (rsbsa_table_columns($pdo, 'parcel_livestock') && (int) $pdo->query("SELECT COUNT(*) FROM parcel_livestock WHERE animal_type = 'Carabao - Female (Caracao)'")->fetchColumn() > 0) {
+        $pdo->exec("UPDATE parcel_livestock SET animal_type = 'Carabao - Female (Caracow)' WHERE animal_type = 'Carabao - Female (Caracao)'");
+        $done[] = 'corrected the animal name Caracao to Caracow';
     }
 
     foreach (rsbsa_new_columns() as $table => $columns) {
@@ -95,4 +109,61 @@ function rsbsa_migrate(PDO $pdo): array
         $done[] = 'started history for ' . count($missing) . ' existing parcel(s)';
     }
     return $done;
+}
+
+
+/**
+ * Livestock -> Animals. The commodity is a CHECK / ENUM list, so the parcels table has to be rebuilt (SQLite)
+ * or its column widened (MySQL). All rows, ids and links to other tables are kept.
+ * @return bool true when something was changed
+ */
+function rsbsa_rename_livestock(PDO $pdo, bool $sqlite): bool
+{
+    if (!rsbsa_table_columns($pdo, 'parcels')) {
+        return false;
+    }
+    if (!$sqlite) {
+        $type = (string) $pdo->query("SHOW COLUMNS FROM parcels LIKE 'commodity'")->fetch(PDO::FETCH_ASSOC)['Type'];
+        if (strpos($type, "'Livestock'") === false) {
+            return false;
+        }
+        $pdo->exec("ALTER TABLE parcels MODIFY commodity ENUM('Rice','Vegetable','Root Crops','Banana','Coconut','Livestock','Animals','Fishery') NOT NULL");
+        $pdo->exec("UPDATE parcels SET commodity = 'Animals' WHERE commodity = 'Livestock'");
+        $pdo->exec("ALTER TABLE parcels MODIFY commodity ENUM('Rice','Vegetable','Root Crops','Banana','Coconut','Animals','Fishery') NOT NULL");
+        return true;
+    }
+
+    $sql = (string) $pdo->query("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'parcels'")->fetchColumn();
+    if (strpos($sql, "'Livestock'") === false) {
+        return false;
+    }
+    $newSql = preg_replace('/^CREATE TABLE\s+(?:IF NOT EXISTS\s+)?["`]?parcels["`]?/i', 'CREATE TABLE parcels_new', str_replace("'Livestock'", "'Animals'", $sql), 1);
+    $cols = rsbsa_table_columns($pdo, 'parcels');
+    $list = implode(', ', $cols);
+    $select = implode(', ', array_map(fn($c) => $c === 'commodity' ? "CASE WHEN commodity = 'Livestock' THEN 'Animals' ELSE commodity END" : $c, $cols));
+
+    // the usual SQLite table rebuild: foreign keys are switched off so the child tables keep pointing at "parcels"
+    $pdo->exec('PRAGMA foreign_keys = OFF');
+    try {
+        $before = count($pdo->query('PRAGMA foreign_key_check')->fetchAll());   // problems that were already there are not our concern
+        $pdo->exec('BEGIN');
+        $pdo->exec('DROP TABLE IF EXISTS parcels_new');
+        $pdo->exec($newSql);
+        $pdo->exec("INSERT INTO parcels_new ($list) SELECT $select FROM parcels");
+        $pdo->exec('DROP TABLE parcels');
+        $pdo->exec('ALTER TABLE parcels_new RENAME TO parcels');
+        if (count($pdo->query('PRAGMA foreign_key_check')->fetchAll()) > $before) {
+            throw new RuntimeException('foreign key check failed after rebuilding parcels');
+        }
+        $pdo->exec('COMMIT');
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->exec('ROLLBACK');
+        }
+        $pdo->exec('PRAGMA foreign_keys = ON');
+        throw $e;
+    }
+    $pdo->exec('PRAGMA foreign_keys = ON');
+    $pdo->exec((string) file_get_contents(__DIR__ . '/schema.sql'));   // recreates the indexes of the rebuilt table
+    return true;
 }

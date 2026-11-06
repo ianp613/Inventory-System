@@ -10,6 +10,14 @@
 </head>
 <body class="login-page" data-page="login">
 
+  <div class="login-split">
+  <aside class="login-art" aria-hidden="true">
+    <div class="login-art-text">
+      <p class="login-art-title">Growing a stronger<br>Palo, together.</p>
+      <p class="login-art-sub">Registry of farmers, fisherfolk and growers of the Municipality of Palo, Leyte.</p>
+    </div>
+  </aside>
+
   <main class="login-card" aria-labelledby="login-title">
     <header class="login-header">
       <img class="login-seal" src="assets/img/palo-seal.png" alt="Municipality of Palo official seal" width="96" height="96">
@@ -53,6 +61,7 @@
       Authorized administrators only.
     </footer>
   </main>
+  </div>
 
   <script src="assets/js/script.js?v=<?= (int) @filemtime(__DIR__ . '/assets/js/script.js') ?>"></script>
 </body>

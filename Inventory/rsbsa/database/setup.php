@@ -52,6 +52,11 @@ if ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite') {
     echo "Using MySQL: import database/schema.mysql.sql yourself; only the account is created here.\n";
 }
 
+if (strcasecmp($username, SUPER_USERNAME) === 0) {
+    fwrite(STDERR, "The username \"" . SUPER_USERNAME . "\" is reserved for the super user. Choose another username.\n");
+    exit(1);
+}
+
 $hash = password_hash($password, PASSWORD_DEFAULT);
 $existing = q_one('SELECT id FROM admins WHERE LOWER(username) = LOWER(?)', [$username]);
 if ($existing) {

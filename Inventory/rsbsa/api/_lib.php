@@ -3,11 +3,34 @@
  * Business rules shared by several endpoints (lot / spouse checks, farmer loading).
  */
 
-const COMMODITIES      = ['Rice', 'Vegetable', 'Root Crops', 'Banana', 'Coconut', 'Livestock', 'Fishery'];
+const COMMODITIES      = ['Rice', 'Vegetable', 'Root Crops', 'Banana', 'Coconut', 'Animals', 'Fishery'];
 const CROP_COMMODITIES = ['Rice', 'Vegetable', 'Root Crops', 'Banana', 'Coconut'];
 const CROP_KEYS        = ['rice', 'vegetable', 'root_crops', 'banana', 'coconut', 'fruit_bearing'];
 const FARMING_ROLES    = ['Owner', 'Tenant', 'Leasee', 'Actual Tiller', 'Farm Worker'];
-const ANIMAL_TYPES     = ['Cow', 'Carabao', 'Sheep', 'Goat', 'Swine', 'Poultry', 'Other'];
+/** Choices when the commodity is Animals (livestock, poultry and dogs), grouped as on the paper form. */
+const ANIMAL_GROUPS = [
+    'Carabao' => ['Carabao - Male', 'Carabao - Female (Caracow)'],
+    'Cattle (Baka)' => ['Cattle - Male', 'Cattle - Female (Cow)'],
+    'Swine (Baboy)' => ['Swine - Boar (Male/Breeder)', 'Swine - Sow (Inahin)', 'Swine - Fatteners (Patabain)', 'Swine - Piglets (Biik)'],
+    'Goat (Kanding)' => ['Goat - Male', 'Goat - Female'],
+    'Sheep (Karnero)' => ['Sheep - Male', 'Sheep - Female'],
+    'Poultry' => ['Gamefowl (Pangsabong)', 'Chicken - Layer (Pang-itlog)', 'Chicken - Native/Improved (for Dressing/Meat)', 'Chicken - Broiler', 'Duck (Pato)', 'Turkey (Pabo)', 'Goose (Gansa)', 'Pigeon (Salapati)'],
+    'Dog (Ayam)' => ['Dog - Stray Male', 'Dog - Stray Female', 'Dog - Leashed Male', 'Dog - Leashed Female'],
+];
+/** Older records used these plain names: still accepted so they can be saved again unchanged. */
+const LEGACY_ANIMAL_TYPES = ['Cow', 'Carabao', 'Sheep', 'Goat', 'Swine', 'Poultry', 'Other', 'Carabao - Female (Caracao)'];
+/** Dashboard "Animal Monitoring": each group and the stored animal types that belong to it (older plain names included). */
+const ANIMAL_CHART_GROUPS = [
+    'Carabao'  => ['Carabao - Male', 'Carabao - Female (Caracow)', 'Carabao - Female (Caracao)', 'Carabao'],
+    'Cattle'   => ['Cattle - Male', 'Cattle - Female (Cow)', 'Cow'],
+    'Swine'    => ['Swine - Boar (Male/Breeder)', 'Swine - Sow (Inahin)', 'Swine - Fatteners (Patabain)', 'Swine - Piglets (Biik)', 'Swine'],
+    'Goat'     => ['Goat - Male', 'Goat - Female', 'Goat'],
+    'Sheep'    => ['Sheep - Male', 'Sheep - Female', 'Sheep'],
+    'Poultry'  => ['Gamefowl (Pangsabong)', 'Chicken - Layer (Pang-itlog)', 'Chicken - Native/Improved (for Dressing/Meat)', 'Chicken - Broiler', 'Duck (Pato)', 'Turkey (Pabo)', 'Goose (Gansa)', 'Pigeon (Salapati)', 'Poultry'],
+    'Dog'      => ['Dog - Stray Male', 'Dog - Stray Female', 'Dog - Leashed Male', 'Dog - Leashed Female'],
+    'Other'    => ['Other'],
+];
+define('ANIMAL_TYPES', array_merge(array_merge(...array_values(ANIMAL_GROUPS)), LEGACY_ANIMAL_TYPES));
 const CIVIL_STATUSES = ['Single', 'Married', 'Widowed', 'Separated', 'Annulled'];
 /** Parcel remark. Only 'Active' parcels count in a farmer's total area. */
 const PARCEL_STATUSES = ['Active', 'Inactive', 'Deceased'];
@@ -119,7 +142,7 @@ function load_farmer(int $id): ?array
         }
 
         $livestock = null;
-        if ($p['commodity'] === 'Livestock') {
+        if ($p['commodity'] === 'Animals') {
             $livestock = array_map(
                 fn($a) => ['type' => $a['animal_type'], 'heads' => (int) $a['heads']],
                 q_all('SELECT animal_type, heads FROM parcel_livestock WHERE parcel_id = ? ORDER BY id', [$pid])
