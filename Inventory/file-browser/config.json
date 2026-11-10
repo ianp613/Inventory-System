@@ -1,7 +1,7 @@
 {
    "database" : "inventory_system",
-   "host" : "192.168.33.222",
-   "username" : "db_artisan",
-   "password" : "12345ICORE",
-   "storage_location" : "D:/inventory_files"
+   "host" : "localhost",
+   "username" : "ddc_artisan",
+   "password" : "DB*33253983",
+   "storage_location" : "D:/Wifi Files"
 }
