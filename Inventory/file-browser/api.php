@@ -8,7 +8,7 @@ if (!Auth::user()) {
 
 $action = (string)($_GET['action'] ?? '');
 $readActions = ['list', 'foldersize', 'search', 'download', 'preview'];
-$writeActions = ['mkdir', 'rename', 'delete', 'copy', 'move', 'upload'];
+$writeActions = ['mkdir', 'rename', 'delete', 'copy', 'move', 'upload', 'uploadchunk', 'uploadabort'];
 
 $in = [];
 if (in_array($action, $writeActions, true)) {
@@ -19,6 +19,9 @@ if (in_array($action, $writeActions, true)) {
         json_out(['error' => 'Session expired. Please reload the page.'], 403);
     }
     $in = $_POST;
+    if ($action === 'uploadchunk' || $action === 'uploadabort') {
+        $in = $_GET; // the request body is the raw chunk
+    }
     if (stripos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') === 0) {
         $in = json_decode(file_get_contents('php://input'), true) ?: [];
     }
@@ -74,6 +77,23 @@ try {
                 throw new RuntimeException('No files received (check upload_max_filesize / post_max_size in php.ini).');
             }
             json_out(['saved' => $fs->upload($path, $_FILES['files'])]);
+
+        case 'uploadchunk':
+            session_write_close(); // do not lock the session while the chunk arrives
+            $body = fopen('php://input', 'rb');
+            json_out($fs->uploadChunk(
+                $path,
+                (string)($in['id'] ?? ''),
+                (string)($in['name'] ?? ''),
+                (int)($in['offset'] ?? 0),
+                (int)($in['total'] ?? 0),
+                ($in['last'] ?? '0') === '1',
+                $body
+            ));
+
+        case 'uploadabort':
+            $fs->uploadAbort($path, (string)($in['id'] ?? ''));
+            json_out(['ok' => true]);
 
         case 'download':
         case 'preview':

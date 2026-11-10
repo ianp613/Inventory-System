@@ -316,47 +316,90 @@
   }
 
   function cancelUpload(u) {
+    u.cancelled = true;
     if (u.state === 'waiting') setUpload(u, 'cancelled', 'Cancelled', 0);
     else if (u.xhr) u.xhr.abort();
   }
 
-  function sendUpload(u) {
+  const CHUNK = 5 * 1024 * 1024; // each request carries at most 5 MB, so none can hit a proxy timeout
+
+  function newUploadId() {
+    const a = new Uint8Array(12);
+    crypto.getRandomValues(a);
+    return [...a].map((b) => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  // sends one chunk; resolves { ok, error, cancelled, saved }
+  function sendChunk(u, offset, blob, last) {
     return new Promise((resolve) => {
+      const q = new URLSearchParams({
+        action: 'uploadchunk', path: u.dest, name: u.file.name, id: u.id,
+        offset: String(offset), total: String(u.file.size), last: last ? '1' : '0',
+      });
       const xhr = new XMLHttpRequest();
       u.xhr = xhr;
-      xhr.open('POST', BASE + 'api.php?action=upload');
+      xhr.open('POST', BASE + 'api.php?' + q.toString());
       xhr.setRequestHeader('X-CSRF-Token', csrf);
+      xhr.setRequestHeader('Content-Type', 'application/octet-stream');
       xhr.upload.onprogress = (e) => {
         if (!e.lengthComputable) return;
-        const pct = Math.round((e.loaded / e.total) * 100);
-        if (e.loaded >= e.total) setUpload(u, 'saving', 'Saving on server…', 100);
-        else setUpload(u, 'uploading', 'Uploading ' + pct + '% (' + fmtSize(e.loaded) + ' of ' + fmtSize(e.total) + ')', pct);
+        const sent = offset + e.loaded;
+        const pct = u.file.size ? Math.min(100, Math.round((sent / u.file.size) * 100)) : 100;
+        if (last && e.loaded >= e.total) setUpload(u, 'saving', 'Saving on server…', 100);
+        else setUpload(u, 'uploading', 'Uploading ' + pct + '% (' + fmtSize(Math.min(sent, u.file.size)) + ' of ' + fmtSize(u.file.size) + ')', pct);
       };
       xhr.onload = () => {
         let data = {};
         try { data = JSON.parse(xhr.responseText); } catch (e) { /* not JSON */ }
-        if (xhr.status === 401) { location.href = BASE + 'index.php'; return resolve(false); }
-        if (xhr.status >= 200 && xhr.status < 300 && Array.isArray(data.saved)) {
-          const saved = data.saved[0];
-          setUpload(u, 'done', saved && saved !== u.file.name ? 'Done - saved as "' + saved + '" (name already existed)' : 'Done', 100);
-          resolve(true);
-        } else {
-          let msg = data.error;
-          if (!msg && xhr.status === 413) msg = 'File is too large for the server (check post_max_size / upload_max_filesize).';
-          if (!msg) msg = 'Server returned an error (HTTP ' + xhr.status + ').';
-          setUpload(u, 'error', 'Failed: ' + msg);
-          resolve(false);
+        if (xhr.status === 401) { location.href = BASE + 'index.php'; return resolve({ ok: false, error: 'Signed out' }); }
+        if (xhr.status >= 200 && xhr.status < 300 && (data.saved || data.received !== undefined)) {
+          return resolve({ ok: true, saved: data.saved });
         }
+        const retry = xhr.status === 0 || xhr.status >= 500; // proxy/server hiccup: worth retrying
+        let msg = data.error;
+        if (!msg && xhr.status === 413) msg = 'The server or proxy rejected the request as too large (HTTP 413).';
+        if (!msg && [502, 503, 504, 524, 408].includes(xhr.status)) msg = 'The server or proxy timed out (HTTP ' + xhr.status + ').';
+        if (!msg) msg = 'Server returned an error (HTTP ' + xhr.status + ').';
+        resolve({ ok: false, error: msg, retry });
       };
-      xhr.onerror = () => { setUpload(u, 'error', 'Failed: network error or the server closed the connection (the file may exceed the server size limit).'); resolve(false); };
-      xhr.ontimeout = () => { setUpload(u, 'error', 'Failed: the upload timed out.'); resolve(false); };
-      xhr.onabort = () => { setUpload(u, 'cancelled', 'Cancelled'); resolve(false); };
-      const fd = new FormData();
-      fd.append('path', u.dest);
-      fd.append('files[]', u.file);
-      setUpload(u, 'uploading', 'Uploading 0%', 0);
-      xhr.send(fd);
+      xhr.onerror = () => resolve({ ok: false, retry: true, error: 'Network error - the connection to the server was lost.' });
+      xhr.ontimeout = () => resolve({ ok: false, retry: true, error: 'The upload timed out.' });
+      xhr.onabort = () => resolve({ ok: false, cancelled: true });
+      xhr.send(blob);
     });
+  }
+
+  function abortOnServer(u) {
+    fetch(BASE + 'api.php?' + new URLSearchParams({ action: 'uploadabort', path: u.dest, id: u.id }), {
+      method: 'POST', headers: { 'X-CSRF-Token': csrf },
+    }).catch(() => {});
+  }
+
+  async function sendUpload(u) {
+    const total = u.file.size;
+    u.id = newUploadId();
+    u.cancelled = false;
+    setUpload(u, 'uploading', 'Uploading 0%', 0);
+    let offset = 0;
+    let saved = null;
+    do {
+      const end = Math.min(offset + CHUNK, total);
+      const last = end >= total;
+      const blob = u.file.slice(offset, end);
+      let r;
+      for (let attempt = 1; ; attempt++) {
+        r = await sendChunk(u, offset, blob, last);
+        if (r.ok || r.cancelled || !r.retry || attempt >= 3) break;
+        setUpload(u, 'uploading', r.error + ' Retrying (' + attempt + '/2)…');
+        await new Promise((res) => setTimeout(res, 1500 * attempt));
+      }
+      if (r.cancelled || u.cancelled) { abortOnServer(u); setUpload(u, 'cancelled', 'Cancelled'); return false; }
+      if (!r.ok) { abortOnServer(u); setUpload(u, 'error', 'Failed: ' + r.error); return false; }
+      saved = r.saved || saved;
+      offset = end;
+    } while (offset < total);
+    setUpload(u, 'done', saved && saved !== u.file.name ? 'Done - saved as "' + saved + '" (name already existed)' : 'Done', 100);
+    return true;
   }
 
   async function runUploads() {

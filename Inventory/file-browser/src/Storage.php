@@ -134,9 +134,10 @@ final class Storage
         if (!is_dir($dir)) {
             throw new RuntimeException('Not a folder.');
         }
+        $this->cleanStale($dir);
         $items = [];
         foreach (scandir($dir) ?: [] as $n) {
-            if ($n === '.' || $n === '..') {
+            if ($n === '.' || $n === '..' || self::isPartial($n)) {
                 continue;
             }
             $items[] = $this->item($dir . '/' . $n, $n);
@@ -186,7 +187,7 @@ final class Storage
             RecursiveIteratorIterator::CATCH_GET_CHILD
         );
         foreach ($it as $f) {
-            if (mb_stripos($f->getFilename(), $q) !== false) {
+            if (!self::isPartial($f->getFilename()) && mb_stripos($f->getFilename(), $q) !== false) {
                 $res[] = $this->item($f->getPathname(), $f->getFilename());
                 if (count($res) >= $limit) {
                     break;
@@ -334,6 +335,110 @@ final class Storage
         }
         if (!@rename($src, $dst)) {
             throw new RuntimeException('Move failed.');
+        }
+    }
+
+    /* ---------- chunked upload ---------- */
+
+    private static function isPartial(string $name): bool
+    {
+        return strncmp($name, '.upload-', 8) === 0 && substr($name, -5) === '.part';
+    }
+
+    /** Remove abandoned partial uploads (older than 24 hours) from a folder. */
+    private function cleanStale(string $dir): void
+    {
+        foreach (glob($dir . '/.upload-*.part') ?: [] as $f) {
+            if (is_file($f) && filemtime($f) < time() - 86400) {
+                @unlink($f);
+            }
+        }
+    }
+
+    private function partPath(string $dir, string $uid): string
+    {
+        if (!preg_match('/^[a-f0-9]{16,32}$/', $uid)) {
+            throw new RuntimeException('Invalid upload id.');
+        }
+        return $dir . '/.upload-' . $uid . '.part';
+    }
+
+    /**
+     * Append one chunk (read from $stream) to a partial file. When $last is true the
+     * partial file is checked against $total and renamed to its final, unique name.
+     * Returns ['saved' => name] on the last chunk, otherwise ['received' => bytes].
+     */
+    public function uploadChunk(string $rel, string $uid, string $name, int $offset, int $total, bool $last, $stream): array
+    {
+        $dir = $this->abs($rel);
+        if (!is_dir($dir)) {
+            throw new RuntimeException('Destination is not a folder.');
+        }
+        $part = $this->partPath($dir, $uid);
+        $name = self::sanitizeName(basename(str_replace('\\', '/', $name)));
+        if ($name === '') {
+            throw new RuntimeException('Invalid file name.');
+        }
+
+        // read the chunk first, so we know its length (spills to disk if large)
+        $buf = fopen('php://temp/maxmemory:1048576', 'w+b');
+        $n = stream_copy_to_stream($stream, $buf);
+        if ($n === false) {
+            throw new RuntimeException('Could not read the uploaded data.');
+        }
+
+        clearstatcache(true, $part);
+        $have = is_file($part) ? (int)filesize($part) : 0;
+        if ($offset === 0 && $have > 0) {
+            @unlink($part);   // a new upload starts over
+            $have = 0;
+        }
+
+        if ($have === $offset + $n && $offset > 0) {
+            // same chunk sent twice (a retry after a lost response): already stored
+        } elseif ($have !== $offset) {
+            @unlink($part);
+            throw new RuntimeException('Upload went out of sync (expected byte ' . $have . ', got ' . $offset . '). Please upload the file again.');
+        } else {
+            rewind($buf);
+            $out = @fopen($part, 'ab');
+            if (!$out) {
+                throw new RuntimeException('Could not write to the destination folder.');
+            }
+            $copied = stream_copy_to_stream($buf, $out);
+            $ok = fflush($out);
+            fclose($out);
+            if ($copied !== $n || !$ok) {
+                @unlink($part);
+                throw new RuntimeException('Could not write the file (disk full or no permission).');
+            }
+        }
+        fclose($buf);
+
+        if (!$last) {
+            return ['received' => $offset + $n];
+        }
+
+        clearstatcache(true, $part);
+        $size = is_file($part) ? (int)filesize($part) : 0;
+        if ($size !== $total) {
+            @unlink($part);
+            throw new RuntimeException('The uploaded file is incomplete (' . $size . ' of ' . $total . ' bytes).');
+        }
+        $final = $this->uniqueName($dir, $name, false, ' (copy)');
+        if (!@rename($part, $dir . '/' . $final)) {
+            @unlink($part);
+            throw new RuntimeException('Could not save "' . $name . '".');
+        }
+        return ['saved' => $final];
+    }
+
+    public function uploadAbort(string $rel, string $uid): void
+    {
+        $dir = $this->abs($rel);
+        $part = $this->partPath($dir, $uid);
+        if (is_file($part)) {
+            @unlink($part);
         }
     }
 
