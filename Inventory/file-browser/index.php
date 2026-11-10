@@ -50,15 +50,22 @@ if (!$user && $_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <?php if (!$user): ?>
 <body class="login-page">
+<div class="login-bg" aria-hidden="true">
+    <div class="bg-head"><span class="bg-logo"></span><span class="bg-dot"></span><span class="bg-text"></span></div>
+    <div class="bg-bar"><span class="bg-ico"></span><span class="bg-label"></span><span class="bg-box"></span></div>
+</div>
 <form class="login-card" method="post" autocomplete="off">
-    <h1>File Manager</h1>
-    <p class="muted">Sign in to continue</p>
+    <h1>LOGIN TO FILE BROWSER</h1>
     <?php if ($error !== ''): ?><div class="alert"><?= h($error) ?></div><?php endif; ?>
     <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
-    <label>Username<input type="text" name="username" required autofocus></label>
-    <label>Password<input type="password" name="password" required></label>
-    <button type="submit" class="primary">Sign in</button>
+    <input type="text" name="username" placeholder="User ID" required autofocus autocomplete="username">
+    <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
+    <button type="submit" class="login-btn">
+        <svg viewBox="0 0 512 512" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M217.9 105.9 340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9-18.7 0-33.9-15.2-33.9-33.9V320H32c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32h128V129.9C160 111.2 175.2 96 193.9 96c9 0 17.6 3.6 24 9.9zM352 416h64c17.7 0 32-14.3 32-32V128c0-17.7-14.3-32-32-32H352c-17.7 0-32-14.3-32-32s14.3-32 32-32h64c53 0 96 43 96 96V384c0 53-43 96-96 96H352c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg>LOGIN
+    </button>
+    <p class="login-note">Integrated with DDC LEYTE ICORE Credentials<br><span>File Browser v1.2</span></p>
 </form>
+<div class="login-foot">Copyright 2025 @ Wifi Team | Ian Paul</div>
 </body>
 </html>
 <?php return; endif; ?>
@@ -88,6 +95,17 @@ if (!$user && $_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div id="notice" class="notice" hidden></div>
+
+    <div id="uploads" class="uploads" hidden>
+        <div class="uploads-head">
+            <strong>Uploads</strong>
+            <span id="uploadSummary" class="muted"></span>
+            <span class="grow"></span>
+            <button id="uploadClear" class="small">Clear finished</button>
+            <button id="uploadHide" class="small">Hide</button>
+        </div>
+        <ul id="uploadList"></ul>
+    </div>
 
     <div id="dropzone" class="table-wrap">
         <table>

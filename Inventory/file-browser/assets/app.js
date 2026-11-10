@@ -271,18 +271,119 @@
     guard(async () => { await api('delete', { paths }, 'POST'); notice('Deleted.', false); await load(); });
   }
 
-  async function upload(fileList) {
-    if (!fileList.length) return;
-    const fd = new FormData();
-    fd.append('path', cwd);
-    [...fileList].forEach((f) => fd.append('files[]', f));
-    notice('Uploading ' + fileList.length + ' file(s)…', false);
-    await guard(async () => {
-      const r = await api('upload', {}, 'POST', fd);
-      notice('Uploaded ' + r.saved.length + ' file(s).', false);
-      await load();
+  /* ---------- uploads: queue, per-file progress bar, status and error message ---------- */
+  const uploads = [];
+  let uploadRunning = false;
+
+  function upload(fileList) {
+    const files = [...fileList];
+    if (!files.length) return;
+    files.forEach((file) => {
+      const u = { file, dest: cwd, state: 'waiting', xhr: null };
+      u.li = el('li', { className: 'up waiting' });
+      u.name = el('div', { className: 'up-name', textContent: file.name, title: file.name });
+      u.status = el('div', { className: 'up-status', textContent: 'Waiting…' });
+      u.fill = el('div', { className: 'fill' });
+      u.cancel = btn('Cancel', () => cancelUpload(u));
+      u.li.append(u.name, el('div', { className: 'up-size', textContent: fmtSize(file.size) }), el('div', { className: 'bar' }, u.fill), u.status, u.cancel);
+      $('#uploadList').append(u.li);
+      uploads.push(u);
+    });
+    $('#uploads').hidden = false;
+    updateUploadSummary();
+    runUploads();
+  }
+
+  function setUpload(u, state, text, pct) {
+    u.state = state;
+    u.li.className = 'up ' + state;
+    u.status.textContent = text;
+    if (pct != null) u.fill.style.width = pct + '%';
+    u.cancel.hidden = !(state === 'waiting' || state === 'uploading' || state === 'saving');
+    if (state === 'error') u.status.title = text;
+    updateUploadSummary();
+  }
+
+  function updateUploadSummary() {
+    const n = (s) => uploads.filter((u) => u.state === s).length;
+    const active = n('waiting') + n('uploading') + n('saving');
+    const parts = [];
+    if (active) parts.push(active + ' in progress');
+    if (n('done')) parts.push(n('done') + ' done');
+    if (n('error')) parts.push(n('error') + ' failed');
+    if (n('cancelled')) parts.push(n('cancelled') + ' cancelled');
+    $('#uploadSummary').textContent = parts.length ? ' · ' + parts.join(' · ') : '';
+  }
+
+  function cancelUpload(u) {
+    if (u.state === 'waiting') setUpload(u, 'cancelled', 'Cancelled', 0);
+    else if (u.xhr) u.xhr.abort();
+  }
+
+  function sendUpload(u) {
+    return new Promise((resolve) => {
+      const xhr = new XMLHttpRequest();
+      u.xhr = xhr;
+      xhr.open('POST', BASE + 'api.php?action=upload');
+      xhr.setRequestHeader('X-CSRF-Token', csrf);
+      xhr.upload.onprogress = (e) => {
+        if (!e.lengthComputable) return;
+        const pct = Math.round((e.loaded / e.total) * 100);
+        if (e.loaded >= e.total) setUpload(u, 'saving', 'Saving on server…', 100);
+        else setUpload(u, 'uploading', 'Uploading ' + pct + '% (' + fmtSize(e.loaded) + ' of ' + fmtSize(e.total) + ')', pct);
+      };
+      xhr.onload = () => {
+        let data = {};
+        try { data = JSON.parse(xhr.responseText); } catch (e) { /* not JSON */ }
+        if (xhr.status === 401) { location.href = BASE + 'index.php'; return resolve(false); }
+        if (xhr.status >= 200 && xhr.status < 300 && Array.isArray(data.saved)) {
+          const saved = data.saved[0];
+          setUpload(u, 'done', saved && saved !== u.file.name ? 'Done - saved as "' + saved + '" (name already existed)' : 'Done', 100);
+          resolve(true);
+        } else {
+          let msg = data.error;
+          if (!msg && xhr.status === 413) msg = 'File is too large for the server (check post_max_size / upload_max_filesize).';
+          if (!msg) msg = 'Server returned an error (HTTP ' + xhr.status + ').';
+          setUpload(u, 'error', 'Failed: ' + msg);
+          resolve(false);
+        }
+      };
+      xhr.onerror = () => { setUpload(u, 'error', 'Failed: network error or the server closed the connection (the file may exceed the server size limit).'); resolve(false); };
+      xhr.ontimeout = () => { setUpload(u, 'error', 'Failed: the upload timed out.'); resolve(false); };
+      xhr.onabort = () => { setUpload(u, 'cancelled', 'Cancelled'); resolve(false); };
+      const fd = new FormData();
+      fd.append('path', u.dest);
+      fd.append('files[]', u.file);
+      setUpload(u, 'uploading', 'Uploading 0%', 0);
+      xhr.send(fd);
     });
   }
+
+  async function runUploads() {
+    if (uploadRunning) return;
+    uploadRunning = true;
+    let refresh = false;
+    for (;;) {
+      const u = uploads.find((x) => x.state === 'waiting');
+      if (!u) break;
+      const ok = await sendUpload(u);
+      if (ok && u.dest === cwd) refresh = true;
+    }
+    uploadRunning = false;
+    if (refresh && !searchTerm) load();
+  }
+
+  $('#uploadClear').addEventListener('click', () => {
+    for (let i = uploads.length - 1; i >= 0; i--) {
+      if (['done', 'error', 'cancelled'].includes(uploads[i].state)) {
+        uploads[i].li.remove();
+        uploads.splice(i, 1);
+      }
+    }
+    if (!uploads.length) $('#uploads').hidden = true;
+    updateUploadSummary();
+  });
+  $('#uploadHide').addEventListener('click', () => { $('#uploads').hidden = true; });
 
   /* ---------- wiring ---------- */
   $('#btnUpload').addEventListener('click', () => $('#fileInput').click());
