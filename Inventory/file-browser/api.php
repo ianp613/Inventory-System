@@ -1,0 +1,107 @@
+<?php
+declare(strict_types=1);
+require __DIR__ . '/src/bootstrap.php';
+
+if (!Auth::user()) {
+    json_out(['error' => 'Not signed in.'], 401);
+}
+
+$action = (string)($_GET['action'] ?? '');
+$readActions = ['list', 'foldersize', 'search', 'download', 'preview'];
+$writeActions = ['mkdir', 'rename', 'delete', 'copy', 'move', 'upload'];
+
+$in = [];
+if (in_array($action, $writeActions, true)) {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        json_out(['error' => 'POST required.'], 405);
+    }
+    if (!csrf_valid($_SERVER['HTTP_X_CSRF_TOKEN'] ?? null)) {
+        json_out(['error' => 'Session expired. Please reload the page.'], 403);
+    }
+    $in = $_POST;
+    if (stripos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') === 0) {
+        $in = json_decode(file_get_contents('php://input'), true) ?: [];
+    }
+} elseif (in_array($action, $readActions, true)) {
+    $in = $_GET;
+} else {
+    json_out(['error' => 'Unknown action.'], 400);
+}
+
+$path = (string)($in['path'] ?? '');
+
+try {
+    $fs = Auth::storage();
+
+    switch ($action) {
+        case 'list':
+            json_out(['items' => $fs->list($path)]);
+
+        case 'foldersize':
+            json_out($fs->folderSize($path));
+
+        case 'search':
+            json_out(['items' => $fs->search($path, (string)($in['q'] ?? ''))]);
+
+        case 'mkdir':
+            $fs->mkdir($path, (string)($in['name'] ?? ''));
+            json_out(['ok' => true]);
+
+        case 'rename':
+            $fs->rename($path, (string)($in['name'] ?? ''));
+            json_out(['ok' => true]);
+
+        case 'delete':
+            foreach ((array)($in['paths'] ?? []) as $p) {
+                $fs->delete((string)$p);
+            }
+            json_out(['ok' => true]);
+
+        case 'copy':
+            foreach ((array)($in['paths'] ?? []) as $p) {
+                $fs->copy((string)$p, (string)($in['dest'] ?? ''));
+            }
+            json_out(['ok' => true]);
+
+        case 'move':
+            foreach ((array)($in['paths'] ?? []) as $p) {
+                $fs->move((string)$p, (string)($in['dest'] ?? ''));
+            }
+            json_out(['ok' => true]);
+
+        case 'upload':
+            if (empty($_FILES['files'])) {
+                throw new RuntimeException('No files received (check upload_max_filesize / post_max_size in php.ini).');
+            }
+            json_out(['saved' => $fs->upload($path, $_FILES['files'])]);
+
+        case 'download':
+        case 'preview':
+            $file = $fs->absFile($path);
+            $name = basename($file);
+            $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+            $previewTypes = [
+                'png' => 'image/png', 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg',
+                'gif' => 'image/gif', 'webp' => 'image/webp', 'pdf' => 'application/pdf',
+                'txt' => 'text/plain; charset=utf-8', 'log' => 'text/plain; charset=utf-8',
+                'csv' => 'text/plain; charset=utf-8', 'json' => 'text/plain; charset=utf-8',
+            ];
+            session_write_close(); // don't block other requests while streaming
+            header('X-Content-Type-Options: nosniff');
+            header('Content-Length: ' . filesize($file));
+            if ($action === 'preview' && isset($previewTypes[$ext])) {
+                header('Content-Type: ' . $previewTypes[$ext]);
+                header('Content-Disposition: inline; filename="' . rawurlencode($name) . '"');
+            } else {
+                header('Content-Type: application/octet-stream');
+                header("Content-Disposition: attachment; filename=\"" . rawurlencode($name) . "\"; filename*=UTF-8''" . rawurlencode($name));
+            }
+            readfile($file);
+            exit;
+    }
+} catch (RuntimeException $e) {
+    json_out(['error' => $e->getMessage()], 400);
+} catch (Throwable $e) {
+    error_log($e->getMessage());
+    json_out(['error' => 'Server error.'], 500);
+}

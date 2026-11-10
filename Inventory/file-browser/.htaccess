@@ -1,0 +1,6 @@
+# Apache: block direct web access to the config file and source folder.
+<Files "config.json">
+    Require all denied
+</Files>
+DirectoryIndex index.php
+Options -Indexes
