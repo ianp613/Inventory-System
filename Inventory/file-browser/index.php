@@ -50,10 +50,6 @@ if (!$user && $_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <?php if (!$user): ?>
 <body class="login-page">
-<div class="login-bg" aria-hidden="true">
-    <div class="bg-head"><span class="bg-logo"></span><span class="bg-dot"></span><span class="bg-text"></span></div>
-    <div class="bg-bar"><span class="bg-ico"></span><span class="bg-label"></span><span class="bg-box"></span></div>
-</div>
 <form class="login-card" method="post" autocomplete="off">
     <h1>LOGIN TO FILE BROWSER</h1>
     <?php if ($error !== ''): ?><div class="alert"><?= h($error) ?></div><?php endif; ?>
