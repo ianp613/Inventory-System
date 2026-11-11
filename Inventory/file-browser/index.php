@@ -46,7 +46,7 @@ if (!$user && $_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= $user ? 'File Manager' : 'Sign in - File Manager' ?></title>
-<link rel="stylesheet" href="<?= h($base) ?>assets/style.css">
+<link rel="stylesheet" href="<?= h($base) ?>assets/style.css?v=<?= (int)@filemtime(__DIR__ . '/assets/style.css') ?>">
 </head>
 <?php if (!$user): ?>
 <body class="login-page">
@@ -128,6 +128,6 @@ if (!$user && $_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<script src="<?= h($base) ?>assets/app.js"></script>
+<script src="<?= h($base) ?>assets/app.js?v=<?= (int)@filemtime(__DIR__ . '/assets/app.js') ?>"></script>
 </body>
 </html>
