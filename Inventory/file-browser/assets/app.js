@@ -296,6 +296,8 @@
     mute: svg('M16.5 12c0-1.8-1-3.3-2.5-4v2.2l2.5 2.5v-.7zM19 12c0 .9-.2 1.8-.5 2.6l1.5 1.5c.7-1.2 1-2.6 1-4.1 0-4.3-3-7.9-7-8.8v2.1c2.9.9 5 3.5 5 6.7zM4.3 3L3 4.3 7.7 9H3v6h4l5 5v-6.7l4.2 4.2c-.7.5-1.4.9-2.2 1.1v2.1c1.4-.3 2.6-1 3.7-1.9l2 2 1.3-1.3L4.3 3zM12 4L9.9 6.1 12 8.2V4z'),
     full: svg('M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z'),
     exitFull: svg('M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z'),
+    prev: svg('M6 6h2v12H6zm3.5 6l8.5 6V6z'),
+    next: svg('M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z'),
     pip: svg('M19 7h-8v6h8V7zm2-4H3c-1.1 0-2 .9-2 2v14c0 1.1.9 1.98 2 1.98h18c1.1 0 2-.88 2-1.98V5c0-1.1-.9-2-2-2zm0 16.01H3V4.98h18v14.03z'),
   };
 
@@ -349,9 +351,9 @@
   }
 
   function openVideo(it) {
-    const url = BASE + 'api.php?action=preview&path=' + encodeURIComponent(it.path);
+    const srcFor = (x) => BASE + 'api.php?action=preview&path=' + encodeURIComponent(x.path);
     const prefs = Object.assign({ volume: 1, muted: false, rate: 1 }, store.get(KP, {}));
-    const saved = readSaved(it);
+    let saved = readSaved(it);
     $('#modalTitle').textContent = it.name;
     $('#modal .modal-box').classList.add('video');
 
@@ -365,6 +367,10 @@
     const bPlay = mk('p-play', 'Play / Pause (Space)', ICON.play);
     const bBack = mk('p-back', 'Back 10 seconds (←)', ICON.back);
     const bFwd = mk('p-fwd', 'Forward 10 seconds (→)', ICON.fwd);
+    const bPrev = mk('p-prev', 'Previous video (P)', ICON.prev);
+    const bNext = mk('p-next', 'Next video (N)', ICON.next);
+    bPrev.disabled = true;
+    bNext.disabled = true;
     const bMute = mk('p-mute', 'Mute (M)', ICON.vol);
     const bFull = mk('p-full', 'Fullscreen (F)', ICON.full);
     const bPip = document.pictureInPictureEnabled ? mk('p-pip', 'Picture in picture', ICON.pip) : null;
@@ -375,7 +381,7 @@
     const time = el('span', { className: 'p-time', textContent: '0:00 / 0:00' });
     const msg = el('div', { className: 'p-msg' });
     msg.hidden = true;
-    const row = el('div', { className: 'p-row' }, bPlay, bBack, bFwd, time, el('span', { className: 'grow' }), bMute, vol, rate);
+    const row = el('div', { className: 'p-row' }, bPrev, bBack, bPlay, bFwd, bNext, time, el('span', { className: 'grow' }), bMute, vol, rate);
     if (bPip) row.append(bPip);
     row.append(bFull);
     const box = el('div', { className: 'player', tabIndex: -1 }, video, msg, el('div', { className: 'p-controls' }, seek, row));
@@ -449,7 +455,43 @@
       if (document.fullscreenElement === box && !video.paused) idleTimer = setTimeout(() => box.classList.add('idle'), 3000);
     };
 
+    /* playlist = the videos in the same folder (natural name order); next/previous wrap around */
+    let list = [];
+    let switchNote = null; // "Back to the first video: name" - shown together with the resume message
+    const dirOf = (path) => path.split('/').slice(0, -1).join('/');
+    const natural = (a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
+    const syncNav = () => { bPrev.disabled = list.length < 2; bNext.disabled = list.length < 2; };
+    api('list', { path: dirOf(it.path) }).then((d) => {
+      if (closed) return;
+      list = d.items.filter((x) => x.type === 'file' && PREVIEW[x.ext] === 'video').sort(natural);
+      syncNav();
+    }).catch(() => {});
+    const switchTo = (next, note) => {
+      save(true);                       // remember where we stopped in the current video
+      it = next;
+      saved = readSaved(it);            // and resume the next one if it has a saved time
+      $('#modalTitle').textContent = it.name;
+      time.textContent = '0:00 / 0:00';
+      seek.value = '0';
+      seek.style.setProperty('--played', '0%');
+      seek.style.setProperty('--buffered', '0%');
+      switchNote = (note || 'Now playing') + ': ' + it.name;
+      setMsg([el('span', { textContent: switchNote })], 2500, 'skip');
+      video.src = srcFor(it);           // same player element, so fullscreen stays on
+      video.play().catch(() => {});
+    };
+    const goTo = (step) => {
+      if (list.length < 2) return;
+      const cur = list.findIndex((x) => x.path === it.path);
+      const raw = cur + step;
+      const wrapped = raw >= list.length || raw < 0;
+      const n = (raw + list.length) % list.length;
+      switchTo(list[n], wrapped ? (step > 0 ? 'Back to the first video' : 'Last video in the folder') : '');
+    };
+
     // controls
+    bNext.addEventListener('click', () => { goTo(1); box.focus(); });
+    bPrev.addEventListener('click', () => { goTo(-1); box.focus(); });
     bPlay.addEventListener('click', () => { toggle(); box.focus(); });
     bBack.addEventListener('click', () => { skip(-10); box.focus(); });
     bFwd.addEventListener('click', () => { skip(10); box.focus(); });
@@ -487,10 +529,11 @@
       if (saved && saved.time >= 5 && (!d || saved.time < d - 10)) {
         video.currentTime = saved.time;
         setMsg([
-          el('span', { textContent: 'Resumed from ' + fmtTime(saved.time) }),
+          el('span', { textContent: (switchNote ? switchNote + ' · ' : '') + 'Resumed from ' + fmtTime(saved.time) }),
           btn('Start over', () => { video.currentTime = 0; hideMsg(); }),
         ], 8000, 'resume');
       }
+      switchNote = null;
     });
     video.addEventListener('error', () => {
       if (closed) return;
@@ -514,6 +557,8 @@
         case 'ArrowDown': setVolume(video.volume - 0.05); break;
         case 'm': case 'M': video.muted = !video.muted; break;
         case 'f': case 'F': toggleFull(); break;
+        case 'n': case 'N': goTo(1); break;
+        case 'p': case 'P': goTo(-1); break;
         case '>': stepRate(1); break;
         case '<': stepRate(-1); break;
         default: return;
@@ -568,7 +613,7 @@
     const body = $('#modalBody');
     body.replaceChildren(box);
     $('#modal').hidden = false;
-    video.src = url;
+    video.src = srcFor(it);
     video.play().catch(() => {});
     box.focus();
   }

@@ -43,6 +43,31 @@ search by name, file sizes and folder sizes (calculated one by one).
 - If a folder with the same name already exists when you upload a folder, the contents are merged into it;
   files that already exist are kept and the new ones are saved as `name (copy).ext`.
 
+## Video streaming
+
+Double-click (or tap) a video to play it in the browser. Supported containers: `mp4`, `m4v`, `webm`, `ogv`, `mov`, `mkv`.
+Whether a file plays depends on the browser's codecs (H.264/AAC mp4 and VP8/VP9 webm play everywhere; HEVC, AVI or
+WMV files will show a message with a Download button instead).
+
+- The server supports HTTP Range requests, so playback starts immediately and you can seek anywhere without
+  downloading the whole file. Downloads of any file are resumable too.
+- Controls: play/pause, back/forward 10 seconds, seek bar (shows what is buffered), volume and mute, speed
+  (0.5x - 3x), picture-in-picture and fullscreen.
+- **Previous / Next:** plays the neighbouring video of the same folder (natural name order, so `ep2` comes before `ep10`)
+  without closing the player, and fullscreen stays on. After the last video, Next goes back to the first one;
+  Previous on the first video goes to the last. Disabled when the folder has only one video.
+- Keys: `N` next, `P` previous, `Space`/`K` play-pause, `Left`/`J` back 10 s, `Right`/`L` forward 10 s, `Up`/`Down` volume, `M` mute,
+  `F` fullscreen, `<` `>` speed.
+- The last video and the time you stopped at are saved in the browser's local storage (per user, per video, up to
+  200 videos). Opening the video again resumes from there ("Start over" is offered), and a "Continue watching"
+  bar appears at the top. A video watched to the end is forgotten. Volume and speed are remembered too.
+  Because this is local storage, it belongs to that browser on that device.
+
+## Phones and tablets
+
+The layout adapts to laptops and phones: on small screens the file table becomes a list of cards, and a single tap
+opens a folder, file or video (use the checkbox to select items).
+
 ## Security notes
 
 - Every path from the browser is validated and must resolve inside the user's root (no `..`, no symlink escapes).
