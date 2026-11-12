@@ -65,3 +65,4 @@ function json_out(array $data, int $code = 200): void
 
 require __DIR__ . '/Auth.php';
 require __DIR__ . '/Storage.php';
+require __DIR__ . '/ZipStream.php';

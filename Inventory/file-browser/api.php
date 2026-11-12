@@ -8,14 +8,14 @@ if (!Auth::user()) {
 
 $action = (string)($_GET['action'] ?? '');
 $readActions = ['list', 'foldersize', 'search', 'download', 'preview'];
-$writeActions = ['mkdir', 'rename', 'delete', 'copy', 'move', 'upload', 'uploadchunk', 'uploadabort'];
+$writeActions = ['mkdir', 'rename', 'delete', 'copy', 'move', 'upload', 'uploadchunk', 'uploadabort', 'mkpath', 'zip'];
 
 $in = [];
 if (in_array($action, $writeActions, true)) {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         json_out(['error' => 'POST required.'], 405);
     }
-    if (!csrf_valid($_SERVER['HTTP_X_CSRF_TOKEN'] ?? null)) {
+    if (!csrf_valid($_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($_POST['csrf'] ?? null))) {
         json_out(['error' => 'Session expired. Please reload the page.'], 403);
     }
     $in = $_POST;
@@ -83,6 +83,7 @@ try {
             $body = fopen('php://input', 'rb');
             json_out($fs->uploadChunk(
                 $path,
+                (string)($in['sub'] ?? ''),
                 (string)($in['id'] ?? ''),
                 (string)($in['name'] ?? ''),
                 (int)($in['offset'] ?? 0),
@@ -92,8 +93,40 @@ try {
             ));
 
         case 'uploadabort':
-            $fs->uploadAbort($path, (string)($in['id'] ?? ''));
+            $fs->uploadAbort($path, (string)($in['sub'] ?? ''), (string)($in['id'] ?? ''));
             json_out(['ok' => true]);
+
+        case 'mkpath':
+            $fs->mkpath($path, (string)($in['sub'] ?? ''));
+            json_out(['ok' => true]);
+
+        case 'zip':
+            $sel = $in['paths'] ?? [];
+            if (is_string($sel)) {
+                $sel = json_decode($sel, true) ?: [];
+            }
+            $plan = $fs->zipPlan((array)$sel); // validates everything before the first byte is sent
+            session_write_close();
+            @set_time_limit(0);
+            while (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+            $zname = $plan['name'];
+            header('Content-Type: application/zip');
+            header('Content-Disposition: attachment; filename="' . rawurlencode($zname) . '"; filename*=UTF-8\'\'' . rawurlencode($zname));
+            header('X-Content-Type-Options: nosniff');
+            header('X-Accel-Buffering: no'); // nginx: do not buffer the stream
+            header('Cache-Control: no-store');
+            $zip = new ZipStream();
+            foreach ($fs->zipEntries($plan['items']) as $e) {
+                if ($e['dir']) {
+                    $zip->addDir($e['name'], $e['mtime']);
+                } else {
+                    $zip->addFile($e['abs'], $e['name'], $e['size'], $e['mtime']);
+                }
+            }
+            $zip->finish();
+            exit;
 
         case 'download':
         case 'preview':
@@ -120,8 +153,14 @@ try {
             exit;
     }
 } catch (RuntimeException $e) {
+    if (headers_sent()) {
+        exit; // a zip was already streaming; nothing sensible can be added
+    }
     json_out(['error' => $e->getMessage()], 400);
 } catch (Throwable $e) {
     error_log($e->getMessage());
+    if (headers_sent()) {
+        exit;
+    }
     json_out(['error' => 'Server error.'], 500);
 }

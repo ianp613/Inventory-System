@@ -163,7 +163,7 @@
       sizeCell.dataset.size = it.path;
 
       const acts = el('td', { className: 'c-act' });
-      if (it.type === 'file') acts.append(btn('Download', () => download(it)));
+      acts.append(btn('Download', () => downloadPaths([it.path])));
       acts.append(btn('Rename', () => rename(it)));
       acts.append(btn('Delete', () => remove([it.path]), 'danger'));
 
@@ -206,6 +206,8 @@
 
   function updateButtons() {
     const n = selected.size;
+    $('#btnDownload').disabled = n === 0;
+    $('#btnDownload').textContent = n > 1 ? 'Download (' + n + ')' : 'Download';
     $('#btnCopy').disabled = n === 0;
     $('#btnCut').disabled = n === 0;
     $('#btnDelete').disabled = n === 0;
@@ -242,6 +244,33 @@
     location.href = BASE + 'api.php?action=download&path=' + encodeURIComponent(it.path);
   }
 
+  /* One file -> downloaded as is. A folder, or several items -> streamed as one ZIP. */
+  let zipForm = null;
+  function ensureZipForm() {
+    if (zipForm) return;
+    const frame = el('iframe', { name: 'zipFrame', hidden: true, title: 'download' });
+    frame.addEventListener('load', () => {
+      try { // only an error reply (JSON) ends up in here; a real download never does
+        const txt = (frame.contentDocument && frame.contentDocument.body ? frame.contentDocument.body.innerText : '').trim();
+        if (txt.startsWith('{')) { const d = JSON.parse(txt); if (d.error) notice(d.error); }
+      } catch (e) { /* ignore */ }
+    });
+    zipForm = el('form', { method: 'post', action: BASE + 'api.php?action=zip', target: 'zipFrame', hidden: true });
+    zipForm.append(el('input', { type: 'hidden', name: 'csrf', value: csrf }), el('input', { type: 'hidden', name: 'paths' }));
+    document.body.append(frame, zipForm);
+  }
+  function downloadPaths(paths) {
+    if (!paths.length) return;
+    if (paths.length === 1) {
+      const it = items.find((i) => i.path === paths[0]);
+      if (it && it.type === 'file') return download(it);
+    }
+    ensureZipForm();
+    zipForm.elements.paths.value = JSON.stringify(paths);
+    zipForm.submit();
+    notice('Preparing ZIP download… your browser will start saving it in a moment.', false);
+  }
+
   function openPreview(it) {
     const url = BASE + 'api.php?action=preview&path=' + encodeURIComponent(it.path);
     const body = $('#modalBody');
@@ -273,15 +302,15 @@
 
   /* ---------- uploads: queue, per-file progress bar, status and error message ---------- */
   const uploads = [];
-  let uploadRunning = false;
 
-  function upload(fileList) {
-    const files = [...fileList];
-    if (!files.length) return;
-    files.forEach((file) => {
-      const u = { file, dest: cwd, state: 'waiting', xhr: null };
+  // entries: [{ file, rel }] - rel is the path inside the destination ("a.txt" or "Folder/sub/a.txt")
+  function upload(entries, dest = cwd) {
+    if (!entries.length) return;
+    entries.forEach(({ file, rel }) => {
+      const cut = rel.lastIndexOf('/');
+      const u = { file, rel, fname: rel.slice(cut + 1), sub: cut >= 0 ? rel.slice(0, cut) : '', dest, state: 'waiting', xhr: null };
       u.li = el('li', { className: 'up waiting' });
-      u.name = el('div', { className: 'up-name', textContent: file.name, title: file.name });
+      u.name = el('div', { className: 'up-name', textContent: rel, title: rel });
       u.status = el('div', { className: 'up-status', textContent: 'Waiting…' });
       u.fill = el('div', { className: 'fill' });
       u.cancel = btn('Cancel', () => cancelUpload(u));
@@ -292,6 +321,43 @@
     $('#uploads').hidden = false;
     updateUploadSummary();
     runUploads();
+  }
+  const fromFiles = (list) => [...list].map((f) => ({ file: f, rel: f.name }));
+  const fromFolderInput = (list) => [...list].map((f) => ({ file: f, rel: f.webkitRelativePath || f.name }));
+
+  /* dragging whole folders in: walk the dropped entries (also finds empty folders) */
+  function readAllEntries(reader) {
+    return new Promise((resolve, reject) => {
+      const all = [];
+      const next = () => reader.readEntries((batch) => {
+        if (!batch.length) resolve(all); else { all.push(...batch); next(); }
+      }, reject);
+      next();
+    });
+  }
+  async function walkEntry(entry, prefix, out) {
+    if (entry.isFile) {
+      const file = await new Promise((res, rej) => entry.file(res, rej));
+      out.files.push({ file, rel: prefix + entry.name });
+    } else if (entry.isDirectory) {
+      const kids = await readAllEntries(entry.createReader());
+      if (!kids.length) out.dirs.push(prefix + entry.name);
+      for (const k of kids) await walkEntry(k, prefix + entry.name + '/', out);
+    }
+  }
+  async function handleDrop(e) {
+    const dest = cwd;
+    const dt = e.dataTransfer;
+    const plain = [...dt.files];                       // read everything synchronously:
+    const entries = [...(dt.items || [])].map((it) => (it.kind === 'file' && it.webkitGetAsEntry ? it.webkitGetAsEntry() : null));
+    if (!entries.length || entries.some((x) => !x)) return upload(fromFiles(plain), dest); // browser can't give folder info
+    const out = { files: [], dirs: [] };
+    notice('Reading dropped items…', false);
+    await guard(async () => { for (const en of entries) await walkEntry(en, '', out); });
+    for (const d of out.dirs) await guard(() => api('mkpath', { path: dest, sub: d }, 'POST'));
+    $('#notice').hidden = true;
+    upload(out.files, dest);
+    if (!out.files.length && out.dirs.length && dest === cwd) load();
   }
 
   function setUpload(u, state, text, pct) {
@@ -333,7 +399,7 @@
   function sendChunk(u, offset, blob, last) {
     return new Promise((resolve) => {
       const q = new URLSearchParams({
-        action: 'uploadchunk', path: u.dest, name: u.file.name, id: u.id,
+        action: 'uploadchunk', path: u.dest, sub: u.sub, name: u.fname, id: u.id,
         offset: String(offset), total: String(u.file.size), last: last ? '1' : '0',
       });
       const xhr = new XMLHttpRequest();
@@ -370,7 +436,7 @@
   }
 
   function abortOnServer(u) {
-    fetch(BASE + 'api.php?' + new URLSearchParams({ action: 'uploadabort', path: u.dest, id: u.id }), {
+    fetch(BASE + 'api.php?' + new URLSearchParams({ action: 'uploadabort', path: u.dest, sub: u.sub, id: u.id }), {
       method: 'POST', headers: { 'X-CSRF-Token': csrf },
     }).catch(() => {});
   }
@@ -398,22 +464,30 @@
       saved = r.saved || saved;
       offset = end;
     } while (offset < total);
-    setUpload(u, 'done', saved && saved !== u.file.name ? 'Done - saved as "' + saved + '" (name already existed)' : 'Done', 100);
+    setUpload(u, 'done', saved && saved !== u.fname ? 'Done - saved as "' + saved + '" (name already existed)' : 'Done', 100);
     return true;
   }
 
-  async function runUploads() {
-    if (uploadRunning) return;
-    uploadRunning = true;
-    let refresh = false;
-    for (;;) {
+  const MAX_PARALLEL = 3; // a few files at once makes folders with many small files much faster
+  let activeUploads = 0;
+  let uploadRefresh = false;
+  function runUploads() {
+    while (activeUploads < MAX_PARALLEL) {
       const u = uploads.find((x) => x.state === 'waiting');
       if (!u) break;
-      const ok = await sendUpload(u);
-      if (ok && u.dest === cwd) refresh = true;
+      activeUploads++;
+      sendUpload(u)
+        .then((ok) => { if (ok && u.dest === cwd) uploadRefresh = true; })
+        .catch((err) => setUpload(u, 'error', 'Failed: ' + err.message))
+        .finally(() => {
+          activeUploads--;
+          runUploads();
+          if (activeUploads === 0 && uploadRefresh && !uploads.some((x) => x.state === 'waiting')) {
+            uploadRefresh = false;
+            if (!searchTerm) load();
+          }
+        });
     }
-    uploadRunning = false;
-    if (refresh && !searchTerm) load();
   }
 
   $('#uploadClear').addEventListener('click', () => {
@@ -430,7 +504,10 @@
 
   /* ---------- wiring ---------- */
   $('#btnUpload').addEventListener('click', () => $('#fileInput').click());
-  $('#fileInput').addEventListener('change', (e) => { upload(e.target.files); e.target.value = ''; });
+  $('#fileInput').addEventListener('change', (e) => { upload(fromFiles(e.target.files)); e.target.value = ''; });
+  $('#btnUploadFolder').addEventListener('click', () => $('#folderInput').click());
+  $('#folderInput').addEventListener('change', (e) => { upload(fromFolderInput(e.target.files)); e.target.value = ''; });
+  $('#btnDownload').addEventListener('click', () => downloadPaths([...selected]));
   $('#btnMkdir').addEventListener('click', () => {
     const name = prompt('Folder name:');
     if (!name) return;
@@ -481,7 +558,7 @@
   const dz = $('#dropzone');
   ['dragenter', 'dragover'].forEach((ev) => dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.add('drag'); }));
   ['dragleave', 'drop'].forEach((ev) => dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.remove('drag'); }));
-  dz.addEventListener('drop', (e) => { if (!searchTerm) upload(e.dataTransfer.files); });
+  dz.addEventListener('drop', (e) => { if (!searchTerm) handleDrop(e); });
 
   cwd = pathFromHash();
   load();

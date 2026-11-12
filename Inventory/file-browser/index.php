@@ -78,10 +78,13 @@ if (!$user && $_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav id="crumbs" class="crumbs"></nav>
 
     <div class="toolbar">
-        <button id="btnUpload" class="primary">Upload</button>
+        <button id="btnUpload" class="primary">Upload files</button>
         <input type="file" id="fileInput" multiple hidden>
+        <button id="btnUploadFolder">Upload folder</button>
+        <input type="file" id="folderInput" webkitdirectory multiple hidden>
         <button id="btnMkdir">New folder</button>
         <span class="sep"></span>
+        <button id="btnDownload" disabled>Download</button>
         <button id="btnCopy" disabled>Copy</button>
         <button id="btnCut" disabled>Move</button>
         <button id="btnPaste" disabled>Paste here</button>

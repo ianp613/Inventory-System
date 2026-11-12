@@ -30,9 +30,18 @@ and uses your existing `user` / `user_group` tables only for login and access.
 
 ## Features
 
-Browse, breadcrumb navigation, upload (button or drag and drop), download, new folder,
-rename, delete, copy and move (select items, Copy/Move, open the destination, Paste here),
-preview (images, PDF, text), search by name, file sizes and folder sizes (calculated one by one).
+Browse, breadcrumb navigation, upload files, **upload folders** (button or drag and drop, subfolders and
+empty folders included), download, **download folders and multiple selections**, new folder, rename, delete,
+copy and move (select items, Copy/Move, open the destination, Paste here), preview (images, PDF, text),
+search by name, file sizes and folder sizes (calculated one by one).
+
+- Uploads are sent in 5 MB chunks (3 files at a time), so large files do not hit proxy time limits.
+- Downloading **one file** gives you that file as is. Downloading **a folder or several items** gives one ZIP.
+- ZIPs are streamed while they are created (stored without compression, ZIP64 for very large data), so a big
+  folder starts downloading immediately and nothing is written to the server's disk.
+- Symbolic links are skipped when zipping, and files that cannot be read are left out of the ZIP.
+- If a folder with the same name already exists when you upload a folder, the contents are merged into it;
+  files that already exist are kept and the new ones are saved as `name (copy).ext`.
 
 ## Security notes
 

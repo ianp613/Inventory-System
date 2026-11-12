@@ -111,3 +111,6 @@ tr.sel { background: #eaf1ff; }
 .login-foot { position: fixed; right: 30px; bottom: 16px; font: italic 600 11.5px ui-monospace, "JetBrains Mono", Consolas, monospace; color: #8a94a3; }
 .alert { background: #fdecea; color: #8a1c1c; padding: 8px 10px; border-radius: 6px; font-size: 13px; }
 @media (max-height: 560px) { .login-card { top: 120px; } }
+
+/* make the hidden attribute always win (finished uploads must not show Cancel) */
+[hidden] { display: none !important; }

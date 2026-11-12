@@ -340,6 +340,60 @@ final class Storage
 
     /* ---------- chunked upload ---------- */
 
+    /** Split an uploaded relative folder path (e.g. "Photos/2026") into safe segments. */
+    private function subSegments(string $sub): array
+    {
+        $out = [];
+        foreach (explode('/', str_replace('\\', '/', $sub)) as $seg) {
+            if ($seg === '' || $seg === '.') {
+                continue;
+            }
+            if ($seg === '..') {
+                throw new RuntimeException('Invalid folder path.');
+            }
+            $seg = self::sanitizeName($seg);
+            if ($seg === '') {
+                throw new RuntimeException('Invalid folder name.');
+            }
+            $out[] = $seg;
+        }
+        if (count($out) > 40) {
+            throw new RuntimeException('Folder nesting is too deep.');
+        }
+        return $out;
+    }
+
+    /** Create $sub below $dir (existing folders are reused) and return the absolute path. */
+    private function ensureDir(string $dir, string $sub): string
+    {
+        foreach ($this->subSegments($sub) as $seg) {
+            $dir .= '/' . $seg;
+            if (is_dir($dir)) {
+                continue;
+            }
+            if (file_exists($dir)) {
+                throw new RuntimeException('"' . $seg . '" already exists as a file.');
+            }
+            if (!@mkdir($dir, 0775) && !is_dir($dir)) {
+                throw new RuntimeException('Could not create folder "' . $seg . '".');
+            }
+        }
+        if (!$this->inside($dir)) {
+            throw new RuntimeException('Access denied.');
+        }
+        return $dir;
+    }
+
+    /** Create a (possibly nested) folder path; used for empty folders in folder uploads. */
+    public function mkpath(string $rel, string $sub): void
+    {
+        $dir = $this->abs($rel);
+        if (!is_dir($dir)) {
+            throw new RuntimeException('Destination is not a folder.');
+        }
+        $this->ensureDir($dir, $sub);
+    }
+
     private static function isPartial(string $name): bool
     {
         return strncmp($name, '.upload-', 8) === 0 && substr($name, -5) === '.part';
@@ -368,12 +422,13 @@ final class Storage
      * partial file is checked against $total and renamed to its final, unique name.
      * Returns ['saved' => name] on the last chunk, otherwise ['received' => bytes].
      */
-    public function uploadChunk(string $rel, string $uid, string $name, int $offset, int $total, bool $last, $stream): array
+    public function uploadChunk(string $rel, string $sub, string $uid, string $name, int $offset, int $total, bool $last, $stream): array
     {
         $dir = $this->abs($rel);
         if (!is_dir($dir)) {
             throw new RuntimeException('Destination is not a folder.');
         }
+        $dir = $this->ensureDir($dir, $sub);
         $part = $this->partPath($dir, $uid);
         $name = self::sanitizeName(basename(str_replace('\\', '/', $name)));
         if ($name === '') {
@@ -433,12 +488,96 @@ final class Storage
         return ['saved' => $final];
     }
 
-    public function uploadAbort(string $rel, string $uid): void
+    public function uploadAbort(string $rel, string $sub, string $uid): void
     {
         $dir = $this->abs($rel);
+        foreach ($this->subSegments($sub) as $seg) {
+            $dir .= '/' . $seg;
+        }
+        if (!is_dir($dir) || !$this->inside($dir)) {
+            return;
+        }
         $part = $this->partPath($dir, $uid);
         if (is_file($part)) {
             @unlink($part);
+        }
+    }
+
+    /* ---------- zip download ---------- */
+
+    /**
+     * Validate the selection and decide the archive name and top-level entry names.
+     * @return array{name:string, items:array<int,array{0:string,1:string}>}
+     */
+    public function zipPlan(array $rels): array
+    {
+        $rels = array_values(array_filter(array_map('strval', $rels), static fn($r) => $r !== ''));
+        if (!$rels) {
+            throw new RuntimeException('Nothing selected to download.');
+        }
+        $items = [];
+        $used = [];
+        foreach ($rels as $r) {
+            if ($this->clean($r) === '') {
+                throw new RuntimeException('Select files or folders to download.');
+            }
+            $abs = $this->abs($r);
+            $name = basename($abs);
+            $base = $name;
+            $ext = '';
+            if (!is_dir($abs) && ($dot = strrpos($name, '.')) !== false && $dot > 0) {
+                $base = substr($name, 0, $dot);
+                $ext = substr($name, $dot);
+            }
+            for ($i = 2; isset($used[strtolower($name)]); $i++) {
+                $name = $base . ' (' . $i . ')' . $ext;
+            }
+            $used[strtolower($name)] = true;
+            $items[] = [$abs, $name];
+        }
+        if (count($items) === 1 && is_dir($items[0][0])) {
+            $zip = $items[0][1];
+        } else {
+            $parent = basename(dirname($items[0][0]));
+            $zip = ($this->norm(dirname($items[0][0])) === $this->norm($this->root)) ? 'files' : $parent;
+        }
+        return ['name' => self::sanitizeName($zip) . '.zip', 'items' => $items];
+    }
+
+    /**
+     * Yield every file/folder to put in the archive.
+     * Symbolic links are skipped, so nothing outside the user's folder can be reached.
+     * @return Generator<int,array{abs:string,name:string,dir:bool,size:int,mtime:int}>
+     */
+    public function zipEntries(array $items): Generator
+    {
+        foreach ($items as [$abs, $top]) {
+            if (is_link($abs)) {
+                continue;
+            }
+            if (is_file($abs)) {
+                yield ['abs' => $abs, 'name' => $top, 'dir' => false, 'size' => (int)@filesize($abs), 'mtime' => (int)@filemtime($abs)];
+                continue;
+            }
+            yield ['abs' => $abs, 'name' => $top, 'dir' => true, 'size' => 0, 'mtime' => (int)@filemtime($abs)];
+            $prefix = rtrim(str_replace('\\', '/', $abs), '/') . '/';
+            $it = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($abs, FilesystemIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::SELF_FIRST,
+                RecursiveIteratorIterator::CATCH_GET_CHILD
+            );
+            foreach ($it as $f) {
+                if ($f->isLink() || self::isPartial($f->getFilename())) {
+                    continue;
+                }
+                $path = str_replace('\\', '/', $f->getPathname());
+                $name = $top . '/' . substr($path, strlen($prefix));
+                if ($f->isDir()) {
+                    yield ['abs' => $path, 'name' => $name, 'dir' => true, 'size' => 0, 'mtime' => (int)$f->getMTime()];
+                } elseif ($f->isFile()) {
+                    yield ['abs' => $path, 'name' => $name, 'dir' => false, 'size' => (int)$f->getSize(), 'mtime' => (int)$f->getMTime()];
+                }
+            }
         }
     }
 
