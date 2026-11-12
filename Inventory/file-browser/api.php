@@ -138,19 +138,17 @@ try {
                 'gif' => 'image/gif', 'webp' => 'image/webp', 'pdf' => 'application/pdf',
                 'txt' => 'text/plain; charset=utf-8', 'log' => 'text/plain; charset=utf-8',
                 'csv' => 'text/plain; charset=utf-8', 'json' => 'text/plain; charset=utf-8',
+                'mp4' => 'video/mp4', 'm4v' => 'video/mp4', 'webm' => 'video/webm',
+                'ogv' => 'video/ogg', 'mov' => 'video/quicktime', 'mkv' => 'video/x-matroska',
             ];
-            session_write_close(); // don't block other requests while streaming
-            header('X-Content-Type-Options: nosniff');
-            header('Content-Length: ' . filesize($file));
             if ($action === 'preview' && isset($previewTypes[$ext])) {
-                header('Content-Type: ' . $previewTypes[$ext]);
-                header('Content-Disposition: inline; filename="' . rawurlencode($name) . '"');
-            } else {
-                header('Content-Type: application/octet-stream');
-                header("Content-Disposition: attachment; filename=\"" . rawurlencode($name) . "\"; filename*=UTF-8''" . rawurlencode($name));
+                send_file($file, $previewTypes[$ext], 'inline; filename="' . rawurlencode($name) . '"');
             }
-            readfile($file);
-            exit;
+            send_file(
+                $file,
+                'application/octet-stream',
+                'attachment; filename="' . rawurlencode($name) . "\"; filename*=UTF-8''" . rawurlencode($name)
+            );
     }
 } catch (RuntimeException $e) {
     if (headers_sent()) {

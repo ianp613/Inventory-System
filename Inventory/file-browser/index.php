@@ -65,7 +65,7 @@ if (!$user && $_SERVER['REQUEST_METHOD'] === 'POST') {
 </body>
 </html>
 <?php return; endif; ?>
-<body data-csrf="<?= h(csrf_token()) ?>" data-base="<?= h($base) ?>">
+<body data-csrf="<?= h(csrf_token()) ?>" data-base="<?= h($base) ?>" data-uid="<?= (int)$user['id'] ?>">
 <header class="topbar">
     <div class="brand">File Manager</div>
     <div class="who">
@@ -94,6 +94,7 @@ if (!$user && $_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div id="notice" class="notice" hidden></div>
+    <div id="continue" class="continue" hidden></div>
 
     <div id="uploads" class="uploads" hidden>
         <div class="uploads-head">

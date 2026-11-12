@@ -145,6 +145,7 @@
       // click selects the row (Ctrl/Cmd+click adds to the selection); double-click opens it
       tr.addEventListener('click', (e) => {
         if (e.target.closest('input, button')) return;
+        if (coarse.matches) { openItem(it); return; } // phones/tablets: a tap opens (use the checkbox to select)
         if (!(e.ctrlKey || e.metaKey)) selected.clear();
         selected.has(it.path) && (e.ctrlKey || e.metaKey) ? selected.delete(it.path) : selected.add(it.path);
         syncSelection();
@@ -271,7 +272,296 @@
     notice('Preparing ZIP download… your browser will start saving it in a moment.', false);
   }
 
+  /* ---------- video player ---------- */
+  ['mp4', 'm4v', 'webm', 'ogv', 'mov', 'mkv'].forEach((x) => { PREVIEW[x] = 'video'; });
+  const RATES = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 3];
+  const uid = document.body.dataset.uid || '0';
+  const KV = 'fm.video.' + uid; // { last: {...}, pos: { "<path>": { time, duration, size, modified, at } } }
+  const KP = 'fm.player';       // { volume, muted, rate }
+  const coarse = window.matchMedia('(pointer: coarse)'); // touch screens: one tap opens an item
+  const store = {
+    get(key, def) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch (e) { return def; } },
+    set(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { /* private mode / storage full */ } },
+  };
+  let playerCleanup = null;
+
+  const svg = (d, extra = '') => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + d + '"/>' + extra + '</svg>';
+  const TEN = '<text x="12" y="15.3" text-anchor="middle" font-size="7.5" font-weight="700" font-family="Arial,Helvetica,sans-serif">10</text>';
+  const ICON = {
+    play: svg('M8 5v14l11-7z'),
+    pause: svg('M6 19h4V5H6v14zm8-14v14h4V5h-4z'),
+    back: svg('M12 5V1L7 6l5 5V7c3.3 0 6 2.7 6 6s-2.7 6-6 6-6-2.7-6-6H4c0 4.4 3.6 8 8 8s8-3.6 8-8-3.6-8-8-8z', TEN),
+    fwd: svg('M12 5V1l5 5-5 5V7c-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6h2c0 4.4-3.6 8-8 8s-8-3.6-8-8 3.6-8 8-8z', TEN),
+    vol: svg('M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM14 3.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.8-5 6.7v2.1c4-.9 7-4.5 7-8.8s-3-7.9-7-8.8z'),
+    mute: svg('M16.5 12c0-1.8-1-3.3-2.5-4v2.2l2.5 2.5v-.7zM19 12c0 .9-.2 1.8-.5 2.6l1.5 1.5c.7-1.2 1-2.6 1-4.1 0-4.3-3-7.9-7-8.8v2.1c2.9.9 5 3.5 5 6.7zM4.3 3L3 4.3 7.7 9H3v6h4l5 5v-6.7l4.2 4.2c-.7.5-1.4.9-2.2 1.1v2.1c1.4-.3 2.6-1 3.7-1.9l2 2 1.3-1.3L4.3 3zM12 4L9.9 6.1 12 8.2V4z'),
+    full: svg('M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z'),
+    exitFull: svg('M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z'),
+    pip: svg('M19 7h-8v6h8V7zm2-4H3c-1.1 0-2 .9-2 2v14c0 1.1.9 1.98 2 1.98h18c1.1 0 2-.88 2-1.98V5c0-1.1-.9-2-2-2zm0 16.01H3V4.98h18v14.03z'),
+  };
+
+  function fmtTime(sec) {
+    if (!isFinite(sec) || sec < 0) sec = 0;
+    sec = Math.floor(sec);
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = String(sec % 60).padStart(2, '0');
+    return h ? h + ':' + String(m).padStart(2, '0') + ':' + s : m + ':' + s;
+  }
+
+  /* remembers the last video and the time per video, so playback resumes where you stopped */
+  function readSaved(it) {
+    const d = store.get(KV, { pos: {} });
+    const r = d.pos && d.pos[it.path];
+    if (!r) return null;
+    if (it.size != null && r.size != null && r.size !== it.size) return null;         // file was replaced
+    if (it.modified && r.modified && r.modified !== it.modified) return null;
+    return r;
+  }
+  function saveProgress(it, time, duration) {
+    const d = store.get(KV, { last: null, pos: {} });
+    d.pos = d.pos || {};
+    const finished = duration > 30 && time >= duration - 10;
+    const at = Date.now();
+    d.pos[it.path] = { time: finished ? 0 : time, duration, size: it.size, modified: it.modified, at };
+    d.last = finished ? null : { path: it.path, name: it.name, ext: it.ext, size: it.size, modified: it.modified, time, duration, at };
+    const keys = Object.keys(d.pos);
+    if (keys.length > 200) keys.sort((a, b) => d.pos[a].at - d.pos[b].at).slice(0, keys.length - 200).forEach((k) => delete d.pos[k]);
+    store.set(KV, d);
+  }
+  function renderContinue() {
+    const box = $('#continue');
+    const d = store.get(KV, { last: null });
+    if (!d.last || !(d.last.time >= 5)) { box.hidden = true; box.replaceChildren(); return; }
+    box.replaceChildren(
+      el('span', { textContent: 'Continue watching' }),
+      el('strong', { textContent: d.last.name }),
+      el('span', { className: 'muted', textContent: 'at ' + fmtTime(d.last.time) }),
+      el('span', { className: 'grow' }),
+      btn('▶ Play', () => openVideo(d.last)),
+      btn('Dismiss', () => {
+        const x = store.get(KV, { last: null, pos: {} });
+        x.last = null;
+        store.set(KV, x);
+        renderContinue();
+      })
+    );
+    box.hidden = false;
+  }
+
+  function openVideo(it) {
+    const url = BASE + 'api.php?action=preview&path=' + encodeURIComponent(it.path);
+    const prefs = Object.assign({ volume: 1, muted: false, rate: 1 }, store.get(KP, {}));
+    const saved = readSaved(it);
+    $('#modalTitle').textContent = it.name;
+    $('#modal .modal-box').classList.add('video');
+
+    const mk = (cls, label, html) => {
+      const b = el('button', { className: cls, title: label, type: 'button' });
+      b.setAttribute('aria-label', label);
+      b.innerHTML = html;
+      return b;
+    };
+    const video = el('video', { playsInline: true, preload: 'metadata' });
+    const bPlay = mk('p-play', 'Play / Pause (Space)', ICON.play);
+    const bBack = mk('p-back', 'Back 10 seconds (←)', ICON.back);
+    const bFwd = mk('p-fwd', 'Forward 10 seconds (→)', ICON.fwd);
+    const bMute = mk('p-mute', 'Mute (M)', ICON.vol);
+    const bFull = mk('p-full', 'Fullscreen (F)', ICON.full);
+    const bPip = document.pictureInPictureEnabled ? mk('p-pip', 'Picture in picture', ICON.pip) : null;
+    const vol = el('input', { type: 'range', className: 'p-vol', min: '0', max: '1', step: '0.05', title: 'Volume (↑ ↓)' });
+    const rate = el('select', { className: 'p-rate', title: 'Playback speed (< >)' });
+    RATES.forEach((r) => rate.append(el('option', { value: String(r), textContent: r + '×' })));
+    const seek = el('input', { type: 'range', className: 'p-seek', min: '0', max: '1000', step: '1', value: '0', title: 'Seek' });
+    const time = el('span', { className: 'p-time', textContent: '0:00 / 0:00' });
+    const msg = el('div', { className: 'p-msg' });
+    msg.hidden = true;
+    const row = el('div', { className: 'p-row' }, bPlay, bBack, bFwd, time, el('span', { className: 'grow' }), bMute, vol, rate);
+    if (bPip) row.append(bPip);
+    row.append(bFull);
+    const box = el('div', { className: 'player', tabIndex: -1 }, video, msg, el('div', { className: 'p-controls' }, seek, row));
+
+    let closed = false;
+    let seeking = false;
+    let lastSave = 0;
+    let msgTimer = null;
+    let msgKind = '';
+    let idleTimer = null;
+
+    const dur = () => (isFinite(video.duration) ? video.duration : 0);
+    const setMsg = (nodes, ms = 0, kind = '') => {
+      msg.replaceChildren(...nodes);
+      msg.hidden = false;
+      msgKind = kind;
+      clearTimeout(msgTimer);
+      if (ms) msgTimer = setTimeout(() => { msg.hidden = true; }, ms);
+    };
+    const hideMsg = (kind) => { if (!kind || msgKind === kind) { msg.hidden = true; } };
+
+    const syncPlay = () => { bPlay.innerHTML = video.paused ? ICON.play : ICON.pause; };
+    const syncVol = () => {
+      const m = video.muted || video.volume === 0;
+      bMute.innerHTML = m ? ICON.mute : ICON.vol;
+      vol.value = m ? 0 : video.volume;
+      vol.style.setProperty('--vol', Math.round(vol.value * 100) + '%');
+    };
+    const syncTime = () => {
+      if (seeking) return;
+      const d = dur();
+      const t = video.currentTime;
+      time.textContent = fmtTime(t) + ' / ' + fmtTime(d);
+      seek.value = d ? Math.round((t / d) * 1000) : 0;
+      seek.style.setProperty('--played', (d ? (t / d) * 100 : 0) + '%');
+      let buf = 0;
+      try { for (let i = 0; i < video.buffered.length; i++) if (video.buffered.start(i) <= t && video.buffered.end(i) >= t) buf = video.buffered.end(i); } catch (e) { /* ignore */ }
+      seek.style.setProperty('--buffered', (d ? (buf / d) * 100 : 0) + '%');
+    };
+
+    const save = (force) => {
+      if (closed || video.readyState === 0 || !dur()) return; // never overwrite a saved time before the video has loaded
+      const now = Date.now();
+      if (!force && now - lastSave < 2000) return;
+      lastSave = now;
+      saveProgress(it, video.currentTime, dur());
+    };
+    const savePrefs = () => store.set(KP, { volume: video.volume, muted: video.muted, rate: video.playbackRate });
+
+    const toggle = () => { if (video.paused) video.play().catch(() => {}); else video.pause(); };
+    const skip = (s) => {
+      const d = dur();
+      video.currentTime = Math.max(0, d ? Math.min(d, video.currentTime + s) : video.currentTime + s);
+      setMsg([el('span', { textContent: (s > 0 ? '+' : '−') + Math.abs(s) + ' s' })], 600, 'skip');
+    };
+    const setVolume = (v) => { video.volume = Math.max(0, Math.min(1, v)); if (video.volume > 0) video.muted = false; };
+    const setRate = (r) => { video.defaultPlaybackRate = r; video.playbackRate = r; };
+    const stepRate = (dir) => {
+      let i = RATES.indexOf(video.playbackRate);
+      if (i < 0) i = RATES.indexOf(1);
+      setRate(RATES[Math.max(0, Math.min(RATES.length - 1, i + dir))]);
+    };
+    const toggleFull = () => {
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      else if (box.requestFullscreen) box.requestFullscreen().catch(() => {});
+      else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen(); // iPhone Safari
+    };
+    const wake = () => {
+      box.classList.remove('idle');
+      clearTimeout(idleTimer);
+      if (document.fullscreenElement === box && !video.paused) idleTimer = setTimeout(() => box.classList.add('idle'), 3000);
+    };
+
+    // controls
+    bPlay.addEventListener('click', () => { toggle(); box.focus(); });
+    bBack.addEventListener('click', () => { skip(-10); box.focus(); });
+    bFwd.addEventListener('click', () => { skip(10); box.focus(); });
+    bMute.addEventListener('click', () => { video.muted = !video.muted; box.focus(); });
+    bFull.addEventListener('click', toggleFull);
+    if (bPip) bPip.addEventListener('click', () => { (document.pictureInPictureElement ? document.exitPictureInPicture() : video.requestPictureInPicture()).catch(() => {}); });
+    vol.addEventListener('input', () => setVolume(parseFloat(vol.value)));
+    rate.addEventListener('change', () => { setRate(parseFloat(rate.value)); box.focus(); });
+    seek.addEventListener('input', () => {
+      seeking = true;
+      const d = dur();
+      time.textContent = fmtTime((seek.value / 1000) * d) + ' / ' + fmtTime(d);
+      seek.style.setProperty('--played', seek.value / 10 + '%');
+    });
+    seek.addEventListener('change', () => { video.currentTime = (seek.value / 1000) * dur(); seeking = false; syncTime(); });
+    video.addEventListener('click', () => { toggle(); box.focus(); });
+    video.addEventListener('dblclick', toggleFull);
+    ['mousemove', 'touchstart', 'click'].forEach((ev) => box.addEventListener(ev, wake, { passive: true }));
+
+    // video events
+    video.addEventListener('play', () => { syncPlay(); wake(); });
+    video.addEventListener('pause', () => { syncPlay(); save(true); wake(); });
+    video.addEventListener('timeupdate', () => { syncTime(); save(false); });
+    video.addEventListener('progress', syncTime);
+    video.addEventListener('durationchange', syncTime);
+    video.addEventListener('volumechange', () => { syncVol(); savePrefs(); });
+    video.addEventListener('ratechange', () => { rate.value = String(video.playbackRate); savePrefs(); });
+    video.addEventListener('waiting', () => setMsg([el('span', { textContent: 'Buffering…' })], 0, 'buffer'));
+    video.addEventListener('playing', () => hideMsg('buffer'));
+    video.addEventListener('canplay', () => hideMsg('buffer'));
+    video.addEventListener('ended', () => { if (!closed) saveProgress(it, dur(), dur()); syncPlay(); });
+    video.addEventListener('loadedmetadata', () => {
+      syncTime();
+      const d = dur();
+      if (saved && saved.time >= 5 && (!d || saved.time < d - 10)) {
+        video.currentTime = saved.time;
+        setMsg([
+          el('span', { textContent: 'Resumed from ' + fmtTime(saved.time) }),
+          btn('Start over', () => { video.currentTime = 0; hideMsg(); }),
+        ], 8000, 'resume');
+      }
+    });
+    video.addEventListener('error', () => {
+      if (closed) return;
+      const c = video.error ? video.error.code : 0;
+      const text = c === 2 ? 'Network error while loading the video.'
+        : c === 3 ? 'The video could not be decoded (damaged file or unsupported codec).'
+        : "This browser can't play this video (unsupported format or codec, or the file is missing).";
+      setMsg([el('span', { textContent: text }), btn('Download', () => download(it))], 0, 'error');
+    });
+
+    const onKey = (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const tag = e.target.tagName;
+      if (tag === 'SELECT' || (tag === 'INPUT' && e.target.type !== 'range')) return;
+      if ((e.key === ' ' || e.key === 'Enter') && tag === 'BUTTON') return;
+      switch (e.key) {
+        case ' ': case 'k': case 'K': toggle(); break;
+        case 'ArrowLeft': case 'j': case 'J': skip(-10); break;
+        case 'ArrowRight': case 'l': case 'L': skip(10); break;
+        case 'ArrowUp': setVolume(video.volume + 0.05); break;
+        case 'ArrowDown': setVolume(video.volume - 0.05); break;
+        case 'm': case 'M': video.muted = !video.muted; break;
+        case 'f': case 'F': toggleFull(); break;
+        case '>': stepRate(1); break;
+        case '<': stepRate(-1); break;
+        default: return;
+      }
+      e.preventDefault();
+      wake();
+    };
+    const onFs = () => { bFull.innerHTML = document.fullscreenElement ? ICON.exitFull : ICON.full; wake(); };
+    const onHide = () => save(true);
+    const onVis = () => { if (document.visibilityState === 'hidden') save(true); };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('fullscreenchange', onFs);
+    window.addEventListener('pagehide', onHide);
+    document.addEventListener('visibilitychange', onVis);
+
+    playerCleanup = () => {
+      save(true);
+      closed = true;
+      video.pause();
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('fullscreenchange', onFs);
+      window.removeEventListener('pagehide', onHide);
+      document.removeEventListener('visibilitychange', onVis);
+      clearTimeout(idleTimer);
+      clearTimeout(msgTimer);
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      video.removeAttribute('src');
+      video.load(); // stops downloading
+      $('#modal .modal-box').classList.remove('video');
+      renderContinue();
+    };
+
+    // start
+    video.volume = prefs.volume;
+    video.muted = prefs.muted;
+    setRate(RATES.includes(prefs.rate) ? prefs.rate : 1);
+    syncPlay(); syncVol();
+    rate.value = String(video.playbackRate);
+    const body = $('#modalBody');
+    body.replaceChildren(box);
+    $('#modal').hidden = false;
+    video.src = url;
+    video.play().catch(() => {});
+    box.focus();
+  }
+
   function openPreview(it) {
+    if (PREVIEW[it.ext] === 'video') return openVideo(it);
     const url = BASE + 'api.php?action=preview&path=' + encodeURIComponent(it.path);
     const body = $('#modalBody');
     body.replaceChildren();
@@ -286,7 +576,11 @@
     }
     $('#modal').hidden = false;
   }
-  function closePreview() { $('#modal').hidden = true; $('#modalBody').replaceChildren(); }
+  function closePreview() {
+    if (playerCleanup) { playerCleanup(); playerCleanup = null; }
+    $('#modal').hidden = true;
+    $('#modalBody').replaceChildren();
+  }
 
   function rename(it) {
     const name = prompt('New name:', it.name);
@@ -562,4 +856,5 @@
 
   cwd = pathFromHash();
   load();
+  renderContinue();
 })();

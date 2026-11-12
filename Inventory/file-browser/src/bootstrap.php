@@ -63,6 +63,76 @@ function json_out(array $data, int $code = 200): void
     exit;
 }
 
+/**
+ * Send a file with HTTP Range support (video seeking, resumable downloads).
+ * Handles one range ("bytes=a-b", "bytes=a-", "bytes=-n"); anything else gets the whole file.
+ */
+function send_file(string $file, string $mime, string $disposition): void
+{
+    $size = (int)filesize($file);
+    $start = 0;
+    $end = max(0, $size - 1);
+    $status = 200;
+
+    if ($size > 0 && isset($_SERVER['HTTP_RANGE'])
+        && preg_match('/^bytes=(\d*)-(\d*)$/', trim((string)$_SERVER['HTTP_RANGE']), $m)
+        && ($m[1] !== '' || $m[2] !== '')) {
+        if ($m[1] === '') {                       // last N bytes
+            $start = max(0, $size - (int)$m[2]);
+        } else {
+            $start = (int)$m[1];
+            if ($m[2] !== '') {
+                $end = min((int)$m[2], $size - 1);
+            }
+        }
+        if ($start > $end || $start >= $size || ($m[1] === '' && (int)$m[2] === 0)) {
+            http_response_code(416);
+            header('Content-Range: bytes */' . $size);
+            exit;
+        }
+        $status = 206;
+    }
+
+    session_write_close();      // never hold the session lock while streaming
+    @set_time_limit(0);
+    while (ob_get_level() > 0) {
+        ob_end_clean();
+    }
+    http_response_code($status);
+    header('Content-Type: ' . $mime);
+    header('Content-Disposition: ' . $disposition);
+    header('Accept-Ranges: bytes');
+    header('X-Content-Type-Options: nosniff');
+    header('Last-Modified: ' . gmdate('D, d M Y H:i:s', (int)filemtime($file)) . ' GMT');
+    header('Content-Length: ' . ($size > 0 ? $end - $start + 1 : 0));
+    if ($status === 206) {
+        header('Content-Range: bytes ' . $start . '-' . $end . '/' . $size);
+    }
+
+    $fh = @fopen($file, 'rb');
+    if (!$fh) {
+        exit;
+    }
+    if ($start > 0) {
+        fseek($fh, $start);
+    }
+    $left = $size > 0 ? $end - $start + 1 : 0;
+    while ($left > 0 && !feof($fh)) {
+        $buf = fread($fh, (int)min(1048576, $left));
+        if ($buf === false || $buf === '') {
+            break;
+        }
+        echo $buf;
+        $left -= strlen($buf);
+        flush();
+        if (connection_aborted()) {
+            break;
+        }
+    }
+    fclose($fh);
+    exit;
+}
+
 require __DIR__ . '/Auth.php';
 require __DIR__ . '/Storage.php';
 require __DIR__ . '/ZipStream.php';
