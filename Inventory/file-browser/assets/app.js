@@ -521,7 +521,19 @@
       e.preventDefault();
       wake();
     };
-    const onFs = () => { bFull.innerHTML = document.fullscreenElement ? ICON.exitFull : ICON.full; wake(); };
+    const onFs = () => {
+      const isFull = document.fullscreenElement === box;
+      bFull.innerHTML = isFull ? ICON.exitFull : ICON.full;
+      wake();
+      // phones: turn the screen to landscape for wide videos, and release it again on exit
+      const so = window.screen && screen.orientation;
+      if (coarse.matches && so) {
+        try {
+          if (isFull && video.videoWidth >= video.videoHeight && so.lock) so.lock('landscape').catch(() => {});
+          else if (!isFull && so.unlock) so.unlock();
+        } catch (e) { /* not supported (e.g. iPhone Safari) */ }
+      }
+    };
     const onHide = () => save(true);
     const onVis = () => { if (document.visibilityState === 'hidden') save(true); };
     document.addEventListener('keydown', onKey);
@@ -539,6 +551,7 @@
       document.removeEventListener('visibilitychange', onVis);
       clearTimeout(idleTimer);
       clearTimeout(msgTimer);
+      try { if (window.screen && screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) { /* ignore */ }
       if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
       video.removeAttribute('src');
       video.load(); // stops downloading
