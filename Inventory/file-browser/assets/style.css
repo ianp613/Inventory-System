@@ -188,9 +188,6 @@ tr.sel { background: #eaf1ff; }
   .player video { max-height: calc(100dvh - 210px); }
   .p-controls svg { width: 26px; height: 26px; }
   .p-controls button { padding: 5px; }
-  .p-cue { font-size: clamp(13px, 3.6vw, 19px); padding: 1px 8px; }
-  .player:fullscreen .p-subs { bottom: 112px; }
-  .player:fullscreen .p-cue { font-size: clamp(15px, 3.2vw, 24px); }
   .p-row { gap: 3px; }
   .p-vol { display: none; } /* phones use the hardware volume buttons */
   .login-page { padding: 56px 16px; }
@@ -204,4 +201,17 @@ tr.sel { background: #eaf1ff; }
   .login-card input[type=text], .login-card input[type=password] { height: 40px; }
   .login-btn { height: 40px; }
   .player video { max-height: calc(100dvh - 130px); }
+}
+
+/* ---------- subtitles on phones (portrait AND landscape): smaller, tighter, close to the bottom of the picture ---------- */
+@media (max-width: 760px), (pointer: coarse) and (max-height: 520px) {
+  .p-subs { bottom: 3px; left: 3%; right: 3%; }
+  .p-cue { font-size: clamp(12px, 3.2vw, 16px); line-height: 1.22; padding: 1px 6px; margin: 0; border-radius: 3px; }
+  .player:fullscreen .p-cue { font-size: clamp(12px, 2.4vw, 17px); }
+  .player:fullscreen .p-subs { bottom: 112px; }        /* above the two-row controls (portrait) */
+  .player.idle:fullscreen .p-subs { bottom: 10px; }    /* controls hidden: right at the bottom */
+}
+@media (min-width: 761px) and (pointer: coarse) and (max-height: 520px) {
+  .player:fullscreen .p-subs { bottom: 76px; }         /* landscape phone: one-row controls */
+  .player.idle:fullscreen .p-subs { bottom: 10px; }
 }
