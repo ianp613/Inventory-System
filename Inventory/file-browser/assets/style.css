@@ -130,6 +130,16 @@ tr.sel { background: #eaf1ff; }
 .p-controls input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 0; }
 .p-seek { width: 100%; height: 8px !important; margin: 2px 0 6px !important; background: linear-gradient(to right, #3b82f6 0, #3b82f6 var(--played, 0%), #8a8a8a var(--played, 0%), #8a8a8a var(--buffered, 0%), #444 var(--buffered, 0%)) !important; }
 .p-vol { width: 90px; background: linear-gradient(to right, #fff 0, #fff var(--vol, 100%), #555 var(--vol, 100%)) !important; }
+/* subtitles are drawn by us: above the controls, and they move down when the controls auto-hide */
+.p-stage { position: relative; }
+.p-subs { position: absolute; left: 4%; right: 4%; bottom: 12px; text-align: center; pointer-events: none; z-index: 1; transition: bottom .25s; }
+.p-cue { display: inline-block; max-width: 100%; margin: 2px 0; padding: 2px 10px; border-radius: 4px; background: rgba(0,0,0,.72); color: #fff; line-height: 1.35; white-space: pre-line; font-size: clamp(15px, 1.9vw, 26px); text-shadow: 0 1px 2px #000; }
+.p-cc.on { color: #60a5fa; }
+.p-cc:disabled svg { opacity: .5; }
+.player:fullscreen .p-stage { position: absolute; inset: 0; }
+.player:fullscreen .p-subs { bottom: 104px; }
+.player.idle:fullscreen .p-subs { bottom: 44px; }
+.player:fullscreen .p-cue { font-size: clamp(20px, 3vw, 46px); }
 .player:fullscreen { width: 100%; height: 100%; justify-content: center; }
 .player:fullscreen video { max-height: none; height: 100%; width: 100%; object-fit: contain; }
 .player:fullscreen .p-controls { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(transparent, rgba(0,0,0,.8)); padding-top: 26px; }
@@ -178,6 +188,9 @@ tr.sel { background: #eaf1ff; }
   .player video { max-height: calc(100dvh - 210px); }
   .p-controls svg { width: 26px; height: 26px; }
   .p-controls button { padding: 5px; }
+  .p-cue { font-size: clamp(13px, 3.6vw, 19px); padding: 1px 8px; }
+  .player:fullscreen .p-subs { bottom: 112px; }
+  .player:fullscreen .p-cue { font-size: clamp(15px, 3.2vw, 24px); }
   .p-row { gap: 3px; }
   .p-vol { display: none; } /* phones use the hardware volume buttons */
   .login-page { padding: 56px 16px; }

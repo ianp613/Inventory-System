@@ -56,7 +56,12 @@ WMV files will show a message with a Download button instead).
 - **Previous / Next:** plays the neighbouring video of the same folder (natural name order, so `ep2` comes before `ep10`)
   without closing the player, and fullscreen stays on. After the last video, Next goes back to the first one;
   Previous on the first video goes to the last. Disabled when the folder has only one video.
-- Keys: `N` next, `P` previous, `Space`/`K` play-pause, `Left`/`J` back 10 s, `Right`/`L` forward 10 s, `Up`/`Down` volume, `M` mute,
+- **Subtitles:** if the video's folder has a subtitle file with the same name (`movie_720.mp4` -> `movie_720.srt`),
+  it is found automatically and shown. Also found: `movie_720.en.srt`, `movie_720.fil.srt` (several languages show a
+  picker). Formats `srt`, `vtt`, `ass`, `ssa`; odd encodings (Windows-1252, UTF-16) are converted on the server. ASS/SSA
+  styling (colors, fonts, positions) is dropped, only text and timing are kept. The CC button (or `C`) turns them
+  on/off and the choice is remembered. Hard-coded (burned-in) subtitles are part of the video and cannot be switched off.
+- Keys: `C` subtitles, `N` next, `P` previous, `Space`/`K` play-pause, `Left`/`J` back 10 s, `Right`/`L` forward 10 s, `Up`/`Down` volume, `M` mute,
   `F` fullscreen, `<` `>` speed.
 - The last video and the time you stopped at are saved in the browser's local storage (per user, per video, up to
   200 videos). Opening the video again resumes from there ("Start over" is offered), and a "Continue watching"

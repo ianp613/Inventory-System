@@ -298,6 +298,7 @@
     exitFull: svg('M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z'),
     prev: svg('M6 6h2v12H6zm3.5 6l8.5 6V6z'),
     next: svg('M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z'),
+    cc: svg('M19 4H5c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 7H9.5v-.5h-2v3h2V13H11v1c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1zm7 0h-1.5v-.5h-2v3h2V13H18v1c0 .55-.45 1-1 1h-3c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1z'),
     pip: svg('M19 7h-8v6h8V7zm2-4H3c-1.1 0-2 .9-2 2v14c0 1.1.9 1.98 2 1.98h18c1.1 0 2-.88 2-1.98V5c0-1.1-.9-2-2-2zm0 16.01H3V4.98h18v14.03z'),
   };
 
@@ -352,7 +353,8 @@
 
   function openVideo(it) {
     const srcFor = (x) => BASE + 'api.php?action=preview&path=' + encodeURIComponent(x.path);
-    const prefs = Object.assign({ volume: 1, muted: false, rate: 1 }, store.get(KP, {}));
+    const prefs = Object.assign({ volume: 1, muted: false, rate: 1, subs: true }, store.get(KP, {}));
+    let subsOn = prefs.subs !== false; // subtitles are shown by default when a subtitle file exists
     let saved = readSaved(it);
     $('#modalTitle').textContent = it.name;
     $('#modal .modal-box').classList.add('video');
@@ -373,6 +375,11 @@
     bNext.disabled = true;
     const bMute = mk('p-mute', 'Mute (M)', ICON.vol);
     const bFull = mk('p-full', 'Fullscreen (F)', ICON.full);
+    const bCc = mk('p-cc', 'Subtitles (C)', ICON.cc);
+    bCc.disabled = true;
+    const subSel = el('select', { className: 'p-sub', title: 'Subtitle track' });
+    subSel.hidden = true;
+    const subs = el('div', { className: 'p-subs' });
     const bPip = document.pictureInPictureEnabled ? mk('p-pip', 'Picture in picture', ICON.pip) : null;
     const vol = el('input', { type: 'range', className: 'p-vol', min: '0', max: '1', step: '0.05', title: 'Volume (↑ ↓)' });
     const rate = el('select', { className: 'p-rate', title: 'Playback speed (< >)' });
@@ -381,10 +388,11 @@
     const time = el('span', { className: 'p-time', textContent: '0:00 / 0:00' });
     const msg = el('div', { className: 'p-msg' });
     msg.hidden = true;
-    const row = el('div', { className: 'p-row' }, bPrev, bBack, bPlay, bFwd, bNext, time, el('span', { className: 'grow' }), bMute, vol, rate);
+    const row = el('div', { className: 'p-row' }, bPrev, bBack, bPlay, bFwd, bNext, time, el('span', { className: 'grow' }), bMute, vol, rate, subSel, bCc);
     if (bPip) row.append(bPip);
     row.append(bFull);
-    const box = el('div', { className: 'player', tabIndex: -1 }, video, msg, el('div', { className: 'p-controls' }, seek, row));
+    const stage = el('div', { className: 'p-stage' }, video, subs, msg);
+    const box = el('div', { className: 'player', tabIndex: -1 }, stage, el('div', { className: 'p-controls' }, seek, row));
 
     let closed = false;
     let seeking = false;
@@ -429,7 +437,7 @@
       lastSave = now;
       saveProgress(it, video.currentTime, dur());
     };
-    const savePrefs = () => store.set(KP, { volume: video.volume, muted: video.muted, rate: video.playbackRate });
+    const savePrefs = () => store.set(KP, { volume: video.volume, muted: video.muted, rate: video.playbackRate, subs: subsOn });
 
     const toggle = () => { if (video.paused) video.play().catch(() => {}); else video.pause(); };
     const skip = (s) => {
@@ -461,10 +469,85 @@
     const dirOf = (path) => path.split('/').slice(0, -1).join('/');
     const natural = (a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
     const syncNav = () => { bPrev.disabled = list.length < 2; bNext.disabled = list.length < 2; };
+    /* subtitles: a file with the same name next to the video, e.g. movie_720.mp4 -> movie_720.srt
+       (also movie_720.en.srt, movie_720.fil.srt ...). Formats: srt, vtt, ass, ssa. */
+    const SUB_EXT = ['srt', 'vtt', 'ass', 'ssa'];
+    const LANG = { en: 'English', eng: 'English', fil: 'Filipino', tl: 'Filipino', tgl: 'Filipino', es: 'Spanish', spa: 'Spanish', ja: 'Japanese', jp: 'Japanese', jpn: 'Japanese', ko: 'Korean', kor: 'Korean', zh: 'Chinese', chi: 'Chinese', fr: 'French', de: 'German', pt: 'Portuguese', id: 'Indonesian', ar: 'Arabic', ru: 'Russian', it: 'Italian', hi: 'Hindi', th: 'Thai', vi: 'Vietnamese' };
+    let dirItems = [];
+    let tracks = [];   // [{ item, label }]
+    let trackEl = null;
+    const stripExt = (n) => n.replace(/\.[^.]+$/, '');
+    const findTracks = (v) => {
+      const base = stripExt(v.name).toLowerCase();
+      const found = [];
+      dirItems.forEach((f) => {
+        if (f.type !== 'file' || !SUB_EXT.includes(f.ext)) return;
+        const n = stripExt(f.name);
+        if (n.toLowerCase() === base) found.push({ item: f, rank: 0, label: 'Subtitles' });
+        else if (n.toLowerCase().startsWith(base + '.')) {
+          const suf = n.slice(base.length + 1);
+          found.push({ item: f, rank: 1, label: LANG[suf.toLowerCase()] || suf });
+        }
+      });
+      found.sort((a, b) => a.rank - b.rank || natural(a.item, b.item));
+      found.forEach((t) => { if (found.filter((o) => o.label === t.label).length > 1) t.label += ' (.' + t.item.ext + ')'; });
+      return found;
+    };
+    const renderCues = () => {
+      subs.replaceChildren();
+      if (!subsOn || !trackEl || !trackEl.track.activeCues) return;
+      Array.from(trackEl.track.activeCues).forEach((cue) => {
+        const line = el('div', { className: 'p-cue' });
+        line.append(cue.getCueAsHTML ? cue.getCueAsHTML() : document.createTextNode(cue.text)); // browser-sanitised (<i> <b> <u> only)
+        subs.append(line);
+      });
+    };
+    // 'hidden' = the browser loads and times the cues, we draw them ourselves (so they can sit above the controls)
+    const applyTrackMode = () => { if (trackEl) trackEl.track.mode = subsOn ? 'hidden' : 'disabled'; renderCues(); };
+    const loadTrack = (i) => {
+      if (trackEl) { trackEl.remove(); trackEl = null; }
+      subs.replaceChildren();
+      const t = tracks[i];
+      if (!t) return;
+      trackEl = el('track', { kind: 'subtitles', label: t.label, src: BASE + 'api.php?action=subtitle&path=' + encodeURIComponent(t.item.path) });
+      trackEl.addEventListener('error', () => setMsg([el('span', { textContent: 'Could not load the subtitles (' + t.item.name + ').' })], 4000, 'sub'));
+      video.append(trackEl);
+      trackEl.track.addEventListener('cuechange', renderCues);
+      applyTrackMode();
+    };
+    const syncSubUi = () => {
+      const on = subsOn && tracks.length > 0;
+      bCc.disabled = tracks.length === 0;
+      bCc.classList.toggle('on', on);
+      bCc.setAttribute('aria-pressed', String(on));
+      bCc.title = tracks.length ? 'Subtitles ' + (subsOn ? 'on' : 'off') + ' (C)' : 'No subtitle file found next to this video';
+      subSel.hidden = tracks.length < 2;
+    };
+    const setupSubs = () => {
+      tracks = findTracks(it);
+      subSel.replaceChildren(...tracks.map((t, i) => el('option', { value: String(i), textContent: t.label })));
+      subSel.value = '0';
+      loadTrack(0);
+      syncSubUi();
+    };
+    const toggleSubs = () => {
+      if (!tracks.length) {
+        setMsg([el('span', { textContent: 'No subtitle file found next to this video (for example ' + stripExt(it.name) + '.srt)' })], 3500, 'sub');
+        return;
+      }
+      subsOn = !subsOn;
+      applyTrackMode();
+      syncSubUi();
+      savePrefs();
+      setMsg([el('span', { textContent: subsOn ? 'Subtitles on' : 'Subtitles off' })], 900, 'sub');
+    };
+
     api('list', { path: dirOf(it.path) }).then((d) => {
       if (closed) return;
+      dirItems = d.items;
       list = d.items.filter((x) => x.type === 'file' && PREVIEW[x.ext] === 'video').sort(natural);
       syncNav();
+      setupSubs();
     }).catch(() => {});
     const switchTo = (next, note) => {
       save(true);                       // remember where we stopped in the current video
@@ -476,6 +559,7 @@
       seek.style.setProperty('--played', '0%');
       seek.style.setProperty('--buffered', '0%');
       switchNote = (note || 'Now playing') + ': ' + it.name;
+      setupSubs();                      // each video has its own subtitle file
       setMsg([el('span', { textContent: switchNote })], 2500, 'skip');
       video.src = srcFor(it);           // same player element, so fullscreen stays on
       video.play().catch(() => {});
@@ -497,6 +581,11 @@
     bFwd.addEventListener('click', () => { skip(10); box.focus(); });
     bMute.addEventListener('click', () => { video.muted = !video.muted; box.focus(); });
     bFull.addEventListener('click', toggleFull);
+    bCc.addEventListener('click', () => { toggleSubs(); box.focus(); });
+    subSel.addEventListener('change', () => { loadTrack(parseInt(subSel.value, 10)); subsOn = true; applyTrackMode(); syncSubUi(); savePrefs(); box.focus(); });
+    // iPhone native fullscreen draws the subtitles itself
+    video.addEventListener('webkitbeginfullscreen', () => { if (trackEl && subsOn) trackEl.track.mode = 'showing'; });
+    video.addEventListener('webkitendfullscreen', applyTrackMode);
     if (bPip) bPip.addEventListener('click', () => { (document.pictureInPictureElement ? document.exitPictureInPicture() : video.requestPictureInPicture()).catch(() => {}); });
     vol.addEventListener('input', () => setVolume(parseFloat(vol.value)));
     rate.addEventListener('change', () => { setRate(parseFloat(rate.value)); box.focus(); });
@@ -557,6 +646,7 @@
         case 'ArrowDown': setVolume(video.volume - 0.05); break;
         case 'm': case 'M': video.muted = !video.muted; break;
         case 'f': case 'F': toggleFull(); break;
+        case 'c': case 'C': toggleSubs(); break;
         case 'n': case 'N': goTo(1); break;
         case 'p': case 'P': goTo(-1); break;
         case '>': stepRate(1); break;

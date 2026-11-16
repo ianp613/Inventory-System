@@ -7,7 +7,7 @@ if (!Auth::user()) {
 }
 
 $action = (string)($_GET['action'] ?? '');
-$readActions = ['list', 'foldersize', 'search', 'download', 'preview'];
+$readActions = ['list', 'foldersize', 'search', 'download', 'preview', 'subtitle'];
 $writeActions = ['mkdir', 'rename', 'delete', 'copy', 'move', 'upload', 'uploadchunk', 'uploadabort', 'mkpath', 'zip'];
 
 $in = [];
@@ -126,6 +126,23 @@ try {
                 }
             }
             $zip->finish();
+            exit;
+
+        case 'subtitle':
+            $file = $fs->absFile($path);
+            $sext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+            if (!in_array($sext, ['srt', 'vtt', 'ass', 'ssa'], true)) {
+                throw new RuntimeException('Not a subtitle file.');
+            }
+            if (filesize($file) > 5 * 1024 * 1024) {
+                throw new RuntimeException('Subtitle file is too large.');
+            }
+            $vtt = Subtitles::toVtt((string)file_get_contents($file), $sext);
+            session_write_close();
+            header('Content-Type: text/vtt; charset=utf-8');
+            header('X-Content-Type-Options: nosniff');
+            header('Cache-Control: no-store');
+            echo $vtt;
             exit;
 
         case 'download':

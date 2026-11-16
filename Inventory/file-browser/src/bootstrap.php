@@ -136,3 +136,4 @@ function send_file(string $file, string $mime, string $disposition): void
 require __DIR__ . '/Auth.php';
 require __DIR__ . '/Storage.php';
 require __DIR__ . '/ZipStream.php';
+require __DIR__ . '/Subtitles.php';
