@@ -1,0 +1,524 @@
+[
+  {
+    "id": "almalinux", "name": "AlmaLinux", "family": "rhel", "status": "active",
+    "install_method": "guided_gui", "installer": "Anaconda",
+    "archs": ["x86_64", "aarch64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 10, "rec_disk_gb": 20,
+    "secure_boot": "yes", "website": "https://almalinux.org",
+    "notes": ["RHEL-compatible rebuild. Mostly used for servers; a desktop is optional."],
+    "verified": false
+  },
+  {
+    "id": "alpine", "name": "Alpine Linux", "family": "independent", "status": "active",
+    "install_method": "guided_tui", "installer": "setup-alpine (text installer)",
+    "archs": ["x86_64", "aarch64", "armv7"],
+    "min_ram_gb": 0.5, "rec_ram_gb": 1, "min_disk_gb": 1, "rec_disk_gb": 8,
+    "secure_boot": "no", "website": "https://alpinelinux.org",
+    "docs": "https://wiki.alpinelinux.org/wiki/Installation",
+    "layout": { "esp_mib": 512, "esp_mount": "/boot/efi", "root_gb": { "desktop": 10, "dev": 20, "server": 5, "minimal": 2 } },
+    "notes": [
+      "Uses musl libc and BusyBox, so some proprietary software will not run.",
+      "In setup-alpine choose disk mode 'sys' for a normal disk install ('diskless' runs from RAM, 'data' only prepares a data disk)."
+    ],
+    "install_steps": [
+      "Boot the Alpine ISO and log in as 'root' (no password).",
+      "Run: setup-alpine and answer the prompts (keyboard, hostname, network, root password, time zone, mirror, SSH).",
+      "When asked for the disk, pick your target disk and the 'sys' mode. The script partitions it automatically; the layout above shows what a manual setup should look like.",
+      "Reboot, remove the USB stick and log in with the account you created."
+    ],
+    "verified": false
+  },
+  {
+    "id": "arch", "name": "Arch Linux", "family": "arch", "status": "active",
+    "install_method": "manual", "installer": "Manual (Installation guide) or archinstall",
+    "archs": ["x86_64"],
+    "min_ram_gb": 0.5, "rec_ram_gb": 2, "min_disk_gb": 2, "rec_disk_gb": 20,
+    "secure_boot": "no", "website": "https://archlinux.org",
+    "docs": "https://wiki.archlinux.org/title/Installation_guide",
+    "notes": [
+      "The live ISO includes 'archinstall', a guided text installer that follows the same layout.",
+      "Secure Boot is possible only with manual key setup; disable it for a first install."
+    ],
+    "install_steps": [
+      "Boot the Arch ISO, set the keyboard (loadkeys), and confirm boot mode: ls /sys/firmware/efi/efivars (a listing means UEFI).",
+      "Connect to the network (iwctl for Wi-Fi) and sync the clock: timedatectl set-ntp true",
+      "Partition, format and mount the disk with the commands below.",
+      "Install the base system: pacstrap -K /mnt base linux linux-firmware (add your CPU microcode, a text editor and networkmanager).",
+      "Generate fstab: genfstab -U /mnt >> /mnt/etc/fstab, then arch-chroot /mnt.",
+      "Inside the chroot: set time zone, locale, hostname, root password, install a boot loader (GRUB or systemd-boot), enable NetworkManager.",
+      "Exit, unmount with umount -R /mnt and reboot."
+    ],
+    "verified": false
+  },
+  {
+    "id": "asahi", "name": "Asahi Linux", "family": "independent", "status": "active",
+    "install_method": "special", "installer": "Asahi installer (runs from macOS)",
+    "archs": ["aarch64"],
+    "min_ram_gb": 8, "rec_ram_gb": 16, "min_disk_gb": 53, "rec_disk_gb": 100,
+    "secure_boot": "unknown", "website": "https://asahilinux.org",
+    "notes": [
+      "Only for Apple Silicon Macs. It cannot be installed on Intel PCs or other ARM boards.",
+      "The installer runs from macOS and resizes the macOS container; no manual partitioning is needed."
+    ],
+    "steps": [
+      "Update macOS and make a full backup first.",
+      "Follow the install instructions on the Asahi Linux website (the installer is started from macOS Terminal).",
+      "Choose how much space to give Linux, pick the desktop flavour, and follow the prompts, including the 1TR recovery steps.",
+      "Reboot, hold the power button to open the boot picker and choose the new Linux entry."
+    ],
+    "verified": false
+  },
+  {
+    "id": "blackarch", "name": "BlackArch Linux", "family": "arch", "status": "active",
+    "install_method": "guided_tui", "installer": "BlackArch installer (live ISO) or add the repo to Arch",
+    "archs": ["x86_64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 20, "rec_disk_gb": 50,
+    "secure_boot": "no", "website": "https://blackarch.org",
+    "layout": { "root_gb": { "desktop": 50, "dev": 70, "server": 40, "minimal": 20 } },
+    "notes": [
+      "A penetration-testing distribution. The full tool set takes tens of GB, so plan a large root partition.",
+      "Alternative: install plain Arch, then add the BlackArch repository and the tool groups you need."
+    ],
+    "install_steps": [
+      "Boot the BlackArch live ISO.",
+      "Start the installer from the live environment (see the instructions on blackarch.org).",
+      "Partition with the layout above, choose the tool set and a user account, then install.",
+      "Reboot and remove the USB stick."
+    ],
+    "verified": false
+  },
+  {
+    "id": "centos-stream", "name": "CentOS Stream", "family": "rhel", "status": "active",
+    "install_method": "guided_gui", "installer": "Anaconda",
+    "archs": ["x86_64", "aarch64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 10, "rec_disk_gb": 20,
+    "secure_boot": "yes", "website": "https://centos.org",
+    "notes": ["Rolling preview of the next RHEL minor release; it is not a stable RHEL clone."],
+    "verified": false
+  },
+  {
+    "id": "clear", "name": "Clear Linux", "family": "independent", "status": "legacy",
+    "install_method": "guided_tui", "installer": "Clear Linux installer",
+    "archs": ["x86_64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 20, "rec_disk_gb": 40,
+    "secure_boot": "no", "website": "https://clearlinux.org",
+    "notes": [
+      "Intel has announced that the project is no longer supported. Existing images still boot but receive no updates, so it is not recommended for new installs."
+    ],
+    "install_steps": [
+      "Boot the live image and run the installer.",
+      "Choose manual partitioning if you want the layout above, then follow the prompts."
+    ],
+    "verified": false
+  },
+  {
+    "id": "cloudlinux", "name": "CloudLinux OS", "family": "rhel", "status": "active",
+    "install_method": "guided_gui", "installer": "Anaconda (or convert an existing CentOS/Alma system)",
+    "archs": ["x86_64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 20, "rec_disk_gb": 40,
+    "secure_boot": "unknown", "website": "https://cloudlinux.com",
+    "notes": [
+      "Commercial server OS for shared hosting; a license is required.",
+      "Most people convert an existing RHEL-compatible server using the vendor's conversion script instead of a fresh install."
+    ],
+    "layout": { "root_gb": { "desktop": 30, "dev": 50, "server": 30, "minimal": 20 } },
+    "verified": false
+  },
+  {
+    "id": "debian", "name": "Debian", "family": "debian", "status": "active",
+    "install_method": "guided_gui", "installer": "Debian Installer (graphical or text)",
+    "archs": ["x86_64", "aarch64", "i686", "armv7"],
+    "min_ram_gb": 1, "rec_ram_gb": 2, "min_disk_gb": 10, "rec_disk_gb": 25,
+    "secure_boot": "yes", "website": "https://debian.org",
+    "docs": "https://www.debian.org/releases/stable/installmanual",
+    "notes": [
+      "Use the non-free-firmware image if your Wi-Fi or GPU needs firmware.",
+      "The installer's 'Guided' mode is fine for most people; use 'Manual' to follow the layout above."
+    ],
+    "verified": false
+  },
+  {
+    "id": "endeavouros", "name": "EndeavourOS", "family": "arch", "status": "active",
+    "install_method": "guided_gui", "installer": "Calamares",
+    "archs": ["x86_64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 15, "rec_disk_gb": 30,
+    "secure_boot": "partial", "website": "https://endeavouros.com",
+    "notes": ["Arch-based with a friendly installer. The installer can download a desktop of your choice (online mode)."],
+    "verified": false
+  },
+  {
+    "id": "elementary", "name": "elementary OS", "family": "debian", "status": "active",
+    "install_method": "guided_gui", "installer": "elementary installer",
+    "archs": ["x86_64"],
+    "min_ram_gb": 4, "rec_ram_gb": 8, "min_disk_gb": 15, "rec_disk_gb": 32,
+    "secure_boot": "yes", "website": "https://elementary.io",
+    "notes": ["Ubuntu LTS based. An SSD is recommended."],
+    "layout": { "swap_style": "file" },
+    "verified": false
+  },
+  {
+    "id": "fedora", "name": "Fedora", "family": "rhel", "status": "active",
+    "install_method": "guided_gui", "installer": "Anaconda",
+    "archs": ["x86_64", "aarch64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 15, "rec_disk_gb": 40,
+    "secure_boot": "yes", "website": "https://fedoraproject.org",
+    "docs": "https://docs.fedoraproject.org/en-US/fedora/latest/install-guide/",
+    "layout": {
+      "boot_mib": 1024, "boot_fs": "ext4", "lvm": false, "swap_style": "zram",
+      "default_fs": "btrfs", "fs_options": ["btrfs", "ext4", "xfs"], "home_fs": "btrfs",
+      "root_gb": { "desktop": 30, "dev": 50, "server": 20, "minimal": 10 }
+    },
+    "notes": [
+      "Workstation uses Btrfs with subvolumes (root and home share one pool) and swap on compressed RAM (zram).",
+      "Hibernation needs a real swap partition; tick 'hibernate' if you want that."
+    ],
+    "verified": false
+  },
+  {
+    "id": "garuda", "name": "Garuda Linux", "family": "arch", "status": "active",
+    "install_method": "guided_gui", "installer": "Calamares",
+    "archs": ["x86_64"],
+    "min_ram_gb": 4, "rec_ram_gb": 8, "min_disk_gb": 30, "rec_disk_gb": 50,
+    "secure_boot": "no", "website": "https://garudalinux.org",
+    "layout": { "default_fs": "btrfs", "fs_options": ["btrfs", "ext4"], "root_gb": { "desktop": 40, "dev": 60, "server": 30, "minimal": 30 } },
+    "notes": ["Defaults to Btrfs with automatic snapshots and zstd compression."],
+    "verified": false
+  },
+  {
+    "id": "gentoo", "name": "Gentoo", "family": "independent", "status": "active",
+    "install_method": "manual", "installer": "Manual (Gentoo Handbook)",
+    "archs": ["x86_64", "aarch64", "i686", "armv7"],
+    "min_ram_gb": 2, "rec_ram_gb": 8, "min_disk_gb": 20, "rec_disk_gb": 60,
+    "secure_boot": "partial", "website": "https://gentoo.org",
+    "docs": "https://wiki.gentoo.org/wiki/Handbook:AMD64",
+    "layout": { "esp_mib": 1024, "esp_mount": "/efi", "root_gb": { "desktop": 60, "dev": 80, "server": 30, "minimal": 20 } },
+    "notes": [
+      "Source-based: large installs compile for hours. Binary packages and a binary kernel (gentoo-kernel-bin) reduce that.",
+      "Only the partitioning step is automated here. Follow the Handbook for the rest."
+    ],
+    "install_steps": [
+      "Boot any recent live image (the Gentoo minimal ISO is best) and check boot mode.",
+      "Partition, format and mount the disk with the commands below (mount root on /mnt/gentoo).",
+      "Download and unpack a stage3 tarball into /mnt/gentoo as the Handbook describes.",
+      "Copy DNS info, mount /proc, /sys and /dev, then chroot into /mnt/gentoo.",
+      "Configure make.conf, choose a profile, sync with emerge-webrsync, then update @world.",
+      "Install a kernel (gentoo-kernel-bin is the quickest), firmware and fstab entries.",
+      "Install and configure a boot loader, set the root password, then reboot."
+    ],
+    "verified": false
+  },
+  {
+    "id": "kali", "name": "Kali Linux", "family": "debian", "status": "active",
+    "install_method": "guided_gui", "installer": "Debian Installer / Calamares (depending on image)",
+    "archs": ["x86_64", "aarch64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 20, "rec_disk_gb": 40,
+    "secure_boot": "no", "website": "https://kali.org",
+    "notes": [
+      "Designed for security testing, not as a general daily system.",
+      "Secure Boot is not supported by the standard images; disable it in firmware."
+    ],
+    "verified": false
+  },
+  {
+    "id": "knoppix", "name": "Knoppix", "family": "debian", "status": "active",
+    "install_method": "live_usb", "installer": "Live system (hard-disk install is optional)",
+    "archs": ["x86_64", "i686"],
+    "min_ram_gb": 1, "rec_ram_gb": 2, "min_disk_gb": 4, "rec_disk_gb": 16,
+    "secure_boot": "partial", "website": "https://knoppix.net",
+    "notes": ["Mainly used as a live rescue system. Installing it to a disk is possible but unusual."],
+    "steps": [
+      "Write the Knoppix image to a USB stick or DVD.",
+      "Boot it; the whole system runs from the stick with no changes to the internal disk.",
+      "Optional: use the installer from the menu to copy it to a disk, or save settings to a persistent image on the USB stick."
+    ],
+    "verified": false
+  },
+  {
+    "id": "mint", "name": "Linux Mint", "family": "debian", "status": "active",
+    "install_method": "guided_gui", "installer": "Ubiquity-style installer",
+    "archs": ["x86_64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 20, "rec_disk_gb": 100,
+    "secure_boot": "yes", "website": "https://linuxmint.com",
+    "docs": "https://linuxmint-installation-guide.readthedocs.io/",
+    "layout": { "swap_style": "file" },
+    "notes": ["Good first distro. Ubuntu LTS based. Swap is a file by default in the installer's guided mode."],
+    "verified": false
+  },
+  {
+    "id": "lubuntu", "name": "Lubuntu", "family": "debian", "status": "active",
+    "install_method": "guided_gui", "installer": "Calamares",
+    "archs": ["x86_64"],
+    "min_ram_gb": 1, "rec_ram_gb": 2, "min_disk_gb": 8, "rec_disk_gb": 20,
+    "secure_boot": "yes", "website": "https://lubuntu.me",
+    "layout": { "swap_style": "file" },
+    "notes": ["Lightweight Ubuntu flavour using LXQt. A good fit for older machines."],
+    "verified": false
+  },
+  {
+    "id": "mageia", "name": "Mageia", "family": "independent", "status": "active",
+    "install_method": "guided_gui", "installer": "DrakX",
+    "archs": ["x86_64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 10, "rec_disk_gb": 25,
+    "secure_boot": "partial", "website": "https://mageia.org",
+    "layout": { "esp_mib": 512, "esp_mount": "/boot/efi", "root_gb": { "desktop": 30, "dev": 50, "server": 20, "minimal": 10 } },
+    "notes": ["RPM-based community distribution (Mandriva heritage) with its own installer and Mageia Control Center."],
+    "install_steps": [
+      "Boot the USB stick (the Live ISO includes the installer icon; the classic DVD boots straight into DrakX).",
+      "Accept the license, pick language, then choose 'Custom' disk partitioning to apply the layout above (or 'Use free space' for dual boot).",
+      "Choose desktop and packages, set the root password and create a user.",
+      "Install the boot loader (GRUB2-EFI on UEFI), reboot and remove the USB stick."
+    ],
+    "verified": false
+  },
+  {
+    "id": "manjaro", "name": "Manjaro", "family": "arch", "status": "active",
+    "install_method": "guided_gui", "installer": "Calamares",
+    "archs": ["x86_64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 30, "rec_disk_gb": 50,
+    "secure_boot": "no", "website": "https://manjaro.org",
+    "layout": { "esp_mount": "/boot/efi", "esp_mib": 512 },
+    "notes": ["Arch-based but with delayed, tested updates. Secure Boot is not supported; disable it."],
+    "verified": false
+  },
+  {
+    "id": "mx", "name": "MX Linux", "family": "debian", "status": "active",
+    "install_method": "guided_gui", "installer": "MX Installer",
+    "archs": ["x86_64"],
+    "min_ram_gb": 1, "rec_ram_gb": 2, "min_disk_gb": 8, "rec_disk_gb": 20,
+    "secure_boot": "unknown", "website": "https://mxlinux.org",
+    "notes": ["Debian stable based and light on resources. Uses its own installer with good manual partition support."],
+    "verified": false
+  },
+  {
+    "id": "navy", "name": "Navy Linux", "family": "generic", "status": "unknown",
+    "install_method": "guided_gui", "installer": "Unknown",
+    "archs": ["x86_64"],
+    "min_ram_gb": null, "rec_ram_gb": null, "min_disk_gb": null, "rec_disk_gb": null,
+    "secure_boot": "unknown", "website": null,
+    "notes": [
+      "No reliable information was collected for this distribution. A generic layout is shown, but you should confirm requirements and the installer from the project's own documentation before using it."
+    ],
+    "verified": false
+  },
+  {
+    "id": "nixos", "name": "NixOS", "family": "independent", "status": "active",
+    "install_method": "guided_gui", "installer": "Calamares (graphical ISO) or manual (minimal ISO)",
+    "archs": ["x86_64", "aarch64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 10, "rec_disk_gb": 40,
+    "secure_boot": "partial", "website": "https://nixos.org",
+    "docs": "https://nixos.org/manual/nixos/stable/#sec-installation",
+    "layout": { "esp_mib": 1024, "esp_mount": "/boot", "root_gb": { "desktop": 50, "dev": 80, "server": 30, "minimal": 20 } },
+    "notes": [
+      "The Nix store grows quickly, so give root generous space and plan to run garbage collection.",
+      "Secure Boot needs extra tooling (for example lanzaboote); disable it for a first install."
+    ],
+    "install_steps": [
+      "Boot the graphical ISO (easiest) or the minimal ISO (manual, uses the commands below and nixos-generate-config).",
+      "In the graphical installer choose language, location, keyboard and desktop, then pick 'Manual partitioning' to apply the layout above.",
+      "Create a user and choose whether to allow unfree software (needed for NVIDIA drivers).",
+      "Install and reboot. Your system is described in /etc/nixos/configuration.nix."
+    ],
+    "verified": false
+  },
+  {
+    "id": "opensuse", "name": "openSUSE", "family": "suse", "status": "active",
+    "install_method": "guided_gui", "installer": "YaST or Agama (depends on edition)",
+    "archs": ["x86_64", "aarch64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 20, "rec_disk_gb": 40,
+    "secure_boot": "yes", "website": "https://opensuse.org",
+    "docs": "https://doc.opensuse.org/",
+    "notes": [
+      "Leap is the stable release, Tumbleweed is rolling. Both default to a Btrfs root with snapshots.",
+      "If the root partition is under about 40 GB, disable snapshots or use XFS/ext4 to avoid running out of space."
+    ],
+    "verified": false
+  },
+  {
+    "id": "oracle", "name": "Oracle Linux", "family": "rhel", "status": "active",
+    "install_method": "guided_gui", "installer": "Anaconda",
+    "archs": ["x86_64", "aarch64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 10, "rec_disk_gb": 20,
+    "secure_boot": "yes", "website": "https://oracle.com/linux",
+    "notes": ["RHEL-compatible; free to download and use. Offers the Red Hat compatible kernel or Oracle's UEK kernel."],
+    "verified": false
+  },
+  {
+    "id": "pop", "name": "Pop!_OS", "family": "debian", "status": "active",
+    "install_method": "guided_gui", "installer": "Pop!_OS installer",
+    "archs": ["x86_64"],
+    "min_ram_gb": 4, "rec_ram_gb": 8, "min_disk_gb": 20, "rec_disk_gb": 40,
+    "secure_boot": "yes", "website": "https://pop.system76.com",
+    "layout": { "esp_mib": 1024 },
+    "notes": [
+      "A clean install normally creates a 4 GiB recovery partition in addition to the layout shown. Add it if you want the Refresh Install feature.",
+      "The NVIDIA ISO includes the proprietary driver; pick it on NVIDIA systems."
+    ],
+    "verified": false
+  },
+  {
+    "id": "raspios", "name": "Raspberry Pi OS", "family": "debian", "status": "active",
+    "install_method": "image", "installer": "Raspberry Pi Imager (writes a disk image)",
+    "archs": ["aarch64", "armv7"],
+    "min_ram_gb": 1, "rec_ram_gb": 4, "min_disk_gb": 8, "rec_disk_gb": 32,
+    "secure_boot": "no", "website": "https://www.raspberrypi.com/software/",
+    "notes": [
+      "No manual partitioning. The image creates a FAT boot partition (about 512 MiB) and an ext4 root that expands to fill the card on first boot.",
+      "For a regular PC use Debian or another distribution instead."
+    ],
+    "steps": [
+      "Install Raspberry Pi Imager on another computer.",
+      "Choose your Pi model, the OS (Raspberry Pi OS 64-bit for Pi 3 and newer), and the storage (microSD, USB or NVMe).",
+      "Open the OS customisation options and set hostname, user, Wi-Fi and SSH.",
+      "Write the image, insert the card/drive into the Pi and power it on."
+    ],
+    "verified": false
+  },
+  {
+    "id": "rhel", "name": "Red Hat Enterprise Linux", "family": "rhel", "status": "active",
+    "install_method": "guided_gui", "installer": "Anaconda",
+    "archs": ["x86_64", "aarch64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 10, "rec_disk_gb": 20,
+    "secure_boot": "yes", "website": "https://redhat.com/rhel",
+    "docs": "https://docs.redhat.com/",
+    "notes": ["Needs a Red Hat account. A no-cost developer subscription is available for individuals."],
+    "verified": false
+  },
+  {
+    "id": "rocky", "name": "Rocky Linux", "family": "rhel", "status": "active",
+    "install_method": "guided_gui", "installer": "Anaconda",
+    "archs": ["x86_64", "aarch64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 10, "rec_disk_gb": 20,
+    "secure_boot": "yes", "website": "https://rockylinux.org",
+    "notes": ["RHEL-compatible rebuild. Mostly used for servers."],
+    "verified": false
+  },
+  {
+    "id": "scientific", "name": "Scientific Linux", "family": "rhel", "status": "legacy",
+    "install_method": "guided_gui", "installer": "Anaconda",
+    "archs": ["x86_64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 10, "rec_disk_gb": 20,
+    "secure_boot": "no", "website": "https://scientificlinux.org",
+    "notes": ["The project has ended and receives no updates. Use AlmaLinux or Rocky Linux for new installs."],
+    "verified": false
+  },
+  {
+    "id": "slackware", "name": "Slackware", "family": "independent", "status": "active",
+    "install_method": "manual", "installer": "setup (text installer) after manual partitioning",
+    "archs": ["x86_64", "i686"],
+    "min_ram_gb": 0.5, "rec_ram_gb": 2, "min_disk_gb": 10, "rec_disk_gb": 25,
+    "secure_boot": "no", "website": "https://slackware.com",
+    "docs": "https://docs.slackware.com/slackware:install",
+    "layout": { "esp_mib": 512, "esp_mount": "/boot/efi", "root_gb": { "desktop": 30, "dev": 50, "server": 20, "minimal": 10 } },
+    "notes": ["A full install (all package sets) is recommended and takes around 15 GB or more."],
+    "install_steps": [
+      "Boot the Slackware DVD or USB and log in as 'root'.",
+      "Partition with cfdisk/fdisk (or use the commands below).",
+      "Run: setup",
+      "In setup choose ADDSWAP, TARGET (set the root and ESP mount points), SOURCE, SELECT (full install recommended) and INSTALL.",
+      "In CONFIGURE choose the kernel, boot loader (ELILO/GRUB on UEFI, LILO on BIOS), network and root password.",
+      "Exit setup and reboot."
+    ],
+    "verified": false
+  },
+  {
+    "id": "sle", "name": "SUSE Linux Enterprise", "family": "suse", "status": "active",
+    "install_method": "guided_gui", "installer": "YaST or Agama (depends on version)",
+    "archs": ["x86_64", "aarch64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 15, "rec_disk_gb": 40,
+    "secure_boot": "yes", "website": "https://suse.com",
+    "notes": ["Commercial; a registration code (or a trial) is needed for updates. SLES defaults to a Btrfs root with snapshots."],
+    "verified": false
+  },
+  {
+    "id": "tails", "name": "Tails", "family": "debian", "status": "active",
+    "install_method": "live_usb", "installer": "Tails Installer / Etcher (USB only)",
+    "archs": ["x86_64"],
+    "min_ram_gb": 3, "rec_ram_gb": 4, "min_disk_gb": 8, "rec_disk_gb": 16,
+    "secure_boot": "partial", "website": "https://tails.net",
+    "notes": [
+      "Tails runs from a USB stick and leaves the computer's disk untouched. It is not installed to the internal drive.",
+      "A USB stick of at least 8 GB is required; encrypted Persistent Storage is optional."
+    ],
+    "steps": [
+      "Follow the official installation steps on the Tails website to write the image to a USB stick and verify the download.",
+      "Boot the target computer from that USB stick.",
+      "Optional: create an encrypted Persistent Storage on the remaining USB space from the Welcome screen."
+    ],
+    "verified": false
+  },
+  {
+    "id": "tizen", "name": "Tizen", "family": "independent", "status": "active",
+    "install_method": "special", "installer": "Not a PC distribution",
+    "archs": ["aarch64", "armv7"],
+    "min_ram_gb": null, "rec_ram_gb": null, "min_disk_gb": null, "rec_disk_gb": null,
+    "secure_boot": "no", "website": "https://tizen.org",
+    "notes": [
+      "Tizen targets TVs, wearables and embedded devices, and it is flashed by the device maker. There is no standard PC install, so no partition plan is shown."
+    ],
+    "steps": [
+      "For app development, install Tizen Studio and use its emulator.",
+      "For hardware images (for example the Raspberry Pi builds), follow the project's flashing guide for that specific board."
+    ],
+    "verified": false
+  },
+  {
+    "id": "ubuntu", "name": "Ubuntu", "family": "debian", "status": "active",
+    "install_method": "guided_gui", "installer": "Ubuntu Desktop installer (Subiquity for Server)",
+    "archs": ["x86_64", "aarch64"],
+    "min_ram_gb": 4, "rec_ram_gb": 8, "min_disk_gb": 25, "rec_disk_gb": 50,
+    "secure_boot": "yes", "website": "https://ubuntu.com",
+    "docs": "https://ubuntu.com/tutorials/install-ubuntu-desktop",
+    "layout": { "swap_style": "file" },
+    "notes": [
+      "Ubuntu creates a swap file by default instead of a swap partition.",
+      "Server edition needs much less (about 1 GB RAM and 5 GB disk)."
+    ],
+    "verified": false
+  },
+  {
+    "id": "void", "name": "Void Linux", "family": "independent", "status": "active",
+    "install_method": "guided_tui", "installer": "void-installer (text) or manual",
+    "archs": ["x86_64", "aarch64", "i686", "armv7"],
+    "min_ram_gb": 1, "rec_ram_gb": 2, "min_disk_gb": 2, "rec_disk_gb": 20,
+    "secure_boot": "no", "website": "https://voidlinux.org",
+    "docs": "https://docs.voidlinux.org/installation/index.html",
+    "layout": { "esp_mib": 512, "esp_mount": "/boot/efi", "root_gb": { "desktop": 20, "dev": 40, "server": 10, "minimal": 4 } },
+    "notes": ["Uses runit instead of systemd. The base ISO is text only; the XFCE image adds a desktop."],
+    "install_steps": [
+      "Boot the Void live ISO and log in as 'root' (the password is 'voidlinux').",
+      "Run: void-installer",
+      "Work through the menu: Keyboard, Network, Source (local), Hostname, Locale, Timezone, RootPassword, UserAccount, BootLoader.",
+      "In Partition, use cfdisk to create the layout above; in Filesystems assign mount points and formats.",
+      "Choose Install, then reboot."
+    ],
+    "verified": false
+  },
+  {
+    "id": "vzlinux", "name": "VzLinux", "family": "rhel", "status": "active",
+    "install_method": "guided_gui", "installer": "Anaconda",
+    "archs": ["x86_64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 10, "rec_disk_gb": 20,
+    "secure_boot": "unknown", "website": "https://virtuozzo.com",
+    "notes": ["RHEL-compatible server OS from Virtuozzo. Many people convert an existing CentOS/Alma system instead of installing fresh."],
+    "verified": false
+  },
+  {
+    "id": "zorin", "name": "Zorin OS", "family": "debian", "status": "active",
+    "install_method": "guided_gui", "installer": "Ubiquity-style installer",
+    "archs": ["x86_64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 15, "rec_disk_gb": 40,
+    "secure_boot": "yes", "website": "https://zorin.com",
+    "layout": { "swap_style": "file" },
+    "notes": ["Ubuntu LTS based and aimed at Windows switchers. Core, Lite and Pro editions have slightly different needs."],
+    "verified": false
+  },
+  {
+    "id": "peppermint", "name": "Peppermint OS", "family": "debian", "status": "active",
+    "install_method": "guided_gui", "installer": "Calamares",
+    "archs": ["x86_64"],
+    "min_ram_gb": 2, "rec_ram_gb": 4, "min_disk_gb": 16, "rec_disk_gb": 32,
+    "secure_boot": "partial", "website": "https://peppermintos.com",
+    "notes": ["Lightweight, Debian based, with a focus on web apps."],
+    "verified": false
+  }
+]

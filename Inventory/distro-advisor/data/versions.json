@@ -1,0 +1,789 @@
+{
+  "ubuntu": [
+    {
+      "id": "26.04-lts",
+      "short": "26.04 LTS",
+      "default": true,
+      "status": "current",
+      "label": "26.04 LTS \"Resolute Raccoon\" (current LTS)",
+      "released": "2026-04-23",
+      "eol": "2031-04-30",
+      "eol_label": "April 2031",
+      "overrides": {
+        "min_ram_gb": 6,
+        "rec_ram_gb": 8,
+        "min_disk_gb": 25,
+        "rec_disk_gb": 50
+      },
+      "notes": [
+        "Ubuntu 26.04 raised the desktop minimum to 6 GB RAM (it was 4 GB). With 4 GB or less, use Ubuntu Server and add a light desktop, or pick a lighter flavour such as Lubuntu.",
+        "The 26.04 desktop is Wayland only (no X11 session), which matters for some NVIDIA setups and older remote-desktop tools."
+      ],
+      "verified": true,
+      "checked": "2026-11-17",
+      "checked_note": "minimum RAM, disk and support end date",
+      "sources": [
+        {
+          "title": "Ubuntu 26.04 LTS release notes",
+          "url": "https://documentation.ubuntu.com/release-notes/26.04/"
+        },
+        {
+          "title": "OMG! Ubuntu: new system requirements",
+          "url": "https://www.omgubuntu.co.uk/2026/04/ubuntu-2604-system-requriments/amp"
+        }
+      ]
+    },
+    {
+      "id": "26.10",
+      "short": "26.10",
+      "default": false,
+      "status": "supported",
+      "label": "26.10 \"Stonking Stingray\" (interim, 9 months)",
+      "released": "2026-10-15",
+      "eol": "2027-07-01",
+      "eol_label": "July 2027",
+      "overrides": {
+        "min_ram_gb": 6,
+        "rec_ram_gb": 8,
+        "min_disk_gb": 25,
+        "rec_disk_gb": 50
+      },
+      "notes": [
+        "Interim release: it gets updates for only about 9 months, so you must upgrade again in 2027. Choose 26.04 LTS for anything long-lived.",
+        "Requirements are assumed to match 26.04 LTS; they were not separately confirmed.",
+        "Reported change (one source, check the 26.10 release notes): with Secure Boot on, the signed GRUB can no longer read Btrfs, XFS or ZFS, nor LVM, software RAID or LUKS. Keep /boot (or the whole root) on plain ext4 if Secure Boot is enabled."
+      ],
+      "verified": true,
+      "checked": "2026-11-17",
+      "checked_note": "release date and support end date",
+      "sources": [
+        {
+          "title": "Linux Today: 26.10 release schedule",
+          "url": "https://www.linuxtoday.com/blog/ubuntu-26-10-stonking-stingray-is-slated-for-release-on-october-15th-2026/"
+        },
+        {
+          "title": "LinuxCompatible: 26.10 released",
+          "url": "https://www.linuxcompatible.org/story/ubuntu-linux-2610-stonking-stingray-ships-with-rust-core-and-slimmer-boot/"
+        }
+      ]
+    },
+    {
+      "id": "24.04-lts",
+      "short": "24.04 LTS",
+      "default": false,
+      "status": "supported",
+      "label": "24.04 LTS \"Noble Numbat\" (previous LTS)",
+      "released": "2024-04-25",
+      "eol": "2029-04-30",
+      "eol_label": "April 2029",
+      "overrides": {
+        "min_ram_gb": 4,
+        "rec_ram_gb": 8,
+        "min_disk_gb": 25,
+        "rec_disk_gb": 50
+      },
+      "notes": [
+        "A good choice if your PC has 4 GB of RAM and cannot meet the 26.04 minimum."
+      ],
+      "verified": false,
+      "checked": null,
+      "checked_note": null,
+      "sources": [
+        {
+          "title": "Ubuntu release cycle",
+          "url": "https://ubuntu.com/about/release-cycle"
+        }
+      ]
+    },
+    {
+      "id": "server-26.04-lts",
+      "short": "Server 26.04 LTS",
+      "default": false,
+      "status": "current",
+      "label": "Server 26.04 LTS (text installer)",
+      "released": "2026-04-23",
+      "eol": "2031-04-30",
+      "eol_label": "April 2031",
+      "overrides": {
+        "min_ram_gb": 1.5,
+        "rec_ram_gb": null,
+        "min_disk_gb": 4,
+        "rec_disk_gb": null,
+        "install_method": "guided_tui",
+        "installer": "Subiquity (text installer)",
+        "install_steps": [
+          "Boot the Ubuntu Server ISO. It starts the text installer.",
+          "Choose language and keyboard layout, then the installation type (Ubuntu Server or the minimized option).",
+          "Configure the network and, if needed, a proxy or mirror.",
+          "At Storage choose 'Custom storage layout' to apply the layout above, or 'Use an entire disk' (optionally with LVM). Review the summary before confirming.",
+          "Set the server name and create a user. Enable the OpenSSH server if you will manage it remotely, and pick any optional snaps.",
+          "Install, then reboot and remove the USB stick when asked."
+        ]
+      },
+      "notes": [
+        "Server requirements start at 1.5 GB RAM and 4 GB storage and grow with what you run on it."
+      ],
+      "verified": true,
+      "checked": "2026-11-17",
+      "checked_note": "minimum RAM, disk and support end date",
+      "sources": [
+        {
+          "title": "Ubuntu 26.04 LTS release notes",
+          "url": "https://documentation.ubuntu.com/release-notes/26.04/"
+        },
+        {
+          "title": "Ubuntu Server requirements",
+          "url": "https://ubuntu.com/server/docs/reference/installation/system-requirements/"
+        }
+      ]
+    }
+  ],
+  "debian": [
+    {
+      "id": "13",
+      "short": "13 (Trixie)",
+      "default": true,
+      "status": "current",
+      "label": "13 \"Trixie\" (stable)",
+      "released": "2025-08-09",
+      "limited_from": "2028-08-09",
+      "limited_label": "August 2028",
+      "eol": "2030-06-30",
+      "eol_label": "June 2030 (including LTS)",
+      "overrides": {
+        "archs": [
+          "x86_64",
+          "aarch64",
+          "armv7"
+        ]
+      },
+      "notes": [
+        "Debian 13 no longer treats 32-bit x86 (i386) as a regular architecture. For a 32-bit PC use Debian 12 (check the release notes)."
+      ],
+      "verified": true,
+      "checked": "2026-11-17",
+      "checked_note": "release status and support dates",
+      "sources": [
+        {
+          "title": "Debian releases (official)",
+          "url": "https://www.debian.org/releases/"
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "short": "12 (Bookworm)",
+      "default": false,
+      "status": "supported",
+      "label": "12 \"Bookworm\" (oldstable)",
+      "released": "2023-06-10",
+      "limited_from": "2026-07-11",
+      "limited_label": "July 2026",
+      "eol": "2028-06-30",
+      "eol_label": "June 2028 (LTS)",
+      "overrides": {
+        "archs": [
+          "x86_64",
+          "aarch64",
+          "i686",
+          "armv7"
+        ]
+      },
+      "notes": [
+        "Regular security support has ended; the community LTS team supplies updates until June 2028, for a reduced set of packages."
+      ],
+      "verified": true,
+      "checked": "2026-11-17",
+      "checked_note": "release status and support dates",
+      "sources": [
+        {
+          "title": "Debian releases (official)",
+          "url": "https://www.debian.org/releases/"
+        }
+      ]
+    }
+  ],
+  "fedora": [
+    {
+      "id": "45",
+      "short": "45",
+      "default": true,
+      "status": "current",
+      "label": "45 (current)",
+      "released": "2026-11-03",
+      "eol": "2027-11-24",
+      "eol_label": "late Nov to early Dec 2027 (sources differ)",
+      "overrides": {},
+      "notes": [
+        "Support end dates are not fixed far ahead: Fedora ends support about 4 weeks after release N+2 ships."
+      ],
+      "verified": true,
+      "checked": "2026-11-17",
+      "checked_note": "release date (3 November 2026) and approximate support end",
+      "sources": [
+        {
+          "title": "Fedora 45 release coverage (Phoronix)",
+          "url": "https://phoronix.com/news/Fedora-45-Released"
+        },
+        {
+          "title": "Fedora 45 timeline and EOL dates (FOSS Linux)",
+          "url": "https://www.fosslinux.com/163518/fedora-45-release-whats-new-and-how-to-upgrade.htm"
+        }
+      ]
+    },
+    {
+      "id": "44",
+      "short": "44",
+      "default": false,
+      "status": "supported",
+      "label": "44 (previous)",
+      "released": "2026-04-28",
+      "eol": "2027-06-02",
+      "eol_label": "June 2027",
+      "overrides": {},
+      "notes": [],
+      "verified": true,
+      "checked": "2026-11-17",
+      "checked_note": "release date and approximate support end",
+      "sources": [
+        {
+          "title": "Fedora 45 release coverage (Phoronix)",
+          "url": "https://phoronix.com/news/Fedora-45-Released"
+        },
+        {
+          "title": "Fedora 45 timeline and EOL dates (FOSS Linux)",
+          "url": "https://www.fosslinux.com/163518/fedora-45-release-whats-new-and-how-to-upgrade.htm"
+        }
+      ]
+    },
+    {
+      "id": "43",
+      "short": "43",
+      "default": false,
+      "status": "supported",
+      "label": "43 (previous)",
+      "released": "2025-10-28",
+      "eol": "2026-12-01",
+      "eol_label": "early December 2026",
+      "overrides": {},
+      "notes": [
+        "Fedora 43 loses support within weeks of Fedora 45's release. For a new install, choose 45."
+      ],
+      "verified": true,
+      "checked": "2026-11-17",
+      "checked_note": "release date and approximate support end (sources give 1 to 9 December)",
+      "sources": [
+        {
+          "title": "Fedora 45 release coverage (Phoronix)",
+          "url": "https://phoronix.com/news/Fedora-45-Released"
+        },
+        {
+          "title": "Fedora 45 timeline and EOL dates (FOSS Linux)",
+          "url": "https://www.fosslinux.com/163518/fedora-45-release-whats-new-and-how-to-upgrade.htm"
+        }
+      ]
+    }
+  ],
+  "rhel": [
+    {
+      "verified": true,
+      "checked": "2026-11-17",
+      "checked_note": "support dates and minimum RAM",
+      "id": "10",
+      "short": "10",
+      "default": true,
+      "status": "current",
+      "label": "10 (current)",
+      "released": "2025-05-20",
+      "limited_from": "2030-05-31",
+      "limited_label": "May 2030 (full support ends)",
+      "eol": "2035-05-31",
+      "eol_label": "May 2035",
+      "overrides": {
+        "min_ram_gb": 1.5
+      },
+      "notes": [
+        "RHEL 10 needs a newer CPU level (x86-64-v3, roughly Intel Haswell 2013 or AMD Excavator 2015 and newer). Older CPUs cannot run it; use version 9 instead. This CPU requirement was not confirmed in the sources checked here, so verify it."
+      ],
+      "sources": [
+        {
+          "title": "RHEL lifecycle dates (endoflife.ai)",
+          "url": "https://endoflife.ai/article-rhel-eol.html"
+        },
+        {
+          "title": "RHEL capabilities and limits (Red Hat)",
+          "url": "https://access.redhat.com/articles/rhel-limits"
+        }
+      ]
+    },
+    {
+      "verified": true,
+      "checked": "2026-11-17",
+      "checked_note": "support dates and minimum RAM",
+      "id": "9",
+      "short": "9",
+      "default": false,
+      "status": "supported",
+      "label": "9",
+      "released": "2022-05-18",
+      "limited_from": "2027-05-31",
+      "limited_label": "May 2027 (full support ends)",
+      "eol": "2032-05-31",
+      "eol_label": "May 2032",
+      "overrides": {
+        "min_ram_gb": 1.5
+      },
+      "notes": [
+        "RHEL 9 needs at least an x86-64-v2 CPU (SSE4.2 and related flags)."
+      ],
+      "sources": [
+        {
+          "title": "RHEL lifecycle dates (endoflife.ai)",
+          "url": "https://endoflife.ai/article-rhel-eol.html"
+        },
+        {
+          "title": "RHEL capabilities and limits (Red Hat)",
+          "url": "https://access.redhat.com/articles/rhel-limits"
+        }
+      ]
+    },
+    {
+      "verified": true,
+      "checked": "2026-11-17",
+      "checked_note": "support dates and minimum RAM",
+      "id": "8",
+      "short": "8",
+      "default": false,
+      "status": "supported",
+      "label": "8 (maintenance only)",
+      "released": "2019-05-07",
+      "limited_from": "2024-05-31",
+      "limited_label": "May 2024",
+      "eol": "2029-05-31",
+      "eol_label": "May 2029",
+      "overrides": {},
+      "notes": [
+        "Version 8 is already in its maintenance phase (critical fixes only) until May 2029. Prefer 9 or 10 for new systems."
+      ],
+      "sources": [
+        {
+          "title": "RHEL lifecycle dates (endoflife.ai)",
+          "url": "https://endoflife.ai/article-rhel-eol.html"
+        },
+        {
+          "title": "RHEL capabilities and limits (Red Hat)",
+          "url": "https://access.redhat.com/articles/rhel-limits"
+        }
+      ]
+    }
+  ],
+  "almalinux": [
+    {
+      "verified": false,
+      "checked": null,
+      "checked_note": null,
+      "id": "10",
+      "short": "10",
+      "default": true,
+      "status": "current",
+      "label": "10 (current)",
+      "released": "2025-05-20",
+      "limited_from": "2030-05-31",
+      "limited_label": "May 2030 (full support ends)",
+      "eol": "2035-05-31",
+      "eol_label": "May 2035",
+      "overrides": {},
+      "notes": [
+        "RHEL 10 needs a newer CPU level (x86-64-v3, roughly Intel Haswell 2013 or AMD Excavator 2015 and newer). Older CPUs cannot run it; use version 9 instead. This CPU requirement was not confirmed in the sources checked here, so verify it.",
+        "Support dates follow the RHEL major-version lifecycle; confirm the vendor's own dates."
+      ],
+      "sources": [
+        {
+          "title": "RHEL lifecycle dates (endoflife.ai)",
+          "url": "https://endoflife.ai/article-rhel-eol.html"
+        },
+        {
+          "title": "RHEL capabilities and limits (Red Hat)",
+          "url": "https://access.redhat.com/articles/rhel-limits"
+        }
+      ]
+    },
+    {
+      "verified": false,
+      "checked": null,
+      "checked_note": null,
+      "id": "9",
+      "short": "9",
+      "default": false,
+      "status": "supported",
+      "label": "9",
+      "released": "2022-05-18",
+      "limited_from": "2027-05-31",
+      "limited_label": "May 2027 (full support ends)",
+      "eol": "2032-05-31",
+      "eol_label": "May 2032",
+      "overrides": {},
+      "notes": [
+        "RHEL 9 needs at least an x86-64-v2 CPU (SSE4.2 and related flags).",
+        "Support dates follow the RHEL major-version lifecycle; confirm the vendor's own dates."
+      ],
+      "sources": [
+        {
+          "title": "RHEL lifecycle dates (endoflife.ai)",
+          "url": "https://endoflife.ai/article-rhel-eol.html"
+        },
+        {
+          "title": "RHEL capabilities and limits (Red Hat)",
+          "url": "https://access.redhat.com/articles/rhel-limits"
+        }
+      ]
+    },
+    {
+      "verified": false,
+      "checked": null,
+      "checked_note": null,
+      "id": "8",
+      "short": "8",
+      "default": false,
+      "status": "supported",
+      "label": "8 (maintenance only)",
+      "released": "2019-05-07",
+      "limited_from": "2024-05-31",
+      "limited_label": "May 2024",
+      "eol": "2029-05-31",
+      "eol_label": "May 2029",
+      "overrides": {},
+      "notes": [
+        "Version 8 is already in its maintenance phase (critical fixes only) until May 2029. Prefer 9 or 10 for new systems.",
+        "Support dates follow the RHEL major-version lifecycle; confirm the vendor's own dates."
+      ],
+      "sources": [
+        {
+          "title": "RHEL lifecycle dates (endoflife.ai)",
+          "url": "https://endoflife.ai/article-rhel-eol.html"
+        },
+        {
+          "title": "RHEL capabilities and limits (Red Hat)",
+          "url": "https://access.redhat.com/articles/rhel-limits"
+        }
+      ]
+    }
+  ],
+  "rocky": [
+    {
+      "verified": false,
+      "checked": null,
+      "checked_note": null,
+      "id": "10",
+      "short": "10",
+      "default": true,
+      "status": "current",
+      "label": "10 (current)",
+      "released": "2025-05-20",
+      "limited_from": "2030-05-31",
+      "limited_label": "May 2030 (full support ends)",
+      "eol": "2035-05-31",
+      "eol_label": "May 2035",
+      "overrides": {},
+      "notes": [
+        "RHEL 10 needs a newer CPU level (x86-64-v3, roughly Intel Haswell 2013 or AMD Excavator 2015 and newer). Older CPUs cannot run it; use version 9 instead. This CPU requirement was not confirmed in the sources checked here, so verify it.",
+        "Support dates follow the RHEL major-version lifecycle; confirm the vendor's own dates."
+      ],
+      "sources": [
+        {
+          "title": "RHEL lifecycle dates (endoflife.ai)",
+          "url": "https://endoflife.ai/article-rhel-eol.html"
+        },
+        {
+          "title": "RHEL capabilities and limits (Red Hat)",
+          "url": "https://access.redhat.com/articles/rhel-limits"
+        }
+      ]
+    },
+    {
+      "verified": false,
+      "checked": null,
+      "checked_note": null,
+      "id": "9",
+      "short": "9",
+      "default": false,
+      "status": "supported",
+      "label": "9",
+      "released": "2022-05-18",
+      "limited_from": "2027-05-31",
+      "limited_label": "May 2027 (full support ends)",
+      "eol": "2032-05-31",
+      "eol_label": "May 2032",
+      "overrides": {},
+      "notes": [
+        "RHEL 9 needs at least an x86-64-v2 CPU (SSE4.2 and related flags).",
+        "Support dates follow the RHEL major-version lifecycle; confirm the vendor's own dates."
+      ],
+      "sources": [
+        {
+          "title": "RHEL lifecycle dates (endoflife.ai)",
+          "url": "https://endoflife.ai/article-rhel-eol.html"
+        },
+        {
+          "title": "RHEL capabilities and limits (Red Hat)",
+          "url": "https://access.redhat.com/articles/rhel-limits"
+        }
+      ]
+    },
+    {
+      "verified": false,
+      "checked": null,
+      "checked_note": null,
+      "id": "8",
+      "short": "8",
+      "default": false,
+      "status": "supported",
+      "label": "8 (maintenance only)",
+      "released": "2019-05-07",
+      "limited_from": "2024-05-31",
+      "limited_label": "May 2024",
+      "eol": "2029-05-31",
+      "eol_label": "May 2029",
+      "overrides": {},
+      "notes": [
+        "Version 8 is already in its maintenance phase (critical fixes only) until May 2029. Prefer 9 or 10 for new systems.",
+        "Support dates follow the RHEL major-version lifecycle; confirm the vendor's own dates."
+      ],
+      "sources": [
+        {
+          "title": "RHEL lifecycle dates (endoflife.ai)",
+          "url": "https://endoflife.ai/article-rhel-eol.html"
+        },
+        {
+          "title": "RHEL capabilities and limits (Red Hat)",
+          "url": "https://access.redhat.com/articles/rhel-limits"
+        }
+      ]
+    }
+  ],
+  "oracle": [
+    {
+      "verified": false,
+      "checked": null,
+      "checked_note": null,
+      "id": "10",
+      "short": "10",
+      "default": true,
+      "status": "current",
+      "label": "10 (current)",
+      "released": "2025-05-20",
+      "limited_from": "2030-05-31",
+      "limited_label": "May 2030 (full support ends)",
+      "eol": "2035-05-31",
+      "eol_label": "May 2035",
+      "overrides": {},
+      "notes": [
+        "RHEL 10 needs a newer CPU level (x86-64-v3, roughly Intel Haswell 2013 or AMD Excavator 2015 and newer). Older CPUs cannot run it; use version 9 instead. This CPU requirement was not confirmed in the sources checked here, so verify it.",
+        "Support dates follow the RHEL major-version lifecycle; confirm the vendor's own dates.",
+        "Oracle Linux offers the Red Hat compatible kernel or Oracle's UEK kernel; UEK may have different hardware support."
+      ],
+      "sources": [
+        {
+          "title": "RHEL lifecycle dates (endoflife.ai)",
+          "url": "https://endoflife.ai/article-rhel-eol.html"
+        },
+        {
+          "title": "RHEL capabilities and limits (Red Hat)",
+          "url": "https://access.redhat.com/articles/rhel-limits"
+        }
+      ]
+    },
+    {
+      "verified": false,
+      "checked": null,
+      "checked_note": null,
+      "id": "9",
+      "short": "9",
+      "default": false,
+      "status": "supported",
+      "label": "9",
+      "released": "2022-05-18",
+      "limited_from": "2027-05-31",
+      "limited_label": "May 2027 (full support ends)",
+      "eol": "2032-05-31",
+      "eol_label": "May 2032",
+      "overrides": {},
+      "notes": [
+        "RHEL 9 needs at least an x86-64-v2 CPU (SSE4.2 and related flags).",
+        "Support dates follow the RHEL major-version lifecycle; confirm the vendor's own dates.",
+        "Oracle Linux offers the Red Hat compatible kernel or Oracle's UEK kernel; UEK may have different hardware support."
+      ],
+      "sources": [
+        {
+          "title": "RHEL lifecycle dates (endoflife.ai)",
+          "url": "https://endoflife.ai/article-rhel-eol.html"
+        },
+        {
+          "title": "RHEL capabilities and limits (Red Hat)",
+          "url": "https://access.redhat.com/articles/rhel-limits"
+        }
+      ]
+    },
+    {
+      "verified": false,
+      "checked": null,
+      "checked_note": null,
+      "id": "8",
+      "short": "8",
+      "default": false,
+      "status": "supported",
+      "label": "8 (maintenance only)",
+      "released": "2019-05-07",
+      "limited_from": "2024-05-31",
+      "limited_label": "May 2024",
+      "eol": "2029-05-31",
+      "eol_label": "May 2029",
+      "overrides": {},
+      "notes": [
+        "Version 8 is already in its maintenance phase (critical fixes only) until May 2029. Prefer 9 or 10 for new systems.",
+        "Support dates follow the RHEL major-version lifecycle; confirm the vendor's own dates.",
+        "Oracle Linux offers the Red Hat compatible kernel or Oracle's UEK kernel; UEK may have different hardware support."
+      ],
+      "sources": [
+        {
+          "title": "RHEL lifecycle dates (endoflife.ai)",
+          "url": "https://endoflife.ai/article-rhel-eol.html"
+        },
+        {
+          "title": "RHEL capabilities and limits (Red Hat)",
+          "url": "https://access.redhat.com/articles/rhel-limits"
+        }
+      ]
+    }
+  ],
+  "opensuse": [
+    {
+      "id": "leap-16",
+      "short": "Leap 16.0",
+      "default": true,
+      "status": "current",
+      "label": "Leap 16.0 (stable)",
+      "released": "2025-10-01",
+      "eol": "2027-10-01",
+      "eol_label": "about October 2027 (24 months)",
+      "overrides": {
+        "installer": "Agama (web-based installer)",
+        "install_steps": [
+          "Boot the openSUSE installer image. It starts Agama, a web-based installer, in a live environment (you can also open it from another computer on the same network).",
+          "Choose language and keyboard, then pick the product to install (Leap 16.0 or Tumbleweed; both come from the same image).",
+          "On the overview page open the storage section. Choose the target disk, then use the custom/advanced option to apply the layout above, or accept the proposal (Btrfs root with snapshots).",
+          "Set the root user and create a user account, then open the software section to choose a desktop pattern.",
+          "Check the overview page one last time, click Install, then reboot and remove the USB stick."
+        ]
+      },
+      "notes": [
+        "Leap 16 requires a CPU with x86-64-v2 (most processors since about 2008). Older machines should use Tumbleweed or Slowroll.",
+        "Leap 16 dropped 32-bit support, replaced YaST's installer with Agama, and enables SELinux by default."
+      ],
+      "verified": true,
+      "checked": "2026-11-17",
+      "checked_note": "installer, CPU requirement and support period",
+      "sources": [
+        {
+          "title": "openSUSE Leap 16.0",
+          "url": "https://get.opensuse.org/leap/16.0/"
+        },
+        {
+          "title": "Linuxiac: Leap 16.0 released",
+          "url": "https://linuxiac.com/opensuse-leap-16-0-released-this-is-whats-new/"
+        }
+      ]
+    },
+    {
+      "id": "tumbleweed",
+      "short": "Tumbleweed",
+      "default": false,
+      "status": "rolling",
+      "label": "Tumbleweed (rolling)",
+      "released": null,
+      "eol": null,
+      "eol_label": null,
+      "overrides": {
+        "installer": "Agama (web-based installer)",
+        "install_steps": [
+          "Boot the openSUSE installer image. It starts Agama, a web-based installer, in a live environment (you can also open it from another computer on the same network).",
+          "Choose language and keyboard, then pick the product to install (Leap 16.0 or Tumbleweed; both come from the same image).",
+          "On the overview page open the storage section. Choose the target disk, then use the custom/advanced option to apply the layout above, or accept the proposal (Btrfs root with snapshots).",
+          "Set the root user and create a user account, then open the software section to choose a desktop pattern.",
+          "Check the overview page one last time, click Install, then reboot and remove the USB stick."
+        ]
+      },
+      "notes": [
+        "Rolling release: always the newest software, with frequent updates. Run 'zypper dup' to update.",
+        "Slowroll is a middle option with slower, monthly-style updates."
+      ],
+      "verified": true,
+      "checked": "2026-11-17",
+      "checked_note": "installer",
+      "sources": [
+        {
+          "title": "openSUSE Leap 16.0",
+          "url": "https://get.opensuse.org/leap/16.0/"
+        },
+        {
+          "title": "Linuxiac: Leap 16.0 released",
+          "url": "https://linuxiac.com/opensuse-leap-16-0-released-this-is-whats-new/"
+        }
+      ]
+    }
+  ],
+  "mint": [
+    {
+      "id": "22.3",
+      "short": "22.3 (Zena)",
+      "default": true,
+      "status": "current",
+      "label": "22.3 \"Zena\" (current)",
+      "released": "2026-01-13",
+      "eol": "2029-04-30",
+      "eol_label": "April 2029",
+      "overrides": {
+        "min_ram_gb": 2,
+        "rec_ram_gb": 4,
+        "min_disk_gb": 20,
+        "rec_disk_gb": 100
+      },
+      "notes": [
+        "Based on Ubuntu 24.04 LTS.",
+        "A new Mint major release (built on Ubuntu 26.04) may appear soon; check linuxmint.com before installing."
+      ],
+      "verified": true,
+      "checked": "2026-11-17",
+      "checked_note": "minimum and recommended RAM and disk, support end date",
+      "sources": [
+        {
+          "title": "Linux Mint 22.3 requirements (BetaNews)",
+          "url": "https://betanews.com/article/linux-mint-22-3-is-built-for-users-who-value-stability-over-surprises"
+        }
+      ]
+    },
+    {
+      "id": "21.3",
+      "short": "21.3 (Virginia)",
+      "default": false,
+      "status": "supported",
+      "label": "21.3 \"Virginia\" (older)",
+      "released": "2024-01-10",
+      "eol": "2027-04-30",
+      "eol_label": "April 2027",
+      "overrides": {},
+      "notes": [
+        "Based on Ubuntu 22.04 LTS. Support dates are from general knowledge and are not yet checked."
+      ],
+      "verified": false,
+      "checked": null,
+      "checked_note": null,
+      "sources": [
+        {
+          "title": "Linux Mint project",
+          "url": "https://linuxmint.com"
+        }
+      ]
+    }
+  ]
+}

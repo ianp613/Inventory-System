@@ -1,0 +1,156 @@
+{
+  "rhel": {
+    "name": "RHEL family (Anaconda installer)",
+    "layout": {
+      "esp_mib": 600,
+      "esp_mount": "/boot/efi",
+      "boot_mib": 1024,
+      "boot_fs": "xfs",
+      "lvm": true,
+      "swap_style": "partition",
+      "default_fs": "xfs",
+      "fs_options": ["xfs", "ext4"],
+      "home_fs": "xfs",
+      "root_gb": { "desktop": 30, "dev": 50, "server": 20, "minimal": 10 }
+    },
+    "nvidia": "Use the vendor repositories (RPM Fusion on Fedora, ELRepo or NVIDIA's CUDA repo on RHEL clones). With Secure Boot on, drivers must be signed and the key enrolled (MOK).",
+    "install_steps": [
+      "Boot the USB stick and choose the Install entry.",
+      "Pick language and keyboard, then open 'Installation Destination'.",
+      "Select the target disk and choose 'Custom' (or 'Advanced Custom') to apply the layout shown above. Keep the LVM scheme.",
+      "Open 'Software Selection' and pick Server, Server with GUI, Workstation or Minimal Install.",
+      "Set network/hostname, time zone, root password and a user account.",
+      "Click 'Begin Installation', wait, then reboot and remove the USB stick."
+    ],
+    "post_steps": [
+      "Update the system: sudo dnf update",
+      "Enable extra repositories if needed (EPEL on Alma/Rocky/CentOS Stream/Oracle, subscription-manager on RHEL).",
+      "Check the boot loader is the default entry: efibootmgr -v"
+    ]
+  },
+  "debian": {
+    "name": "Debian/Ubuntu family",
+    "layout": {
+      "esp_mib": 512,
+      "esp_mount": "/boot/efi",
+      "boot_mib": null,
+      "lvm": false,
+      "swap_style": "partition",
+      "default_fs": "ext4",
+      "fs_options": ["ext4", "btrfs", "xfs"],
+      "home_fs": "ext4",
+      "root_gb": { "desktop": 30, "dev": 50, "server": 20, "minimal": 8 }
+    },
+    "nvidia": "Tick 'Install third-party software' in the installer, or use the Additional/Proprietary Drivers tool after install. With Secure Boot on, accept the MOK enrollment prompt on first reboot.",
+    "install_steps": [
+      "Boot the USB stick and choose 'Install' (or 'Try', then launch the installer from the desktop).",
+      "Pick language, keyboard and network. Tick the option for third-party drivers/codecs if offered.",
+      "At the installation type step choose 'Something else' / 'Manual partitioning' / 'Custom' and create the layout shown above. Choose 'Erase disk' only if you do not need a custom layout. For dual boot choose 'Install alongside' or use the free space.",
+      "Set the boot loader target to the whole disk (BIOS) or leave it on the EFI partition (UEFI).",
+      "Choose time zone and create your user account.",
+      "Install, then reboot and remove the USB stick when asked."
+    ],
+    "post_steps": [
+      "Update: sudo apt update && sudo apt full-upgrade",
+      "Install proprietary drivers if you use NVIDIA or Broadcom Wi-Fi.",
+      "Check the boot menu shows all installed systems: sudo update-grub"
+    ]
+  },
+  "arch": {
+    "name": "Arch family",
+    "layout": {
+      "esp_mib": 1024,
+      "esp_mount": "/boot",
+      "boot_mib": null,
+      "lvm": false,
+      "swap_style": "partition",
+      "default_fs": "ext4",
+      "fs_options": ["ext4", "btrfs", "xfs"],
+      "home_fs": "ext4",
+      "root_gb": { "desktop": 40, "dev": 60, "server": 20, "minimal": 10 }
+    },
+    "nvidia": "Install nvidia / nvidia-open (or nvidia-dkms for custom kernels) and nvidia-utils. Manjaro and Garuda detect hardware drivers during or after install.",
+    "install_steps": [
+      "Boot the live USB and wait for the desktop (or the installer menu).",
+      "Launch the installer, pick language, region and keyboard.",
+      "At 'Partitions' choose 'Manual partitioning' and create the layout shown above (or 'Erase disk' for the default layout).",
+      "Create your user account and choose the desktop/package set if asked.",
+      "Review the summary, install, then reboot and remove the USB stick."
+    ],
+    "post_steps": [
+      "Update everything: sudo pacman -Syu",
+      "Install microcode for your CPU (intel-ucode or amd-ucode) if the installer did not.",
+      "Set up regular SSD trim: sudo systemctl enable --now fstrim.timer"
+    ]
+  },
+  "suse": {
+    "name": "SUSE family",
+    "layout": {
+      "esp_mib": 512,
+      "esp_mount": "/boot/efi",
+      "boot_mib": null,
+      "lvm": false,
+      "swap_style": "partition",
+      "default_fs": "btrfs",
+      "fs_options": ["btrfs", "xfs", "ext4"],
+      "home_fs": "xfs",
+      "root_gb": { "desktop": 40, "dev": 60, "server": 40, "minimal": 40 }
+    },
+    "nvidia": "Add the NVIDIA repository (YaST Software Repositories or 'zypper addrepo') and install the matching driver. With Secure Boot on, enroll the MOK key when prompted.",
+    "install_steps": [
+      "Boot the USB stick and choose 'Installation'.",
+      "Pick language, keyboard and product/edition.",
+      "At storage setup choose 'Expert Partitioner' / 'Custom' and apply the layout shown above, or accept the guided proposal (Btrfs root with snapshots, separate /home on larger disks).",
+      "Select the desktop/software pattern, then set time zone and create your user.",
+      "Review the summary, install, then reboot and remove the USB stick."
+    ],
+    "post_steps": [
+      "Refresh and update: sudo zypper refresh && sudo zypper update (use 'zypper dup' on Tumbleweed).",
+      "Install multimedia codecs from the Packman repository if you need them.",
+      "Learn snapshots: sudo snapper list (you can roll back from the boot menu)."
+    ]
+  },
+  "independent": {
+    "name": "Independent / manual install",
+    "layout": {
+      "esp_mib": 512,
+      "esp_mount": "/boot",
+      "boot_mib": null,
+      "lvm": false,
+      "swap_style": "partition",
+      "default_fs": "ext4",
+      "fs_options": ["ext4", "xfs", "btrfs"],
+      "home_fs": "ext4",
+      "root_gb": { "desktop": 30, "dev": 50, "server": 20, "minimal": 8 }
+    },
+    "nvidia": "Follow the distribution's wiki page for NVIDIA drivers. Driver packaging differs a lot between these distributions.",
+    "install_steps": [],
+    "post_steps": [
+      "Update the system with the distribution's package manager.",
+      "Check the boot loader entry and test a reboot before removing the install medium."
+    ]
+  },
+  "generic": {
+    "name": "Unknown / generic",
+    "layout": {
+      "esp_mib": 512,
+      "esp_mount": "/boot/efi",
+      "boot_mib": null,
+      "lvm": false,
+      "swap_style": "partition",
+      "default_fs": "ext4",
+      "fs_options": ["ext4", "xfs", "btrfs"],
+      "home_fs": "ext4",
+      "root_gb": { "desktop": 30, "dev": 50, "server": 20, "minimal": 8 }
+    },
+    "nvidia": "Check the distribution's documentation for driver installation.",
+    "install_steps": [
+      "Boot the USB stick and start the installer.",
+      "At partitioning choose manual/custom and create the layout shown above.",
+      "Create a user, install, reboot and remove the USB stick."
+    ],
+    "post_steps": [
+      "Update the system and verify the boot loader."
+    ]
+  }
+}
