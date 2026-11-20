@@ -41,6 +41,8 @@ if ($report === 'farmers') {
     $barangay  = clean_str($_GET['barangay'] ?? '');
     $from      = clean_str($_GET['updated_from'] ?? '');
     $to        = clean_str($_GET['updated_to'] ?? '');
+    $ageGroup  = clean_str($_GET['age_group'] ?? '');
+    $gender    = clean_str($_GET['gender'] ?? '');
 
     $where = [];
     $args = [];
@@ -59,6 +61,27 @@ if ($report === 'farmers') {
         $where[] = '(f.addr_barangay = ? OR p.loc_barangay = ?)';
         array_push($args, $barangay, $barangay);
         $filters[] = "Barangay: $barangay";
+    }
+    if ($ageGroup !== '') {
+        $cond = age_group_condition($ageGroup);
+        if (!$cond) {
+            fail(422, 'The age group is not valid.');
+        }
+        $where[] = $cond[0];
+        array_push($args, ...$cond[1]);
+        $filters[] = 'Age group: ' . ($ageGroup === 'youth' ? 'Youth (' . YOUTH_MIN_AGE . '-' . YOUTH_MAX_AGE . ')' : 'Senior Citizen (' . SENIOR_MIN_AGE . '+)');
+    }
+    if ($gender !== '') {
+        if (!in_array($gender, GENDERS, true)) {
+            fail(422, 'The gender is not valid.');
+        }
+        if ($gender === 'Others') {   // includes farmers recorded before the Gender field (blank)
+            $where[] = "f.gender NOT IN ('Male', 'Female')";
+        } else {
+            $where[] = 'f.gender = ?';
+            $args[] = $gender;
+        }
+        $filters[] = "Gender: $gender";
     }
     if ($from !== '') {
         if (!valid_date($from)) {
@@ -83,7 +106,7 @@ if ($report === 'farmers') {
     $data = q_all(
         'SELECT f.*, p.id AS parcel_id, p.cadastral_lot_no, p.area_ha, p.tax_declared_area_ha, p.cultivated_area_ha,
                 p.loc_zone_sitio, p.loc_barangay, p.loc_municipality, p.loc_province, p.commodity, p.fish_size,
-                p.farming_role, p.tax_declarant, p.association AS parcel_association, p.parcel_status, p.duplicate_flag,
+                p.farming_role, p.tax_declarant, p.association AS parcel_association, p.parcel_status, p.duplicate_flag, p.tax_file_path,
                 (SELECT d.status FROM duplicate_flags d WHERE d.parcel_id = p.id ORDER BY d.id DESC LIMIT 1) AS flag_status
            FROM farmers f
            LEFT JOIN parcels p ON p.farmer_id = f.id
@@ -107,13 +130,13 @@ if ($report === 'farmers') {
 
     $title = 'Farmer Masterlist';
     $subtitle = ($filters ? implode(' | ', $filters) . ' | ' : '') . count($data) . ' row(s)';
-    $headers = ['RSBSA No.', 'Surname', 'First Name', 'Middle Name', 'Suffix', 'Date of Birth', 'Valid ID', 'ID Number',
+    $headers = ['RSBSA No.', 'Surname', 'First Name', 'Middle Name', 'Suffix', 'Date of Birth', 'Age', 'Gender', 'Valid ID', 'ID Number',
         'Residential Address', 'Civil Status', 'Spouse', 'Mother Maiden Name', 'Children',
         'Parcel No.', 'Cadastral Lot No.', 'Area (ha)', 'Tax Decl. Area (ha)', 'Farm Location', 'Sectoral Commodity',
         'Cultivated Area (ha)', 'Fish Cage / Pond Size', 'No. of Heads',
         'Rice (ha)', 'Vegetable (ha)', 'Root Crops (ha)', 'Banana (ha)', 'Coconut (ha)', 'Fruit Bearing (ha)',
-        'Farming Status', 'Tax Declarant / Owner', 'Association', 'Parcel Status', 'Duplicate Flag', 'Date Updated'];
-    $widths = [16, 16, 16, 14, 8, 12, 18, 16, 36, 14, 24, 20, 30, 8, 14, 11, 13, 36, 14, 13, 16, 22, 10, 11, 11, 10, 10, 13, 14, 24, 20, 12, 10, 18];
+        'Farming Status', 'Tax Declarant / Owner', 'Association', 'Parcel Status', 'Duplicate Flag', 'Date Updated', 'Tax Declaration'];
+    $widths = [16, 16, 16, 14, 8, 12, 6, 9, 18, 16, 36, 14, 24, 20, 30, 8, 14, 11, 13, 36, 14, 13, 16, 22, 10, 11, 11, 10, 10, 13, 14, 24, 20, 12, 10, 18, 16];
 
     $rows = [];
     $parcelNo = [];
@@ -125,7 +148,8 @@ if ($report === 'farmers') {
         $place = $pid ? implode(', ', array_filter([$r['loc_zone_sitio'], $r['loc_barangay'], $r['loc_municipality'], $r['loc_province']], 'strlen')) : '';
 
         $row = [
-            $r['rsbsa_no'], $r['surname'], $r['first_name'], $r['middle_name'], $r['suffix'], $r['birth_date'],
+            $r['rsbsa_no'], $r['surname'], $r['first_name'], $r['middle_name'], $r['suffix'], $r['birth_date'], age_from_birth($r['birth_date']),
+            in_array($r['gender'] ?? '', ['Male', 'Female'], true) ? $r['gender'] : 'Others',
             $r['valid_id_type'], $r['valid_id_no'],
             implode(', ', array_filter([$r['addr_zone_sitio'], $r['addr_barangay'], $r['addr_municipality'], $r['addr_province']], 'strlen')),
             $r['civil_status'],
@@ -145,7 +169,7 @@ if ($report === 'farmers') {
         foreach (CROP_KEYS as $key) {
             $row[] = $hasCrops ? ($crops[$pid][$key] ?? 0.0) : '';
         }
-        array_push($row, $pid ? $r['farming_role'] : '', $pid ? $r['tax_declarant'] : '', $pid ? $r['parcel_association'] : '', $pid ? $r['parcel_status'] : '', $pid && $r['duplicate_flag'] ? (($r['flag_status'] ?? 'open') === 'resolved' ? 'Resolved' : 'Yes') : '', $r['updated_at']);
+        array_push($row, $pid ? $r['farming_role'] : '', $pid ? $r['tax_declarant'] : '', $pid ? $r['parcel_association'] : '', $pid ? $r['parcel_status'] : '', $pid && $r['duplicate_flag'] ? (($r['flag_status'] ?? 'open') === 'resolved' ? 'Resolved' : 'Yes') : '', $r['updated_at'], $pid ? ($r['tax_file_path'] ? 'Attached' : 'None') : '');
         $rows[] = $row;
     }
     $baseName = 'rsbsa-farmer-masterlist';

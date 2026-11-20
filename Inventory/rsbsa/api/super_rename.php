@@ -28,7 +28,7 @@ $username = array_key_exists('username', $in) ? clean_str($in['username']) : $ro
 if ($username !== $row['username']) {
     if (!preg_match('/^[A-Za-z0-9._-]{3,60}$/', $username)) {
         $errors['username'] = 'Use 3 to 60 letters, numbers, dots, dashes or underscores (no spaces).';
-    } elseif (strcasecmp($username, SUPER_USERNAME) === 0) {
+    } elseif (super_id_for($username) !== null) {
         $errors['username'] = 'That username is reserved.';
     } elseif (q_one('SELECT id FROM admins WHERE LOWER(username) = LOWER(?) AND id <> ?', [$username, $id])) {
         $errors['username'] = 'That username is already used by another account.';

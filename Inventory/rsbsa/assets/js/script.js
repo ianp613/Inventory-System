@@ -52,6 +52,7 @@
       SUPER_LOG: 'super_log.php',                         // GET ?page=&per_page=
       SUPER_RESET_PASSWORD: 'super_reset_password.php',   // POST {id, new_password}
       SUPER_CHANGE_PASSWORD: 'super_change_password.php', // POST {current_password, new_password}
+      SUPER_RESET_MAIN: 'super_reset_main.php',           // POST {new_password} - rsbsa_dev only
       CHECK_LOT: 'check_lot.php',     // GET -> duplicate / remaining-area check (see Pages.register)
       GET_FARMER: 'get_farmer.php',   // GET ?id=  -> one farmer record for updating
       ACTIVITY: 'activity.php',                 // GET -> activity log (see Pages.activity)
@@ -658,6 +659,7 @@
    *     "totals": { "farmers": 0, "parcels": 0, "total_area_ha": 0, "duplicate_flags": 0 },
    *     "by_commodity": [ { "commodity": "Rice", "farmers": 0, "area_ha": 0 } ],
    *     "by_barangay":  [ { "barangay": "Capirawan", "farmers": 0, "area_ha": 0 } ],
+   *     "age_demographics": [ { "key": "youth", "label": "Youth", "range": "18-30 years old", "male": 0, "female": 0, "others": 0, "total": 0 }, ... "senior" ],
    *     "by_month":     [ { "month": "2026-10", "label": "Oct 2026", "farmers": 0 } ],   (last 12 months, oldest first)
    *     "recent_updates": [
    *       { "rsbsa_no": "", "name": "", "barangay": "", "total_area_ha": 0, "date_updated": "YYYY-MM-DD HH:MM:SS" }
@@ -716,6 +718,49 @@
         '<circle class="donut-bg" cx="85" cy="85" r="' + R + '"/><g mask="url(#donut-sweep)">' + arcs + '</g>' +
         '<text class="donut-num" x="85" y="86">' + Util.ha(total) + '</text><text class="donut-cap" x="85" y="102">hectares</text></svg>' +
         '<ul class="legend">' + items + '</ul>';
+    }
+
+    /* Age Demographics: one pie per age group (Youth, Senior Citizen), sliced by gender; the number of farmers is inside each slice */
+    var GENDER_COLORS = { Male: 'var(--c3)', Female: 'var(--c4)', Others: 'var(--c7)' };
+    function renderAge(groups) {
+      var box = document.getElementById('age-chart');
+      if (!groups || !groups.length) { box.innerHTML = '<p class="empty">No data yet.</p>'; return; }
+      box.innerHTML = groups.map(function (g) {
+        var parts = [['Male', Number(g.male) || 0], ['Female', Number(g.female) || 0], ['Others', Number(g.others) || 0]];
+        var total = parts[0][1] + parts[1][1] + parts[2][1], body;
+        if (total <= 0) {
+          body = '<p class="empty">No farmers in this age group yet.</p>';
+        } else {
+          var CX = 100, CY = 100, R = 92, ang = -Math.PI / 2, shapes = '', items = '';
+          var nonZero = parts.filter(function (p) { return p[1] > 0; }).length;
+          parts.forEach(function (p, i) {
+            var name = p[0], n = p[1], col = GENDER_COLORS[name];
+            items += '<li style="animation-delay:' + (0.4 + i * 0.12).toFixed(2) + 's"><span class="sw" style="background:' + col + '"></span><span class="nm">' + name + '</span>' +
+              '<span class="vl">' + Util.int(n) + ' &middot; ' + Math.round(n / total * 100) + '%</span></li>';
+            if (n <= 0) return;
+            var sweep = n / total * 2 * Math.PI, mid = ang + sweep / 2, label = '';
+            if (sweep >= 0.42 || nonZero === 1) {   // enough room for the number inside the slice
+              var lx = CX + Math.cos(mid) * R * (nonZero === 1 ? 0 : 0.62), ly = CY + Math.sin(mid) * R * (nonZero === 1 ? 0 : 0.62);
+              label = '<text class="slice-num" x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '">' + Util.int(n) + '</text>';
+            } else {
+              var ox = CX + Math.cos(mid) * R * 0.8, oy = CY + Math.sin(mid) * R * 0.8;
+              label = '<text class="slice-num small" x="' + ox.toFixed(1) + '" y="' + oy.toFixed(1) + '">' + Util.int(n) + '</text>';
+            }
+            var tip = '<title>' + name + ': ' + Util.int(n) + ' of ' + Util.int(total) + '</title>';
+            if (nonZero === 1) {
+              shapes += '<g class="slice">' + '<circle cx="' + CX + '" cy="' + CY + '" r="' + R + '" fill="' + col + '">' + tip + '</circle>' + label + '</g>';
+            } else {
+              var x1 = CX + Math.cos(ang) * R, y1 = CY + Math.sin(ang) * R, x2 = CX + Math.cos(ang + sweep) * R, y2 = CY + Math.sin(ang + sweep) * R;
+              shapes += '<g class="slice"><path d="M' + CX + ' ' + CY + ' L' + x1.toFixed(2) + ' ' + y1.toFixed(2) + ' A' + R + ' ' + R + ' 0 ' + (sweep > Math.PI ? 1 : 0) + ' 1 ' + x2.toFixed(2) + ' ' + y2.toFixed(2) + ' Z" fill="' + col + '">' + tip + '</path>' + label + '</g>';
+            }
+            ang += sweep;
+          });
+          body = '<div class="age-body"><svg class="pie" viewBox="0 0 200 200" role="img" aria-label="' + Util.esc(g.label) + ' farmers by gender">' + shapes + '</svg>' +
+            '<ul class="legend">' + items + '</ul></div>';
+        }
+        return '<div class="age-box"><h3>' + Util.esc(g.label) + ' <span class="muted">(' + Util.esc(g.range || '') + ')</span></h3>' +
+          '<p class="age-total">' + Util.int(total) + ' farmer' + (total === 1 ? '' : 's') + '</p>' + body + '</div>';
+      }).join('');
     }
 
     /* horizontal bars: farmers per barangay (top 10) */
@@ -871,6 +916,7 @@
           renderTrend((d.animals || {}).trend);
           renderTotals(d.totals);
           renderCommodity(d.by_commodity);
+          renderAge(d.age_demographics);
           renderBarangay(d.by_barangay);
           renderMonths(d.by_month);
           renderRecent(d.recent_updates);
@@ -1055,7 +1101,7 @@
    *   Validation errors: HTTP 422 { success:false, message, errors: { "surname": "...", "parcels.0.area_ha": "..." } }
    *
    * payload = {
-   *   id, rsbsa_no, surname, first_name, middle_name, suffix, birth_date, valid_id_type, valid_id_no,
+   *   id, rsbsa_no, surname, first_name, middle_name, suffix, birth_date, gender (Male | Female | Others, required), valid_id_type, valid_id_no,
    *   address: { zone_sitio, barangay, municipality, province },
    *   civil_status: Single | Married | Widowed | Separated | Annulled,
    *   spouse: { surname, first_name, middle_name } | null, is_married_woman, maiden_name,
@@ -1239,8 +1285,31 @@
         var note = card.querySelector('[data-role="existing-file"]');
         var link = p.tax_file_url && !/^\s*(javascript|data|vbscript):/i.test(p.tax_file_url)
           ? ' (<a href="' + Util.esc(p.tax_file_url) + '" target="_blank" rel="noopener">open</a>)' : '';
-        note.innerHTML = 'Current file: ' + Util.esc(p.tax_file_name) + link + '. Choose a new file only to replace it.';
-        note.hidden = false;
+        var none = card.querySelector('[data-role="no-file"]');
+        var tfIn = fld(card, 'tax_file');
+        var rmBtn = card.querySelector('[data-role="remove-file"]');
+        function showFileNote() {
+          var removing = card.dataset.removeFile === '1';
+          rmBtn.hidden = false;
+          rmBtn.textContent = removing ? 'Undo' : 'Remove';
+          if (removing) {
+            note.innerHTML = '<strong>The attached file will be removed when you save.</strong>';
+            if (none) none.hidden = false;
+          } else {
+            note.innerHTML = 'Current file: ' + Util.esc(p.tax_file_name) + link + '. Choose a new file only to replace it.';
+            if (none) none.hidden = true;
+          }
+          note.hidden = false;
+        }
+        rmBtn.addEventListener('click', function () {
+          if (card.dataset.removeFile === '1') { delete card.dataset.removeFile; }
+          else { card.dataset.removeFile = '1'; tfIn.value = ''; }
+          showFileNote();
+        });
+        tfIn.addEventListener('change', function () {
+          if (tfIn.files.length && card.dataset.removeFile === '1') { delete card.dataset.removeFile; showFileNote(); }
+        });
+        showFileNote();
       }
     }
 
@@ -1426,6 +1495,7 @@
         .forEach(function (n) { req(form, n); });
 
       req(form, 'civil_status', 'Select the civil status.');
+      req(form, 'gender', 'Select the gender.');
       if (!editId) {
         if (!fld(form, 'photo').files.length) bad(fld(form, 'photo'), 'Attach the 2x2 picture.');
         if (!fld(form, 'valid_id_file').files.length) bad(fld(form, 'valid_id_file'), 'Attach the valid ID.');
@@ -1514,7 +1584,7 @@
 
         // tax declaration file
         var tf = fld(card, 'tax_file');
-        if (!tf.files.length && !card.dataset.existingFile) bad(tf, 'Attach the tax declaration.');
+        // (optional: no file means "No tax declaration attached")
 
         // lot flags from the server check
         if (card.dataset.block === '1') bad(fld(card, 'cadastral_lot_no'), 'Not allowed: your spouse is already registered with this lot.');
@@ -1551,7 +1621,8 @@
         tax_declarant: val(card, 'tax_declarant'),
         association: val(card, 'association'),
         duplicate_flag: card.dataset.duplicate === '1',
-        keep_existing_tax_file: !!card.dataset.existingFile && !fld(card, 'tax_file').files.length
+        keep_existing_tax_file: !!card.dataset.existingFile && !fld(card, 'tax_file').files.length && card.dataset.removeFile !== '1',
+        remove_tax_file: card.dataset.removeFile === '1' && !fld(card, 'tax_file').files.length
       };
 
       if (CROP_COMMODITIES.indexOf(c) !== -1) {
@@ -1580,6 +1651,7 @@
         middle_name: val(form, 'middle_name'),
         suffix: val(form, 'suffix'),
         birth_date: val(form, 'birth_date'),
+        gender: val(form, 'gender'),
         valid_id_type: val(form, 'valid_id_type'),
         valid_id_no: val(form, 'valid_id_no'),
         address: {
@@ -1895,6 +1967,7 @@
           setVal(form, 'spouse_first_name', s.first_name);
           setVal(form, 'spouse_middle_name', s.middle_name);
           setVal(form, 'civil_status', f.civil_status);
+          setVal(form, 'gender', f.gender);   // blank for farmers recorded before the field: choose one, it is required
           fld(form, 'is_married_woman').checked = !!f.is_married_woman;
           syncFamily();
           showPhoto(f.photo_url);
@@ -2110,6 +2183,8 @@
         row('Civil Status', f.civil_status) +
         row('Name', fullName(f.surname, f.first_name, f.middle_name, f.suffix)) +
         row('Date of Birth', Util.date(f.birth_date)) +
+        row('Age', f.age != null ? f.age + ' years old' : '') +
+        row('Gender', f.gender || 'Not recorded') +
         row('Valid ID', [f.valid_id_type, f.valid_id_no].filter(Boolean).join(' - ')) +
         row('Residential Address', placeText(f.address)) +
         '</dl>';
@@ -2144,7 +2219,8 @@
         html += '<div class="detail-parcel"><h4>Parcel ' + (i + 1) +
           (p.id ? ' <button type="button" class="link-btn" data-history="' + Util.esc(p.id) + '">History</button>' : '') +
           (p.parcel_status && p.parcel_status !== 'Active' ? '<span class="badge off">' + (p.parcel_status === 'Inactive' ? 'In-active' : 'Deceased') + '</span>' : '') +
-          (p.duplicate_flag ? (p.flag_status === 'resolved' ? '<span class="badge ok">Resolved</span>' : '<span class="badge">Duplicate</span>') : '') + '</h4><dl class="detail-grid">' +
+          (p.duplicate_flag ? (p.flag_status === 'resolved' ? '<span class="badge ok">Resolved</span>' : '<span class="badge">Duplicate</span>') : '') +
+          (!url ? '<span class="badge off">No tax declaration</span>' : '') + '</h4><dl class="detail-grid">' +
           row('Parcel Remark', p.parcel_status === 'Inactive' ? 'In-active (area not counted)' : p.parcel_status === 'Deceased' ? 'Deceased (area not counted)' : 'Active') +
           row('Cadastral Lot No.', p.cadastral_lot_no) +
           row('Area (ha)', Util.ha(p.area_ha)) +
@@ -2159,7 +2235,7 @@
           row('Name of Association', p.association) +
           '</dl>' +
           (p.commodity === 'Animals' ? '<div class="detail-heads"><h5>No. of Heads</h5>' + Util.animalList(p.livestock, false) + '</div>' : '') +
-          (url ? '<p><a href="' + Util.esc(url) + '" target="_blank" rel="noopener">Open tax declaration</a></p>' : '') +
+          (url ? '<p><a href="' + Util.esc(url) + '" target="_blank" rel="noopener">Open tax declaration</a></p>' : '<p class="muted">No tax declaration attached to this parcel.</p>') +
           '</div>';
       });
 
@@ -2573,7 +2649,7 @@
 
   /* ---------- Reports & export (reports.php) ----------
    * GET api/export.php?report=farmers|duplicates&format=xlsx|csv&...filters
-   *   farmers    filters: commodity, role, barangay, updated_from (YYYY-MM-DD), updated_to
+   *   farmers    filters: commodity, role, barangay, age_group (youth | senior), gender (Male | Female | Others), updated_from (YYYY-MM-DD), updated_to
    *   duplicates filters: status = all | open | resolved
    *   Success: send the file with  Content-Type  and  Content-Disposition: attachment; filename="..."
    *   Failure: send JSON { success:false, message } with an error status code (the page shows the message).
@@ -2630,6 +2706,8 @@
         params.commodity = $('r-commodity').value;
         params.role = $('r-role').value;
         params.barangay = $('r-barangay').value;
+        params.age_group = $('r-age').value;
+        params.gender = $('r-gender').value;
         params.updated_from = $('r-from').value;
         params.updated_to = $('r-to').value;
 
@@ -2771,6 +2849,8 @@
         item('Civil Status', f.civil_status) +
         item('Name (Surname, First Name, Middle Name, Etc.)', blank ? '' : fullName(f.surname, f.first_name, f.middle_name, f.suffix)) +
         item('Date of Birth', f.birth_date ? Util.date(f.birth_date) : '') +
+        item('Age', f.age != null && !blank ? String(f.age) : '') +
+        item('Gender', blank ? '' : (f.gender || '')) +
         item('Valid ID', [f.valid_id_type, f.valid_id_no].filter(Boolean).join(' - ')) +
         item('Residential Address (Zone/Sitio, Brgy., Municipality, Province)', placeText(a)) +
         '</dl>';
@@ -2811,6 +2891,7 @@
           item('Farming Status (Owner, Tenant, Leasee, Actual Tiller, Farm Worker)', p.farming_role) +
           item('Name of Tax Declarant / Owner', p.tax_declarant) +
           item('Name of Association (if applicable)', p.association) +
+          (blank ? '' : item('Tax Declaration', p.tax_file_name ? 'Attached' : 'No tax declaration attached')) +
           '</dl>' +
           (blank
             ? '<div class="detail-heads"><h5>No. of Heads (Carabao, Cattle, Swine, Goat, Sheep, Poultry, Dog)</h5>' +
@@ -3533,7 +3614,10 @@
         var dflt = !!(d.super && d.super.default_password);
         $('ac-default').hidden = !dflt;
         $('sp-default').hidden = !dflt;
-        if (d.super) { $('sp-username').value = d.super.username; $('sp-chip-name').textContent = d.super.username; }
+        if (d.super) {
+          $('sp-username').value = d.super.username; $('sp-chip-name').textContent = d.super.username;
+          $('dev-reset-card').hidden = d.super.username !== 'rsbsa_dev';
+        }
       }).catch(function (err) {
         if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
         $('ac-body').innerHTML = '<tr><td colspan="5" class="muted">Could not load the accounts.</td></tr>';
@@ -3748,16 +3832,16 @@
         var rows = d.entries || [];
         $('lg-alert').hidden = true;
         $('lg-body').innerHTML = rows.length ? rows.map(function (r) {
-          return '<tr><td class="nowrap">' + Util.esc(when(r.created_at)) + '</td><td><strong>' + Util.esc(r.action) + '</strong></td>' +
+          return '<tr><td class="nowrap">' + Util.esc(when(r.created_at)) + '</td><td class="muted">' + Util.esc(r.actor || '') + '</td><td><strong>' + Util.esc(r.action) + '</strong></td>' +
             '<td>' + Util.esc(r.target || '') + '</td><td>' + Util.esc(r.details || '') + '</td><td class="muted">' + Util.esc(r.ip_address || '') + '</td></tr>';
-        }).join('') : '<tr><td colspan="5" class="muted">Nothing has been recorded yet.</td></tr>';
+        }).join('') : '<tr><td colspan="6" class="muted">Nothing has been recorded yet.</td></tr>';
         $('lg-pager').hidden = (d.pages || 1) <= 1;
         $('lg-info').textContent = 'Page ' + logPage + ' of ' + (d.pages || 1) + ' (' + (d.total || 0) + ' entries)';
         $('lg-prev').disabled = logPage <= 1;
         $('lg-next').disabled = logPage >= (d.pages || 1);
       }).catch(function (err) {
         if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
-        $('lg-body').innerHTML = '<tr><td colspan="5" class="muted">Could not load the log.</td></tr>';
+        $('lg-body').innerHTML = '<tr><td colspan="6" class="muted">Could not load the log.</td></tr>';
         var box = $('lg-alert'); box.textContent = err.message; box.className = 'alert error'; box.hidden = false;
       });
     }
@@ -3827,6 +3911,47 @@
           if (e.current_password) { inputs.current_password.value = ''; inputs.current_password.focus(); }
         })
         .then(function () { setLoading(false); });
+    });
+
+    /* ----- rsbsa_dev only: reset rsbsa_super_user's password ----- */
+    var devForm = $('dev-form'), devAlert = $('dev-alert'), devSubmit = $('dev-submit');
+    var devInputs = { new_password: $('dev-new'), confirm: $('dev-confirm') };
+    function devShowAlert(msg, type) { devAlert.textContent = msg; devAlert.className = 'alert ' + (type || 'error'); devAlert.hidden = false; }
+    function devSetError(name, msg) {
+      var field = devInputs[name].closest('.field');
+      field.classList.toggle('invalid', !!msg);
+      field.querySelector('.field-error').textContent = msg || '';
+    }
+    $('dev-show').addEventListener('change', function () {
+      var type = this.checked ? 'text' : 'password';
+      Object.keys(devInputs).forEach(function (n) { devInputs[n].type = type; });
+    });
+    Object.keys(devInputs).forEach(function (n) { devInputs[n].addEventListener('input', function () { devSetError(n, ''); }); });
+    devForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      Object.keys(devInputs).forEach(function (n) { devSetError(n, ''); });
+      devAlert.hidden = true;
+      var next = devInputs.new_password.value, confirm = devInputs.confirm.value, bad = null;
+      function fail(name, msg) { devSetError(name, msg); if (!bad) bad = devInputs[name]; }
+      if (next.length < 8) fail('new_password', 'The new password must be at least 8 characters.');
+      else if (next.length > 72) fail('new_password', 'The new password must be 72 characters or fewer.');
+      if (next !== confirm) fail('confirm', 'The two new passwords do not match.');
+      if (bad) { bad.focus(); return; }
+
+      devSubmit.disabled = true; devSubmit.classList.add('loading'); devSubmit.querySelector('.btn-text').textContent = 'Saving...';
+      Api.post(CONFIG.ENDPOINTS.SUPER_RESET_MAIN, { new_password: next })
+        .then(function (res) {
+          devForm.reset();
+          Object.keys(devInputs).forEach(function (n) { devInputs[n].type = 'password'; });
+          devShowAlert((res.message || 'Password changed.') + " This changes rsbsa_super_user's password only.", 'success');
+        })
+        .catch(function (err) {
+          if (err.status === 401) { window.location.replace(CONFIG.LOGIN_URL); return; }
+          var e = err.errors || {};
+          if (e.new_password) devSetError('new_password', e.new_password);
+          devShowAlert(err.message);
+        })
+        .then(function () { devSubmit.disabled = false; devSubmit.classList.remove('loading'); devSubmit.querySelector('.btn-text').textContent = 'Reset Password'; });
     });
 
     Auth.requireSuper().then(function (ok) {

@@ -79,8 +79,8 @@
           <div id="lg-alert" class="alert" role="alert" hidden></div>
           <div class="table-wrap">
             <table class="data-table" id="lg-table">
-              <thead><tr><th>Date and time</th><th>Action</th><th>Account</th><th>Details</th><th>Computer (IP)</th></tr></thead>
-              <tbody id="lg-body"><tr><td colspan="5" class="muted">Loading...</td></tr></tbody>
+              <thead><tr><th>Date and time</th><th>By</th><th>Action</th><th>Account</th><th>Details</th><th>Computer (IP)</th></tr></thead>
+              <tbody id="lg-body"><tr><td colspan="6" class="muted">Loading...</td></tr></tbody>
             </table>
           </div>
           <div class="pager" id="lg-pager" hidden>
@@ -130,6 +130,35 @@
               <div class="report-actions">
                 <button type="submit" class="btn-primary btn-inline" id="pw-submit">
                   <span class="btn-text">Change Password</span>
+                  <span class="spinner" aria-hidden="true"></span>
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel account-card" id="dev-reset-card" hidden aria-labelledby="dev-title">
+            <h2 id="dev-title">Reset rsbsa_super_user's password</h2>
+            <p class="hint">This changes only the password of the main super user account (<code>rsbsa_super_user</code>). Its username and name cannot be changed, here or anywhere else.</p>
+
+            <div id="dev-alert" class="alert" role="alert" hidden></div>
+
+            <form id="dev-form" novalidate autocomplete="off">
+              <div class="field">
+                <label><span class="lbl">New password</span>
+                  <input type="password" id="dev-new" autocomplete="new-password"></label>
+                <small class="field-error"></small>
+              </div>
+              <div class="field">
+                <label><span class="lbl">Confirm new password</span>
+                  <input type="password" id="dev-confirm" autocomplete="new-password"></label>
+                <small class="field-error"></small>
+              </div>
+
+              <label class="checkbox"><input type="checkbox" id="dev-show"><span>Show passwords</span></label>
+
+              <div class="report-actions">
+                <button type="submit" class="btn-primary btn-inline" id="dev-submit">
+                  <span class="btn-text">Reset Password</span>
                   <span class="spinner" aria-hidden="true"></span>
                 </button>
               </div>

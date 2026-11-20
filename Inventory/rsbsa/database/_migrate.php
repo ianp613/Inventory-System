@@ -10,6 +10,7 @@ function rsbsa_new_columns(): array
     return [
         'farmers' => [
             'civil_status'  => ["TEXT NOT NULL DEFAULT ''", "VARCHAR(20) NOT NULL DEFAULT ''"],
+            'gender'        => ["TEXT NOT NULL DEFAULT ''", "VARCHAR(10) NOT NULL DEFAULT ''"],
             'photo_path'    => ['TEXT', 'VARCHAR(255) NULL'],
             'photo_name'    => ['TEXT', 'VARCHAR(160) NULL'],
             'valid_id_path' => ['TEXT', 'VARCHAR(255) NULL'],

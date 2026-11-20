@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS farmers (
   middle_name        VARCHAR(60) NOT NULL DEFAULT '',
   suffix             VARCHAR(10) NOT NULL DEFAULT '',
   birth_date         DATE NOT NULL,
+  gender             VARCHAR(10) NOT NULL DEFAULT '',
   valid_id_type      VARCHAR(60) NOT NULL,
   valid_id_no        VARCHAR(60) NOT NULL,
   addr_zone_sitio    VARCHAR(80) NOT NULL DEFAULT '',

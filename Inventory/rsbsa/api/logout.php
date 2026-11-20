@@ -8,7 +8,7 @@ if (current_admin()) {
     $auto = $reason === 'inactivity';
     log_activity('Login', $auto ? 'Logged out automatically' : 'Logged out', $auto ? 'No activity for the auto-logout time.' : '');
 } elseif (current_super()) {
-    super_log($reason === 'inactivity' ? 'Logged out automatically' : 'Logged out', SUPER_USERNAME);
+    super_log($reason === 'inactivity' ? 'Logged out automatically' : 'Logged out', current_super()['username']);
 }
 destroy_session();
 ok([], 'Logged out.');

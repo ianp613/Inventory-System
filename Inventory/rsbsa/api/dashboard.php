@@ -147,6 +147,19 @@ $animals = [
     'groups'      => $animalRows,
 ];
 
+// Age Demographics: farmers by age group and gender; the age is always worked out from the date of birth.
+// Blank gender (farmers recorded before the Gender field existed) is counted as Others.
+$ageDemo = [];
+foreach (['youth' => 'Youth', 'senior' => 'Senior Citizen'] as $key => $label) {
+    [$cond, $cargs] = age_group_condition($key, 'birth_date');
+    $g = ['Male' => 0, 'Female' => 0, 'Others' => 0];
+    foreach (q_all("SELECT gender, COUNT(*) AS n FROM farmers WHERE $cond GROUP BY gender", $cargs) as $r) {
+        $g[in_array($r['gender'], ['Male', 'Female'], true) ? $r['gender'] : 'Others'] += (int) $r['n'];
+    }
+    $range = $key === 'youth' ? YOUTH_MIN_AGE . '-' . YOUTH_MAX_AGE . ' years old' : SENIOR_MIN_AGE . ' years old and above';
+    $ageDemo[] = ['key' => $key, 'label' => $label, 'range' => $range, 'male' => $g['Male'], 'female' => $g['Female'], 'others' => $g['Others'], 'total' => array_sum($g)];
+}
+
 backup_auto_if_due();
 $lastBackup = null;
 if (backup_is_sqlite() && class_exists('ZipArchive')) {
@@ -163,5 +176,6 @@ ok([
     'animal_barangays' => array_column(q_all("SELECT DISTINCT loc_barangay AS b FROM parcels WHERE commodity = 'Animals' AND loc_barangay <> '' ORDER BY loc_barangay"), 'b'),
     'by_barangay'    => $byBarangay,
     'by_month'       => array_values($byMonth),
+    'age_demographics' => $ageDemo,
     'recent_updates' => $recent,
 ]);

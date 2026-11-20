@@ -87,7 +87,15 @@ browser keeps its own choice. The server also ends sessions after 120 idle minut
 
 A separate account that manages the administrator accounts. It uses the same login page.
 
-- Username: `rsbsa_super_user` (fixed, it cannot be changed). Default password: `RSBSA*2026!`.
+- Username: `rsbsa_super_user` (fixed, it cannot be changed). Its starting password is set in `SUPER_ACCOUNTS`
+  in `api/_bootstrap.php` (not printed here, since this file may be shared); **change it immediately after the
+  first login**, under My Account.
+- There is a second super user account, `rsbsa_dev` (for the developer). Both are defined in `SUPER_ACCOUNTS` in `api/_bootstrap.php`,
+  have the same powers, and each has its own password (change it under My Account). The Activity Log tab shows which super user did what.
+  Both usernames are reserved: an administrator cannot be given either name.
+- `rsbsa_dev` is hidden: nothing it does is written to the super user Activity Log (not its logins, not account changes it makes),
+  and it does not appear in any list. Logged in as `rsbsa_dev`, My Account has one extra card, "Reset rsbsa_super_user's
+  password", which changes only that account's password (never its username, which is fixed everywhere in the system).
   **Change the default password** after the first login (My Account > Change your password).
 - It can add administrator accounts, change the name or username of an account, and reset an
   administrator's password (it cannot open farmer records, reports or settings), and change its own password.
@@ -96,7 +104,7 @@ A separate account that manages the administrator accounts. It uses the same log
 - Nothing done as the super user is written to the administrators' Activity Logs. It has its own
   **Activity Log** page (logins, failed logins, added/edited/disabled accounts, password resets) that only the
   super user can read. That log and the super user password are not copied into backups or replaced by a restore.
-- If the super user password is lost, delete the one row of the `super_user` table
+- If a super user password is lost, delete that account's row in the `super_user` table
   (`sqlite3 database/rsbsa.sqlite "DELETE FROM super_user"`); the default password is created again at the next login.
 
 ## Deleting
@@ -108,14 +116,32 @@ A separate account that manages the administrator accounts. It uses the same log
   blank) and the page tells you how many to review.
 - **Delete a parcel:** on the Update page click Remove Parcel, then Save Changes. The parcel, its duplicate
   flags and all its attached files are deleted. A farmer must keep at least one parcel (delete the farmer instead).
+- **Tax declaration is optional.** A parcel may be saved without an attached tax declaration (some parcels
+  have none yet). It is tagged "No tax declaration" in the farmer's View window and marked "No tax declaration
+  attached" on the printed form; the farmers Excel/CSV export has a "Tax Declaration" column (Attached / None).
+  The declared area and tax declarant fields are still required. To attach one later, open the Update page and
+  choose a file. To take one off, click Remove beside the file field (Undo cancels it) and Save Changes; the file
+  is deleted. Attach / replace / remove are written to the Activity Log ("Tax declaration attached / replaced /
+  removed") and to the parcel's history.
 - Replacing a tax declaration also deletes the old file. Deletions cannot be undone, so back up first
   (see Backup).
+
+## Gender and age groups
+
+- **Gender** (Male, Female, Others) is a required field on the Register / Update form. Farmers recorded before the
+  field existed have it blank: they are counted as **Others** in the charts and the export, and the Update page asks
+  for a gender the next time you save that farmer. The `gender` column is added to the database automatically the
+  first time the updated system runs (no data is changed or lost); `php database/migrate.php` also adds it.
+- **Age** is never stored: it is worked out from the date of birth each time, so it is always current.
+  Youth = 18-30 years old, Senior Citizen = 60 and above (`YOUTH_MIN_AGE`, `YOUTH_MAX_AGE`, `SENIOR_MIN_AGE` in `api/_lib.php`).
+- **Dashboard > Age Demographics:** two pie charts (Youth, Senior Citizen) with the number of Male, Female and Others inside.
+- **Reports > Farmer Masterlist:** new filters Age Group and Gender, and new Age and Gender columns after Date of Birth.
 
 ## Notes
 
 - Parcel history: every saved parcel has a History button (Update page, and the farmer's View window). It lists
   each change newest first (previous value -> new value) for lot number, tax declarant, parcel remark, farming
-  status, areas, commodity, association, location and replaced tax declaration files, plus the values at that
+  status, areas, commodity, association, location and replaced or removed tax declaration files, plus the values at that
   time. Use Print, Export Excel or Export CSV in that window. Parcels that existed before this feature start
   with an "Existing record" entry after `php database/migrate.php`. History is deleted with the parcel.
 - Activity Logs (left menu): every action is recorded with the user, date and time, and IP: logins (including

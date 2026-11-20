@@ -52,8 +52,8 @@ if ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite') {
     echo "Using MySQL: import database/schema.mysql.sql yourself; only the account is created here.\n";
 }
 
-if (strcasecmp($username, SUPER_USERNAME) === 0) {
-    fwrite(STDERR, "The username \"" . SUPER_USERNAME . "\" is reserved for the super user. Choose another username.\n");
+if (super_id_for($username) !== null) {
+    fwrite(STDERR, "The username \"" . $username . "\" is reserved for the super user. Choose another username.\n");
     exit(1);
 }
 

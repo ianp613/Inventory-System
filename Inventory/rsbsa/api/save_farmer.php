@@ -127,6 +127,11 @@ if ($birth === '') {
     $errors['birth_date'] = 'Enter a valid date of birth.';
 }
 
+$gender = clean_str($in['gender'] ?? '');
+if (!in_array($gender, GENDERS, true)) {
+    $errors['gender'] = 'Select the gender.';
+}
+
 $addr = is_array($in['address'] ?? null) ? $in['address'] : [];
 $addrZone = $text($addr['zone_sitio'] ?? '', 'address.zone_sitio', 80);
 $addrBrgy = $text($addr['barangay'] ?? '', 'address.barangay', 80, true, 'Barangay');
@@ -327,9 +332,9 @@ foreach ($parcelsIn as $i => $p) {
         } else {
             $n['tax_file'] = $uploads[0];
         }
-    } elseif ($pid === null || empty($existingParcels[$pid]['tax_file_path'])) {
-        $errors["$k.tax_file"] = 'Attach the tax declaration.';
     }
+    $n['remove_tax_file'] = !empty($p['remove_tax_file']);
+    // (optional: a parcel without a tax declaration yet is allowed; it is shown as "No tax declaration attached")
 
     // supporting documents (checked now, only required later if the lot turns out to be a duplicate)
     $n['support'] = [];
@@ -426,6 +431,7 @@ try {
         'middle_name'        => $middle,
         'suffix'             => $suffix,
         'birth_date'         => $birth,
+        'gender'             => $gender,
         'valid_id_type'      => $idType,
         'valid_id_no'        => $idNo,
         'addr_zone_sitio'    => $addrZone,
@@ -502,6 +508,14 @@ try {
             }
         }
 
+        $removedFile = false;
+        if (!$n['tax_file'] && $n['remove_tax_file'] && $n['id'] && !empty($existingParcels[$n['id']]['tax_file_path'])) {
+            $obsolete[] = $existingParcels[$n['id']]['tax_file_path'];
+            $data['tax_file_path'] = null;
+            $data['tax_file_name'] = null;
+            $removedFile = true;
+        }
+
         if ($n['id']) {
             $parcelId = $n['id'];
             $old = $existingParcels[$parcelId];
@@ -509,12 +523,17 @@ try {
 
             // history: record what this save changed
             $changes = history_changes($old, $data);
-            if (isset($data['tax_file_name'])) {
+            $labels = [];
+            if ($removedFile) {
+                $labels[] = 'Tax declaration removed';
+                $changes[] = ['field' => 'tax_file', 'label' => 'Tax Declaration File', 'old' => (string) $old['tax_file_name'], 'new' => '(removed)'];
+            } elseif (isset($data['tax_file_name'])) {
+                $labels[] = empty($old['tax_file_name']) ? 'Tax declaration attached' : 'Tax declaration replaced';
                 $changes[] = ['field' => 'tax_file', 'label' => 'Tax Declaration File', 'old' => (string) $old['tax_file_name'], 'new' => $data['tax_file_name']];
             }
             if ($changes) {
                 record_history($parcelId, $farmerId, 'Updated', $changes, array_merge($old, $data), $now);
-                $notes[] = 'Lot ' . $data['cadastral_lot_no'] . ' changed: ' . implode(', ', array_column($changes, 'label')) . '.';
+                $notes[] = 'Lot ' . $data['cadastral_lot_no'] . ' changed: ' . implode(', ', array_merge(array_diff(array_column($changes, 'label'), ['Tax Declaration File']), $labels)) . '.';
             }
         } else {
             $data['farmer_id'] = $farmerId;

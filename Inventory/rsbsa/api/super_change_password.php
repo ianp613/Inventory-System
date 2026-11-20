@@ -30,7 +30,8 @@ if ($errors) {
     fail(422, 'Please correct the highlighted fields.', $errors);
 }
 
-$key = substr('password:' . SUPER_USERNAME, 0, 60);
+$me = current_super();
+$key = substr('password:' . $me['username'], 0, 60);
 $ip = client_ip();
 $windowMin = (int) cfg('login_window_minutes', 15);
 $since = date('Y-m-d H:i:s', time() - $windowMin * 60);
@@ -40,16 +41,16 @@ if ($recent >= (int) cfg('login_max_attempts', 5)) {
     fail(429, "Too many wrong passwords. Please wait $windowMin minutes and try again.", [], ['Retry-After: ' . ($windowMin * 60)]);
 }
 
-$su = ensure_super_user();
+$su = ensure_super_user($me['sid']);
 if (!password_verify($current, $su['password_hash'])) {
     q('INSERT INTO login_attempts (ip_address, username, attempted_at) VALUES (?, ?, ?)', [$ip, $key, now()]);
     fail(422, 'The current password is not correct.', ['current_password' => 'The current password is not correct.']);
 }
 
-q('UPDATE super_user SET password_hash = ?, password_changed_at = ? WHERE id = 1', [password_hash($new, PASSWORD_DEFAULT), now()]);
+q('UPDATE super_user SET password_hash = ?, password_changed_at = ? WHERE id = ?', [password_hash($new, PASSWORD_DEFAULT), now(), $me['sid']]);
 q('DELETE FROM login_attempts WHERE ip_address = ? AND username = ?', [$ip, $key]);
 
-super_log('Password changed', SUPER_USERNAME, 'The super user changed their own password.');
+super_log('Password changed', $me['username'], 'The super user changed their own password.');
 
 session_regenerate_id(true);
 $_SESSION['last_activity'] = time();

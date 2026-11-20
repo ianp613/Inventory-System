@@ -6,12 +6,12 @@
 require __DIR__ . '/_bootstrap.php';
 
 require_get();
-require_super();
-$su = ensure_super_user();
+$me = require_super();
+$su = ensure_super_user($me['sid']);
 
 ok([
     'super' => [
-        'username'         => SUPER_USERNAME,
+        'username'         => $me['username'],
         'default_password' => empty($su['password_changed_at']),
         'last_login'       => $su['last_login'],
     ],

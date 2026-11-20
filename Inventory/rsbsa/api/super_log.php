@@ -20,5 +20,5 @@ ok([
     'page'     => $page,
     'pages'    => $pages,
     'per_page' => $perPage,
-    'entries'  => q_all("SELECT id, created_at, action, target, details, ip_address FROM super_log ORDER BY id DESC LIMIT $perPage OFFSET $offset"),
+    'entries'  => q_all("SELECT id, created_at, actor, action, target, details, ip_address FROM super_log ORDER BY id DESC LIMIT $perPage OFFSET $offset"),
 ]);

@@ -36,9 +36,12 @@ $recent = (int) q_val(
     'SELECT COUNT(*) FROM login_attempts WHERE ip_address = ? AND LOWER(username) = LOWER(?) AND attempted_at >= ?',
     [$ip, $username, $since]
 );
-$isSuper = strcasecmp($username, SUPER_USERNAME) === 0;   // the super user is never written to the activity log
+$superId = super_id_for($username);   // a super user is never written to the activity log
+$isSuper = $superId !== null;
+$superName = $isSuper ? SUPER_ACCOUNTS[$superId][0] : '';
+if ($isSuper) { $GLOBALS['rsbsa_super_actor_id'] = $superId; $GLOBALS['rsbsa_super_actor'] = $superName; }
 if ($recent >= $maxAttempts) {
-    $isSuper ? super_log('Login blocked', SUPER_USERNAME, 'Too many wrong passwords.') : log_activity('Login', 'Login blocked', "Too many failed attempts for username \"$username\".", ['id' => null, 'username' => $username, 'name' => '']);
+    $isSuper ? super_log('Login blocked', $superName, 'Too many wrong passwords.', $superName) : log_activity('Login', 'Login blocked', "Too many failed attempts for username \"$username\".", ['id' => null, 'username' => $username, 'name' => '']);
     fail(
         429,
         "Too many failed attempts. Please wait $windowMin minutes and try again.",
@@ -48,25 +51,25 @@ if ($recent >= $maxAttempts) {
 }
 
 if ($isSuper) {
-    $su = ensure_super_user();
+    $su = ensure_super_user($superId);
     $dummy = '$2y$10$nldsI6O.fbJp6EZWHVsmrutxaN6zMQyazSA1u132LTo/UKfNxfrYK';
     if (!password_verify($password, $su['password_hash'] ?? $dummy)) {
         q('INSERT INTO login_attempts (ip_address, username, attempted_at) VALUES (?, ?, ?)', [$ip, $username, now()]);
-        super_log('Failed login', SUPER_USERNAME, 'Wrong password.');
+        super_log('Failed login', $superName, 'Wrong password.', $superName);
         fail(401, 'Invalid username or password.');
     }
     q('DELETE FROM login_attempts WHERE ip_address = ? AND LOWER(username) = LOWER(?)', [$ip, $username]);
     if (password_needs_rehash($su['password_hash'], PASSWORD_DEFAULT)) {
-        q('UPDATE super_user SET password_hash = ? WHERE id = 1', [password_hash($password, PASSWORD_DEFAULT)]);
+        q('UPDATE super_user SET password_hash = ? WHERE id = ?', [password_hash($password, PASSWORD_DEFAULT), $superId]);
     }
-    q('UPDATE super_user SET last_login = ? WHERE id = 1', [now()]);
+    q('UPDATE super_user SET last_login = ? WHERE id = ?', [now(), $superId]);
     start_session();
     session_regenerate_id(true);
     unset($_SESSION['admin_id'], $_SESSION['admin_username'], $_SESSION['admin_name']);
-    $_SESSION['super_id'] = 1;
+    $_SESSION['super_id'] = $superId;
     $_SESSION['last_activity'] = time();
-    super_log('Logged in', SUPER_USERNAME);
-    ok(['user' => ['id' => 0, 'username' => SUPER_USERNAME, 'name' => 'Super User', 'role' => 'super']], 'Login successful.');
+    super_log('Logged in', $superName, '', $superName);
+    ok(['user' => ['id' => 0, 'username' => $superName, 'name' => 'Super User', 'role' => 'super']], 'Login successful.');
 }
 
 $admin = q_one('SELECT id, username, name, password_hash, is_active FROM admins WHERE LOWER(username) = LOWER(?)', [$username]);

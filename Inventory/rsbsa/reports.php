@@ -88,6 +88,23 @@
                 </select></label>
             </div>
             <div class="field">
+              <label><span class="lbl">Age Group</span>
+                <select id="r-age">
+                  <option value="">All</option>
+                  <option value="youth">Youth (18&ndash;30)</option>
+                  <option value="senior">Senior Citizen (60 and above)</option>
+                </select></label>
+            </div>
+            <div class="field">
+              <label><span class="lbl">Gender</span>
+                <select id="r-gender">
+                  <option value="">All</option>
+                  <option>Male</option>
+                  <option>Female</option>
+                  <option>Others</option>
+                </select></label>
+            </div>
+            <div class="field">
               <label><span class="lbl">Date Updated (from)</span>
                 <input type="date" id="r-from"></label>
             </div>

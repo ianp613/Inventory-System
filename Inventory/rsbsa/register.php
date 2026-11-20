@@ -136,6 +136,16 @@ $brgyOptions .= '<option value="__other">Other (type manually)...</option>';
                   </select></label>
                 <small class="field-error"></small>
               </div>
+              <div class="field">
+                <label><span class="lbl">Gender <b class="req">*</b></span>
+                  <select data-f="gender">
+                    <option value="">Select...</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Others</option>
+                  </select></label>
+                <small class="field-error"></small>
+              </div>
             </div>
 
             <h3 class="sub-title">Photo and Valid ID</h3>
@@ -444,8 +454,10 @@ $brgyOptions .= '<option value="__other">Other (type manually)...</option>';
           <small class="field-error"></small>
         </div>
         <div class="field">
-          <label><span class="lbl">Attached Tax Declaration <b class="req">*</b></span>
-            <input type="file" data-f="tax_file" accept=".pdf,.jpg,.jpeg,.png"></label>
+          <label><span class="lbl">Attached Tax Declaration <span class="opt">(optional)</span></span>
+            <span class="input-group"><input type="file" data-f="tax_file" accept=".pdf,.jpg,.jpeg,.png">
+              <button type="button" class="btn-addon" data-role="remove-file" hidden>Remove</button></span></label>
+          <small class="hint" data-role="no-file">No file chosen: this parcel will be marked "No tax declaration attached". You can attach it later.</small>
           <small class="hint" data-role="existing-file" hidden></small>
           <small class="field-error"></small>
         </div>

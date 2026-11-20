@@ -1281,3 +1281,40 @@ body.super-page {
 [data-theme="dark"] .btn-warn { color: #f0b3a2; border-color: #7a4a3e; }
 .pager { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 14px; }
 .nowrap { white-space: nowrap; }
+.opt { font-weight: 400; color: var(--gray-600); font-size: .85em; }
+
+/* input group: file input with an attached Remove button */
+.input-group { display: flex; align-items: stretch; width: 100%; }
+.field .input-group input[type="file"] {
+  flex: 1 1 auto; width: auto; min-width: 0; padding: 7px 10px; background: var(--surface); color: var(--gray-900);
+  border: 1.5px solid var(--gray-300); border-radius: var(--radius);
+}
+.field .input-group input[type="file"]:not(:last-child) { border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: 0; }
+.input-group .btn-addon {
+  flex: 0 0 auto; padding: 0 14px; font: inherit; font-size: .88rem; font-weight: 500; cursor: pointer;
+  color: var(--danger); background: var(--surface); border: 1.5px solid var(--gray-300);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.input-group .btn-addon[hidden] { display: none; }
+.input-group .btn-addon:hover { background: var(--danger-bg); }
+
+
+/* Age Demographics: two pies in one card */
+.age-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.age-grid > .empty { grid-column: 1 / -1; text-align: center; color: var(--gray-600); padding: 18px 10px; }
+.age-box { border: 1px solid var(--gray-200, var(--green-100)); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+.age-box h3 { margin: 0; font-size: 1rem; }
+.age-box h3 .muted { font-size: .8rem; font-weight: 400; }
+.age-total { margin: 2px 0 8px; color: var(--gray-600); font-size: .86rem; }
+.age-body { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
+.age-box .empty { text-align: center; color: var(--gray-600); padding: 26px 8px; }
+.pie { width: 200px; height: 200px; flex: 0 0 auto; }
+.pie path, .pie circle { stroke: var(--surface); stroke-width: 2; }
+.pie text { fill: #fff; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.pie .slice-num { font-size: 20px; font-weight: 700; }
+.pie .slice-num.small { font-size: 13px; }
+.age-body .legend { flex: 1 1 130px; min-width: 130px; }
+.age-note { margin: 12px 0 0; }
+.pie .slice { animation: chart-fade .8s ease both; }
+html[data-charts="still"] .pie .slice { animation: none; }
+@media (max-width: 760px) { .age-grid { grid-template-columns: 1fr; } }

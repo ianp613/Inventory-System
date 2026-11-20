@@ -99,6 +99,15 @@
           </section>
         </div>
 
+        <!-- Age demographics -->
+        <section class="panel" aria-labelledby="age-title">
+          <h2 id="age-title">Age Demographics</h2>
+          <div id="age-chart" class="age-grid">
+            <p class="empty">Loading...</p>
+          </div>
+          <p class="hint age-note">Counted by farmer (not by parcel). The age is worked out from each farmer's date of birth, so it is always up to date.</p>
+        </section>
+
         <!-- Animal monitoring -->
         <section class="panel" aria-labelledby="animal-title">
           <div class="panel-head">

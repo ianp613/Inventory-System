@@ -32,6 +32,32 @@ const ANIMAL_CHART_GROUPS = [
 ];
 define('ANIMAL_TYPES', array_merge(array_merge(...array_values(ANIMAL_GROUPS)), LEGACY_ANIMAL_TYPES));
 const CIVIL_STATUSES = ['Single', 'Married', 'Widowed', 'Separated', 'Annulled'];
+const GENDERS = ['Male', 'Female', 'Others'];   // farmers recorded before the Gender field have it blank and are counted as Others
+// age groups, always worked out from the date of birth: Youth 18-30 years old, Senior Citizen 60 and above (RA 9994)
+const YOUTH_MIN_AGE = 18;
+const YOUTH_MAX_AGE = 30;
+const SENIOR_MIN_AGE = 60;
+
+/** SQL condition on farmers.birth_date for an age group ('youth' | 'senior'); returns [sql, args], or null for any other value. */
+function age_group_condition(string $group, string $col = 'f.birth_date'): ?array
+{
+    $today = new DateTime('today');
+    $before = fn(int $years) => (clone $today)->modify("-$years years")->format('Y-m-d');
+    if ($group === 'youth') {   // already 18, not yet 31
+        return ["($col <= ? AND $col > ?)", [$before(YOUTH_MIN_AGE), $before(YOUTH_MAX_AGE + 1)]];
+    }
+    if ($group === 'senior') {
+        return ["$col <= ?", [$before(SENIOR_MIN_AGE)]];
+    }
+    return null;
+}
+
+/** Completed years from a YYYY-MM-DD date of birth, as of today; null when the date is not valid. */
+function age_from_birth(?string $birth): ?int
+{
+    $d = $birth ? DateTime::createFromFormat('!Y-m-d', $birth) : false;
+    return $d ? (int) $d->diff(new DateTime('today'))->y : null;
+}
 /** Parcel remark. Only 'Active' parcels count in a farmer's total area. */
 const PARCEL_STATUSES = ['Active', 'Inactive', 'Deceased'];
 const AREA_EPSILON     = 0.00005;
@@ -184,6 +210,8 @@ function load_farmer(int $id): ?array
         'middle_name'      => $f['middle_name'],
         'suffix'           => $f['suffix'],
         'birth_date'       => $f['birth_date'],
+        'age'              => age_from_birth($f['birth_date']),
+        'gender'           => (string) ($f['gender'] ?? ''),
         'valid_id_type'    => $f['valid_id_type'],
         'valid_id_no'      => $f['valid_id_no'],
         'address'          => [
