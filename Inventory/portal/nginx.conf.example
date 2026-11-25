@@ -1,0 +1,25 @@
+server {
+    listen 80;
+    server_name portal.example.com;        # or just the server's IP
+    root /var/www/unifi-portal/public;
+    index index.php;
+
+    # UniFi sends guests to /guest/s/<site-id>/?id=<mac>&ap=<ap-mac>&ssid=<ssid>&url=<original-url>
+    location ~ ^/guest/s/([^/]+)/? {
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root/guest/index.php;
+        fastcgi_param QUERY_STRING site=$1&$args;
+    }
+
+    location / { try_files $uri $uri/ =404; }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    location /uploads/ { location ~ \.php$ { return 403; } }
+    location ~ /\. { deny all; }
+}
